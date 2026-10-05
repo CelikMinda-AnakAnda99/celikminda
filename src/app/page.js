@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useGameStore } from '@/stores/gameStore';
+import { assetPath } from '@/utils/assetPath';
 import { WORLDS, GUIDES, LETTERS, BUBBLE_COLORS, PACKAGES, MINI_WORLDS, COMPLETE_ONLY_WORLDS, MINI_GAME_COUNT, COMPLETE_GAME_COUNT, COMPLETE_ONLY_GAME_COUNT } from '@/data/gameData';
 import { t, getRandomEncouragement, getRandomWrongResponse, getGreeting } from '@/data/translations';
 import { LetterTreeGame, BeeFlowerGame, CountObjectsGame, ColourMixingGame, AnimalSoundsGame, ShapeHuntGame, BlockTowerGame, AnimalHomesGame, MatchColourGame, SortTransportGame, MathMachineGame, AnimalFoodGame, FreeDrawGame, SubtractionShopGame, RoadSafetyGame, GroceryStoreGame, OurGardenGame, LittleChefGame, HealthyOrNotGame, FruitOrVegGame, LetterTrailGame, SyllableFactoryGame, LetterPuzzleGame, NumberTraceGame, BiggerSmallerGame, PatternsGame, MagicDiceGame, MagicColouringGame, SockPairsGame, ColourHunterGame, BuildVehicleGame, WorldVehiclesGame, AnimalPuzzleGame, AnimalEncyclopediaGame, MimicAnimalGame, AbcSongGame, LetterStoriesGame, LabelBodyGame, MoveTogetherGame, HealthyHabitsGame, LittleDoctorGame, BodySongGame, MagicTangramGame, DrawShapesGame, BuildPicturesGame, ThreeDShapesGame, RolePlayGame, JobToolsGame, VisitWorkplaceGame, WhoAmIGame, InstrumentsGame, FollowBeatGame, ChildrensSongsGame, LearnNotesGame, WorldMapGame, WorldHousesGame, WorldFestivalsGame, WeatherGame, PlantsGame, ExperimentsGame, DayNightGame } from '@/components/Games';
@@ -40,6 +41,9 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true);
+    // Set CSS custom property for basePath (GitHub Pages)
+    const bp = process.env.NODE_ENV === 'production' ? '/celikminda' : '';
+    document.documentElement.style.setProperty('--base-path', `"${bp}"`);
     // Restore Supabase session on mount
     store.initAuth();
   }, []);
@@ -95,7 +99,7 @@ function SplashScreen({ onEnter }) {
   return (
     <div className="splash-screen" style={{ 
       cursor: ready ? 'pointer' : 'default',
-      backgroundImage: 'url(/images/splash_bg.jpg)',
+      backgroundImage: `url(${assetPath('/images/splash_bg.jpg')})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       minHeight: '100vh',
@@ -114,7 +118,7 @@ function SplashScreen({ onEnter }) {
         ))}
       </div>
       <img 
-        src="/images/celikminda_logo.jpg" 
+        src={assetPath('/images/celikminda_logo.jpg')} 
         alt="CelikMinda" 
         style={{ 
           width: '80%', maxWidth: 320, borderRadius: 20,
@@ -147,7 +151,7 @@ function SplashScreen({ onEnter }) {
             gap: 8,
           }}
         >
-          <img src="/images/star_icon.jpg" alt="" style={{ width: 24, height: 24, borderRadius: '50%' }} />
+          <img src={assetPath('/images/star_icon.jpg')} alt="" style={{ width: 24, height: 24, borderRadius: '50%' }} />
           {lang === 'bm' ? 'Mula Belajar!' : 'Start Learning!'}
         </button>
       )}
@@ -296,7 +300,7 @@ function LoginPage({ onLoginSuccess }) {
   };
 
   return (
-    <div className="login-wrapper">
+    <div className="login-wrapper" style={{ backgroundImage: `url(${assetPath('/images/login_bg_unified.jpg')})` }}>
       {/* ═══ LOGIN FORM — Sits within the white rectangle in background ═══ */}
       <div className={`login-form-card${mode === 'register' ? ' register-mode' : ''}`}>
         {/* Tab Switcher */}
@@ -749,7 +753,7 @@ function TopBar({ onOpenParent }) {
     <div className="top-bar">
       <div className="top-bar-left">
         <div className="avatar-circle" onClick={goHome} style={{ cursor: 'pointer' }}>
-          <img src="/characters/minda.jpg" alt={childName} />
+          <img src={assetPath('/characters/minda.jpg')} alt={childName} />
         </div>
         <span className="child-name">{t('greeting', lang)}, {childName}!</span>
       </div>

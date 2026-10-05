@@ -1925,7 +1925,7 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url(/images/login_bg_unified.jpg);
+  /* background-image: url(/images/login_bg_unified.jpg); -- handled inline via assetPath */
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -1997,7 +1997,7 @@ img {
 /* ── TABLET LANDSCAPE (768px - 1023px) ── */
 @media (min-width: 768px) and (max-width: 1023px) and (orientation: landscape) {
   .login-wrapper {
-    background-image: url(/images/login_bg_unified.jpg);
+    /* background-image: url(/images/login_bg_unified.jpg); -- handled inline via assetPath */
   }
   .login-form-card {
     width: 40%;
@@ -2011,7 +2011,7 @@ img {
 /* ── TABLET PORTRAIT (600px - 1023px, portrait) ── */
 @media (min-width: 600px) and (max-width: 1023px) and (orientation: portrait) {
   .login-wrapper {
-    background-image: url(/images/login_bg_tablet.jpg);
+    /* background-image: url(/images/login_bg_tablet.jpg); -- handled inline via assetPath */
     background-position: center top;
   }
   .login-form-card {
@@ -2029,7 +2029,7 @@ img {
 /* ── TABLET PORTRAIT FALLBACK (no orientation support) ── */
 @media (min-width: 600px) and (max-width: 767px) {
   .login-wrapper {
-    background-image: url(/images/login_bg_tablet.jpg);
+    /* background-image: url(/images/login_bg_tablet.jpg); -- handled inline via assetPath */
     background-position: center top;
   }
   .login-form-card {
@@ -2044,7 +2044,7 @@ img {
 /* ── MOBILE LARGE (480px - 599px) ── */
 @media (min-width: 480px) and (max-width: 599px) {
   .login-wrapper {
-    background-image: url(/images/login_bg_mobile.jpg);
+    /* background-image: url(/images/login_bg_mobile.jpg); -- handled inline via assetPath */
     background-size: cover;
     background-position: center top;
     align-items: center;
@@ -2064,7 +2064,7 @@ img {
 /* ── MOBILE SMALL (below 480px) ── */
 @media (max-width: 479px) {
   .login-wrapper {
-    background-image: url(/images/login_bg_mobile.jpg);
+    /* background-image: url(/images/login_bg_mobile.jpg); -- handled inline via assetPath */
     background-size: cover;
     background-position: center top;
     align-items: center;
@@ -2112,7 +2112,7 @@ img {
 /* ── LANDSCAPE on small screens — keep desktop bg ── */
 @media (max-width: 767px) and (orientation: landscape) {
   .login-wrapper {
-    background-image: url(/images/login_bg_unified.jpg);
+    /* background-image: url(/images/login_bg_unified.jpg); -- handled inline via assetPath */
     background-position: center center;
     min-height: 100vh;
   }
