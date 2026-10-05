@@ -611,16 +611,16 @@ export function CountObjectsGame() {
 
   const TOTAL_ROUNDS = 8;
   const OBJECT_SETS = [
-    { emoji: '🐱', image: '/animals/cat.jpg', nameBm: 'kucing', nameEn: 'cats' },
-    { emoji: '🐶', image: '/animals/dog.jpg', nameBm: 'anjing', nameEn: 'dogs' },
-    { emoji: '🦋', image: '/animals/butterfly.jpg', nameBm: 'rama-rama', nameEn: 'butterflies' },
-    { emoji: '🐠', image: '/animals/fish.jpg', nameBm: 'ikan', nameEn: 'fish' },
+    { emoji: '🐱', image: assetPath('/animals/cat.jpg'), nameBm: 'kucing', nameEn: 'cats' },
+    { emoji: '🐶', image: assetPath('/animals/dog.jpg'), nameBm: 'anjing', nameEn: 'dogs' },
+    { emoji: '🦋', image: assetPath('/animals/butterfly.jpg'), nameBm: 'rama-rama', nameEn: 'butterflies' },
+    { emoji: '🐠', image: assetPath('/animals/fish.jpg'), nameBm: 'ikan', nameEn: 'fish' },
     { emoji: '🌺', nameBm: 'bunga', nameEn: 'flowers' },
     { emoji: '⭐', nameBm: 'bintang', nameEn: 'stars' },
     { emoji: '🍎', nameBm: 'epal', nameEn: 'apples' },
-    { emoji: '🐸', image: '/animals/frog.jpg', nameBm: 'katak', nameEn: 'frogs' },
-    { emoji: '🐣', image: '/animals/rooster.jpg', nameBm: 'anak ayam', nameEn: 'chicks' },
-    { emoji: '🐝', image: '/animals/bee.jpg', nameBm: 'lebah', nameEn: 'bees' },
+    { emoji: '🐸', image: assetPath('/animals/frog.jpg'), nameBm: 'katak', nameEn: 'frogs' },
+    { emoji: '🐣', image: assetPath('/animals/rooster.jpg'), nameBm: 'anak ayam', nameEn: 'chicks' },
+    { emoji: '🐝', image: assetPath('/animals/bee.jpg'), nameBm: 'lebah', nameEn: 'bees' },
   ];
 
   const [round, setRound] = useState(1);
@@ -1054,16 +1054,16 @@ export function AnimalSoundsGame() {
   const lang = language;
 
   const ANIMALS = [
-    { id: 'cat', emoji: '🐱', image: '/animals/cat.jpg', nameBm: 'Kucing', nameEn: 'Cat', soundBm: 'Meow! Meow!', soundEn: 'Meow! Meow!', bgColor: '#FFF0E5' },
-    { id: 'dog', emoji: '🐶', image: '/animals/dog.jpg', nameBm: 'Anjing', nameEn: 'Dog', soundBm: 'Woof! Woof!', soundEn: 'Woof! Woof!', bgColor: '#FFF5E0' },
-    { id: 'cow', emoji: '🐮', image: '/animals/cow.jpg', nameBm: 'Lembu', nameEn: 'Cow', soundBm: 'Moo! Moo!', soundEn: 'Moo! Moo!', bgColor: '#E8F5E9' },
-    { id: 'duck', emoji: '🦆', image: '/animals/duck.jpg', nameBm: 'Itik', nameEn: 'Duck', soundBm: 'Kwek! Kwek!', soundEn: 'Quack! Quack!', bgColor: '#E3F2FD' },
-    { id: 'rooster', emoji: '🐓', image: '/animals/rooster.jpg', nameBm: 'Ayam Jantan', nameEn: 'Rooster', soundBm: 'Kukuruyuk!', soundEn: 'Cock-a-doodle-doo!', bgColor: '#FFF3E0' },
-    { id: 'sheep', emoji: '🐑', image: '/animals/sheep.jpg', nameBm: 'Kambing Biri-biri', nameEn: 'Sheep', soundBm: 'Baa! Baa!', soundEn: 'Baa! Baa!', bgColor: '#F3E5F5' },
-    { id: 'frog', emoji: '🐸', image: '/animals/frog.jpg', nameBm: 'Katak', nameEn: 'Frog', soundBm: 'Koak! Koak!', soundEn: 'Ribbit! Ribbit!', bgColor: '#E8F5E9' },
-    { id: 'lion', emoji: '🦁', image: '/animals/lion.jpg', nameBm: 'Singa', nameEn: 'Lion', soundBm: 'Aum! Aum!', soundEn: 'Roar! Roar!', bgColor: '#FFF8E1' },
-    { id: 'elephant', emoji: '🐘', image: '/animals/elephant.jpg', nameBm: 'Gajah', nameEn: 'Elephant', soundBm: 'Prruut!', soundEn: 'Trumpet!', bgColor: '#ECEFF1' },
-    { id: 'bird', emoji: '🐦', image: '/animals/bird.jpg', nameBm: 'Burung', nameEn: 'Bird', soundBm: 'Cip! Cip!', soundEn: 'Tweet! Tweet!', bgColor: '#E0F7FA' },
+    { id: 'cat', emoji: '🐱', image: assetPath('/animals/cat.jpg'), nameBm: 'Kucing', nameEn: 'Cat', soundBm: 'Meow! Meow!', soundEn: 'Meow! Meow!', bgColor: '#FFF0E5' },
+    { id: 'dog', emoji: '🐶', image: assetPath('/animals/dog.jpg'), nameBm: 'Anjing', nameEn: 'Dog', soundBm: 'Woof! Woof!', soundEn: 'Woof! Woof!', bgColor: '#FFF5E0' },
+    { id: 'cow', emoji: '🐮', image: assetPath('/animals/cow.jpg'), nameBm: 'Lembu', nameEn: 'Cow', soundBm: 'Moo! Moo!', soundEn: 'Moo! Moo!', bgColor: '#E8F5E9' },
+    { id: 'duck', emoji: '🦆', image: assetPath('/animals/duck.jpg'), nameBm: 'Itik', nameEn: 'Duck', soundBm: 'Kwek! Kwek!', soundEn: 'Quack! Quack!', bgColor: '#E3F2FD' },
+    { id: 'rooster', emoji: '🐓', image: assetPath('/animals/rooster.jpg'), nameBm: 'Ayam Jantan', nameEn: 'Rooster', soundBm: 'Kukuruyuk!', soundEn: 'Cock-a-doodle-doo!', bgColor: '#FFF3E0' },
+    { id: 'sheep', emoji: '🐑', image: assetPath('/animals/sheep.jpg'), nameBm: 'Kambing Biri-biri', nameEn: 'Sheep', soundBm: 'Baa! Baa!', soundEn: 'Baa! Baa!', bgColor: '#F3E5F5' },
+    { id: 'frog', emoji: '🐸', image: assetPath('/animals/frog.jpg'), nameBm: 'Katak', nameEn: 'Frog', soundBm: 'Koak! Koak!', soundEn: 'Ribbit! Ribbit!', bgColor: '#E8F5E9' },
+    { id: 'lion', emoji: '🦁', image: assetPath('/animals/lion.jpg'), nameBm: 'Singa', nameEn: 'Lion', soundBm: 'Aum! Aum!', soundEn: 'Roar! Roar!', bgColor: '#FFF8E1' },
+    { id: 'elephant', emoji: '🐘', image: assetPath('/animals/elephant.jpg'), nameBm: 'Gajah', nameEn: 'Elephant', soundBm: 'Prruut!', soundEn: 'Trumpet!', bgColor: '#ECEFF1' },
+    { id: 'bird', emoji: '🐦', image: assetPath('/animals/bird.jpg'), nameBm: 'Burung', nameEn: 'Bird', soundBm: 'Cip! Cip!', soundEn: 'Tweet! Tweet!', bgColor: '#E0F7FA' },
   ];
 
   const TOTAL_ROUNDS = 8;
@@ -1735,26 +1735,26 @@ export function AnimalHomesGame() {
   ];
 
   const ANIMALS_DATA = [
-    { emoji: '🐮', image: '/animals/cow.jpg', nameBm: 'Lembu', nameEn: 'Cow', habitat: 'farm' },
-    { emoji: '🐔', image: '/animals/rooster.jpg', nameBm: 'Ayam', nameEn: 'Chicken', habitat: 'farm' },
-    { emoji: '🐷', image: '/animals/pig.jpg', nameBm: 'Babi', nameEn: 'Pig', habitat: 'farm' },
-    { emoji: '🐑', image: '/animals/sheep.jpg', nameBm: 'Kambing', nameEn: 'Sheep', habitat: 'farm' },
-    { emoji: '🦁', image: '/animals/lion.jpg', nameBm: 'Singa', nameEn: 'Lion', habitat: 'jungle' },
-    { emoji: '🐒', image: '/animals/monkey.jpg', nameBm: 'Monyet', nameEn: 'Monkey', habitat: 'jungle' },
-    { emoji: '🐍', image: '/animals/snake.jpg', nameBm: 'Ular', nameEn: 'Snake', habitat: 'jungle' },
-    { emoji: '🦜', image: '/animals/bird.jpg', nameBm: 'Burung', nameEn: 'Bird', habitat: 'sky' },
-    { emoji: '🐠', image: '/animals/fish.jpg', nameBm: 'Ikan', nameEn: 'Fish', habitat: 'ocean' },
-    { emoji: '🐙', image: '/animals/octopus.jpg', nameBm: 'Sotong', nameEn: 'Octopus', habitat: 'ocean' },
-    { emoji: '🐢', image: '/animals/turtle.jpg', nameBm: 'Penyu', nameEn: 'Turtle', habitat: 'ocean' },
-    { emoji: '🐬', image: '/animals/dolphin.jpg', nameBm: 'Lumba-lumba', nameEn: 'Dolphin', habitat: 'ocean' },
-    { emoji: '🦅', image: '/animals/eagle.jpg', nameBm: 'Helang', nameEn: 'Eagle', habitat: 'sky' },
-    { emoji: '🦋', image: '/animals/butterfly.jpg', nameBm: 'Rama-rama', nameEn: 'Butterfly', habitat: 'sky' },
-    { emoji: '🐝', image: '/animals/bee.jpg', nameBm: 'Lebah', nameEn: 'Bee', habitat: 'sky' },
-    { emoji: '🐱', image: '/animals/cat.jpg', nameBm: 'Kucing', nameEn: 'Cat', habitat: 'farm' },
-    { emoji: '🐶', image: '/animals/dog.jpg', nameBm: 'Anjing', nameEn: 'Dog', habitat: 'farm' },
-    { emoji: '🦆', image: '/animals/duck.jpg', nameBm: 'Itik', nameEn: 'Duck', habitat: 'farm' },
-    { emoji: '🐸', image: '/animals/frog.jpg', nameBm: 'Katak', nameEn: 'Frog', habitat: 'jungle' },
-    { emoji: '🐘', image: '/animals/elephant.jpg', nameBm: 'Gajah', nameEn: 'Elephant', habitat: 'jungle' },
+    { emoji: '🐮', image: assetPath('/animals/cow.jpg'), nameBm: 'Lembu', nameEn: 'Cow', habitat: 'farm' },
+    { emoji: '🐔', image: assetPath('/animals/rooster.jpg'), nameBm: 'Ayam', nameEn: 'Chicken', habitat: 'farm' },
+    { emoji: '🐷', image: assetPath('/animals/pig.jpg'), nameBm: 'Babi', nameEn: 'Pig', habitat: 'farm' },
+    { emoji: '🐑', image: assetPath('/animals/sheep.jpg'), nameBm: 'Kambing', nameEn: 'Sheep', habitat: 'farm' },
+    { emoji: '🦁', image: assetPath('/animals/lion.jpg'), nameBm: 'Singa', nameEn: 'Lion', habitat: 'jungle' },
+    { emoji: '🐒', image: assetPath('/animals/monkey.jpg'), nameBm: 'Monyet', nameEn: 'Monkey', habitat: 'jungle' },
+    { emoji: '🐍', image: assetPath('/animals/snake.jpg'), nameBm: 'Ular', nameEn: 'Snake', habitat: 'jungle' },
+    { emoji: '🦜', image: assetPath('/animals/bird.jpg'), nameBm: 'Burung', nameEn: 'Bird', habitat: 'sky' },
+    { emoji: '🐠', image: assetPath('/animals/fish.jpg'), nameBm: 'Ikan', nameEn: 'Fish', habitat: 'ocean' },
+    { emoji: '🐙', image: assetPath('/animals/octopus.jpg'), nameBm: 'Sotong', nameEn: 'Octopus', habitat: 'ocean' },
+    { emoji: '🐢', image: assetPath('/animals/turtle.jpg'), nameBm: 'Penyu', nameEn: 'Turtle', habitat: 'ocean' },
+    { emoji: '🐬', image: assetPath('/animals/dolphin.jpg'), nameBm: 'Lumba-lumba', nameEn: 'Dolphin', habitat: 'ocean' },
+    { emoji: '🦅', image: assetPath('/animals/eagle.jpg'), nameBm: 'Helang', nameEn: 'Eagle', habitat: 'sky' },
+    { emoji: '🦋', image: assetPath('/animals/butterfly.jpg'), nameBm: 'Rama-rama', nameEn: 'Butterfly', habitat: 'sky' },
+    { emoji: '🐝', image: assetPath('/animals/bee.jpg'), nameBm: 'Lebah', nameEn: 'Bee', habitat: 'sky' },
+    { emoji: '🐱', image: assetPath('/animals/cat.jpg'), nameBm: 'Kucing', nameEn: 'Cat', habitat: 'farm' },
+    { emoji: '🐶', image: assetPath('/animals/dog.jpg'), nameBm: 'Anjing', nameEn: 'Dog', habitat: 'farm' },
+    { emoji: '🦆', image: assetPath('/animals/duck.jpg'), nameBm: 'Itik', nameEn: 'Duck', habitat: 'farm' },
+    { emoji: '🐸', image: assetPath('/animals/frog.jpg'), nameBm: 'Katak', nameEn: 'Frog', habitat: 'jungle' },
+    { emoji: '🐘', image: assetPath('/animals/elephant.jpg'), nameBm: 'Gajah', nameEn: 'Elephant', habitat: 'jungle' },
   ];
 
   const TOTAL_ROUNDS = 8;
@@ -2116,20 +2116,20 @@ export function SortTransportGame() {
   ];
 
   const VEHICLES = [
-    { emoji: '🚗', image: '/transport/car.jpg', nameBm: 'Kereta', nameEn: 'Car', category: 'land' },
-    { emoji: '🚌', image: '/transport/bus.jpg', nameBm: 'Bas', nameEn: 'Bus', category: 'land' },
-    { emoji: '🚲', image: '/transport/bicycle.jpg', nameBm: 'Basikal', nameEn: 'Bicycle', category: 'land' },
-    { emoji: '🏍️', image: '/transport/motorcycle.jpg', nameBm: 'Motosikal', nameEn: 'Motorcycle', category: 'land' },
-    { emoji: '🚂', image: '/transport/train.jpg', nameBm: 'Keretapi', nameEn: 'Train', category: 'land' },
-    { emoji: '🚑', image: '/transport/ambulance.jpg', nameBm: 'Ambulans', nameEn: 'Ambulance', category: 'land' },
-    { emoji: '✈️', image: '/transport/airplane.jpg', nameBm: 'Kapal Terbang', nameEn: 'Airplane', category: 'air' },
-    { emoji: '🚁', image: '/transport/helicopter.jpg', nameBm: 'Helikopter', nameEn: 'Helicopter', category: 'air' },
-    { emoji: '🎈', image: '/transport/balloon.jpg', nameBm: 'Belon Udara', nameEn: 'Hot Air Balloon', category: 'air' },
-    { emoji: '🚀', image: '/transport/rocket.jpg', nameBm: 'Roket', nameEn: 'Rocket', category: 'air' },
-    { emoji: '🚢', image: '/transport/ship.jpg', nameBm: 'Kapal', nameEn: 'Ship', category: 'water' },
-    { emoji: '⛵', image: '/transport/sailboat.jpg', nameBm: 'Perahu Layar', nameEn: 'Sailboat', category: 'water' },
-    { emoji: '🛶', image: '/transport/kayak.jpg', nameBm: 'Kayak', nameEn: 'Kayak', category: 'water' },
-    { emoji: '🚤', image: '/transport/speedboat.jpg', nameBm: 'Bot Laju', nameEn: 'Speedboat', category: 'water' },
+    { emoji: '🚗', image: assetPath('/transport/car.jpg'), nameBm: 'Kereta', nameEn: 'Car', category: 'land' },
+    { emoji: '🚌', image: assetPath('/transport/bus.jpg'), nameBm: 'Bas', nameEn: 'Bus', category: 'land' },
+    { emoji: '🚲', image: assetPath('/transport/bicycle.jpg'), nameBm: 'Basikal', nameEn: 'Bicycle', category: 'land' },
+    { emoji: '🏍️', image: assetPath('/transport/motorcycle.jpg'), nameBm: 'Motosikal', nameEn: 'Motorcycle', category: 'land' },
+    { emoji: '🚂', image: assetPath('/transport/train.jpg'), nameBm: 'Keretapi', nameEn: 'Train', category: 'land' },
+    { emoji: '🚑', image: assetPath('/transport/ambulance.jpg'), nameBm: 'Ambulans', nameEn: 'Ambulance', category: 'land' },
+    { emoji: '✈️', image: assetPath('/transport/airplane.jpg'), nameBm: 'Kapal Terbang', nameEn: 'Airplane', category: 'air' },
+    { emoji: '🚁', image: assetPath('/transport/helicopter.jpg'), nameBm: 'Helikopter', nameEn: 'Helicopter', category: 'air' },
+    { emoji: '🎈', image: assetPath('/transport/balloon.jpg'), nameBm: 'Belon Udara', nameEn: 'Hot Air Balloon', category: 'air' },
+    { emoji: '🚀', image: assetPath('/transport/rocket.jpg'), nameBm: 'Roket', nameEn: 'Rocket', category: 'air' },
+    { emoji: '🚢', image: assetPath('/transport/ship.jpg'), nameBm: 'Kapal', nameEn: 'Ship', category: 'water' },
+    { emoji: '⛵', image: assetPath('/transport/sailboat.jpg'), nameBm: 'Perahu Layar', nameEn: 'Sailboat', category: 'water' },
+    { emoji: '🛶', image: assetPath('/transport/kayak.jpg'), nameBm: 'Kayak', nameEn: 'Kayak', category: 'water' },
+    { emoji: '🚤', image: assetPath('/transport/speedboat.jpg'), nameBm: 'Bot Laju', nameEn: 'Speedboat', category: 'water' },
   ];
 
   const TOTAL_ROUNDS = 10;
@@ -2534,14 +2534,14 @@ export function AnimalFoodGame() {
   const lang = language;
 
   const ANIMALS = [
-    { nameBm: 'Kucing', nameEn: 'Cat', image: '/animals/cat.jpg', food: 'fish', foodEmoji: '🐟', foodBm: 'Ikan', foodEn: 'Fish' },
-    { nameBm: 'Arnab', nameEn: 'Rabbit', image: '/animals/rabbit.jpg', food: 'carrot', foodEmoji: '🥕', foodBm: 'Lobak', foodEn: 'Carrot' },
-    { nameBm: 'Monyet', nameEn: 'Monkey', image: '/animals/monkey.jpg', food: 'banana', foodEmoji: '🍌', foodBm: 'Pisang', foodEn: 'Banana' },
-    { nameBm: 'Gajah', nameEn: 'Elephant', image: '/animals/elephant.jpg', food: 'leaves', foodEmoji: '🌿', foodBm: 'Daun', foodEn: 'Leaves' },
-    { nameBm: 'Anjing', nameEn: 'Dog', image: '/animals/dog.jpg', food: 'bone', foodEmoji: '🦴', foodBm: 'Tulang', foodEn: 'Bone' },
-    { nameBm: 'Burung', nameEn: 'Bird', image: '/animals/bird.jpg', food: 'seeds', foodEmoji: '🌾', foodBm: 'Biji', foodEn: 'Seeds' },
-    { nameBm: 'Panda', nameEn: 'Panda', image: '/animals/panda.jpg', food: 'bamboo', foodEmoji: '🎋', foodBm: 'Buluh', foodEn: 'Bamboo' },
-    { nameBm: 'Singa', nameEn: 'Lion', image: '/animals/lion.jpg', food: 'meat', foodEmoji: '🥩', foodBm: 'Daging', foodEn: 'Meat' },
+    { nameBm: 'Kucing', nameEn: 'Cat', image: assetPath('/animals/cat.jpg'), food: 'fish', foodEmoji: '🐟', foodBm: 'Ikan', foodEn: 'Fish' },
+    { nameBm: 'Arnab', nameEn: 'Rabbit', image: assetPath('/animals/rabbit.jpg'), food: 'carrot', foodEmoji: '🥕', foodBm: 'Lobak', foodEn: 'Carrot' },
+    { nameBm: 'Monyet', nameEn: 'Monkey', image: assetPath('/animals/monkey.jpg'), food: 'banana', foodEmoji: '🍌', foodBm: 'Pisang', foodEn: 'Banana' },
+    { nameBm: 'Gajah', nameEn: 'Elephant', image: assetPath('/animals/elephant.jpg'), food: 'leaves', foodEmoji: '🌿', foodBm: 'Daun', foodEn: 'Leaves' },
+    { nameBm: 'Anjing', nameEn: 'Dog', image: assetPath('/animals/dog.jpg'), food: 'bone', foodEmoji: '🦴', foodBm: 'Tulang', foodEn: 'Bone' },
+    { nameBm: 'Burung', nameEn: 'Bird', image: assetPath('/animals/bird.jpg'), food: 'seeds', foodEmoji: '🌾', foodBm: 'Biji', foodEn: 'Seeds' },
+    { nameBm: 'Panda', nameEn: 'Panda', image: assetPath('/animals/panda.jpg'), food: 'bamboo', foodEmoji: '🎋', foodBm: 'Buluh', foodEn: 'Bamboo' },
+    { nameBm: 'Singa', nameEn: 'Lion', image: assetPath('/animals/lion.jpg'), food: 'meat', foodEmoji: '🥩', foodBm: 'Daging', foodEn: 'Meat' },
   ];
 
   const TOTAL_ROUNDS = 6;
