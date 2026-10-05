@@ -1,28 +1,61 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useGameStore } from '@/stores/gameStore';
 import { WORLDS, GUIDES, LETTERS, BUBBLE_COLORS } from '@/data/gameData';
 import { t, getRandomEncouragement, getRandomWrongResponse } from '@/data/translations';
 import { StarIcon, CheckIcon, RefreshIcon, TrophyIcon, SparkleIcon, CloseIcon } from '@/components/Icons';
-import { playCorrectSound, playWrongSound, playTapSound, playCelebrationSound, playStarSound, playAnimalHint, playRevealSound, playNewRoundSound, playBlockPlaceSound, playMixSound, playNavigateSound } from '@/utils/audio';
+import { GI } from '@/components/GameIcon';
+import { playCorrectSound, playWrongSound, playTapSound, playCelebrationSound, playStarSound, playAnimalHint, playRevealSound, playNewRoundSound, playBlockPlaceSound, playMixSound, playNavigateSound, playBMVoice, playBMCorrectFeedback, playBMWrongFeedback, playBMCelebration, playBMAnimalSfx, playBMAnimalName, playBMBodyPart, playBMColor, playBMShape, playBMGreeting, preloadBMVoices, initAudio } from '@/utils/audio';
 
-// Audio-enhanced feedback helpers — premium SFX, zero robot voice
+// Stable shuffle — Fisher-Yates with seed derived from key
+// Prevents choices from jumping around on re-render!
+function shuffleWithSeed(arr, seed) {
+  const result = [...arr];
+  let s = typeof seed === 'number' ? seed : String(seed).split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+  for (let i = result.length - 1; i > 0; i--) {
+    s = (s * 1103515245 + 12345) & 0x7fffffff;
+    const j = s % (i + 1);
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+// Audio-enhanced feedback helpers — premium SFX + BM voice
 function correctFeedback(lang, soundEnabled = true) {
   const msg = getRandomEncouragement(lang);
-  if (soundEnabled) playCorrectSound();
+  if (soundEnabled) {
+    if (lang === 'bm') {
+      playBMCorrectFeedback();
+    } else {
+      playCorrectSound();
+    }
+  }
   return msg;
 }
 
 function wrongFeedback(lang, soundEnabled = true) {
   const msg = getRandomWrongResponse(lang);
-  if (soundEnabled) playWrongSound();
+  if (soundEnabled) {
+    if (lang === 'bm') {
+      playBMWrongFeedback();
+    } else {
+      playWrongSound();
+    }
+  }
   return msg;
 }
 
 function celebrationFeedback(lang, soundEnabled = true) {
-  if (soundEnabled) playCelebrationSound();
+  if (soundEnabled) {
+    if (lang === 'bm') {
+      playBMCelebration();
+    } else {
+      playCelebrationSound();
+    }
+  }
 }
+
 
 // ============================================
 // LETTER TREE GAME (Pokok Huruf)
@@ -44,8 +77,69 @@ export function LetterTreeGame() {
   const [gameComplete, setGameComplete] = useState(false);
   const [confettiPieces, setConfettiPieces] = useState([]);
   const [shakeTree, setShakeTree] = useState(false);
+  const [fruitOffsets, setFruitOffsets] = useState({});
+  const animFrameRef = useRef(null);
+  const driftDataRef = useRef({});
 
+  // Multi-directional floating animation loop
+  useEffect(() => {
+    let lastTime = performance.now();
+    const drift = driftDataRef.current;
+
+    // Initialise drift vectors for each fruit
+    fruits.forEach(f => {
+      if (!drift[f.id]) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 8 + Math.random() * 12; // px per second
+        drift[f.id] = {
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          ox: 0, oy: 0,
+        };
+      }
+    });
+
+    function tick(now) {
+      const dt = Math.min((now - lastTime) / 1000, 0.1);
+      lastTime = now;
+      const newOffsets = {};
+      const BOUND = 30; // max drift px from origin
+
+      fruits.forEach(f => {
+        if (f.picked) return;
+        const d = drift[f.id];
+        if (!d) return;
+
+        d.ox += d.vx * dt;
+        d.oy += d.vy * dt;
+
+        // Bounce off invisible boundary
+        if (Math.abs(d.ox) > BOUND) { d.vx *= -1; d.ox = Math.sign(d.ox) * BOUND; }
+        if (Math.abs(d.oy) > BOUND) { d.vy *= -1; d.oy = Math.sign(d.oy) * BOUND; }
+
+        // Occasional random direction nudge for organic feel
+        if (Math.random() < 0.005) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 8 + Math.random() * 12;
+          d.vx = Math.cos(angle) * speed;
+          d.vy = Math.sin(angle) * speed;
+        }
+
+        newOffsets[f.id] = { x: d.ox, y: d.oy };
+      });
+
+      setFruitOffsets(prev => ({ ...prev, ...newOffsets }));
+      animFrameRef.current = requestAnimationFrame(tick);
+    }
+
+    animFrameRef.current = requestAnimationFrame(tick);
+    return () => { if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current); };
+  }, [fruits]);
+
+  // Reset drift data between rounds
   const generateRound = useCallback((roundNum) => {
+    driftDataRef.current = {};
+    setFruitOffsets({});
     const target = LETTERS[Math.floor(Math.random() * LETTERS.length)];
     setTargetLetter(target);
 
@@ -54,13 +148,24 @@ export function LetterTreeGame() {
       .slice(0, FRUITS_PER_ROUND - 1);
     const allLetters = [target, ...wrongLetters].sort(() => Math.random() - 0.5);
 
+    // Positions arranged in a ring around the tree (avoiding center)
+    const positions = [
+      { x: 5 + Math.random() * 8, y: 22 + Math.random() * 6 },   // far left top
+      { x: 8 + Math.random() * 8, y: 52 + Math.random() * 6 },   // far left bottom
+      { x: 30 + Math.random() * 8, y: 12 + Math.random() * 5 },  // center-left top
+      { x: 58 + Math.random() * 8, y: 12 + Math.random() * 5 },  // center-right top
+      { x: 82 + Math.random() * 8, y: 22 + Math.random() * 6 },  // far right top
+      { x: 80 + Math.random() * 8, y: 52 + Math.random() * 6 },  // far right bottom
+    ];
+    const shuffledPos = positions.sort(() => Math.random() - 0.5);
+
     const newFruits = allLetters.map((letter, i) => ({
       id: `${roundNum}-${i}`,
       letter,
       isTarget: letter === target,
       emoji: FRUIT_EMOJIS[Math.floor(Math.random() * FRUIT_EMOJIS.length)],
-      x: 10 + (i % 3) * 30 + Math.random() * 15,
-      y: 15 + Math.floor(i / 3) * 25 + Math.random() * 10,
+      x: shuffledPos[i % shuffledPos.length].x,
+      y: shuffledPos[i % shuffledPos.length].y,
       picked: false,
       wrong: false,
     }));
@@ -127,16 +232,16 @@ export function LetterTreeGame() {
 
       <div className="game-body" style={{ padding: 0 }}>
         <div style={{
-          width: '100%', minHeight: '70vh', position: 'relative',
-          background: 'linear-gradient(180deg, #87CEEB 0%, #90EE90 60%, #228B22 100%)',
-          borderRadius: 'var(--radius-xl)', overflow: 'hidden',
+          width: '100%', height: '100%', position: 'relative',
+          background: 'linear-gradient(180deg, #87CEEB 0%, #b5e8b5 60%, #228B22 100%)',
+          borderRadius: 0, overflow: 'hidden',
         }}>
           {/* Instruction */}
           <div style={{
             position: 'absolute', top: 'var(--space-lg)', left: '50%',
-            transform: 'translateX(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(8px)', padding: 'var(--space-sm) var(--space-xl)',
-            borderRadius: 'var(--radius-full)', boxShadow: 'var(--shadow-md)',
+            transform: 'translateX(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.92)',
+            backdropFilter: 'blur(10px)', padding: 'var(--space-sm) var(--space-xl)',
+            borderRadius: 'var(--radius-full)', boxShadow: 'var(--shadow-lg)',
             fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.3rem',
             whiteSpace: 'nowrap',
           }}>
@@ -153,50 +258,69 @@ export function LetterTreeGame() {
             {t('round', lang)} {round}/{TOTAL_ROUNDS}
           </div>
 
-          {/* Tree trunk */}
+          {/* Beautiful generated tree image */}
           <div style={{
-            position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
-            width: 60, height: '45%', background: 'linear-gradient(90deg, #8B4513, #A0522D, #8B4513)',
-            borderRadius: '8px 8px 0 0',
+            position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+            width: '50%', maxWidth: 320, zIndex: 1,
             animation: shakeTree ? 'bubbleShake 0.5s ease' : 'none',
-          }} />
-
-          {/* Tree canopy */}
-          <div style={{
-            position: 'absolute', top: '8%', left: '50%', transform: 'translateX(-50%)',
-            width: '80%', height: '55%',
-            background: 'radial-gradient(ellipse, #228B22 0%, #006400 60%, transparent 70%)',
-            borderRadius: '50%', opacity: 0.7,
-            animation: shakeTree ? 'bubbleShake 0.5s ease' : 'none',
-          }} />
-
-          {/* Fruit buttons */}
-          {fruits.map(fruit => (
-            <div
-              key={fruit.id}
-              onClick={() => handleFruitTap(fruit)}
+            filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.1))',
+            overflow: 'hidden',
+            borderRadius: 24,
+          }}>
+            <img
+              src="/images/game/magic_tree.jpg"
+              alt="Magic Tree"
               style={{
-                position: 'absolute',
-                left: `${fruit.x}%`, top: `${fruit.y}%`,
-                width: 75, height: 75,
-                background: fruit.picked ? 'rgba(107,203,119,0.3)' : 'rgba(255,255,255,0.9)',
-                borderRadius: 'var(--radius-lg)',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                boxShadow: fruit.picked ? 'none' : 'var(--shadow-md)',
-                cursor: fruit.picked ? 'default' : 'pointer',
-                transition: 'all 0.3s ease',
-                animation: fruit.wrong ? 'bubbleShake 0.5s ease' : fruit.picked ? 'bubblePop 0.4s ease-out forwards' : 'float 3s ease-in-out infinite',
-                animationDelay: `${fruit.y * 0.02}s`,
-                zIndex: 5,
+                width: '100%', height: 'auto',
+                objectFit: 'contain',
+                display: 'block',
               }}
-            >
-              <span style={{ fontSize: '1.5rem' }}>{fruit.emoji}</span>
-              <span style={{
-                fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.1rem',
-                color: 'var(--text-primary)',
-              }}>{fruit.letter}</span>
-            </div>
-          ))}
+            />
+          </div>
+
+          {/* Floating fruit buttons — multi-directional movement */}
+          {fruits.map(fruit => {
+            const off = fruitOffsets[fruit.id] || { x: 0, y: 0 };
+            const isActive = !fruit.picked && !fruit.wrong;
+            return (
+              <div
+                key={fruit.id}
+                onClick={() => handleFruitTap(fruit)}
+                style={{
+                  position: 'absolute',
+                  left: `${fruit.x}%`, top: `${fruit.y}%`,
+                  transform: isActive ? `translate(${off.x}px, ${off.y}px)` : undefined,
+                  width: 78, height: 78,
+                  background: fruit.picked
+                    ? 'rgba(107,203,119,0.3)'
+                    : 'rgba(255,255,255,0.92)',
+                  borderRadius: 'var(--radius-lg)',
+                  border: fruit.picked ? '3px solid rgba(107,203,119,0.5)' : '2px solid rgba(255,255,255,0.8)',
+                  display: 'flex', flexDirection: 'column',
+                  alignItems: 'center', justifyContent: 'center',
+                  gap: 2,
+                  boxShadow: fruit.picked
+                    ? 'none'
+                    : '0 6px 20px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)',
+                  cursor: fruit.picked ? 'default' : 'pointer',
+                  transition: fruit.wrong ? 'none' : 'box-shadow 0.3s ease, background 0.3s ease, opacity 0.4s ease',
+                  animationName: fruit.wrong ? 'bubbleShake' : fruit.picked ? 'bubblePop' : 'none',
+                  animationDuration: fruit.wrong ? '0.5s' : fruit.picked ? '0.4s' : '0s',
+                  animationTimingFunction: 'ease',
+                  animationFillMode: fruit.picked ? 'forwards' : 'none',
+                  opacity: fruit.picked ? 0.4 : 1,
+                  zIndex: 5,
+                  backdropFilter: 'blur(6px)',
+                }}
+              >
+                <GI e={fruit.emoji} size={25}/>
+                <span style={{
+                  fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.2rem',
+                  color: 'var(--text-primary)',
+                }}>{fruit.letter}</span>
+              </div>
+            );
+          })}
 
           {/* Feedback */}
           {feedback && (
@@ -206,9 +330,12 @@ export function LetterTreeGame() {
               background: feedback.type === 'correct'
                 ? 'linear-gradient(135deg, #6BCB77, #48C9B0)'
                 : 'linear-gradient(135deg, #FF6B6B, #ee5a24)',
-              color: 'white', padding: '10px 24px', borderRadius: 'var(--radius-full)',
-              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.1rem',
-              boxShadow: 'var(--shadow-md)', animation: 'fadeInUp 0.3s ease-out',
+              color: 'white', padding: '12px 28px', borderRadius: 'var(--radius-full)',
+              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.15rem',
+              boxShadow: '0 6px 24px rgba(0,0,0,0.2)',
+              animationName: 'fadeInUp',
+              animationDuration: '0.3s',
+              animationTimingFunction: 'ease-out',
             }}>
               {feedback.message}
             </div>
@@ -218,7 +345,8 @@ export function LetterTreeGame() {
           <div style={{
             position: 'absolute', bottom: 0, left: 0, right: 0, height: 50,
             background: 'linear-gradient(0deg, #228B22 0%, #32CD32 50%, transparent 100%)',
-            borderRadius: '0 0 var(--radius-xl) var(--radius-xl)',
+            borderRadius: 0,
+            zIndex: 0,
           }} />
         </div>
       </div>
@@ -343,10 +471,14 @@ export function BeeFlowerGame() {
 
       <div className="game-body" style={{ padding: 0 }}>
         <div style={{
-          width: '100%', minHeight: '70vh', position: 'relative',
-          background: 'linear-gradient(180deg, #87CEEB 0%, #98FB98 50%, #228B22 100%)',
-          borderRadius: 'var(--radius-xl)', overflow: 'hidden',
+          width: '100%', height: '100%', position: 'relative',
+          borderRadius: 0, overflow: 'hidden',
         }}>
+          {/* Full background image */}
+          <img src="/images/game/bee_garden_bg.jpg" alt="" style={{
+            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+            objectFit: 'cover', zIndex: 0,
+          }} />
           {/* Instruction */}
           <div style={{
             position: 'absolute', top: 'var(--space-lg)', left: '50%',
@@ -407,7 +539,7 @@ export function BeeFlowerGame() {
                 border: flower.matched ? '3px solid var(--cm-green)' : '3px solid rgba(255,255,255,0.5)',
                 transition: 'all 0.3s ease',
               }}>
-                <span style={{ fontSize: '1.8rem' }}>{flower.emoji}</span>
+                <GI e={flower.emoji} size={28}/>
                 <span style={{
                   fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.3rem',
                   color: flower.matched ? 'var(--cm-green)' : 'var(--cm-purple)',
@@ -443,7 +575,7 @@ export function BeeFlowerGame() {
           <div style={{
             position: 'absolute', bottom: 0, left: 0, right: 0, height: 60,
             background: 'linear-gradient(0deg, #228B22 0%, #32CD32 50%, transparent 100%)',
-            borderRadius: '0 0 var(--radius-xl) var(--radius-xl)',
+            borderRadius: 0,
           }} />
 
           {/* Sun */}
@@ -573,11 +705,14 @@ export function CountObjectsGame() {
 
       <div className="game-body" style={{ padding: 0 }}>
         <div style={{
-          width: '100%', minHeight: '70vh', position: 'relative',
-          background: 'linear-gradient(180deg, #FFE4E1 0%, #FFF0F5 40%, #FFFAF0 100%)',
-          borderRadius: 'var(--radius-xl)', overflow: 'hidden',
+          width: '100%', height: '100%', position: 'relative',
+          borderRadius: 0, overflow: 'hidden',
           display: 'flex', flexDirection: 'column',
         }}>
+          <img src="/images/game/counting_classroom.jpg" alt="" style={{
+            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+            objectFit: 'cover', zIndex: 0, opacity: 0.3,
+          }} />
           {/* Instruction */}
           <div style={{
             textAlign: 'center', padding: 'var(--space-lg) var(--space-md) var(--space-sm)',
@@ -610,9 +745,7 @@ export function CountObjectsGame() {
                 position: 'absolute', left: `${obj.x}%`, top: `${obj.y}%`,
                 fontSize: `${obj.size}px`,
                 animation: `bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${obj.delay}s both`,
-              }}>
-                {objectInfo.emoji}
-              </div>
+              }}><GI e={objectInfo.emoji} size={32}/></div>
             ))}
           </div>
 
@@ -771,14 +904,17 @@ export function ColourMixingGame() {
         </div>
       </div>
 
-      <div className="game-body" style={{ padding: 'var(--space-md)' }}>
+      <div className="game-body">
         <div style={{
-          width: '100%', minHeight: '70vh',
-          background: 'linear-gradient(180deg, #F8F9FA 0%, #E8E8E8 100%)',
-          borderRadius: 'var(--radius-xl)', overflow: 'hidden',
+          width: '100%', height: '100%', position: 'relative',
+          borderRadius: 0, overflow: 'hidden',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           padding: 'var(--space-lg)',
         }}>
+          <img src="/images/game/colour_mixing_lab.jpg" alt="" style={{
+            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+            objectFit: 'cover', zIndex: 0, opacity: 0.25,
+          }} />
           {/* Round & Score */}
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-lg)' }}>
             <div className="round-counter" style={{ position: 'static' }}>{t('round', lang)} {round}/{TOTAL_ROUNDS}</div>
@@ -948,9 +1084,17 @@ export function AnimalSoundsGame() {
     setShowSound(true);
     setSoundPulse(true);
     setTimeout(() => setSoundPulse(false), 2000);
-    // Auto-speak the animal sound for the new round
+    // Auto-play the real animal sound for the new round
     if (soundEnabled) {
-      setTimeout(() => playAnimalHint(), 500);
+      setTimeout(() => {
+        // Play real animal SFX if available, otherwise fallback to hint chime
+        const sfxMap = { cat: 'kucing', dog: 'anjing', cow: 'lembu', duck: 'itik', rooster: 'ayam', sheep: 'kambing', frog: 'katak', lion: 'singa', elephant: 'gajah', bird: 'burung' };
+        if (sfxMap[target.id]) {
+          playBMAnimalSfx(sfxMap[target.id]);
+        } else {
+          playAnimalHint();
+        }
+      }, 500);
     }
 
     const wrongAnimals = ANIMALS.filter(a => a.id !== target.id)
@@ -1007,14 +1151,17 @@ export function AnimalSoundsGame() {
         </div>
       </div>
 
-      <div className="game-body" style={{ padding: 'var(--space-md)' }}>
+      <div className="game-body">
         <div style={{
-          width: '100%', minHeight: '70vh',
-          background: `linear-gradient(180deg, #87CEEB 0%, ${targetAnimal.bgColor} 50%, #E8F5E9 100%)`,
-          borderRadius: 'var(--radius-xl)', overflow: 'hidden',
+          width: '100%', height: '100%', position: 'relative',
+          borderRadius: 0, overflow: 'hidden',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           padding: 'var(--space-lg)',
         }}>
+          <img src="/images/game/safari_jungle_bg.jpg" alt="" style={{
+            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+            objectFit: 'cover', zIndex: 0, opacity: 0.35,
+          }} />
           {/* Round & Score */}
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-lg)' }}>
             <div className="round-counter" style={{ position: 'static' }}>{t('round', lang)} {round}/{TOTAL_ROUNDS}</div>
@@ -1073,7 +1220,7 @@ export function AnimalSoundsGame() {
                   <img src={animal.image} alt={lang === 'bm' ? animal.nameBm : animal.nameEn}
                     style={{ width: 80, height: 80, objectFit: 'contain', borderRadius: 'var(--radius-md)' }} />
                 ) : (
-                  <span style={{ fontSize: '3rem' }}>{animal.emoji}</span>
+                  <GI e={animal.emoji} size={48}/>
                 )}
                 <span style={{
                   fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.9rem',
@@ -1241,14 +1388,18 @@ export function ShapeHuntGame() {
         </div>
       </div>
 
-      <div className="game-body" style={{ padding: 'var(--space-md)' }}>
+      <div className="game-body">
         <div style={{
-          width: '100%', minHeight: '70vh',
+          width: '100%', height: '100%',
           background: currentScene.bg,
-          borderRadius: 'var(--radius-xl)', overflow: 'hidden',
+          borderRadius: 0, overflow: 'hidden',
           display: 'flex', flexDirection: 'column',
           position: 'relative',
         }}>
+          <img src="/images/game/shape_hunt_bg.jpg" alt="" style={{
+            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+            objectFit: 'cover', zIndex: 0, opacity: 0.2,
+          }} />
           {/* Instruction */}
           <div style={{
             textAlign: 'center', padding: 'var(--space-lg) var(--space-md) var(--space-sm)',
@@ -1294,9 +1445,9 @@ export function ShapeHuntGame() {
               <div key={i} style={{
                 position: 'absolute',
                 left: `${15 + i * 18}%`, top: `${20 + (i % 2) * 30}%`,
-                fontSize: '2.5rem', opacity: 0.5, pointerEvents: 'none',
+                opacity: 0.5, pointerEvents: 'none',
               }}>
-                {d}
+                <GI e={d} size={40}/>
               </div>
             ))}
 
@@ -1447,14 +1598,17 @@ export function BlockTowerGame() {
         </div>
       </div>
 
-      <div className="game-body" style={{ padding: 'var(--space-md)' }}>
+      <div className="game-body">
         <div style={{
-          width: '100%', minHeight: '70vh',
-          background: 'linear-gradient(180deg, #E3F2FD 0%, #BBDEFB 50%, #90CAF9 100%)',
-          borderRadius: 'var(--radius-xl)', overflow: 'hidden',
+          width: '100%', height: '100%', position: 'relative',
+          borderRadius: 0, overflow: 'hidden',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           padding: 'var(--space-lg)',
         }}>
+          <img src="/images/game/block_tower_bg.jpg" alt="" style={{
+            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+            objectFit: 'cover', zIndex: 0, opacity: 0.3,
+          }} />
           {/* Round & Score */}
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-md)' }}>
             <div className="round-counter" style={{ position: 'static' }}>{t('round', lang)} {round}/{TOTAL_ROUNDS}</div>
@@ -1663,14 +1817,17 @@ export function AnimalHomesGame() {
         </div>
       </div>
 
-      <div className="game-body" style={{ padding: 'var(--space-md)' }}>
+      <div className="game-body">
         <div style={{
-          width: '100%', minHeight: '70vh',
-          background: 'linear-gradient(180deg, #87CEEB 0%, #E8F5E9 50%, #C8E6C9 100%)',
-          borderRadius: 'var(--radius-xl)', overflow: 'hidden',
+          width: '100%', height: '100%', position: 'relative',
+          borderRadius: 0, overflow: 'hidden',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           padding: 'var(--space-lg)',
         }}>
+          <img src="/images/game/safari_jungle_bg.jpg" alt="" style={{
+            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+            objectFit: 'cover', zIndex: 0, opacity: 0.3,
+          }} />
           {/* Round & Score */}
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-lg)' }}>
             <div className="round-counter" style={{ position: 'static' }}>{t('round', lang)} {round}/{TOTAL_ROUNDS}</div>
@@ -1692,7 +1849,7 @@ export function AnimalHomesGame() {
               <img src={currentAnimal.image} alt={lang === 'bm' ? currentAnimal.nameBm : currentAnimal.nameEn}
                 style={{ width: 90, height: 90, objectFit: 'contain', borderRadius: 'var(--radius-md)' }} />
             ) : (
-              <span style={{ fontSize: '3.5rem' }}>{currentAnimal.emoji}</span>
+              <GI e={currentAnimal.emoji} size={56}/>
             )}
             <span style={{
               fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.9rem',
@@ -1727,7 +1884,7 @@ export function AnimalHomesGame() {
                 transition: 'all 0.2s ease',
                 animation: `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.1}s both`,
               }}>
-                <span style={{ fontSize: '2.5rem' }}>{habitat.emoji}</span>
+                <GI e={habitat.emoji} size={40}/>
                 <span style={{
                   fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1rem',
                   color: feedback?.type === 'correct' && habitat.id === currentAnimal.habitat ? 'white' : 'var(--text-primary)',
@@ -1855,14 +2012,17 @@ export function MatchColourGame() {
         </div>
       </div>
 
-      <div className="game-body" style={{ padding: 'var(--space-md)' }}>
+      <div className="game-body">
         <div style={{
-          width: '100%', minHeight: '70vh',
-          background: 'linear-gradient(180deg, #FCE4EC 0%, #F3E5F5 50%, #EDE7F6 100%)',
-          borderRadius: 'var(--radius-xl)', overflow: 'hidden',
+          width: '100%', height: '100%', position: 'relative',
+          borderRadius: 0, overflow: 'hidden',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           padding: 'var(--space-lg)',
         }}>
+          <img src="/images/game/sock_room_bg.jpg" alt="" style={{
+            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+            objectFit: 'cover', zIndex: 0, opacity: 0.25,
+          }} />
           {/* Round & Score */}
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-lg)' }}>
             <div className="round-counter" style={{ position: 'static' }}>{t('round', lang)} {round}/{TOTAL_ROUNDS}</div>
@@ -2032,14 +2192,17 @@ export function SortTransportGame() {
         </div>
       </div>
 
-      <div className="game-body" style={{ padding: 'var(--space-md)' }}>
+      <div className="game-body">
         <div style={{
-          width: '100%', minHeight: '70vh',
-          background: 'linear-gradient(180deg, #E3F2FD 0%, #F1F8E9 50%, #E0F2F1 100%)',
-          borderRadius: 'var(--radius-xl)', overflow: 'hidden',
+          width: '100%', height: '100%', position: 'relative',
+          borderRadius: 0, overflow: 'hidden',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           padding: 'var(--space-lg)',
         }}>
+          <img src="/images/game/transport_bg.jpg" alt="" style={{
+            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+            objectFit: 'cover', zIndex: 0, opacity: 0.3,
+          }} />
           {/* Round & Score */}
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-lg)' }}>
             <div className="round-counter" style={{ position: 'static' }}>{t('round', lang)} {round}/{TOTAL_ROUNDS}</div>
@@ -2061,7 +2224,7 @@ export function SortTransportGame() {
               <img src={currentVehicle.image} alt={lang === 'bm' ? currentVehicle.nameBm : currentVehicle.nameEn}
                 style={{ width: 100, height: 100, objectFit: 'contain', borderRadius: 'var(--radius-md)' }} />
             ) : (
-              <span style={{ fontSize: '4rem' }}>{currentVehicle.emoji}</span>
+              <GI e={currentVehicle.emoji} size={64}/>
             )}
             <span style={{
               fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.85rem',
@@ -2096,7 +2259,7 @@ export function SortTransportGame() {
                 transition: 'all 0.2s ease',
                 animation: `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.1}s both`,
               }}>
-                <span style={{ fontSize: '2.5rem' }}>{cat.emoji}</span>
+                <GI e={cat.emoji} size={40}/>
                 <span style={{
                   fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1rem',
                   color: feedback?.type === 'correct' && cat.id === currentVehicle.category ? 'white' : 'var(--text-primary)',
@@ -2267,7 +2430,8 @@ export function MathMachineGame() {
   }
 
   return (
-    <div className="game-screen" style={{ background: 'linear-gradient(180deg, #FFF0F5 0%, #FFE4E1 100%)' }}>
+    <div className="game-screen" style={{ position: 'relative' }}>
+      <img src="/images/game/dice_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.2 }} />
       <div className="game-header">
         <button className="back-btn" onClick={() => goToWorld('numbers')}>←</button>
         <span className="game-title">
@@ -2460,7 +2624,8 @@ export function AnimalFoodGame() {
   if (!currentAnimal) return null;
 
   return (
-    <div className="game-screen" style={{ background: 'linear-gradient(180deg, #E8F5E9 0%, #C8E6C9 100%)' }}>
+    <div className="game-screen" style={{ position: 'relative' }}>
+      <img src="/images/game/safari_jungle_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.2 }} />
       <div className="game-header">
         <button className="back-btn" onClick={() => goToWorld('animals')}>←</button>
         <span className="game-title">
@@ -2507,7 +2672,7 @@ export function AnimalFoodGame() {
               transition: 'all 0.2s ease',
               transform: feedback?.type === 'correct' && food.key === currentAnimal.food ? 'scale(1.1)' : 'scale(1)'
             }}>
-              <span style={{ fontSize: '2.2rem' }}>{food.emoji}</span>
+              <GI e={food.emoji} size={35}/>
               <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#555' }}>{food.name}</span>
             </button>
           ))}
@@ -2616,7 +2781,8 @@ export function FreeDrawGame() {
   };
 
   return (
-    <div className="game-screen" style={{ background: 'linear-gradient(180deg, #F3E5F5 0%, #E1BEE7 100%)' }}>
+    <div className="game-screen" style={{ position: 'relative' }}>
+      <img src="/images/game/drawing_studio_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.2 }} />
       <div className="game-header">
         <button className="back-btn" onClick={() => goToWorld('colours')}>←</button>
         <span className="game-title">
@@ -2807,7 +2973,8 @@ export function SubtractionShopGame() {
   const itemEmoji = ITEMS[round % ITEMS.length];
 
   return (
-    <div className="game-screen" style={{ background: 'linear-gradient(180deg, #FFF8E1 0%, #FFECB3 100%)' }}>
+    <div className="game-screen" style={{ position: 'relative' }}>
+      <img src="/images/game/grocery_store_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.2 }} />
       <div className="game-header">
         <button className="back-btn" onClick={() => goToWorld('numbers')}>←</button>
         <span className="game-title">
@@ -3006,7 +3173,8 @@ export function RoadSafetyGame() {
   }
 
   return (
-    <div className="game-screen" style={{ background: 'linear-gradient(180deg, #E3F2FD 0%, #BBDEFB 100%)' }}>
+    <div className="game-screen" style={{ position: 'relative' }}>
+      <img src="/images/game/road_scene_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.2 }} />
       <div className="game-header">
         <button className="back-btn" onClick={() => goToWorld('transport')}>←</button>
         <span className="game-title">
@@ -3111,7 +3279,7 @@ export function GroceryStoreGame() {
   const handlePick = (item) => {
     const recipe = RECIPES[recipeIdx];
     if (recipe.items.includes(item) && !basket.includes(item)) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       const newBasket = [...basket, item];
       setBasket(newBasket);
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
@@ -3125,7 +3293,7 @@ export function GroceryStoreGame() {
             setupShelf(recipeIdx + 1);
             setFeedback(null);
           } else {
-            if (soundEnabled) playCelebrationSound();
+            if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
             const stars = newScore >= 3 ? 3 : newScore >= 2 ? 2 : 1;
             completeGame('food', 'grocery-store', stars, newScore * 30);
             setGameComplete(true);
@@ -3133,7 +3301,7 @@ export function GroceryStoreGame() {
         }, 800);
       }
     } else if (!recipe.items.includes(item)) {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
     }
     setTimeout(() => setFeedback(null), 1500);
@@ -3141,7 +3309,7 @@ export function GroceryStoreGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF8E1, #FFECB3)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>
           {lang === 'bm' ? 'Tahniah, Chef Kecil!' : 'Great Shopping!'}
@@ -3157,10 +3325,11 @@ export function GroceryStoreGame() {
   const recipe = RECIPES[recipeIdx];
   
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF8E1, #FFECB3)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/grocery_store_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('food')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        <div style={{ fontSize: '2rem' }}>{recipe.emoji}</div>
+        <div style={{ textAlign: 'center' }}><GI e={recipe.emoji} size={32}/></div>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100', margin: '4px 0' }}>
           {lang === 'bm' ? `Beli bahan untuk ${recipe.name}!` : `Shop for ${recipe.name}!`}
         </h2>
@@ -3195,13 +3364,13 @@ export function GroceryStoreGame() {
         }}>
           {shelves.map((item, i) => (
             <button key={i} onClick={() => handlePick(item)} style={{
-              fontSize: '2rem', padding: 10, borderRadius: 14,
+              padding: 10, borderRadius: 14,
               background: basket.includes(item) ? '#E0E0E0' : 'white',
               border: '2px solid rgba(0,0,0,0.08)',
               boxShadow: 'var(--shadow-sm)', cursor: basket.includes(item) ? 'default' : 'pointer',
               opacity: basket.includes(item) ? 0.4 : 1,
               transition: 'all 0.2s',
-            }}>{item}</button>
+            }}><GI e={item} size={32}/></button>
           ))}
         </div>
         
@@ -3248,7 +3417,7 @@ export function OurGardenGame() {
       if (stage < PLANTS[plantIdx].stages.length - 1) {
         setStage(stage + 1);
         setWaterCount(0);
-        if (soundEnabled) playCorrectSound();
+        if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
         setShowSun(true);
         setTimeout(() => setShowSun(false), 1000);
         
@@ -3261,7 +3430,7 @@ export function OurGardenGame() {
               setStage(0);
               setWaterCount(0);
             } else {
-              if (soundEnabled) playCelebrationSound();
+              if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
               completeGame('food', 'our-garden', newScore >= 3 ? 3 : newScore >= 2 ? 2 : 1, newScore * 30);
               setGameComplete(true);
             }
@@ -3273,7 +3442,7 @@ export function OurGardenGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #E8F5E9, #C8E6C9)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>
           {lang === 'bm' ? 'Kebun kamu cantik!' : 'Beautiful garden!'}
@@ -3289,7 +3458,8 @@ export function OurGardenGame() {
   const plant = PLANTS[plantIdx];
   
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #E8F5E9, #C8E6C9)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/garden_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('food')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         
@@ -3308,8 +3478,8 @@ export function OurGardenGame() {
           position: 'relative', overflow: 'hidden',
         }}>
           {showSun && <div style={{ position: 'absolute', top: 12, right: 12, fontSize: '2rem', animation: 'popIn 0.3s ease' }}><svg width="32" height="32" viewBox="0 0 24 24" fill="#FBBF24" style={{display:"inline-block"}}><circle cx="12" cy="12" r="5"/><path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="#FBBF24" strokeWidth="2" fill="none"/></svg></div>}
-          <div style={{ fontSize: '5rem', transition: 'all 0.5s ease', transform: stage > 0 ? 'scale(1)' : 'scale(0.7)' }}>
-            {plant.stages[stage]}
+          <div style={{ transition: 'all 0.5s ease', transform: stage > 0 ? 'scale(1)' : 'scale(0.7)' }}>
+            <GI e={plant.stages[stage]} size={80}/>
           </div>
         </div>
         
@@ -3381,7 +3551,7 @@ export function LittleChefGame() {
     const step = recipe.steps[stepIdx];
     
     if (emoji === step.emoji) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
       setDoneSteps([...doneSteps, step.emoji]);
       
@@ -3397,14 +3567,14 @@ export function LittleChefGame() {
             setStepIdx(0);
             setDoneSteps([]);
           } else {
-            if (soundEnabled) playCelebrationSound();
+            if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
             completeGame('food', 'little-chef', newScore >= 2 ? 3 : 2, newScore * 40);
             setGameComplete(true);
           }
         }
       }, 800);
     } else {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
       setTimeout(() => setFeedback(null), 1200);
     }
@@ -3412,7 +3582,7 @@ export function LittleChefGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF3E0, #FFE0B2)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>
           {lang === 'bm' ? 'Chef Hebat!' : 'Great Chef!'}
@@ -3429,7 +3599,8 @@ export function LittleChefGame() {
   const step = recipe.steps[stepIdx];
   
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF3E0, #FFE0B2)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/kitchen_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('food')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         
@@ -3464,7 +3635,7 @@ export function LittleChefGame() {
           <div style={{ fontSize: '1.1rem', color: '#555', marginBottom: 16 }}>{step.action}</div>
           
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-            {step.choices.sort(() => Math.random() - 0.5).map((c, i) => (
+            {step.choices.map((c, i) => (
               <button key={i} onClick={() => handleChoice(c)} style={{
                 fontSize: '2.5rem', padding: 16, borderRadius: 20,
                 background: 'white', border: '3px solid rgba(0,0,0,0.08)',
@@ -3525,11 +3696,11 @@ export function HealthyOrNotGame() {
     const correct = items[currentIdx].healthy === isHealthy;
     
     if (correct) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
       setScore(score + 1);
     } else {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
     }
     
@@ -3538,7 +3709,7 @@ export function HealthyOrNotGame() {
       if (currentIdx + 1 < items.length) {
         setCurrentIdx(currentIdx + 1);
       } else {
-        if (soundEnabled) playCelebrationSound();
+        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
         const finalScore = correct ? score + 1 : score;
         const stars = finalScore >= 7 ? 3 : finalScore >= 5 ? 2 : 1;
         completeGame('food', 'healthy-or-not', stars, finalScore * 10);
@@ -3550,7 +3721,7 @@ export function HealthyOrNotGame() {
   if (gameComplete) {
     const stars = score >= 7 ? 3 : score >= 5 ? 2 : 1;
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #E8F5E9, #C8E6C9)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>
           {lang === 'bm' ? 'Bijak Pilih Makanan!' : 'Smart Food Choices!'}
@@ -3568,7 +3739,8 @@ export function HealthyOrNotGame() {
   const current = items[currentIdx];
   
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #E8F5E9, #C8E6C9)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/kitchen_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('food')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         
@@ -3584,11 +3756,9 @@ export function HealthyOrNotGame() {
           margin: '24px auto', width: 180, height: 180,
           background: 'white', borderRadius: 30,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '5rem', boxShadow: 'var(--shadow-lg)',
+          textAlign: 'center', boxShadow: 'var(--shadow-lg)',
           animation: 'popIn 0.3s ease',
-        }}>
-          {current.emoji}
-        </div>
+        }}><GI e={current.emoji} size={80}/></div>
         
         <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 20 }}>{current.name}</div>
         
@@ -3660,13 +3830,13 @@ export function FruitOrVegGame() {
     const correct = item.type === type;
     
     if (correct) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
       setScore(score + 1);
       if (type === 'fruit') setFruitBasket([...fruitBasket, item.emoji]);
       else setVegBasket([...vegBasket, item.emoji]);
     } else {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
     }
     
@@ -3675,7 +3845,7 @@ export function FruitOrVegGame() {
       if (currentIdx + 1 < items.length) {
         setCurrentIdx(currentIdx + 1);
       } else {
-        if (soundEnabled) playCelebrationSound();
+        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
         const finalScore = correct ? score + 1 : score;
         const stars = finalScore >= 7 ? 3 : finalScore >= 5 ? 2 : 1;
         completeGame('food', 'fruit-or-veg', stars, finalScore * 10);
@@ -3686,7 +3856,7 @@ export function FruitOrVegGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF8E1, #FFECB3)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>
           {lang === 'bm' ? 'Bijak Mengasingkan!' : 'Great Sorting!'}
@@ -3704,7 +3874,8 @@ export function FruitOrVegGame() {
   const current = items[currentIdx];
   
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF8E1, #FFECB3)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/kitchen_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('food')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         
@@ -3718,13 +3889,13 @@ export function FruitOrVegGame() {
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '0.7rem', color: '#666' }}>{lang === 'bm' ? 'Buah' : 'Fruit'}</div>
             <div style={{ display: 'flex', gap: 2, minWidth: 60, justifyContent: 'center' }}>
-              {fruitBasket.map((e, i) => <span key={i} style={{ fontSize: '0.9rem' }}>{e}</span>)}
+              {fruitBasket.map((e, i) => <GI key={i} e={e} size={16}/>)}
             </div>
           </div>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '0.7rem', color: '#666' }}>{lang === 'bm' ? 'Sayur' : 'Veg'}</div>
             <div style={{ display: 'flex', gap: 2, minWidth: 60, justifyContent: 'center' }}>
-              {vegBasket.map((e, i) => <span key={i} style={{ fontSize: '0.9rem' }}>{e}</span>)}
+              {vegBasket.map((e, i) => <GI key={i} e={e} size={16}/>)}
             </div>
           </div>
         </div>
@@ -3794,7 +3965,7 @@ export function LetterTrailGame() {
       setDotsTapped(newDots);
       
       if (newDots === DOTS_PER_LETTER) {
-        if (soundEnabled) playCorrectSound();
+        if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
         setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
         const newScore = score + 1;
         setScore(newScore);
@@ -3805,7 +3976,7 @@ export function LetterTrailGame() {
             setLetterIdx(letterIdx + 1);
             setDotsTapped(0);
           } else {
-            if (soundEnabled) playCelebrationSound();
+            if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
             const stars = newScore >= 7 ? 3 : newScore >= 5 ? 2 : 1;
             completeGame('abc', 'letter-trail', stars, newScore * 10);
             setGameComplete(true);
@@ -3817,7 +3988,7 @@ export function LetterTrailGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #E3F2FD, #BBDEFB)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>
           {lang === 'bm' ? 'Huruf kamu cantik!' : 'Beautiful letters!'}
@@ -3838,7 +4009,8 @@ export function LetterTrailGame() {
   }));
   
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #E3F2FD, #BBDEFB)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/letter_trail_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('abc')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         
@@ -3935,7 +4107,7 @@ export function SyllableFactoryGame() {
     const nextIdx = built.length;
     
     if (nextIdx < w.syllables.length && syllable === w.syllables[nextIdx]) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       const newBuilt = [...built, syllable];
       setBuilt(newBuilt);
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
@@ -3949,7 +4121,7 @@ export function SyllableFactoryGame() {
             setWordIdx(wordIdx + 1);
             setupWord(wordIdx + 1);
           } else {
-            if (soundEnabled) playCelebrationSound();
+            if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
             const stars = newScore >= 5 ? 3 : newScore >= 3 ? 2 : 1;
             completeGame('abc', 'syllable-factory', stars, newScore * 15);
             setGameComplete(true);
@@ -3957,7 +4129,7 @@ export function SyllableFactoryGame() {
         }, 800);
       }
     } else {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
     }
     setTimeout(() => setFeedback(null), 1200);
@@ -3965,7 +4137,7 @@ export function SyllableFactoryGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #EDE7F6, #D1C4E9)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#4527A0' }}>
           {lang === 'bm' ? 'Bijak Membina Perkataan!' : 'Word Building Master!'}
@@ -3981,7 +4153,8 @@ export function SyllableFactoryGame() {
   const w = WORDS[wordIdx];
   
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #EDE7F6, #D1C4E9)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/letter_trail_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('abc')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         
@@ -4072,7 +4245,7 @@ export function LetterPuzzleGame() {
     const correct = letter === puzzle.word[puzzle.missing];
     
     if (correct) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
       setScore(score + 1);
       setRevealed(true);
@@ -4083,14 +4256,14 @@ export function LetterPuzzleGame() {
         if (puzzleIdx + 1 < PUZZLES.length) {
           setPuzzleIdx(puzzleIdx + 1);
         } else {
-          if (soundEnabled) playCelebrationSound();
+          if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
           const stars = score + 1 >= 7 ? 3 : score + 1 >= 4 ? 2 : 1;
           completeGame('abc', 'letter-puzzle', stars, (score + 1) * 10);
           setGameComplete(true);
         }
       }, 1000);
     } else {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
       setTimeout(() => setFeedback(null), 1200);
     }
@@ -4098,7 +4271,7 @@ export function LetterPuzzleGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #E3F2FD, #BBDEFB)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>
           {lang === 'bm' ? 'Bijak Mengeja!' : 'Spelling Star!'}
@@ -4115,7 +4288,8 @@ export function LetterPuzzleGame() {
   const puzzle = PUZZLES[puzzleIdx];
   
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #E3F2FD, #BBDEFB)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/letter_trail_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('abc')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         
@@ -4148,7 +4322,7 @@ export function LetterPuzzleGame() {
         
         {/* Letter choices */}
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 20 }}>
-          {puzzle.choices.sort(() => Math.random() - 0.5).map((letter, i) => (
+          {shuffleWithSeed(puzzle.choices, puzzleIdx).map((letter, i) => (
             <button key={i} onClick={() => handleChoice(letter)} style={{
               width: 55, height: 55, borderRadius: 14,
               fontSize: '1.5rem', fontWeight: 900, fontFamily: 'var(--font-heading)',
@@ -4193,7 +4367,7 @@ export function NumberTraceGame() {
       const newDots = dotsTapped + 1;
       setDotsTapped(newDots);
       if (newDots === DOTS_PER_NUM) {
-        if (soundEnabled) playCorrectSound();
+        if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
         setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
         const newScore = score + 1;
         setScore(newScore);
@@ -4203,7 +4377,7 @@ export function NumberTraceGame() {
             setNumIdx(numIdx + 1);
             setDotsTapped(0);
           } else {
-            if (soundEnabled) playCelebrationSound();
+            if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
             completeGame('numbers', 'number-trace', newScore >= 8 ? 3 : newScore >= 5 ? 2 : 1, newScore * 10);
             setGameComplete(true);
           }
@@ -4214,7 +4388,7 @@ export function NumberTraceGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #FCE4EC, #F8BBD0)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>
           {lang === 'bm' ? 'Nombor kamu cantik!' : 'Beautiful numbers!'}
@@ -4234,7 +4408,8 @@ export function NumberTraceGame() {
   }));
   
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #FCE4EC, #F8BBD0)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/dice_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('numbers')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>
@@ -4304,11 +4479,11 @@ export function BiggerSmallerGame() {
   const handleChoice = (side) => {
     const correct = (side === 'left' && leftCount > rightCount) || (side === 'right' && rightCount > leftCount);
     if (correct) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
       setScore(score + 1);
     } else {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
     }
     setTimeout(() => {
@@ -4317,7 +4492,7 @@ export function BiggerSmallerGame() {
         setRound(round + 1);
         generateRound();
       } else {
-        if (soundEnabled) playCelebrationSound();
+        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
         const finalScore = correct ? score + 1 : score;
         completeGame('numbers', 'bigger-smaller', finalScore >= 7 ? 3 : finalScore >= 4 ? 2 : 1, finalScore * 10);
         setGameComplete(true);
@@ -4327,7 +4502,7 @@ export function BiggerSmallerGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #FCE4EC, #F8BBD0)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>
           {lang === 'bm' ? 'Bijak Membanding!' : 'Great Comparing!'}
@@ -4339,7 +4514,8 @@ export function BiggerSmallerGame() {
   }
   
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #FCE4EC, #F8BBD0)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/block_tower_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('numbers')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>
@@ -4351,16 +4527,16 @@ export function BiggerSmallerGame() {
             flex: 1, maxWidth: 160, padding: 20, borderRadius: 20, background: 'white',
             border: '3px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-md)',
           }}>
-            <div style={{ fontSize: '2rem', lineHeight: 1.4, wordBreak: 'break-all' }}>
-              {Array.from({ length: leftCount }).map((_, i) => <span key={i}>{leftEmoji}</span>)}
+            <div style={{ lineHeight: 1.4, display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'center' }}>
+              {Array.from({ length: leftCount }).map((_, i) => <GI key={i} e={leftEmoji} size={32}/>)}
             </div>
           </button>
           <button onClick={() => handleChoice('right')} style={{
             flex: 1, maxWidth: 160, padding: 20, borderRadius: 20, background: 'white',
             border: '3px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-md)',
           }}>
-            <div style={{ fontSize: '2rem', lineHeight: 1.4, wordBreak: 'break-all' }}>
-              {Array.from({ length: rightCount }).map((_, i) => <span key={i}>{rightEmoji}</span>)}
+            <div style={{ lineHeight: 1.4, display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'center' }}>
+              {Array.from({ length: rightCount }).map((_, i) => <GI key={i} e={rightEmoji} size={32}/>)}
             </div>
           </button>
         </div>
@@ -4399,18 +4575,18 @@ export function PatternsGame() {
   const handleChoice = (emoji) => {
     const correct = emoji === PATTERN_SETS[idx].answer;
     if (correct) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
       setScore(score + 1);
     } else {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
     }
     setTimeout(() => {
       setFeedback(null);
       if (idx + 1 < PATTERN_SETS.length) setIdx(idx + 1);
       else {
-        if (soundEnabled) playCelebrationSound();
+        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
         const f = correct ? score + 1 : score;
         completeGame('numbers', 'patterns', f >= 5 ? 3 : f >= 3 ? 2 : 1, f * 15);
         setGameComplete(true);
@@ -4420,7 +4596,7 @@ export function PatternsGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #F3E5F5, #E1BEE7)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#6A1B9A' }}>{lang === 'bm' ? 'Bijak Corak!' : 'Pattern Master!'}</h1>
         <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
@@ -4431,23 +4607,24 @@ export function PatternsGame() {
   
   const p = PATTERN_SETS[idx];
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #F3E5F5, #E1BEE7)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/dice_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('numbers')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#6A1B9A' }}>{lang === 'bm' ? 'Lengkapkan corak!' : 'Complete the pattern!'}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{PATTERN_SETS.length}</div>
         <div style={{ display: 'flex', gap: 8, justifyContent: 'center', margin: '24px 0', alignItems: 'center', flexWrap: 'wrap' }}>
           {p.pattern.map((e, i) => (
-            <span key={i} style={{ fontSize: '2.2rem' }}>{e}</span>
+            <span key={i} style={{ display: 'inline-flex', alignItems: 'center' }}><GI e={e} size={36}/></span>
           ))}
           <span style={{ fontSize: '2.2rem', width: 50, height: 50, borderRadius: 12, border: '3px dashed #9C27B0', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#9C27B0' }}>?</span>
         </div>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-          {p.choices.sort(() => Math.random() - 0.5).map((c, i) => (
+          {p.choices.map((c, i) => (
             <button key={i} onClick={() => handleChoice(c)} style={{
-              fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white',
+              padding: 14, borderRadius: 18, background: 'white',
               border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)',
-            }}>{c}</button>
+            }}><GI e={c} size={40}/></button>
           ))}
         </div>
         {feedback && (
@@ -4503,18 +4680,18 @@ export function MagicDiceGame() {
   const handleAnswer = (num) => {
     const total = (dice1 + 1) + (dice2 + 1);
     if (num === total) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
       setScore(score + 1);
     } else {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: `${lang === 'bm' ? 'Jawapan betul:' : 'Correct answer:'} ${total}` });
     }
     setTimeout(() => {
       setFeedback(null);
       if (round + 1 < TOTAL_ROUNDS) { setRound(round + 1); rollDice(); }
       else {
-        if (soundEnabled) playCelebrationSound();
+        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
         const f = num === total ? score + 1 : score;
         completeGame('numbers', 'magic-dice', f >= 7 ? 3 : f >= 4 ? 2 : 1, f * 10);
         setGameComplete(true);
@@ -4524,7 +4701,7 @@ export function MagicDiceGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF3E0, #FFE0B2)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? 'Bijak Mengira!' : 'Great Counting!'}</h1>
         <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
@@ -4534,7 +4711,8 @@ export function MagicDiceGame() {
   }
   
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF3E0, #FFE0B2)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/dice_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('numbers')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? 'Berapa jumlah?' : 'What is the total?'}</h2>
@@ -4592,13 +4770,13 @@ export function MagicColouringGame() {
     
     const allColored = SCENES[sceneIdx].parts.every((_, i) => partColors[`${sceneIdx}-${i}`] || `${sceneIdx}-${i}` === key);
     if (allColored) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       const newScore = score + 1;
       setScore(newScore);
       setTimeout(() => {
         if (sceneIdx + 1 < SCENES.length) setSceneIdx(sceneIdx + 1);
         else {
-          if (soundEnabled) playCelebrationSound();
+          if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
           completeGame('colours', 'magic-colouring', newScore >= 3 ? 3 : 2, newScore * 30);
           setGameComplete(true);
         }
@@ -4608,7 +4786,7 @@ export function MagicColouringGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #F3E5F5, #E1BEE7)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2' }}>{lang === 'bm' ? 'Lukisan cantik!' : 'Beautiful art!'}</h1>
         <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
@@ -4619,12 +4797,13 @@ export function MagicColouringGame() {
   
   const scene = SCENES[sceneIdx];
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #F3E5F5, #E1BEE7)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/drawing_studio_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('colours')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2' }}>{lang === 'bm' ? `Warnakan ${scene.name}!` : `Colour the ${scene.name}!`}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{sceneIdx + 1}/{SCENES.length}</div>
-        <div style={{ fontSize: '4rem', margin: '12px 0' }}>{scene.emoji}</div>
+        <div style={{ textAlign: 'center', margin: '12px 0' }}><GI e={scene.emoji} size={64}/></div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, margin: '16px auto', maxWidth: 280 }}>
           {scene.parts.map((part, i) => {
             const key = `${sceneIdx}-${i}`;
@@ -4683,18 +4862,18 @@ export function SockPairsGame() {
     if (newFlipped.length === 2) {
       setMoves(moves + 1);
       if (cards[newFlipped[0]] === cards[newFlipped[1]]) {
-        if (soundEnabled) playCorrectSound();
+        if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
         const newMatched = [...matched, ...newFlipped];
         setMatched(newMatched);
         setFlipped([]);
         if (newMatched.length === cards.length) {
-          if (soundEnabled) playCelebrationSound();
+          if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
           const stars = moves + 1 <= 6 ? 3 : moves + 1 <= 10 ? 2 : 1;
           completeGame('colours', 'sock-pairs', stars, (12 - Math.min(moves + 1, 11)) * 10);
           setGameComplete(true);
         }
       } else {
-        if (soundEnabled) playWrongSound();
+        if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
         setTimeout(() => setFlipped([]), 800);
       }
     }
@@ -4703,7 +4882,7 @@ export function SockPairsGame() {
   if (gameComplete) {
     const stars = moves <= 6 ? 3 : moves <= 10 ? 2 : 1;
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #E8EAF6, #C5CAE9)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#283593' }}>{lang === 'bm' ? 'Semua berpasangan!' : 'All matched!'}</h1>
         <p>{moves} {lang === 'bm' ? 'cubaan' : 'moves'}</p>
@@ -4714,7 +4893,8 @@ export function SockPairsGame() {
   }
   
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #E8EAF6, #C5CAE9)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/sock_room_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('colours')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#283593' }}>{lang === 'bm' ? 'Cari Pasangan!' : 'Find Pairs!'}</h2>
@@ -4775,7 +4955,7 @@ export function ColourHunterGame() {
     const r = ROUNDS[roundIdx];
     if (found.includes(item)) return;
     if (r.targets.includes(item)) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       const newFound = [...found, item];
       setFound(newFound);
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
@@ -4785,14 +4965,14 @@ export function ColourHunterGame() {
           setFeedback(null);
           if (roundIdx + 1 < ROUNDS.length) { setRoundIdx(roundIdx + 1); setupRound(roundIdx + 1); }
           else {
-            if (soundEnabled) playCelebrationSound();
+            if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
             completeGame('colours', 'colour-hunter', score + 1 >= 4 ? 3 : score + 1 >= 2 ? 2 : 1, (score + 1) * 25);
             setGameComplete(true);
           }
         }, 800);
       }
     } else {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
     }
     setTimeout(() => setFeedback(null), 1200);
@@ -4800,7 +4980,7 @@ export function ColourHunterGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF9C4, #FFF176)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}>{lang === 'bm' ? 'Pemburu Warna Hebat!' : 'Colour Hunter!'}</h1>
         <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
@@ -4811,7 +4991,8 @@ export function ColourHunterGame() {
   
   const r = ROUNDS[roundIdx];
   return (
-    <div className="game-container" style={{ background: `linear-gradient(180deg, ${r.bg}22, ${r.bg}44)` }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/sock_room_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('colours')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: r.bg }}>
@@ -4821,10 +5002,10 @@ export function ColourHunterGame() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, maxWidth: 280, margin: '24px auto' }}>
           {items.map((item, i) => (
             <button key={i} onClick={() => handleTap(item)} style={{
-              fontSize: '2.5rem', padding: 14, borderRadius: 18, background: found.includes(item) ? `${r.bg}33` : 'white',
+              padding: 14, borderRadius: 18, background: found.includes(item) ? `${r.bg}33` : 'white',
               border: found.includes(item) ? `3px solid ${r.bg}` : '2px solid rgba(0,0,0,0.08)',
               cursor: 'pointer', boxShadow: 'var(--shadow-sm)', opacity: found.includes(item) ? 0.6 : 1,
-            }}>{item}</button>
+            }}><GI e={item} size={40}/></button>
           ))}
         </div>
         {feedback && (
@@ -4861,7 +5042,7 @@ export function BuildVehicleGame() {
   const handlePick = (emoji) => {
     const v = VEHICLES[vIdx];
     if (emoji === v.parts[partIdx]) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
       const newBuilt = [...builtParts, emoji];
       setBuiltParts(newBuilt);
@@ -4873,14 +5054,14 @@ export function BuildVehicleGame() {
           setScore(newScore);
           if (vIdx + 1 < VEHICLES.length) { setVIdx(vIdx + 1); setPartIdx(0); setBuiltParts([]); }
           else {
-            if (soundEnabled) playCelebrationSound();
+            if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
             completeGame('transport', 'build-vehicle', newScore >= 3 ? 3 : 2, newScore * 30);
             setGameComplete(true);
           }
         }
       }, 600);
     } else {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
       setTimeout(() => setFeedback(null), 1000);
     }
@@ -4888,7 +5069,7 @@ export function BuildVehicleGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF3E0, #FFE0B2)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? 'Jurutera Hebat!' : 'Great Engineer!'}</h1>
         <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
@@ -4900,12 +5081,13 @@ export function BuildVehicleGame() {
   const v = VEHICLES[vIdx];
   const choices = [v.parts[partIdx], ...v.wrong.slice(0, 2)].sort(() => Math.random() - 0.5);
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF3E0, #FFE0B2)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/transport_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('transport')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? `Bina ${v.name}!` : `Build a ${v.name}!`}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{vIdx + 1}/{VEHICLES.length}</div>
-        <div style={{ fontSize: '4rem', margin: '16px 0' }}>{v.emoji}</div>
+        <div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={v.emoji} size={64}/></div>
         <div style={{ display: 'flex', gap: 4, justifyContent: 'center', marginBottom: 16 }}>
           {v.parts.map((_, i) => (
             <div key={i} style={{
@@ -4960,10 +5142,10 @@ export function WorldVehiclesGame() {
   const handleQuiz = (answer) => {
     const correct = answer === VEHICLES[idx].country;
     if (correct) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setScore(score + 1);
     } else {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
     }
     setQuizAnswer(correct ? 'correct' : 'wrong');
     setTimeout(() => {
@@ -4971,7 +5153,7 @@ export function WorldVehiclesGame() {
       setShowFact(true);
       if (idx + 1 < VEHICLES.length) setIdx(idx + 1);
       else {
-        if (soundEnabled) playCelebrationSound();
+        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
         const f = correct ? score + 1 : score;
         completeGame('transport', 'world-vehicles', f >= 4 ? 3 : f >= 2 ? 2 : 1, f * 20);
         setGameComplete(true);
@@ -4981,7 +5163,7 @@ export function WorldVehiclesGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #E0F7FA, #B2EBF2)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{lang === 'bm' ? 'Penjelajah Kenderaan!' : 'Vehicle Explorer!'}</h1>
         <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
@@ -4994,12 +5176,13 @@ export function WorldVehiclesGame() {
   const countryChoices = [v.country, ...VEHICLES.filter((_, i) => i !== idx).slice(0, 2).map(x => x.country)].sort(() => Math.random() - 0.5);
   
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #E0F7FA, #B2EBF2)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/transport_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('transport')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{v.name}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{VEHICLES.length}</div>
-        <div style={{ fontSize: '5rem', margin: '16px 0' }}>{v.emoji}</div>
+        <div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={v.emoji} size={80}/></div>
         {showFact && (
           <div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '12px auto', maxWidth: 300 }}>
             <p style={{ fontSize: '0.9rem', color: '#555', margin: 0 }}>{v.fact}</p>
@@ -5059,18 +5242,18 @@ export function AnimalPuzzleGame() {
   const handleChoice = (answer) => {
     const correct = answer === PUZZLES[idx].answer;
     if (correct) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
       setScore(score + 1);
     } else {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
     }
     setTimeout(() => {
       setFeedback(null);
       if (idx + 1 < PUZZLES.length) setIdx(idx + 1);
       else {
-        if (soundEnabled) playCelebrationSound();
+        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
         const f = correct ? score + 1 : score;
         completeGame('animals', 'animal-puzzle', f >= 5 ? 3 : f >= 3 ? 2 : 1, f * 15);
         setGameComplete(true);
@@ -5080,7 +5263,7 @@ export function AnimalPuzzleGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #E8F5E9, #C8E6C9)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{lang === 'bm' ? 'Pakar Haiwan!' : 'Animal Expert!'}</h1>
         <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
@@ -5091,7 +5274,8 @@ export function AnimalPuzzleGame() {
   
   const p = PUZZLES[idx];
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #E8F5E9, #C8E6C9)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/safari_jungle_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('animals')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{lang === 'bm' ? 'Apa yang hilang?' : 'What is missing?'}</h2>
@@ -5102,7 +5286,7 @@ export function AnimalPuzzleGame() {
           {lang === 'bm' ? `Bahagian hilang: ${p.missing}` : `Missing part: ${p.missing}`}
         </div>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-          {p.choices.sort(() => Math.random() - 0.5).map((c, i) => (
+          {p.choices.map((c, i) => (
             <button key={i} onClick={() => handleChoice(c)} style={{
               fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white',
               border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)',
@@ -5144,19 +5328,19 @@ export function AnimalEncyclopediaGame() {
   const handleAnswer = (answer) => {
     const correct = answer === ANIMALS[idx].a;
     if (correct) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setBadges([...badges, ANIMALS[idx].emoji]);
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
       setScore(score + 1);
     } else {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
     }
     setTimeout(() => {
       setFeedback(null);
       if (idx + 1 < ANIMALS.length) setIdx(idx + 1);
       else {
-        if (soundEnabled) playCelebrationSound();
+        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
         const f = correct ? score + 1 : score;
         completeGame('animals', 'animal-encyclopedia', f >= 4 ? 3 : f >= 2 ? 2 : 1, f * 20);
         setGameComplete(true);
@@ -5166,7 +5350,7 @@ export function AnimalEncyclopediaGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #E8F5E9, #A5D6A7)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#1B5E20' }}>{lang === 'bm' ? 'Ensaiklopedia Lengkap!' : 'Encyclopedia Complete!'}</h1>
         <div style={{ fontSize: '2rem', margin: '8px 0' }}>{badges.join(' ')}</div>
@@ -5178,16 +5362,17 @@ export function AnimalEncyclopediaGame() {
   
   const a = ANIMALS[idx];
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #E8F5E9, #A5D6A7)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/safari_jungle_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('animals')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#1B5E20' }}>{a.name}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{ANIMALS.length}</div>
         {badges.length > 0 && <div style={{ fontSize: '1.5rem', margin: '8px 0' }}>{badges.join(' ')}</div>}
-        <div style={{ fontSize: '5rem', margin: '16px 0' }}>{a.emoji}</div>
+        <div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={a.emoji} size={80}/></div>
         <div style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 16 }}>{a.q}</div>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-          {a.choices.sort(() => Math.random() - 0.5).map((c, i) => (
+          {a.choices.map((c, i) => (
             <button key={i} onClick={() => handleAnswer(c)} style={{
               fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white',
               border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)',
@@ -5229,13 +5414,22 @@ export function MimicAnimalGame() {
   
   const startAction = () => {
     if (soundEnabled) playTapSound();
+    // Play real animal SFX when starting mimic
+    if (soundEnabled && lang === 'bm') {
+      const sfxMap = { '🐱': 'kucing', '🐶': 'anjing', '🐸': 'katak', '🐘': 'gajah', '🦁': 'singa' };
+      const animalKey = sfxMap[ACTIONS[idx].animal];
+      if (animalKey) setTimeout(() => playBMAnimalSfx(animalKey), 300);
+    }
     setActing(true);
     setCountdown(3);
     const timer = setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          if (soundEnabled) playCorrectSound();
+          if (soundEnabled) {
+            if (lang === 'bm') playBMCorrectFeedback();
+            else playCorrectSound();
+          }
           setDone(true);
           setActing(false);
           return 0;
@@ -5249,7 +5443,7 @@ export function MimicAnimalGame() {
     setDone(false);
     if (idx + 1 < ACTIONS.length) setIdx(idx + 1);
     else {
-      if (soundEnabled) playCelebrationSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
       completeGame('animals', 'mimic-animal', 3, ACTIONS.length * 15);
       setGameComplete(true);
     }
@@ -5257,7 +5451,7 @@ export function MimicAnimalGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF9C4, #FFF59D)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}>{lang === 'bm' ? 'Pelakon Hebat!' : 'Great Actor!'}</h1>
         <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
@@ -5268,12 +5462,13 @@ export function MimicAnimalGame() {
   
   const a = ACTIONS[idx];
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF9C4, #FFF59D)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/safari_jungle_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('animals')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}>{lang === 'bm' ? 'Tiru Haiwan!' : 'Act Like an Animal!'}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{ACTIONS.length}</div>
-        <div style={{ fontSize: '6rem', margin: '20px 0', animation: acting ? 'bounce 0.5s infinite alternate' : 'none' }}>{a.animal}</div>
+        <div style={{ textAlign: 'center', margin: '20px 0', animation: acting ? 'bounce 0.5s infinite alternate' : 'none' }}><GI e={a.animal} size={96}/></div>
         <div style={{ fontSize: '1.3rem', fontWeight: 800, fontFamily: 'var(--font-heading)' }}>{a.name}</div>
         <div style={{ fontSize: '1rem', color: '#555', margin: '8px 0 20px' }}>{a.action}</div>
         {acting && <div style={{ fontSize: '3rem', fontWeight: 900, color: '#F57F17' }}>{countdown}</div>}
@@ -5332,7 +5527,7 @@ export function AbcSongGame() {
         setCurrentIdx(-1);
         const newCount = completedCount + 1;
         setCompletedCount(newCount);
-        if (soundEnabled) playCelebrationSound();
+        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
         if (newCount >= 2) {
           completeGame('abc', 'abc-song', 3, 100);
           setGameComplete(true);
@@ -5346,7 +5541,7 @@ export function AbcSongGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #E3F2FD, #BBDEFB)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Pandai nyanyi ABC!' : 'ABC Song Star!'}</h1>
         <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
@@ -5356,7 +5551,8 @@ export function AbcSongGame() {
   }
   
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #E3F2FD, #BBDEFB)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/music_room_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('abc')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Nyanyian ABC!' : 'ABC Song!'}</h2>
@@ -5453,11 +5649,11 @@ export function LetterStoriesGame() {
   const handleQuiz = (answer) => {
     const correct = answer === STORIES[storyIdx].a;
     if (correct) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
       setScore(score + 1);
     } else {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
     }
     setTimeout(() => {
@@ -5466,7 +5662,7 @@ export function LetterStoriesGame() {
       setPageIdx(0);
       if (storyIdx + 1 < STORIES.length) setStoryIdx(storyIdx + 1);
       else {
-        if (soundEnabled) playCelebrationSound();
+        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
         const f = correct ? score + 1 : score;
         completeGame('abc', 'letter-stories', f >= 3 ? 3 : f >= 2 ? 2 : 1, f * 30);
         setGameComplete(true);
@@ -5476,7 +5672,7 @@ export function LetterStoriesGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF3E0, #FFE0B2)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? 'Pandai Membaca!' : 'Reading Star!'}</h1>
         <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
@@ -5487,7 +5683,8 @@ export function LetterStoriesGame() {
   
   const story = STORIES[storyIdx];
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF3E0, #FFE0B2)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/music_room_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('abc')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <div style={{
@@ -5501,7 +5698,7 @@ export function LetterStoriesGame() {
         
         {!showQuiz ? (
           <div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 20, padding: 24, margin: '16px auto', maxWidth: 320 }}>
-            <div style={{ fontSize: '3rem', marginBottom: 12 }}>{story.pages[pageIdx].emoji}</div>
+            <div style={{ textAlign: 'center', marginBottom: 12 }}><GI e={story.pages[pageIdx].emoji} size={48}/></div>
             <p style={{ fontSize: '1.1rem', fontWeight: 700, color: '#555', lineHeight: 1.6 }}>{story.pages[pageIdx].text}</p>
             <button onClick={nextPage} style={{
               marginTop: 16, padding: '10px 28px', borderRadius: 14, background: '#FF9800', color: 'white',
@@ -5512,7 +5709,7 @@ export function LetterStoriesGame() {
           <div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 20, padding: 24, margin: '16px auto', maxWidth: 320 }}>
             <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16 }}>{story.q}</div>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-              {story.choices.sort(() => Math.random() - 0.5).map((c, i) => (
+              {story.choices.map((c, i) => (
                 <button key={i} onClick={() => handleQuiz(c)} style={{
                   fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white',
                   border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)',
@@ -5564,7 +5761,12 @@ export function LabelBodyGame() {
     if (labeled.includes(partId)) return;
     const correct = partId === PARTS[currentIdx].id;
     if (correct) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
+      // Speak the body part name in BM
+      if (soundEnabled && lang === 'bm') {
+        const bodyMap = { head: 'kepala', eyes: 'mata', nose: 'hidung', mouth: 'mulut', hands: 'tangan', legs: 'kaki' };
+        if (bodyMap[partId]) setTimeout(() => playBMBodyPart(bodyMap[partId]), 400);
+      }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
       setLabeled([...labeled, partId]);
       setScore(score + 1);
@@ -5572,13 +5774,13 @@ export function LabelBodyGame() {
         setFeedback(null);
         if (currentIdx + 1 < PARTS.length) setCurrentIdx(currentIdx + 1);
         else {
-          if (soundEnabled) playCelebrationSound();
+          if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
           completeGame('body', 'label-body', score + 1 >= 5 ? 3 : score + 1 >= 3 ? 2 : 1, (score + 1) * 15);
           setGameComplete(true);
         }
       }, 600);
     } else {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
       setTimeout(() => setFeedback(null), 800);
     }
@@ -5586,7 +5788,7 @@ export function LabelBodyGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #E0F2F1, #B2DFDB)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{lang === 'bm' ? 'Pandai Labelkan!' : 'Body Expert!'}</h1>
         <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
@@ -5596,7 +5798,8 @@ export function LabelBodyGame() {
   }
   
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #E0F2F1, #B2DFDB)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/body_parts_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('body')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{lang === 'bm' ? 'Labelkan bahagian badan!' : 'Label the body parts!'}</h2>
@@ -5617,7 +5820,7 @@ export function LabelBodyGame() {
               border: i === currentIdx ? '2px solid #FF9800' : '1px solid rgba(0,0,0,0.1)',
               cursor: labeled.includes(part.id) ? 'default' : 'pointer',
               boxShadow: i === currentIdx ? '0 0 8px rgba(255,152,0,0.4)' : 'none',
-            }}>{labeled.includes(part.id) ? '✓' : part.emoji}</button>
+            }}><GI e={labeled.includes(part.id) ? '✓' : part.emoji} size={32}/></button>
           ))}
         </div>
         {feedback && (
@@ -5659,7 +5862,7 @@ export function MoveTogetherGame() {
     setCountdown(MOVES[idx].duration);
     const timer = setInterval(() => {
       setCountdown(prev => {
-        if (prev <= 1) { clearInterval(timer); if (soundEnabled) playCorrectSound(); setDone(true); setActing(false); return 0; }
+        if (prev <= 1) { clearInterval(timer); if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setDone(true); setActing(false); return 0; }
         return prev - 1;
       });
     }, 1000);
@@ -5668,12 +5871,12 @@ export function MoveTogetherGame() {
   const next = () => {
     setDone(false);
     if (idx + 1 < MOVES.length) setIdx(idx + 1);
-    else { if (soundEnabled) playCelebrationSound(); completeGame('body', 'move-together', 3, MOVES.length * 15); setGameComplete(true); }
+    else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } completeGame('body', 'move-together', 3, MOVES.length * 15); setGameComplete(true); }
   };
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #E8F5E9, #C8E6C9)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{lang === 'bm' ? 'Badan Sihat!' : 'Healthy Body!'}</h1>
         <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
@@ -5684,12 +5887,13 @@ export function MoveTogetherGame() {
   
   const m = MOVES[idx];
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #E8F5E9, #C8E6C9)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/body_parts_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('body')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{lang === 'bm' ? 'Ikut Gerakan!' : 'Follow Along!'}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{MOVES.length}</div>
-        <div style={{ fontSize: '6rem', margin: '20px 0', animation: acting ? 'bounce 0.4s infinite alternate' : 'none' }}>{m.emoji}</div>
+        <div style={{ textAlign: 'center', margin: '20px 0', animation: acting ? 'bounce 0.4s infinite alternate' : 'none' }}><GI e={m.emoji} size={96}/></div>
         <div style={{ fontSize: '1.3rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: '#333' }}>{m.move}</div>
         {acting && <div style={{ fontSize: '3rem', fontWeight: 900, color: '#4CAF50', marginTop: 12 }}>{countdown}</div>}
         {!acting && !done && (
@@ -5748,7 +5952,7 @@ export function HealthyHabitsGame() {
     const routine = ROUTINES[routineIdx];
     const nextIdx = placed.length;
     if (step.emoji === routine.steps[nextIdx].emoji) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       const newPlaced = [...placed, step];
       setPlaced(newPlaced);
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
@@ -5761,14 +5965,14 @@ export function HealthyHabitsGame() {
             setPlaced([]);
             setShuffled([...ROUTINES[routineIdx + 1].steps].sort(() => Math.random() - 0.5));
           } else {
-            if (soundEnabled) playCelebrationSound();
+            if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
             completeGame('body', 'healthy-habits', score + 1 >= 2 ? 3 : 2, (score + 1) * 40);
             setGameComplete(true);
           }
         }, 800);
       }
     } else {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
     }
     setTimeout(() => setFeedback(null), 1000);
@@ -5776,7 +5980,7 @@ export function HealthyHabitsGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #E0F7FA, #B2EBF2)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{lang === 'bm' ? 'Tabiat Sihat!' : 'Healthy Habits!'}</h1>
         <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
@@ -5786,7 +5990,8 @@ export function HealthyHabitsGame() {
   }
   
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #E0F7FA, #B2EBF2)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/healthy_habits_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('body')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{lang === 'bm' ? 'Susun aktiviti!' : 'Order the routine!'}</h2>
@@ -5846,17 +6051,17 @@ export function LittleDoctorGame() {
   const handleTreat = (treatment) => {
     const correct = treatment === PATIENTS[idx].treatment;
     if (correct) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
       setScore(score + 1);
       setHealed(true);
       setTimeout(() => {
         setFeedback(null); setHealed(false);
         if (idx + 1 < PATIENTS.length) setIdx(idx + 1);
-        else { if (soundEnabled) playCelebrationSound(); completeGame('body', 'little-doctor', score + 1 >= 4 ? 3 : score + 1 >= 2 ? 2 : 1, (score + 1) * 20); setGameComplete(true); }
+        else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } completeGame('body', 'little-doctor', score + 1 >= 4 ? 3 : score + 1 >= 2 ? 2 : 1, (score + 1) * 20); setGameComplete(true); }
       }, 1000);
     } else {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
       setTimeout(() => setFeedback(null), 800);
     }
@@ -5864,7 +6069,7 @@ export function LittleDoctorGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #FCE4EC, #F8BBD0)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>{lang === 'bm' ? 'Doktor Hebat!' : 'Great Doctor!'}</h1>
         <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
@@ -5875,17 +6080,18 @@ export function LittleDoctorGame() {
   
   const p = PATIENTS[idx];
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #FCE4EC, #F8BBD0)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/doctor_clinic_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('body')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>{lang === 'bm' ? 'Doktor Kecil' : 'Little Doctor'}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{PATIENTS.length}</div>
-        <div style={{ fontSize: healed ? '6rem' : '5rem', margin: '16px 0', transition: 'all 0.3s' }}>{healed ? '😊' : p.animal}</div>
+        <div style={{ textAlign: 'center', margin: '16px 0', transition: 'all 0.3s' }}><GI e={healed ? '😊' : p.animal} size={healed ? 96 : 80}/></div>
         <div style={{ fontSize: '1rem', fontWeight: 700 }}>{p.name}</div>
         <div style={{ fontSize: '0.9rem', color: '#666', margin: '4px 0 16px' }}>{lang === 'bm' ? 'Simptom:' : 'Symptom:'} {p.symptom}</div>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-          {p.choices.sort(() => Math.random() - 0.5).map((c, i) => (
-            <button key={i} onClick={() => handleTreat(c)} style={{ fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>{c}</button>
+          {p.choices.map((c, i) => (
+            <button key={i} onClick={() => handleTreat(c)} style={{ padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}><GI e={c} size={40}/></button>
           ))}
         </div>
         {feedback && <div style={{ marginTop: 12, padding: '6px 14px', borderRadius: 10, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}
@@ -5927,7 +6133,7 @@ export function BodySongGame() {
       if (i >= PARTS_SEQ.length) {
         clearInterval(interval); setPlaying(false); setIdx(-1);
         const newRounds = rounds + 1; setRounds(newRounds);
-        if (soundEnabled) playCelebrationSound();
+        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
         if (newRounds >= 2) { completeGame('body', 'body-song', 3, 100); setGameComplete(true); }
       } else { setIdx(i); if (soundEnabled) playTapSound(); }
     }, 500);
@@ -5935,7 +6141,7 @@ export function BodySongGame() {
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ background: 'linear-gradient(180deg, #F3E5F5, #E1BEE7)', textAlign: 'center', padding: 40 }}>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2' }}>{lang === 'bm' ? 'Pandai Menyanyi!' : 'Song Star!'}</h1>
         <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
@@ -5945,7 +6151,8 @@ export function BodySongGame() {
   }
   
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #F3E5F5, #E1BEE7)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/body_parts_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('body')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2' }}>{lang === 'bm' ? 'Lagu Badan!' : 'Body Song!'}</h2>
@@ -5960,7 +6167,7 @@ export function BodySongGame() {
               transform: i === idx ? 'scale(1.2)' : 'scale(1)', transition: 'all 0.2s ease',
               boxShadow: i === idx ? '0 4px 16px rgba(255,152,0,0.4)' : 'var(--shadow-sm)',
             }}>
-              <span style={{ fontSize: '1.4rem' }}>{p.emoji}</span>
+              <GI e={p.emoji} size={22}/>
               <span>{p.part}</span>
             </div>
           ))}
@@ -5997,24 +6204,25 @@ export function MagicTangramGame() {
   
   const handleChoice = (c) => {
     const correct = c === PUZZLES[idx].answer;
-    if (correct) { if (soundEnabled) playCorrectSound(); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); setScore(score + 1); }
-    else { if (soundEnabled) playWrongSound(); setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); }
-    setTimeout(() => { setFeedback(null); if (idx + 1 < PUZZLES.length) setIdx(idx + 1); else { if (soundEnabled) playCelebrationSound(); const f = correct ? score + 1 : score; completeGame('shapes', 'magic-tangram', f >= 4 ? 3 : f >= 2 ? 2 : 1, f * 20); setGameComplete(true); } }, 800);
+    if (correct) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); setScore(score + 1); }
+    else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); }
+    setTimeout(() => { setFeedback(null); if (idx + 1 < PUZZLES.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = correct ? score + 1 : score; completeGame('shapes', 'magic-tangram', f >= 4 ? 3 : f >= 2 ? 2 : 1, f * 20); setGameComplete(true); } }, 800);
   };
   
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #E3F2FD, #BBDEFB)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Pakar Tangram!' : 'Tangram Master!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('shapes')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Pakar Tangram!' : 'Tangram Master!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('shapes')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
   
   const p = PUZZLES[idx];
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #E3F2FD, #BBDEFB)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/drawing_studio_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('shapes')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Tangram Ajaib' : 'Magic Tangram'}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{PUZZLES.length}</div>
-        <div style={{ fontSize: '5rem', margin: '16px 0' }}>{p.emoji}</div>
+        <div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={p.emoji} size={80}/></div>
         <div style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 12 }}>{lang === 'bm' ? `Bentuk apa hilang dari ${p.name}?` : `What shape completes the ${p.name}?`}</div>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-          {p.choices.sort(() => Math.random() - 0.5).map((c, i) => (<button key={i} onClick={() => handleChoice(c)} style={{ fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>{c}</button>))}
+          {p.choices.map((c, i) => (<button key={i} onClick={() => handleChoice(c)} style={{ fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>{c}</button>))}
         </div>
         {feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}
       </div>
@@ -6048,27 +6256,28 @@ export function DrawShapesGame() {
     const newDots = dotsTapped + 1;
     setDotsTapped(newDots);
     if (newDots === SHAPES[shapeIdx].dots) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setScore(score + 1);
       setTimeout(() => {
         if (shapeIdx + 1 < SHAPES.length) { setShapeIdx(shapeIdx + 1); setDotsTapped(0); }
-        else { if (soundEnabled) playCelebrationSound(); completeGame('shapes', 'draw-shapes', score + 1 >= 3 ? 3 : 2, (score + 1) * 25); setGameComplete(true); }
+        else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } completeGame('shapes', 'draw-shapes', score + 1 >= 3 ? 3 : 2, (score + 1) * 25); setGameComplete(true); }
       }, 600);
     }
   };
   
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #E8EAF6, #C5CAE9)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#283593' }}>{lang === 'bm' ? 'Pelukis Hebat!' : 'Shape Artist!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('shapes')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#283593' }}>{lang === 'bm' ? 'Pelukis Hebat!' : 'Shape Artist!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('shapes')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
   
   const s = SHAPES[shapeIdx];
   const dots = Array.from({ length: s.dots }, (_, i) => ({ x: 50 + 35 * Math.cos(2 * Math.PI * i / s.dots - Math.PI / 2), y: 50 + 35 * Math.sin(2 * Math.PI * i / s.dots - Math.PI / 2) }));
   
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #E8EAF6, #C5CAE9)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/drawing_studio_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('shapes')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#283593' }}>{lang === 'bm' ? `Lukis ${s.name}!` : `Draw a ${s.name}!`}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{shapeIdx + 1}/{SHAPES.length}</div>
-        <div style={{ fontSize: '3rem', margin: '8px 0' }}>{s.emoji}</div>
+        <div style={{ textAlign: 'center', margin: '8px 0' }}><GI e={s.emoji} size={48}/></div>
         <div style={{ width: 220, height: 220, margin: '12px auto', position: 'relative', background: 'white', borderRadius: 20, boxShadow: 'var(--shadow-lg)' }}>
           {dots.map((d, i) => (
             <button key={i} onClick={() => handleDot(i)} style={{
@@ -6111,7 +6320,7 @@ export function BuildPicturesGame() {
   const handlePick = (shape) => {
     const correct = shape === PICTURES[picIdx].parts[partIdx];
     if (correct) {
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setBuilt([...built, shape]);
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
       setTimeout(() => {
@@ -6120,26 +6329,27 @@ export function BuildPicturesGame() {
         else {
           setScore(score + 1);
           if (picIdx + 1 < PICTURES.length) { setPicIdx(picIdx + 1); setPartIdx(0); setBuilt([]); }
-          else { if (soundEnabled) playCelebrationSound(); completeGame('shapes', 'build-pictures', score + 1 >= 3 ? 3 : 2, (score + 1) * 30); setGameComplete(true); }
+          else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } completeGame('shapes', 'build-pictures', score + 1 >= 3 ? 3 : 2, (score + 1) * 30); setGameComplete(true); }
         }
       }, 600);
     } else {
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
       setTimeout(() => setFeedback(null), 800);
     }
   };
   
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF3E0, #FFE0B2)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? 'Arkitek Hebat!' : 'Great Architect!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('shapes')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? 'Arkitek Hebat!' : 'Great Architect!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('shapes')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
   
   const pic = PICTURES[picIdx];
   const choices = [pic.parts[partIdx], ...pic.wrong].sort(() => Math.random() - 0.5);
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF3E0, #FFE0B2)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/drawing_studio_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('shapes')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? `Bina ${pic.name}!` : `Build a ${pic.name}!`}</h2>
-        <div style={{ fontSize: '4rem', margin: '12px 0' }}>{pic.emoji}</div>
+        <div style={{ textAlign: 'center', margin: '12px 0' }}><GI e={pic.emoji} size={64}/></div>
         <div style={{ display: 'flex', gap: 4, justifyContent: 'center', marginBottom: 12 }}>{built.map((b, i) => <span key={i} style={{ fontSize: '1.5rem' }}>{b}</span>)}<span style={{ fontSize: '1.5rem', color: '#999' }}></span></div>
         <div style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: 12 }}>{lang === 'bm' ? `Bahagian ${partIdx + 1}:` : `Part ${partIdx + 1}:`}</div>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
@@ -6174,25 +6384,26 @@ export function ThreeDShapesGame() {
   
   const handleChoice = (c) => {
     const correct = c === SHAPES_3D[idx].object;
-    if (correct) { if (soundEnabled) playCorrectSound(); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); setScore(score + 1); }
-    else { if (soundEnabled) playWrongSound(); setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); }
-    setTimeout(() => { setFeedback(null); if (idx + 1 < SHAPES_3D.length) setIdx(idx + 1); else { if (soundEnabled) playCelebrationSound(); const f = correct ? score + 1 : score; completeGame('shapes', '3d-shapes', f >= 4 ? 3 : f >= 2 ? 2 : 1, f * 20); setGameComplete(true); } }, 800);
+    if (correct) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); setScore(score + 1); }
+    else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); }
+    setTimeout(() => { setFeedback(null); if (idx + 1 < SHAPES_3D.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = correct ? score + 1 : score; completeGame('shapes', '3d-shapes', f >= 4 ? 3 : f >= 2 ? 2 : 1, f * 20); setGameComplete(true); } }, 800);
   };
   
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #E8EAF6, #C5CAE9)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#283593' }}>{lang === 'bm' ? 'Pakar 3D!' : '3D Expert!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('shapes')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#283593' }}>{lang === 'bm' ? 'Pakar 3D!' : '3D Expert!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('shapes')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
   
   const s = SHAPES_3D[idx];
   return (
-    <div className="game-container" style={{ background: 'linear-gradient(180deg, #E8EAF6, #C5CAE9)' }}>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+      <img src="/images/game/block_tower_bg.jpg" alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('shapes')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#283593' }}>{lang === 'bm' ? 'Bentuk 3D' : '3D Shapes'}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{SHAPES_3D.length}</div>
-        <div style={{ fontSize: '5rem', margin: '16px 0' }}>{s.emoji}</div>
+        <div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={s.emoji} size={80}/></div>
         <div style={{ fontSize: '1.1rem', fontWeight: 800 }}>{s.shape}</div>
         <div style={{ fontSize: '0.9rem', color: '#555', margin: '8px 0 16px' }}>{lang === 'bm' ? 'Benda apa yang sama bentuk?' : 'What real object has this shape?'}</div>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-          {s.choices.sort(() => Math.random() - 0.5).map((c, i) => (<button key={i} onClick={() => handleChoice(c)} style={{ fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>{c}</button>))}
+          {shuffleWithSeed(s.choices, idx).map((c, i) => (<button key={i} onClick={() => handleChoice(c)} style={{ fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>{c}</button>))}
         </div>
         {feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}
       </div>
@@ -6215,10 +6426,10 @@ export function RolePlayGame() {
     { name: lang === 'bm' ? 'Tukang Masak' : 'Chef', emoji: '👨‍🍳', task: lang === 'bm' ? 'Masak makanan!' : 'Cook food!', answer: '🍳', choices: ['🍳','🩺','🔧'] },
   ];
   const [idx, setIdx] = useState(0); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
-  const handle = (c) => { const ok = c === JOBS[idx].answer; if (ok) { if (soundEnabled) playCorrectSound(); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); setScore(score + 1); } else { if (soundEnabled) playWrongSound(); setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < JOBS.length) setIdx(idx + 1); else { if (soundEnabled) playCelebrationSound(); const f = ok ? score + 1 : score; completeGame('jobs', 'role-play', f >= 4 ? 3 : f >= 2 ? 2 : 1, f * 20); setGameComplete(true); } }, 800); };
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF3E0, #FFE0B2)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? 'Pelakon Hebat!' : 'Great Actor!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('jobs')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  const handle = (c) => { const ok = c === JOBS[idx].answer; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); setScore(score + 1); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < JOBS.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('jobs', 'role-play', f >= 4 ? 3 : f >= 2 ? 2 : 1, f * 20); setGameComplete(true); } }, 800); };
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src="/images/game/workplace_town_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Pelakon Hebat!' : 'Great Actor!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('jobs')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const j = JOBS[idx];
-  return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF3E0, #FFE0B2)' }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('jobs')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{j.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{JOBS.length}</div><div style={{ fontSize: '5rem', margin: '16px 0' }}>{j.emoji}</div><div style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 16 }}>{j.task}</div><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{j.choices.sort(() => Math.random() - 0.5).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>{c}</button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src="/images/game/workplace_town_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('jobs')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{j.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{JOBS.length}</div><div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={j.emoji} size={80}/></div><div style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 16 }}>{j.task}</div><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{shuffleWithSeed(j.choices, idx).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>{c}</button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 
 // ============================================
@@ -6236,10 +6447,10 @@ export function JobToolsGame() {
     { job: '👨‍🌾', name: lang === 'bm' ? 'Petani' : 'Farmer', tool: '🌾', choices: ['🌾','🩺','🔨'] },
   ];
   const [idx, setIdx] = useState(0); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
-  const handle = (c) => { const ok = c === MATCHES[idx].tool; if (ok) { if (soundEnabled) playCorrectSound(); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); setScore(score + 1); } else { if (soundEnabled) playWrongSound(); setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < MATCHES.length) setIdx(idx + 1); else { if (soundEnabled) playCelebrationSound(); const f = ok ? score + 1 : score; completeGame('jobs', 'job-tools', f >= 5 ? 3 : f >= 3 ? 2 : 1, f * 15); setGameComplete(true); } }, 800); };
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF3E0, #FFE0B2)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? 'Bijak Padankan!' : 'Tool Master!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('jobs')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  const handle = (c) => { const ok = c === MATCHES[idx].tool; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); setScore(score + 1); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < MATCHES.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('jobs', 'job-tools', f >= 5 ? 3 : f >= 3 ? 2 : 1, f * 15); setGameComplete(true); } }, 800); };
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src="/images/game/workplace_town_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Bijak Padankan!' : 'Tool Master!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('jobs')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const m = MATCHES[idx];
-  return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF3E0, #FFE0B2)' }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('jobs')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? 'Padankan Alat!' : 'Match the Tool!'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{MATCHES.length}</div><div style={{ fontSize: '5rem', margin: '16px 0' }}>{m.job}</div><div style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 16 }}>{m.name}</div><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{m.choices.sort(() => Math.random() - 0.5).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>{c}</button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src="/images/game/workplace_town_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('jobs')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? 'Padankan Alat!' : 'Match the Tool!'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{MATCHES.length}</div><div style={{ fontSize: '5rem', margin: '16px 0' }}>{m.job}</div><div style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 16 }}>{m.name}</div><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{shuffleWithSeed(m.choices, idx).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>{c}</button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 
 // ============================================
@@ -6255,10 +6466,10 @@ export function VisitWorkplaceGame() {
     { place: '🏬', name: lang === 'bm' ? 'Kedai' : 'Shop', worker: '🧑‍💼', fact: lang === 'bm' ? 'Jurujual menjual barang!' : 'Shopkeepers sell things!', q: lang === 'bm' ? 'Siapa bekerja di sini?' : 'Who works here?', choices: ['🧑‍💼','🧑‍🚒','👨‍⚕️'] },
   ];
   const [idx, setIdx] = useState(0); const [showFact, setShowFact] = useState(true); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
-  const handle = (c) => { const ok = c === PLACES[idx].worker; if (ok) { if (soundEnabled) playCorrectSound(); setScore(score + 1); } else { if (soundEnabled) playWrongSound(); } setFeedback(ok ? 'correct' : 'wrong'); setTimeout(() => { setFeedback(null); setShowFact(true); if (idx + 1 < PLACES.length) setIdx(idx + 1); else { if (soundEnabled) playCelebrationSound(); const f = ok ? score + 1 : score; completeGame('jobs', 'visit-workplace', f >= 3 ? 3 : f >= 2 ? 2 : 1, f * 25); setGameComplete(true); } }, 800); };
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #E8F5E9, #C8E6C9)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{lang === 'bm' ? 'Penjelajah Hebat!' : 'Great Explorer!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('jobs')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  const handle = (c) => { const ok = c === PLACES[idx].worker; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setScore(score + 1); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } } setFeedback(ok ? 'correct' : 'wrong'); setTimeout(() => { setFeedback(null); setShowFact(true); if (idx + 1 < PLACES.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('jobs', 'visit-workplace', f >= 3 ? 3 : f >= 2 ? 2 : 1, f * 25); setGameComplete(true); } }, 800); };
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src="/images/game/workplace_town_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Penjelajah Hebat!' : 'Great Explorer!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('jobs')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const p = PLACES[idx];
-  return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #E8F5E9, #C8E6C9)' }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('jobs')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{p.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{PLACES.length}</div><div style={{ fontSize: '5rem', margin: '16px 0' }}>{p.place}</div>{showFact ? (<div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '12px auto', maxWidth: 300 }}><p style={{ fontSize: '0.9rem', margin: 0 }}>{p.fact}</p><button onClick={() => setShowFact(false)} style={{ marginTop: 10, padding: '8px 20px', borderRadius: 12, background: '#43A047', color: 'white', border: 'none', fontWeight: 700, cursor: 'pointer' }}>{lang === 'bm' ? 'Kuiz!' : 'Quiz!'}</button></div>) : (<div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '12px auto', maxWidth: 300 }}><p style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: 12 }}>{p.q}</p><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{p.choices.sort(() => Math.random() - 0.5).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer' }}>{c}</button>))}</div>{feedback && <div style={{ marginTop: 10, fontWeight: 700, color: feedback === 'correct' ? '#4CAF50' : '#F44336' }}>{feedback === 'correct' ? '' : ''}</div>}</div>)}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src="/images/game/workplace_town_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('jobs')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{p.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{PLACES.length}</div><div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={p.place} size={80}/></div>{showFact ? (<div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '12px auto', maxWidth: 300 }}><p style={{ fontSize: '0.9rem', margin: 0 }}>{p.fact}</p><button onClick={() => setShowFact(false)} style={{ marginTop: 10, padding: '8px 20px', borderRadius: 12, background: '#43A047', color: 'white', border: 'none', fontWeight: 700, cursor: 'pointer' }}>{lang === 'bm' ? 'Kuiz!' : 'Quiz!'}</button></div>) : (<div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '12px auto', maxWidth: 300 }}><p style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: 12 }}>{p.q}</p><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{p.choices.map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer' }}><GI e={c} size={40}/></button>))}</div>{feedback && <div style={{ marginTop: 10, fontWeight: 700, color: feedback === 'correct' ? '#4CAF50' : '#F44336' }}>{feedback === 'correct' ? '' : ''}</div>}</div>)}</div></div>);
 }
 
 // ============================================
@@ -6276,10 +6487,10 @@ export function WhoAmIGame() {
     { clue: lang === 'bm' ? 'Saya padam api!' : 'I put out fires!', answer: '🧑‍🚒', choices: ['🧑‍🚒','👮','👩‍🍳'] },
   ];
   const [idx, setIdx] = useState(0); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
-  const handle = (c) => { const ok = c === RIDDLES[idx].answer; if (ok) { if (soundEnabled) playCorrectSound(); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); setScore(score + 1); } else { if (soundEnabled) playWrongSound(); setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < RIDDLES.length) setIdx(idx + 1); else { if (soundEnabled) playCelebrationSound(); const f = ok ? score + 1 : score; completeGame('jobs', 'who-am-i', f >= 5 ? 3 : f >= 3 ? 2 : 1, f * 15); setGameComplete(true); } }, 800); };
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #FCE4EC, #F8BBD0)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>{lang === 'bm' ? 'Bijak Meneka!' : 'Great Guesser!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('jobs')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  const handle = (c) => { const ok = c === RIDDLES[idx].answer; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); setScore(score + 1); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < RIDDLES.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('jobs', 'who-am-i', f >= 5 ? 3 : f >= 3 ? 2 : 1, f * 15); setGameComplete(true); } }, 800); };
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src="/images/game/workplace_town_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Bijak Meneka!' : 'Great Guesser!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('jobs')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const r = RIDDLES[idx];
-  return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #FCE4EC, #F8BBD0)' }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('jobs')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>{lang === 'bm' ? 'Siapa Saya?' : 'Who Am I?'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{RIDDLES.length}</div><div style={{ fontSize: '4rem', margin: '20px 0' }}></div><div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '0 auto 16px', maxWidth: 300, fontSize: '1rem', fontWeight: 700 }}>{r.clue}</div><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{r.choices.sort(() => Math.random() - 0.5).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>{c}</button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src="/images/game/workplace_town_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('jobs')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>{lang === 'bm' ? 'Siapa Saya?' : 'Who Am I?'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{RIDDLES.length}</div><div style={{ margin: '20px 0' }}></div><div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '0 auto 16px', maxWidth: 300, fontSize: '1rem', fontWeight: 700 }}>{r.clue}</div><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{shuffleWithSeed(r.choices, idx).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}><GI e={c} size={40}/></button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 
 // ============================================
@@ -6298,10 +6509,10 @@ export function InstrumentsGame() {
   ];
   const [idx, setIdx] = useState(0); const [played, setPlayed] = useState(false); const [gameComplete, setGameComplete] = useState(false);
   const playInst = () => { if (soundEnabled) playTapSound(); setPlayed(true); };
-  const next = () => { setPlayed(false); if (idx + 1 < INSTRUMENTS.length) setIdx(idx + 1); else { if (soundEnabled) playCelebrationSound(); completeGame('music', 'instruments', 3, INSTRUMENTS.length * 15); setGameComplete(true); } };
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #F3E5F5, #E1BEE7)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2' }}>{lang === 'bm' ? 'Pemuzik Hebat!' : 'Great Musician!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('music')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  const next = () => { setPlayed(false); if (idx + 1 < INSTRUMENTS.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } completeGame('music', 'instruments', 3, INSTRUMENTS.length * 15); setGameComplete(true); } };
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src="/images/game/music_room_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Pemuzik Hebat!' : 'Great Musician!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('music')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const inst = INSTRUMENTS[idx];
-  return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #F3E5F5, #E1BEE7)' }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('music')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2' }}>{inst.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{INSTRUMENTS.length}</div><div style={{ fontSize: '6rem', margin: '20px 0', cursor: 'pointer' }} onClick={playInst}>{inst.emoji}</div>{played && <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#9C27B0', animation: 'bounce 0.5s ease' }}>{inst.sound}</div>}<button onClick={played ? next : playInst} style={{ marginTop: 16, padding: '12px 28px', borderRadius: 16, background: 'linear-gradient(135deg, #9C27B0, #7B1FA2)', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontFamily: 'var(--font-heading)' }}>{played ? (lang === 'bm' ? 'Seterusnya →' : 'Next →') : (lang === 'bm' ? 'Main!' : 'Play!')}</button></div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src="/images/game/music_room_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('music')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2' }}>{inst.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{INSTRUMENTS.length}</div><div style={{ textAlign: 'center', margin: '20px 0', cursor: 'pointer' }} onClick={playInst}><GI e={inst.emoji} size={96}/></div>{played && <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#9C27B0', animation: 'bounce 0.5s ease' }}>{inst.sound}</div>}<button onClick={played ? next : playInst} style={{ marginTop: 16, padding: '12px 28px', borderRadius: 16, background: 'linear-gradient(135deg, #9C27B0, #7B1FA2)', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontFamily: 'var(--font-heading)' }}>{played ? (lang === 'bm' ? 'Seterusnya →' : 'Next →') : (lang === 'bm' ? 'Main!' : 'Play!')}</button></div></div>);
 }
 
 // ============================================
@@ -6332,19 +6543,19 @@ export function FollowBeatGame() {
       const newIdx = inputIdx + 1;
       setInputIdx(newIdx);
       if (newIdx === p.pattern.length) {
-        if (soundEnabled) playCorrectSound(); setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
-        setTimeout(() => { setFeedback(null); setInputIdx(0); if (patIdx + 1 < PATTERNS.length) setPatIdx(patIdx + 1); else { if (soundEnabled) playCelebrationSound(); completeGame('music', 'follow-beat', score + 1 >= 3 ? 3 : 2, (score + 1) * 25); setGameComplete(true); } }, 800);
+        if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
+        setTimeout(() => { setFeedback(null); setInputIdx(0); if (patIdx + 1 < PATTERNS.length) setPatIdx(patIdx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } completeGame('music', 'follow-beat', score + 1 >= 3 ? 3 : 2, (score + 1) * 25); setGameComplete(true); } }, 800);
       }
     } else {
-      if (soundEnabled) playWrongSound(); setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); setInputIdx(0);
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); setInputIdx(0);
       setTimeout(() => setFeedback(null), 800);
     }
   };
   
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #FCE4EC, #F8BBD0)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>{lang === 'bm' ? 'Rentak Hebat!' : 'Beat Master!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('music')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src="/images/game/music_room_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Rentak Hebat!' : 'Beat Master!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('music')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   
   const p = PATTERNS[patIdx];
-  return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #FCE4EC, #F8BBD0)' }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('music')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>{lang === 'bm' ? 'Ikut Rentak!' : 'Follow the Beat!'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{patIdx + 1}/{PATTERNS.length}</div><div style={{ display: 'flex', gap: 8, justifyContent: 'center', margin: '20px 0' }}>{p.pattern.map((beat, i) => (<div key={i} style={{ fontSize: '2rem', padding: 8, borderRadius: 12, background: i === currentHighlight ? '#FFD93D' : i < inputIdx ? '#E91E63' : 'white', border: '2px solid rgba(0,0,0,0.08)', transform: i === currentHighlight ? 'scale(1.2)' : 'scale(1)', transition: 'all 0.2s' }}>{beat}</div>))}</div>{!showPattern && (<div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 16 }}><button onClick={() => handleInput('👏')} style={{ fontSize: '3rem', padding: 16, borderRadius: 20, background: 'white', border: '2px solid rgba(0,0,0,0.1)', cursor: 'pointer', boxShadow: 'var(--shadow-md)' }}></button><button onClick={() => handleInput('🤚')} style={{ fontSize: '3rem', padding: 16, borderRadius: 20, background: 'white', border: '2px solid rgba(0,0,0,0.1)', cursor: 'pointer', boxShadow: 'var(--shadow-md)' }}></button></div>)}{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src="/images/game/music_room_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('music')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>{lang === 'bm' ? 'Ikut Rentak!' : 'Follow the Beat!'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{patIdx + 1}/{PATTERNS.length}</div><div style={{ display: 'flex', gap: 8, justifyContent: 'center', margin: '20px 0' }}>{p.pattern.map((beat, i) => (<div key={i} style={{ padding: 8, borderRadius: 12, background: i === currentHighlight ? '#FFD93D' : i < inputIdx ? '#E91E63' : 'white', border: '2px solid rgba(0,0,0,0.08)', transform: i === currentHighlight ? 'scale(1.2)' : 'scale(1)', transition: 'all 0.2s' }}><GI e={beat} size={32}/></div>))}</div>{!showPattern && (<div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 16 }}><button onClick={() => handleInput('👏')} style={{ padding: 16, borderRadius: 20, background: 'white', border: '2px solid rgba(0,0,0,0.1)', cursor: 'pointer', boxShadow: 'var(--shadow-md)' }}><GI e="👏" size={48}/></button><button onClick={() => handleInput('🤚')} style={{ padding: 16, borderRadius: 20, background: 'white', border: '2px solid rgba(0,0,0,0.1)', cursor: 'pointer', boxShadow: 'var(--shadow-md)' }}><GI e="🤚" size={48}/></button></div>)}{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 
 // ============================================
@@ -6360,10 +6571,10 @@ export function ChildrensSongsGame() {
     { title: lang === 'bm' ? 'Tepuk Amai-Amai' : 'Tepuk Amai-Amai', emoji: '👏', lyrics: lang === 'bm' ? 'Tepuk amai-amai belalang kupu-kupu...' : 'Clap, clap, butterfly...' },
   ];
   const [idx, setIdx] = useState(0); const [singing, setSinging] = useState(false); const [gameComplete, setGameComplete] = useState(false);
-  const singAlong = () => { if (soundEnabled) playTapSound(); setSinging(true); setTimeout(() => { setSinging(false); if (soundEnabled) playCorrectSound(); if (idx + 1 < SONGS.length) setIdx(idx + 1); else { if (soundEnabled) playCelebrationSound(); completeGame('music', 'childrens-songs', 3, SONGS.length * 25); setGameComplete(true); } }, 3000); };
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF9C4, #FFF176)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}>{lang === 'bm' ? 'Pandai Menyanyi!' : 'Song Star!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('music')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  const singAlong = () => { if (soundEnabled) playTapSound(); setSinging(true); setTimeout(() => { setSinging(false); if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } if (idx + 1 < SONGS.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } completeGame('music', 'childrens-songs', 3, SONGS.length * 25); setGameComplete(true); } }, 3000); };
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src="/images/game/music_room_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Pandai Menyanyi!' : 'Song Star!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('music')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const s = SONGS[idx];
-  return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF9C4, #FFF176)' }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('music')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}>{s.title}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{SONGS.length}</div><div style={{ fontSize: '5rem', margin: '20px 0', animation: singing ? 'bounce 0.4s infinite alternate' : 'none' }}>{s.emoji}</div><div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '12px auto', maxWidth: 300 }}><p style={{ fontSize: '1rem', fontStyle: 'italic', color: '#555' }}>{s.lyrics}</p></div><button onClick={singAlong} disabled={singing} style={{ marginTop: 12, padding: '14px 32px', borderRadius: 20, background: singing ? '#999' : 'linear-gradient(135deg, #FFD93D, #FFA726)', color: 'white', border: 'none', fontWeight: 800, cursor: singing ? 'default' : 'pointer', fontFamily: 'var(--font-heading)' }}>{singing ? '...' : '🎤'} {lang === 'bm' ? (singing ? 'Menyanyi...' : 'Nyanyi!') : (singing ? 'Singing...' : 'Sing!')}</button></div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src="/images/game/music_room_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('music')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}>{s.title}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{SONGS.length}</div><div style={{ textAlign: 'center', margin: '20px 0', animation: singing ? 'bounce 0.4s infinite alternate' : 'none' }}><GI e={s.emoji} size={80}/></div><div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '12px auto', maxWidth: 300 }}><p style={{ fontSize: '1rem', fontStyle: 'italic', color: '#555' }}>{s.lyrics}</p></div><button onClick={singAlong} disabled={singing} style={{ marginTop: 12, padding: '14px 32px', borderRadius: 20, background: singing ? '#999' : 'linear-gradient(135deg, #FFD93D, #FFA726)', color: 'white', border: 'none', fontWeight: 800, cursor: singing ? 'default' : 'pointer', fontFamily: 'var(--font-heading)' }}>{singing ? '...' : '🎤'} {lang === 'bm' ? (singing ? 'Menyanyi...' : 'Nyanyi!') : (singing ? 'Singing...' : 'Sing!')}</button></div></div>);
 }
 
 // ============================================
@@ -6386,15 +6597,15 @@ export function LearnNotesGame() {
     setPlayedNotes(newPlayed);
     if (newPlayed.length === targetSeq.length) {
       const correct = newPlayed.every((n, i) => n === targetSeq[i]);
-      if (correct) { if (soundEnabled) playCorrectSound(); setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); }
-      else { if (soundEnabled) playWrongSound(); setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); }
-      setTimeout(() => { setFeedback(null); if (round + 1 < TOTAL_ROUNDS) { setRound(round + 1); generateSequence(); } else { if (soundEnabled) playCelebrationSound(); const f = correct ? score + 1 : score; completeGame('music', 'learn-notes', f >= 3 ? 3 : f >= 2 ? 2 : 1, f * 25); setGameComplete(true); } }, 800);
+      if (correct) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); }
+      else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); }
+      setTimeout(() => { setFeedback(null); if (round + 1 < TOTAL_ROUNDS) { setRound(round + 1); generateSequence(); } else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = correct ? score + 1 : score; completeGame('music', 'learn-notes', f >= 3 ? 3 : f >= 2 ? 2 : 1, f * 25); setGameComplete(true); } }, 800);
     }
   };
   
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #E3F2FD, #BBDEFB)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Pemuzik Hebat!' : 'Music Master!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('music')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src="/images/game/music_room_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Pemuzik Hebat!' : 'Music Master!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('music')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   
-  return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #E3F2FD, #BBDEFB)' }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('music')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Main nota!' : 'Play the notes!'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{round + 1}/{TOTAL_ROUNDS}</div><div style={{ margin: '16px 0', fontSize: '0.9rem', fontWeight: 700 }}>{lang === 'bm' ? 'Main:' : 'Play:'} {targetSeq.map(n => NOTES[n]).join(' → ')}</div><div style={{ display: 'flex', gap: 4, justifyContent: 'center', margin: '12px 0' }}>{playedNotes.map((n, i) => <span key={i} style={{ background: COLORS[n], color: 'white', padding: '4px 8px', borderRadius: 8, fontWeight: 700, fontSize: '0.8rem' }}>{NOTES[n]}</span>)}</div><div style={{ display: 'flex', gap: 4, justifyContent: 'center', flexWrap: 'wrap', margin: '12px 0' }}>{NOTES.map((note, i) => (<button key={i} onClick={() => handleNote(i)} style={{ width: 38, height: 50, borderRadius: 8, background: COLORS[i], color: 'white', border: 'none', fontWeight: 800, fontSize: '0.7rem', cursor: 'pointer', fontFamily: 'var(--font-heading)' }}>{note}</button>))}</div>{feedback && <div style={{ marginTop: 12, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src="/images/game/music_room_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('music')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Main nota!' : 'Play the notes!'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{round + 1}/{TOTAL_ROUNDS}</div><div style={{ margin: '16px 0', fontSize: '0.9rem', fontWeight: 700 }}>{lang === 'bm' ? 'Main:' : 'Play:'} {targetSeq.map(n => NOTES[n]).join(' → ')}</div><div style={{ display: 'flex', gap: 4, justifyContent: 'center', margin: '12px 0' }}>{playedNotes.map((n, i) => <span key={i} style={{ background: COLORS[n], color: 'white', padding: '4px 8px', borderRadius: 8, fontWeight: 700, fontSize: '0.8rem' }}>{NOTES[n]}</span>)}</div><div style={{ display: 'flex', gap: 4, justifyContent: 'center', flexWrap: 'wrap', margin: '12px 0' }}>{NOTES.map((note, i) => (<button key={i} onClick={() => handleNote(i)} style={{ width: 38, height: 50, borderRadius: 8, background: COLORS[i], color: 'white', border: 'none', fontWeight: 800, fontSize: '0.7rem', cursor: 'pointer', fontFamily: 'var(--font-heading)' }}>{note}</button>))}</div>{feedback && <div style={{ marginTop: 12, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 
 // ============================================
@@ -6410,10 +6621,10 @@ export function WorldMapGame() {
     { flag: '🇧🇷', name: lang === 'bm' ? 'Brazil' : 'Brazil', fact: lang === 'bm' ? 'Negara bola sepak!' : 'Soccer country!', q: lang === 'bm' ? 'Bendera mana milik Brazil?' : 'Which flag is Brazil?', choices: ['🇧🇷','🇦🇷','🇲🇽'] },
   ];
   const [idx, setIdx] = useState(0); const [showFact, setShowFact] = useState(true); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
-  const handle = (c) => { const ok = c === COUNTRIES[idx].flag; if (ok) { if (soundEnabled) playCorrectSound(); setScore(score + 1); } else { if (soundEnabled) playWrongSound(); } setFeedback(ok ? 'correct' : 'wrong'); setTimeout(() => { setFeedback(null); setShowFact(true); if (idx + 1 < COUNTRIES.length) setIdx(idx + 1); else { if (soundEnabled) playCelebrationSound(); const f = ok ? score + 1 : score; completeGame('world-explorer', 'world-map', f >= 3 ? 3 : f >= 2 ? 2 : 1, f * 25); setGameComplete(true); } }, 800); };
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #E0F2F1, #B2DFDB)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{lang === 'bm' ? 'Penjelajah Dunia!' : 'World Explorer!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('world-explorer')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  const handle = (c) => { const ok = c === COUNTRIES[idx].flag; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setScore(score + 1); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } } setFeedback(ok ? 'correct' : 'wrong'); setTimeout(() => { setFeedback(null); setShowFact(true); if (idx + 1 < COUNTRIES.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('world-explorer', 'world-map', f >= 3 ? 3 : f >= 2 ? 2 : 1, f * 25); setGameComplete(true); } }, 800); };
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src="/images/game/world_explorer_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#00695C', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Penjelajah Dunia!' : 'World Explorer!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('world-explorer')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const c = COUNTRIES[idx];
-  return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #E0F2F1, #B2DFDB)' }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('world-explorer')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{c.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{COUNTRIES.length}</div><div style={{ fontSize: '5rem', margin: '16px 0' }}>{c.flag}</div>{showFact ? (<div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '12px auto', maxWidth: 300 }}><p style={{ margin: 0 }}>{c.fact}</p><button onClick={() => setShowFact(false)} style={{ marginTop: 10, padding: '8px 20px', borderRadius: 12, background: '#00897B', color: 'white', border: 'none', fontWeight: 700, cursor: 'pointer' }}>{lang === 'bm' ? 'Kuiz!' : 'Quiz!'}</button></div>) : (<div><p style={{ fontWeight: 700 }}>{c.q}</p><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{c.choices.sort(() => Math.random() - 0.5).map((ch, i) => (<button key={i} onClick={() => handle(ch)} style={{ fontSize: '3rem', padding: 12, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer' }}>{ch}</button>))}</div>{feedback && <div style={{ marginTop: 10, fontWeight: 700, color: feedback === 'correct' ? '#4CAF50' : '#F44336' }}>{feedback === 'correct' ? '' : ''}</div>}</div>)}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src="/images/game/world_explorer_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('world-explorer')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{c.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{COUNTRIES.length}</div><div style={{ fontSize: '5rem', margin: '16px 0' }}>{c.flag}</div>{showFact ? (<div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '12px auto', maxWidth: 300 }}><p style={{ margin: 0 }}>{c.fact}</p><button onClick={() => setShowFact(false)} style={{ marginTop: 10, padding: '8px 20px', borderRadius: 12, background: '#00897B', color: 'white', border: 'none', fontWeight: 700, cursor: 'pointer' }}>{lang === 'bm' ? 'Kuiz!' : 'Quiz!'}</button></div>) : (<div><p style={{ fontWeight: 700 }}>{c.q}</p><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{shuffleWithSeed(c.choices, idx).map((ch, i) => (<button key={i} onClick={() => handle(ch)} style={{ fontSize: '3rem', padding: 12, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer' }}>{ch}</button>))}</div>{feedback && <div style={{ marginTop: 10, fontWeight: 700, color: feedback === 'correct' ? '#4CAF50' : '#F44336' }}>{feedback === 'correct' ? '' : ''}</div>}</div>)}</div></div>);
 }
 
 // ============================================
@@ -6428,10 +6639,10 @@ export function WorldHousesGame() {
     { name: lang === 'bm' ? 'Apartmen' : 'Apartment', emoji: '🏢', country: 'Japan', desc: lang === 'bm' ? 'Bangunan tinggi di bandar!' : 'Tall city building!', answer: '🇯🇵', choices: ['🇯🇵','🇲🇾','❄️'] },
   ];
   const [idx, setIdx] = useState(0); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
-  const handle = (c) => { const ok = c === HOUSES[idx].answer; if (ok) { if (soundEnabled) playCorrectSound(); setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); } else { if (soundEnabled) playWrongSound(); setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < HOUSES.length) setIdx(idx + 1); else { if (soundEnabled) playCelebrationSound(); const f = ok ? score + 1 : score; completeGame('world-explorer', 'world-houses', f >= 3 ? 3 : 2, f * 30); setGameComplete(true); } }, 800); };
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #E0F7FA, #B2EBF2)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{lang === 'bm' ? 'Pakar Rumah!' : 'House Expert!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('world-explorer')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  const handle = (c) => { const ok = c === HOUSES[idx].answer; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < HOUSES.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('world-explorer', 'world-houses', f >= 3 ? 3 : 2, f * 30); setGameComplete(true); } }, 800); };
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src="/images/game/world_explorer_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#00695C', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Pakar Rumah!' : 'House Expert!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('world-explorer')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const h = HOUSES[idx];
-  return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #E0F7FA, #B2EBF2)' }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('world-explorer')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{h.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{HOUSES.length}</div><div style={{ fontSize: '5rem', margin: '16px 0' }}>{h.emoji}</div><p style={{ fontWeight: 700 }}>{h.desc}</p><p>{lang === 'bm' ? 'Dari mana?' : 'Where is it from?'}</p><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{h.choices.sort(() => Math.random() - 0.5).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ fontSize: '2rem', padding: 12, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer' }}>{c}</button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src="/images/game/world_explorer_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('world-explorer')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{h.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{HOUSES.length}</div><div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={h.emoji} size={80}/></div><p style={{ fontWeight: 700 }}>{h.desc}</p><p>{lang === 'bm' ? 'Dari mana?' : 'Where is it from?'}</p><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{shuffleWithSeed(h.choices, idx).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ padding: 12, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer' }}><GI e={c} size={32}/></button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 
 // ============================================
@@ -6447,10 +6658,10 @@ export function WorldFestivalsGame() {
     { name: 'Carnival', emoji: '🎭', country: '🇧🇷', desc: lang === 'bm' ? 'Pesta tarian hebat!' : 'Great dance party!', choices: ['🇧🇷','🇮🇳','🇨🇳'] },
   ];
   const [idx, setIdx] = useState(0); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
-  const handle = (c) => { const ok = c === FESTIVALS[idx].country; if (ok) { if (soundEnabled) playCorrectSound(); setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); } else { if (soundEnabled) playWrongSound(); setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < FESTIVALS.length) setIdx(idx + 1); else { if (soundEnabled) playCelebrationSound(); const f = ok ? score + 1 : score; completeGame('world-explorer', 'world-festivals', f >= 3 ? 3 : f >= 2 ? 2 : 1, f * 25); setGameComplete(true); } }, 800); };
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF9C4, #FFF176)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}>{lang === 'bm' ? 'Pakar Perayaan!' : 'Festival Expert!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('world-explorer')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  const handle = (c) => { const ok = c === FESTIVALS[idx].country; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < FESTIVALS.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('world-explorer', 'world-festivals', f >= 3 ? 3 : f >= 2 ? 2 : 1, f * 25); setGameComplete(true); } }, 800); };
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src="/images/game/world_explorer_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Pakar Perayaan!' : 'Festival Expert!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('world-explorer')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const f = FESTIVALS[idx];
-  return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #FFF9C4, #FFF176)' }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('world-explorer')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}> {f.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{FESTIVALS.length}</div><div style={{ fontSize: '5rem', margin: '16px 0' }}>{f.emoji}</div><p style={{ fontWeight: 700 }}>{f.desc}</p><p>{lang === 'bm' ? 'Perayaan dari negara mana?' : 'Which country celebrates this?'}</p><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{f.choices.sort(() => Math.random() - 0.5).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ fontSize: '2.5rem', padding: 12, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer' }}>{c}</button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src="/images/game/world_explorer_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('world-explorer')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}> {f.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{FESTIVALS.length}</div><div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={f.emoji} size={80}/></div><p style={{ fontWeight: 700 }}>{f.desc}</p><p>{lang === 'bm' ? 'Perayaan dari negara mana?' : 'Which country celebrates this?'}</p><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{shuffleWithSeed(f.choices, idx).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ padding: 12, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer' }}><GI e={c} size={40}/></button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 
 // ============================================
@@ -6467,10 +6678,10 @@ export function WeatherGame() {
     { weather: '🌈', name: lang === 'bm' ? 'Pelangi' : 'Rainbow', q: lang === 'bm' ? 'Pelangi muncul selepas...' : 'Rainbow appears after...', answer: '🌧️', choices: ['🌧️','❄️','🌪️'] },
   ];
   const [idx, setIdx] = useState(0); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
-  const handle = (c) => { const ok = c === WEATHER_Q[idx].answer; if (ok) { if (soundEnabled) playCorrectSound(); setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); } else { if (soundEnabled) playWrongSound(); setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < WEATHER_Q.length) setIdx(idx + 1); else { if (soundEnabled) playCelebrationSound(); const f = ok ? score + 1 : score; completeGame('science', 'weather', f >= 4 ? 3 : f >= 2 ? 2 : 1, f * 20); setGameComplete(true); } }, 800); };
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #E3F2FD, #BBDEFB)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Pakar Cuaca!' : 'Weather Expert!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('science')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  const handle = (c) => { const ok = c === WEATHER_Q[idx].answer; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < WEATHER_Q.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('science', 'weather', f >= 4 ? 3 : f >= 2 ? 2 : 1, f * 20); setGameComplete(true); } }, 800); };
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src="/images/game/science_nature_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Pakar Cuaca!' : 'Weather Expert!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('science')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const w = WEATHER_Q[idx];
-  return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #E3F2FD, #BBDEFB)' }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('science')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>🌧️ {w.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{WEATHER_Q.length}</div><div style={{ fontSize: '5rem', margin: '16px 0' }}>{w.weather}</div><div style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 16 }}>{w.q}</div><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{w.choices.sort(() => Math.random() - 0.5).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>{c}</button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src="/images/game/science_nature_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('science')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{w.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{WEATHER_Q.length}</div><div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={w.weather} size={80}/></div><div style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 16 }}>{w.q}</div><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{shuffleWithSeed(w.choices, idx).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}><GI e={c} size={40}/></button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 
 // ============================================
@@ -6488,10 +6699,10 @@ export function PlantsGame() {
     { stage: lang === 'bm' ? 'Bunga mekar!' : 'Flower blooms!', emoji: '🌸', action: '🌸' },
   ];
   const [stageIdx, setStageIdx] = useState(0); const [gameComplete, setGameComplete] = useState(false);
-  const handleAction = () => { if (soundEnabled) playTapSound(); if (soundEnabled) playCorrectSound(); setTimeout(() => { if (stageIdx + 1 < STAGES.length) setStageIdx(stageIdx + 1); else { if (soundEnabled) playCelebrationSound(); completeGame('science', 'plants', 3, STAGES.length * 20); setGameComplete(true); } }, 600); };
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #E8F5E9, #C8E6C9)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{lang === 'bm' ? 'Tukang Kebun Hebat!' : 'Great Gardener!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('science')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  const handleAction = () => { if (soundEnabled) playTapSound(); if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setTimeout(() => { if (stageIdx + 1 < STAGES.length) setStageIdx(stageIdx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } completeGame('science', 'plants', 3, STAGES.length * 20); setGameComplete(true); } }, 600); };
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src="/images/game/science_nature_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Tukang Kebun Hebat!' : 'Great Gardener!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('science')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const s = STAGES[stageIdx];
-  return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #E8F5E9, #C8E6C9)' }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('science')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{lang === 'bm' ? 'Tanam Pokok!' : 'Grow a Plant!'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{stageIdx + 1}/{STAGES.length}</div><div style={{ display: 'flex', gap: 4, justifyContent: 'center', margin: '12px 0' }}>{STAGES.map((st, i) => <span key={i} style={{ fontSize: i <= stageIdx ? '1.5rem' : '1rem', opacity: i <= stageIdx ? 1 : 0.3 }}>{st.emoji}</span>)}</div><div style={{ fontSize: '6rem', margin: '16px 0' }}>{s.emoji}</div><div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16 }}>{s.stage}</div><button onClick={handleAction} style={{ padding: '14px 32px', borderRadius: 20, background: 'linear-gradient(135deg, #66BB6A, #43A047)', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: '1.1rem' }}>{s.action} {lang === 'bm' ? 'Lakukan!' : 'Do it!'}</button></div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src="/images/game/science_nature_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('science')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{lang === 'bm' ? 'Tanam Pokok!' : 'Grow a Plant!'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{stageIdx + 1}/{STAGES.length}</div><div style={{ display: 'flex', gap: 4, justifyContent: 'center', margin: '12px 0' }}>{STAGES.map((st, i) => <span key={i} style={{ fontSize: i <= stageIdx ? '1.5rem' : '1rem', opacity: i <= stageIdx ? 1 : 0.3 }}><GI e={st.emoji} size={32}/></span>)}</div><div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={s.emoji} size={96}/></div><div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16 }}>{s.stage}</div><button onClick={handleAction} style={{ padding: '14px 32px', borderRadius: 20, background: 'linear-gradient(135deg, #66BB6A, #43A047)', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: '1.1rem' }}>{s.action} {lang === 'bm' ? 'Lakukan!' : 'Do it!'}</button></div></div>);
 }
 
 // ============================================
@@ -6509,10 +6720,10 @@ export function ExperimentsGame() {
     { item: '🍎', name: lang === 'bm' ? 'Epal' : 'Apple', answer: 'float' },
   ];
   const [idx, setIdx] = useState(0); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
-  const handle = (answer) => { const ok = answer === ITEMS[idx].answer; if (ok) { if (soundEnabled) playCorrectSound(); setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); } else { if (soundEnabled) playWrongSound(); setFeedback({ type: 'wrong', message: `${ITEMS[idx].name}: ${ITEMS[idx].answer === 'sink' ? (lang === 'bm' ? 'Tenggelam!' : 'Sinks!') : (lang === 'bm' ? 'Terapung!' : 'Floats!')}` }); } setTimeout(() => { setFeedback(null); if (idx + 1 < ITEMS.length) setIdx(idx + 1); else { if (soundEnabled) playCelebrationSound(); const f = ok ? score + 1 : score; completeGame('science', 'experiments', f >= 5 ? 3 : f >= 3 ? 2 : 1, f * 15); setGameComplete(true); } }, 800); };
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #E3F2FD, #BBDEFB)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Saintis Hebat!' : 'Great Scientist!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('science')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  const handle = (answer) => { const ok = answer === ITEMS[idx].answer; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: `${ITEMS[idx].name}: ${ITEMS[idx].answer === 'sink' ? (lang === 'bm' ? 'Tenggelam!' : 'Sinks!') : (lang === 'bm' ? 'Terapung!' : 'Floats!')}` }); } setTimeout(() => { setFeedback(null); if (idx + 1 < ITEMS.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('science', 'experiments', f >= 5 ? 3 : f >= 3 ? 2 : 1, f * 15); setGameComplete(true); } }, 800); };
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src="/images/game/science_nature_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Saintis Hebat!' : 'Great Scientist!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('science')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const item = ITEMS[idx];
-  return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #E3F2FD, #BBDEFB)' }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('science')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Tenggelam atau Terapung?' : 'Sink or Float?'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{ITEMS.length}</div><div style={{ fontSize: '5rem', margin: '20px 0' }}>{item.item}</div><div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16 }}>{item.name}</div><div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}><button onClick={() => handle('sink')} style={{ padding: '14px 24px', borderRadius: 16, background: '#42A5F5', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>⬇️ {lang === 'bm' ? 'Tenggelam' : 'Sink'}</button><button onClick={() => handle('float')} style={{ padding: '14px 24px', borderRadius: 16, background: '#FFD93D', color: '#333', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>⬆️ {lang === 'bm' ? 'Terapung' : 'Float'}</button></div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src="/images/game/science_nature_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('science')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Tenggelam atau Terapung?' : 'Sink or Float?'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{ITEMS.length}</div><div style={{ textAlign: 'center', margin: '20px 0' }}><GI e={item.item} size={80}/></div><div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16 }}>{item.name}</div><div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}><button onClick={() => handle('sink')} style={{ padding: '14px 24px', borderRadius: 16, background: '#42A5F5', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>⬇️ {lang === 'bm' ? 'Tenggelam' : 'Sink'}</button><button onClick={() => handle('float')} style={{ padding: '14px 24px', borderRadius: 16, background: '#FFD93D', color: '#333', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>⬆️ {lang === 'bm' ? 'Terapung' : 'Float'}</button></div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 
 // ============================================
@@ -6532,9 +6743,9 @@ export function DayNightGame() {
     { item: '🌅', name: lang === 'bm' ? 'Matahari terbit' : 'Sunrise', answer: 'day' },
   ];
   const [idx, setIdx] = useState(0); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
-  const handle = (answer) => { const ok = answer === ITEMS_DN[idx].answer; if (ok) { if (soundEnabled) playCorrectSound(); setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); } else { if (soundEnabled) playWrongSound(); setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < ITEMS_DN.length) setIdx(idx + 1); else { if (soundEnabled) playCelebrationSound(); const f = ok ? score + 1 : score; completeGame('science', 'day-night', f >= 7 ? 3 : f >= 4 ? 2 : 1, f * 10); setGameComplete(true); } }, 800); };
-  if (gameComplete) { return (<div className="game-container" style={{ background: 'linear-gradient(180deg, #1A237E, #283593)', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#FFD93D' }}>{lang === 'bm' ? 'Pakar Siang Malam!' : 'Day & Night Expert!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('science')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
+  const handle = (answer) => { const ok = answer === ITEMS_DN[idx].answer; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < ITEMS_DN.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('science', 'day-night', f >= 7 ? 3 : f >= 4 ? 2 : 1, f * 10); setGameComplete(true); } }, 800); };
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src="/images/game/science_nature_bg.jpg" alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#FFD93D', textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>{lang === 'bm' ? 'Pakar Siang Malam!' : 'Day & Night Expert!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('science')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const item = ITEMS_DN[idx];
-  return (<div className="game-container" style={{ background: `linear-gradient(180deg, ${item.answer === 'day' ? '#87CEEB, #E3F2FD' : '#1A237E, #283593'})` }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('science')} style={{ position: 'absolute', left: 16, top: 16, color: item.answer === 'night' ? 'white' : undefined }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: item.answer === 'day' ? '#1565C0' : '#FFD93D' }}>{lang === 'bm' ? 'Siang atau Malam?' : 'Day or Night?'}</h2><div style={{ fontSize: '0.8rem', color: item.answer === 'day' ? '#999' : '#B0BEC5' }}>{idx + 1}/{ITEMS_DN.length}</div><div style={{ fontSize: '5rem', margin: '20px 0' }}>{item.item}</div><div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16, color: item.answer === 'night' ? 'white' : '#333' }}>{item.name}</div><div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}><button onClick={() => handle('day')} style={{ padding: '14px 24px', borderRadius: 16, background: 'linear-gradient(135deg, #FFD93D, #FFA726)', color: '#333', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>{lang === 'bm' ? 'Siang' : 'Day'}</button><button onClick={() => handle('night')} style={{ padding: '14px 24px', borderRadius: 16, background: 'linear-gradient(135deg, #3F51B5, #1A237E)', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>{lang === 'bm' ? 'Malam' : 'Night'}</button></div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
+  return (<div className="game-container" style={{ background: `linear-gradient(180deg, ${item.answer === 'day' ? '#87CEEB, #E3F2FD' : '#1A237E, #283593'})` }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('science')} style={{ position: 'absolute', left: 16, top: 16, color: item.answer === 'night' ? 'white' : undefined }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: item.answer === 'day' ? '#1565C0' : '#FFD93D' }}>{lang === 'bm' ? 'Siang atau Malam?' : 'Day or Night?'}</h2><div style={{ fontSize: '0.8rem', color: item.answer === 'day' ? '#999' : '#B0BEC5' }}>{idx + 1}/{ITEMS_DN.length}</div><div style={{ textAlign: 'center', margin: '20px 0' }}><GI e={item.item} size={80}/></div><div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16, color: item.answer === 'night' ? 'white' : '#333' }}>{item.name}</div><div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}><button onClick={() => handle('day')} style={{ padding: '14px 24px', borderRadius: 16, position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', color: '#333', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>{lang === 'bm' ? 'Siang' : 'Day'}</button><button onClick={() => handle('night')} style={{ padding: '14px 24px', borderRadius: 16, background: 'linear-gradient(135deg, #3F51B5, #1A237E)', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>{lang === 'bm' ? 'Malam' : 'Night'}</button></div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 

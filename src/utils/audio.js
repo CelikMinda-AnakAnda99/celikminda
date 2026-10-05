@@ -318,9 +318,439 @@ export function initAudio() {
 }
 
 // ============================================
-// 🚫 NO TTS — Zero robot voice, zero AI speech
+// 🎙️ BM VOICE AUDIO ENGINE — Real MP3 Playback
+// Uses Kapten's 178 professionally recorded MP3s
+// Lazy-loaded, cached, zero-latency after first play
 // ============================================
-export function speak() {}
-export function speakAnimalSound() {}
-export function speakWord() {}
-export function speakEncouragement() {}
+
+const voiceCache = {};  // Cache loaded Audio elements
+let currentVoice = null; // Track currently playing voice to prevent overlap
+
+function playMP3(path, volume = 0.85) {
+  return new Promise((resolve) => {
+    try {
+      // Stop any currently playing voice
+      if (currentVoice) {
+        currentVoice.pause();
+        currentVoice.currentTime = 0;
+      }
+      
+      if (voiceCache[path]) {
+        const cached = voiceCache[path];
+        cached.volume = volume;
+        cached.currentTime = 0;
+        currentVoice = cached;
+        cached.play().then(resolve).catch(resolve);
+      } else {
+        const audio = new Audio(path);
+        audio.volume = volume;
+        audio.preload = 'auto';
+        voiceCache[path] = audio;
+        currentVoice = audio;
+        audio.play().then(resolve).catch(resolve);
+      }
+    } catch (e) {
+      resolve();
+    }
+  });
+}
+
+// Helper: pick random from array with deterministic seed option
+function pickRandom(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+// ============================================
+// 🎙️ FEEDBACK VOICES — Galakan & Maklum Balas
+// Randomly picks from multiple encouraging phrases
+// ============================================
+
+const BM_CORRECT_VOICES = [
+  '/audio/bm/betul.mp3',
+  '/audio/bm/bagus_sekali.mp3', 
+  '/audio/bm/bijak.mp3',
+  '/audio/bm/hebat.mp3',
+  '/audio/bm/hebat_sangat.mp3',
+  '/audio/bm/pandainya.mp3',
+  '/audio/bm/sempurna.mp3',
+  '/audio/bm/syabas.mp3',
+  '/audio/bm/tahniah.mp3',
+  '/audio/bm/tepat_sekali.mp3',
+  '/audio/bm/terbaik.mp3',
+  '/audio/bm/wah_pandai.mp3',
+];
+
+const BM_WRONG_VOICES = [
+  '/audio/bm/cuba_lagi.mp3',
+  '/audio/bm/cuba_lagi_sayang.mp3',
+  '/audio/bm/hampir_betul.mp3',
+  '/audio/bm/jangan_putus_asa.mp3',
+  '/audio/bm/tak_apa_cuba_lagi.mp3',
+  '/audio/bm/alamak.mp3',
+];
+
+const BM_CELEBRATION_VOICES = [
+  '/audio/bm/tahniah.mp3',
+  '/audio/bm/hebat_sangat.mp3',
+  '/audio/bm/sempurna.mp3',
+  '/audio/bm/terbaik.mp3',
+  '/audio/bm/wah_pandai.mp3',
+];
+
+// ============================================
+// 🐾 ANIMAL SFX — Real animal sound recordings
+// ============================================
+
+const BM_ANIMAL_SFX = {
+  'kucing': '/audio/bm/sfx_meow.mp3',
+  'cat': '/audio/bm/sfx_meow.mp3',
+  'anjing': '/audio/bm/sfx_woof.mp3',
+  'dog': '/audio/bm/sfx_woof.mp3',
+  'lembu': '/audio/bm/sfx_moo.mp3',
+  'cow': '/audio/bm/sfx_moo.mp3',
+  'ayam': '/audio/bm/sfx_rooster.mp3',
+  'chicken': '/audio/bm/sfx_rooster.mp3',
+  'itik': '/audio/bm/sfx_duck.mp3', 
+  'duck': '/audio/bm/sfx_duck.mp3',
+  'burung': '/audio/bm/sfx_bird.mp3',
+  'bird': '/audio/bm/sfx_bird.mp3',
+  'monyet': '/audio/bm/sfx_monkey.mp3',
+  'monkey': '/audio/bm/sfx_monkey.mp3',
+  'gajah': '/audio/bm/sfx_elephant.mp3',
+  'elephant': '/audio/bm/sfx_elephant.mp3',
+  'singa': '/audio/bm/sfx_roar.mp3',
+  'lion': '/audio/bm/sfx_roar.mp3',
+  'kambing': '/audio/bm/sfx_baa.mp3',
+  'goat': '/audio/bm/sfx_baa.mp3',
+  'kuda': '/audio/bm/sfx_horse.mp3',
+  'horse': '/audio/bm/sfx_horse.mp3',
+  'babi': '/audio/bm/sfx_pig.mp3',
+  'pig': '/audio/bm/sfx_pig.mp3',
+  'lebah': '/audio/bm/sfx_bee.mp3',
+  'bee': '/audio/bm/sfx_bee.mp3',
+  'burung_hantu': '/audio/bm/sfx_owl.mp3',
+  'owl': '/audio/bm/sfx_owl.mp3',
+  'katak': '/audio/bm/sfx_kwak.mp3',
+  'frog': '/audio/bm/sfx_kwak.mp3',
+};
+
+// ============================================
+// 🎙️ GAME-SPECIFIC VOICE MAP
+// Maps game contexts to specific voice files
+// ============================================
+
+const BM_VOICE_MAP = {
+  // Navigation & Greetings
+  'selamat_datang': '/audio/bm/selamat_datang.mp3',
+  'selamat_pagi': '/audio/bm/selamat_pagi.mp3',
+  'selamat_petang': '/audio/bm/selamat_petang.mp3',
+  'selamat_tengah_hari': '/audio/bm/selamat_tengah_hari.mp3',
+  'jom_main': '/audio/bm/jom_main.mp3',
+  'jom_belajar': '/audio/bm/jom_belajar.mp3',
+  'pilih_dunia': '/audio/bm/pilih_dunia.mp3',
+  'laman_utama': '/audio/bm/laman_utama.mp3',
+  'kembali': '/audio/bm/kembali.mp3',
+  'mula': '/audio/bm/mula.mp3',
+  'siap': '/audio/bm/siap.mp3',
+  'tamat': '/audio/bm/tamat.mp3',
+  'main_lagi': '/audio/bm/main_lagi.mp3',
+  'jom_berehat': '/audio/bm/jom_berehat.mp3',
+  
+  // ABC & Letters
+  'cari_huruf': '/audio/bm/cari_huruf.mp3',
+  'huruf_hilang': '/audio/bm/huruf_hilang.mp3',
+  'nyanyian_abc': '/audio/bm/nyanyian_abc.mp3',
+  'bijak_mengeja': '/audio/bm/bijak_mengeja.mp3',
+  'bina_perkataan': '/audio/bm/bina_perkataan.mp3',
+  'suku_kata_betul': '/audio/bm/suku_kata_betul.mp3',
+  'bantu_lebah': '/audio/bm/bantu_lebah.mp3',
+  
+  // Numbers & Math
+  'berapa_jumlah': '/audio/bm/berapa_jumlah.mp3',
+  'bijak_mengira': '/audio/bm/bijak_mengira.mp3',
+  'kira_benda': '/audio/bm/kira_benda.mp3',
+  'mana_lebih_banyak': '/audio/bm/mana_lebih_banyak.mp3',
+  'mesin_matematik': '/audio/bm/mesin_matematik.mp3',
+  'nombor_cantik': '/audio/bm/nombor_cantik.mp3',
+  'tahniah_matematik': '/audio/bm/tahniah_matematik.mp3',
+  'apa_seterusnya': '/audio/bm/apa_seterusnya.mp3',
+  
+  // Shapes & 3D
+  'cari_bentuk': '/audio/bm/cari_bentuk.mp3',
+  'sama_bentuk': '/audio/bm/sama_bentuk.mp3',
+  'bentuk_3d': '/audio/bm/bentuk_3d.mp3',
+  'pakar_3d': '/audio/bm/pakar_3d.mp3',
+  'bulatan': '/audio/bm/bulatan.mp3',
+  'segi_empat': '/audio/bm/segi_empat.mp3',
+  'segi_empat_tepat': '/audio/bm/segi_empat_tepat.mp3',
+  'segi_tiga': '/audio/bm/segi_tiga.mp3',
+  'pentagon': '/audio/bm/pentagon.mp3',
+  'berlian': '/audio/bm/berlian.mp3',
+  'kubus': '/audio/bm/kubus.mp3',
+  'sfera': '/audio/bm/sfera.mp3',
+  'silinder': '/audio/bm/silinder.mp3',
+  'kon': '/audio/bm/kon.mp3',
+  'piramid': '/audio/bm/piramid.mp3',
+  'tangram_ajaib': '/audio/bm/tangram_ajaib.mp3',
+  'pakar_tangram': '/audio/bm/pakar_tangram.mp3',
+  'bijak_corak': '/audio/bm/bijak_corak.mp3',
+  'lengkapkan_corak': '/audio/bm/lengkapkan_corak.mp3',
+  'bijak_membanding': '/audio/bm/bijak_membanding.mp3',
+  
+  // Colors
+  'cari_warna': '/audio/bm/cari_warna.mp3',
+  'padankan_warna': '/audio/bm/padankan_warna.mp3',
+  'campur_warna': '/audio/bm/campur_warna.mp3',
+  'warna_baharu': '/audio/bm/warna_baharu.mp3',
+  'pemburu_warna': '/audio/bm/pemburu_warna.mp3',
+  'merah': '/audio/bm/merah.mp3',
+  'biru': '/audio/bm/biru.mp3',
+  'kuning': '/audio/bm/kuning.mp3',
+  'hijau': '/audio/bm/hijau.mp3',
+  'jingga': '/audio/bm/jingga.mp3',
+  'ungu': '/audio/bm/ungu.mp3',
+  'merah_jambu': '/audio/bm/merah_jambu.mp3',
+  'coklat': '/audio/bm/coklat.mp3',
+  'hitam': '/audio/bm/hitam.mp3',
+  'putih': '/audio/bm/putih.mp3',
+  'kelabu': '/audio/bm/kelabu.mp3',
+  
+  // Animals
+  'haiwan_bunyi': '/audio/bm/haiwan_bunyi.mp3',
+  'haiwan_kenyang': '/audio/bm/haiwan_kenyang.mp3',
+  'pakar_haiwan': '/audio/bm/pakar_haiwan.mp3',
+  'tiru_haiwan': '/audio/bm/tiru_haiwan.mp3',
+  'dimana_tinggal': '/audio/bm/dimana_tinggal.mp3',
+  'apa_makanan': '/audio/bm/apa_makanan.mp3',
+  'kucing': '/audio/bm/kucing.mp3',
+  'anjing': '/audio/bm/anjing.mp3',
+  'lembu': '/audio/bm/lembu.mp3',
+  'ayam': '/audio/bm/ayam.mp3',
+  'ayam_jantan': '/audio/bm/ayam_jantan.mp3',
+  'itik': '/audio/bm/itik.mp3',
+  'ikan': '/audio/bm/ikan.mp3',
+  'arnab': '/audio/bm/arnab.mp3',
+  'burung': '/audio/bm/burung.mp3',
+  'burung_hantu': '/audio/bm/burung_hantu.mp3',
+  'rama_rama': '/audio/bm/rama_rama.mp3',
+  'lebah': '/audio/bm/lebah.mp3',
+  'monyet': '/audio/bm/monyet.mp3',
+  'gajah': '/audio/bm/gajah.mp3',
+  'singa': '/audio/bm/singa.mp3',
+  'beruang': '/audio/bm/beruang.mp3',
+  'ular': '/audio/bm/ular.mp3',
+  'kambing': '/audio/bm/kambing.mp3',
+  'kambing_biribiri': '/audio/bm/kambing_biribiri.mp3',
+  'katak': '/audio/bm/katak.mp3',
+  'babi': '/audio/bm/babi.mp3',
+  'helang': '/audio/bm/helang.mp3',
+  'merak': '/audio/bm/merak.mp3',
+  'penguin': '/audio/bm/penguin.mp3',
+  'penyu': '/audio/bm/penyu.mp3',
+  'lumba_lumba': '/audio/bm/lumba_lumba.mp3',
+  'sotong': '/audio/bm/sotong.mp3',
+  'hayun_belalai': '/audio/bm/hayun_belalai.mp3',
+  'mengaum': '/audio/bm/mengaum.mp3',
+  'mengeong': '/audio/bm/mengeong.mp3',
+  'menyalak': '/audio/bm/menyalak.mp3',
+  'singa_menari': '/audio/bm/singa_menari.mp3',
+  
+  // Body Parts
+  'label_badan': '/audio/bm/label_badan.mp3',
+  'lagu_badan': '/audio/bm/lagu_badan.mp3',
+  'kepala': '/audio/bm/kepala.mp3',
+  'mata': '/audio/bm/mata.mp3',
+  'hidung': '/audio/bm/hidung.mp3',
+  'mulut': '/audio/bm/mulut.mp3',
+  'telinga': '/audio/bm/telinga.mp3',
+  'tangan': '/audio/bm/tangan.mp3',
+  'kaki': '/audio/bm/kaki.mp3',
+  'bahu': '/audio/bm/bahu.mp3',
+  'lutut': '/audio/bm/lutut.mp3',
+  'jari_kaki': '/audio/bm/jari_kaki.mp3',
+  'sentuh_jari': '/audio/bm/sentuh_jari.mp3',
+  
+  // Health & Hygiene
+  'doktor_kecil': '/audio/bm/doktor_kecil.mp3',
+  'doktor_hebat': '/audio/bm/doktor_hebat.mp3',
+  'periksa_pesakit': '/audio/bm/periksa_pesakit.mp3',
+  'badan_sihat': '/audio/bm/badan_sihat.mp3',
+  'tabiat_sihat': '/audio/bm/tabiat_sihat.mp3',
+  'basuh_tangan': '/audio/bm/basuh_tangan.mp3',
+  'gosok_gigi': '/audio/bm/gosok_gigi.mp3',
+  'mandi': '/audio/bm/mandi.mp3',
+  'makan': '/audio/bm/makan.mp3',
+  'tidur': '/audio/bm/tidur.mp3',
+  'batuk': '/audio/bm/batuk.mp3',
+  'demam': '/audio/bm/demam.mp3',
+  'sakit_perut': '/audio/bm/sakit_perut.mp3',
+  'sakit_tekak': '/audio/bm/sakit_tekak.mp3',
+  'kaki_luka': '/audio/bm/kaki_luka.mp3',
+  
+  // Activities & Actions
+  'angkat_tangan': '/audio/bm/angkat_tangan.mp3',
+  'tepuk_tangan': '/audio/bm/tepuk_tangan.mp3',
+  'lompat': '/audio/bm/lompat.mp3',
+  'lompat_tinggi': '/audio/bm/lompat_tinggi.mp3',
+  'pusing_badan': '/audio/bm/pusing_badan.mp3',
+  'geleng_kepala': '/audio/bm/geleng_kepala.mp3',
+  'berjalan_goyang': '/audio/bm/berjalan_goyang.mp3',
+  'ikut_gerakan': '/audio/bm/ikut_gerakan.mp3',
+  'ketuk_gelembung': '/audio/bm/ketuk_gelembung.mp3',
+  
+  // Building & Construction
+  'menara_blok': '/audio/bm/menara_blok.mp3',
+  'arkitek_hebat': '/audio/bm/arkitek_hebat.mp3',
+  
+  // Music
+  'pandai_nyanyi': '/audio/bm/pandai_nyanyi.mp3',
+  
+  // Safety
+  'kedai_tutup': '/audio/bm/kedai_tutup.mp3',
+  'ensaiklopedia': '/audio/bm/ensaiklopedia.mp3',
+};
+
+// ============================================
+// 🎙️ PUBLIC VOICE API
+// ============================================
+
+/**
+ * Play any BM voice clip by key name
+ * @param {string} key - Voice key from BM_VOICE_MAP (e.g., 'selamat_datang', 'betul')
+ * @param {number} volume - Volume 0-1 (default 0.85)
+ */
+export function playBMVoice(key, volume = 0.85) {
+  const path = BM_VOICE_MAP[key];
+  if (path) playMP3(path, volume);
+}
+
+/**
+ * Play a random correct feedback voice
+ * Also plays the SFX correct chime first
+ */
+export function playBMCorrectFeedback() {
+  playBuffer('correct', 0.7);
+  setTimeout(() => {
+    playMP3(pickRandom(BM_CORRECT_VOICES), 0.9);
+  }, 350);
+}
+
+/**
+ * Play a random wrong feedback voice
+ * Also plays the SFX wrong sound first
+ */
+export function playBMWrongFeedback() {
+  playBuffer('wrong', 0.6);
+  setTimeout(() => {
+    playMP3(pickRandom(BM_WRONG_VOICES), 0.9);
+  }, 300);
+}
+
+/**
+ * Play celebration voice with fanfare
+ */
+export function playBMCelebration() {
+  playBuffer('celebration', 0.8);
+  setTimeout(() => {
+    playMP3(pickRandom(BM_CELEBRATION_VOICES), 0.95);
+  }, 500);
+}
+
+/**
+ * Play animal sound effect by animal name
+ * @param {string} animal - Animal name in BM or EN (e.g., 'kucing', 'cat')
+ */
+export function playBMAnimalSfx(animal) {
+  const key = animal.toLowerCase().replace(/\s+/g, '_');
+  const path = BM_ANIMAL_SFX[key];
+  if (path) playMP3(path, 0.9);
+}
+
+/**
+ * Play animal name voice (says the animal name in BM)
+ * @param {string} animal - Animal key (e.g., 'kucing', 'anjing')
+ */
+export function playBMAnimalName(animal) {
+  const key = animal.toLowerCase().replace(/\s+/g, '_');
+  const path = BM_VOICE_MAP[key];
+  if (path) playMP3(path, 0.85);
+}
+
+/**
+ * Play a body part name
+ * @param {string} part - Body part key (e.g., 'kepala', 'mata')
+ */
+export function playBMBodyPart(part) {
+  const key = part.toLowerCase().replace(/\s+/g, '_');
+  const path = BM_VOICE_MAP[key];
+  if (path) playMP3(path, 0.85);
+}
+
+/**
+ * Play a color name voice
+ * @param {string} color - Color key (e.g., 'merah', 'biru')
+ */
+export function playBMColor(color) {
+  const key = color.toLowerCase().replace(/\s+/g, '_');
+  const path = BM_VOICE_MAP[key];
+  if (path) playMP3(path, 0.85);
+}
+
+/**
+ * Play a shape name voice
+ * @param {string} shape - Shape key (e.g., 'bulatan', 'segi_tiga')
+ */
+export function playBMShape(shape) {
+  const key = shape.toLowerCase().replace(/\s+/g, '_');
+  const path = BM_VOICE_MAP[key];
+  if (path) playMP3(path, 0.85);
+}
+
+/**
+ * Play "Selamat Datang" welcome audio — called ONCE on login/register
+ * Only plays selamat_datang.mp3 (no follow-up to avoid clash)
+ */
+export function playSelamatDatang() {
+  playMP3('/audio/bm/selamat_datang.mp3', 0.95);
+}
+
+/**
+ * Play a time-appropriate greeting
+ */
+export function playBMGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) playMP3('/audio/bm/selamat_pagi.mp3', 0.9);
+  else if (hour < 15) playMP3('/audio/bm/selamat_tengah_hari.mp3', 0.9);
+  else playMP3('/audio/bm/selamat_petang.mp3', 0.9);
+}
+
+/**
+ * Preload critical voice files for instant playback
+ * Call this on first user interaction alongside initAudio()
+ */
+export function preloadBMVoices() {
+  const criticalPaths = [
+    ...BM_CORRECT_VOICES,
+    ...BM_WRONG_VOICES,
+    '/audio/bm/selamat_datang.mp3',
+    '/audio/bm/jom_main.mp3',
+    '/audio/bm/pilih_dunia.mp3',
+    '/audio/bm/tamat.mp3',
+    '/audio/bm/main_lagi.mp3',
+  ];
+  
+  criticalPaths.forEach(path => {
+    if (!voiceCache[path]) {
+      const audio = new Audio();
+      audio.preload = 'auto';
+      audio.src = path;
+      voiceCache[path] = audio;
+    }
+  });
+}
+
+// Legacy compatibility — now wired to real voices
+export function speak(key) { playBMVoice(key); }
+export function speakAnimalSound(animal) { playBMAnimalSfx(animal); }
+export function speakWord(word) { playBMVoice(word); }
+export function speakEncouragement() { playBMCorrectFeedback(); }

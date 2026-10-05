@@ -5,7 +5,7 @@ import { useGameStore } from '@/stores/gameStore';
 import { WORLDS, GUIDES, LETTERS, BUBBLE_COLORS, PACKAGES, MINI_WORLDS, COMPLETE_ONLY_WORLDS, MINI_GAME_COUNT, COMPLETE_GAME_COUNT, COMPLETE_ONLY_GAME_COUNT } from '@/data/gameData';
 import { t, getRandomEncouragement, getRandomWrongResponse, getGreeting } from '@/data/translations';
 import { LetterTreeGame, BeeFlowerGame, CountObjectsGame, ColourMixingGame, AnimalSoundsGame, ShapeHuntGame, BlockTowerGame, AnimalHomesGame, MatchColourGame, SortTransportGame, MathMachineGame, AnimalFoodGame, FreeDrawGame, SubtractionShopGame, RoadSafetyGame, GroceryStoreGame, OurGardenGame, LittleChefGame, HealthyOrNotGame, FruitOrVegGame, LetterTrailGame, SyllableFactoryGame, LetterPuzzleGame, NumberTraceGame, BiggerSmallerGame, PatternsGame, MagicDiceGame, MagicColouringGame, SockPairsGame, ColourHunterGame, BuildVehicleGame, WorldVehiclesGame, AnimalPuzzleGame, AnimalEncyclopediaGame, MimicAnimalGame, AbcSongGame, LetterStoriesGame, LabelBodyGame, MoveTogetherGame, HealthyHabitsGame, LittleDoctorGame, BodySongGame, MagicTangramGame, DrawShapesGame, BuildPicturesGame, ThreeDShapesGame, RolePlayGame, JobToolsGame, VisitWorkplaceGame, WhoAmIGame, InstrumentsGame, FollowBeatGame, ChildrensSongsGame, LearnNotesGame, WorldMapGame, WorldHousesGame, WorldFestivalsGame, WeatherGame, PlantsGame, ExperimentsGame, DayNightGame } from '@/components/Games';
-import { initAudio, playCorrectSound, playWrongSound, playCelebrationSound, playTapSound, playNavigateSound } from '@/utils/audio';
+import { initAudio, playCorrectSound, playWrongSound, playCelebrationSound, playTapSound, playNavigateSound, preloadBMVoices, playBMGreeting, playBMVoice, playSelamatDatang } from '@/utils/audio';
 import { GameIcon, WorldIcon, StarRating, GameThumbnail, AchievementBadge } from '@/components/GameIcons';
 import { StarIcon, LockIcon, GearIcon, SparkleIcon, TrophyIcon, GamepadIcon, RefreshIcon, ChartIcon, CheckIcon, CloseIcon, BackspaceIcon, SeedlingIcon, CrownIcon, GradCapIcon, CloudIcon, DiamondIcon, FamilyIcon, PencilIcon, LightbulbIcon, BubbleIcon, FlagMY, FlagEN } from '@/components/Icons';
 
@@ -20,17 +20,36 @@ export default function Home() {
   const [showParentDash, setShowParentDash] = useState(false);
   const [pinVerified, setPinVerified] = useState(false);
 
+  const handleSplashEnter = useCallback(() => {
+    // User tap = first gesture → unlocks browser audio policy
+    initAudio();
+    preloadBMVoices();
+    setShowSplash(false);
+  }, []);
+
+  const handleLoginSuccess = useCallback(() => {
+    // Play selamat_datang.mp3 AFTER successful login
+    if (store.soundEnabled) {
+      if (store.language === 'bm') {
+        playSelamatDatang();
+      } else {
+        playCelebrationSound();
+      }
+    }
+  }, [store.language, store.soundEnabled]);
+
   useEffect(() => {
     setMounted(true);
-    // Pre-bake all audio during splash screen
-    const audioTimer = setTimeout(() => initAudio(), 500);
-    const splashTimer = setTimeout(() => setShowSplash(false), 2800);
-    return () => { clearTimeout(audioTimer); clearTimeout(splashTimer); };
+    // Restore Supabase session on mount
+    store.initAuth();
   }, []);
 
   if (!mounted) return null;
 
-  if (showSplash) return <SplashScreen />;
+  if (showSplash) return <SplashScreen onEnter={handleSplashEnter} />;
+
+  // Show login if not authenticated
+  if (!store.isLoggedIn) return <LoginPage onLoginSuccess={handleLoginSuccess} />;
 
   // Parent Dashboard (PIN protected)
   if (showParentDash) {
@@ -53,7 +72,17 @@ export default function Home() {
 // ════════════════════════════════════════════
 // ✨ SPLASH SCREEN — Premium with Particles
 // ════════════════════════════════════════════
-function SplashScreen() {
+function SplashScreen({ onEnter }) {
+  const { language } = useGameStore();
+  const lang = language;
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    // Show the enter button after a brief logo animation
+    const timer = setTimeout(() => setReady(true), 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
   const particles = Array.from({ length: 20 }, (_, i) => ({
     id: i,
     left: Math.random() * 100,
@@ -64,7 +93,14 @@ function SplashScreen() {
   }));
 
   return (
-    <div className="splash-screen">
+    <div className="splash-screen" style={{ 
+      cursor: ready ? 'pointer' : 'default',
+      backgroundImage: 'url(/images/splash_bg.jpg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      minHeight: '100vh',
+      minHeight: '100dvh',
+    }}>
       <div className="splash-particles">
         {particles.map(p => (
           <div key={p.id} className="sparkle" style={{
@@ -77,9 +113,428 @@ function SplashScreen() {
           }} />
         ))}
       </div>
-      <img src="/characters/minda.jpg" alt="Minda" className="splash-logo" />
-      <h1 className="splash-title" style={{ fontFamily: 'var(--font-heading)' }}>CelikMinda</h1>
-      <p className="splash-subtitle" style={{ fontFamily: 'var(--font-body)' }}>Dunia Ajaib Pembelajaran <SparkleIcon size={18} /></p>
+      <img 
+        src="/images/celikminda_logo.jpg" 
+        alt="CelikMinda" 
+        style={{ 
+          width: '80%', maxWidth: 320, borderRadius: 20,
+          boxShadow: '0 8px 40px rgba(0,0,0,0.15)',
+          marginTop: '10vh',
+        }} 
+      />
+      {ready && (
+        <button
+          onClick={onEnter}
+          style={{
+            marginTop: 28,
+            padding: '16px 48px',
+            borderRadius: 50,
+            border: 'none',
+            background: 'linear-gradient(135deg, #FF6B6B, #FF8E53, #FFC93C)',
+            color: 'white',
+            fontSize: '1.3rem',
+            fontWeight: 900,
+            fontFamily: 'var(--font-heading)',
+            cursor: 'pointer',
+            boxShadow: '0 8px 32px rgba(255, 107, 107, 0.4), 0 0 60px rgba(255, 142, 83, 0.2)',
+            animation: 'pulse-glow 2s ease-in-out infinite',
+            letterSpacing: '0.5px',
+            textTransform: 'none',
+            position: 'relative',
+            zIndex: 10,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
+          <img src="/images/star_icon.jpg" alt="" style={{ width: 24, height: 24, borderRadius: '50%' }} />
+          {lang === 'bm' ? 'Mula Belajar!' : 'Start Learning!'}
+        </button>
+      )}
+      {!ready && (
+        <div style={{ marginTop: 28, height: 52 }}>
+          <div style={{ width: 32, height: 32, border: '3px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════
+// 🔐 LOGIN PAGE — Premium Auth with Hero Image
+// ════════════════════════════════════════════
+function LoginPage({ onLoginSuccess }) {
+  const store = useGameStore();
+  const { language } = store;
+  const lang = language;
+  const [mode, setMode] = useState('login'); // 'login' or 'register'
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [parentName, setParentNameInput] = useState('');
+  const [childName, setChildNameInput] = useState('');
+  const [ageTier, setAgeTierInput] = useState('tunas');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const validateEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+
+  const handleLogin = async () => {
+    setError('');
+    if (!email || !password) {
+      setError(lang === 'bm' ? 'Sila isi emel dan kata laluan.' : 'Please fill in email and password.');
+      return;
+    }
+    if (!validateEmail(email)) {
+      setError(lang === 'bm' ? 'Format emel tidak sah.' : 'Invalid email format.');
+      return;
+    }
+    if (password.length < 6) {
+      setError(lang === 'bm' ? 'Kata laluan minimum 6 aksara.' : 'Password must be at least 6 characters.');
+      return;
+    }
+    setLoading(true);
+    const result = await store.login(email, password);
+    if (result.success) {
+      onLoginSuccess();
+    } else {
+      playSound('error');
+      setError(result.error || (lang === 'bm' ? 'Log masuk gagal.' : 'Login failed.'));
+    }
+    setLoading(false);
+  };
+
+  const handleRegister = async () => {
+    setError('');
+    if (!email || !password || !parentName) {
+      setError(lang === 'bm' ? 'Sila isi semua maklumat.' : 'Please fill in all fields.');
+      return;
+    }
+    if (!validateEmail(email)) {
+      setError(lang === 'bm' ? 'Format emel tidak sah.' : 'Invalid email format.');
+      return;
+    }
+    if (password.length < 6) {
+      setError(lang === 'bm' ? 'Kata laluan minimum 6 aksara.' : 'Password must be at least 6 characters.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError(lang === 'bm' ? 'Kata laluan tidak sepadan.' : 'Passwords do not match.');
+      return;
+    }
+    setLoading(true);
+    const result = await store.register(email, password, childName || 'Adik', ageTier);
+    if (result.success) {
+      onLoginSuccess();
+    } else {
+      playSound('error');
+      setError(result.error || (lang === 'bm' ? 'Pendaftaran gagal.' : 'Registration failed.'));
+    }
+    setLoading(false);
+  };
+
+  // Shared input style
+  const inputStyle = {
+    width: '100%', padding: '14px 16px', borderRadius: 16, border: '2px solid rgba(0,0,0,0.06)',
+    fontSize: '1rem', fontFamily: 'var(--font-body)', background: 'rgba(255,255,255,0.9)',
+    outline: 'none', transition: 'border 0.3s, box-shadow 0.3s', boxSizing: 'border-box',
+  };
+  const inputFocusStyle = '2px solid #7C4DFF';
+  const labelStyle = { display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#555', marginBottom: 6, fontFamily: 'var(--font-body)' };
+
+  // ── Sound Effects (Web Audio API — no files needed) ──
+  const playSound = (type) => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      if (type === 'click') {
+        // Cute pop sound
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.05);
+        osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.15);
+      } else if (type === 'tab') {
+        // Soft switch sound
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(600, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(900, ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.12);
+      } else if (type === 'submit') {
+        // Happy ascending chime
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523, ctx.currentTime);
+        osc.frequency.setValueAtTime(659, ctx.currentTime + 0.1);
+        osc.frequency.setValueAtTime(784, ctx.currentTime + 0.2);
+        osc.frequency.setValueAtTime(1047, ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.25, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.45);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.45);
+      } else if (type === 'error') {
+        // Sad descending buzz
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(400, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.25);
+      }
+    } catch(e) { /* silent fallback */ }
+  };
+
+  return (
+    <div className="login-wrapper">
+      {/* ═══ LOGIN FORM — Sits within the white rectangle in background ═══ */}
+      <div className={`login-form-card${mode === 'register' ? ' register-mode' : ''}`}>
+        {/* Tab Switcher */}
+        <div style={{
+          display: 'flex', gap: 0, marginBottom: 14, borderRadius: 14,
+          background: 'rgba(0,0,0,0.04)', padding: 3, overflow: 'hidden',
+        }}>
+          <button
+            className="login-tab-btn"
+            onClick={() => { playSound('tab'); setMode('login'); setError(''); }}
+            style={{
+              flex: 1, padding: '11px 0', border: 'none', borderRadius: 11,
+              background: mode === 'login' ? 'linear-gradient(135deg, #2196F3, #42A5F5)' : 'transparent',
+              color: mode === 'login' ? 'white' : '#888',
+              fontWeight: 800, fontSize: 'clamp(0.78rem, 1.5vw, 0.9rem)', cursor: 'pointer',
+              fontFamily: 'var(--font-heading)',
+              boxShadow: mode === 'login' ? '0 3px 12px rgba(33,150,243,0.3)' : 'none',
+              transition: 'all 0.3s',
+            }}
+          >
+            {lang === 'bm' ? 'Log Masuk' : 'Login'}
+          </button>
+          <button
+            className="login-tab-btn"
+            onClick={() => { playSound('tab'); setMode('register'); setError(''); }}
+            style={{
+              flex: 1, padding: '11px 0', border: 'none', borderRadius: 11,
+              background: mode === 'register' ? 'linear-gradient(135deg, #2196F3, #42A5F5)' : 'transparent',
+              color: mode === 'register' ? 'white' : '#888',
+              fontWeight: 800, fontSize: 'clamp(0.78rem, 1.5vw, 0.9rem)', cursor: 'pointer',
+              fontFamily: 'var(--font-heading)',
+              boxShadow: mode === 'register' ? '0 3px 12px rgba(33,150,243,0.3)' : 'none',
+              transition: 'all 0.3s',
+            }}
+          >
+            {lang === 'bm' ? 'Daftar Baru' : 'Register'}
+          </button>
+        </div>
+
+        {/* Form Fields */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {mode === 'register' && (
+            <div>
+              <label style={labelStyle}>{lang === 'bm' ? 'Nama Ibu/Ayah' : 'Parent Name'}</label>
+              <input
+                type="text" value={parentName} onChange={(e) => setParentNameInput(e.target.value)}
+                placeholder={lang === 'bm' ? 'cth: Mama Sarah' : 'e.g. Mama Sarah'}
+                style={inputStyle}
+                onFocus={(e) => { playSound('click'); e.target.style.border = inputFocusStyle; }}
+                onBlur={(e) => e.target.style.border = '2px solid rgba(0,0,0,0.06)'}
+              />
+            </div>
+          )}
+
+          <div>
+            <label style={labelStyle}>{lang === 'bm' ? 'Emel' : 'Email'}</label>
+            <input
+              type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+              placeholder={lang === 'bm' ? 'contoh@gmail.com' : 'example@gmail.com'}
+              style={inputStyle}
+              onFocus={(e) => { playSound('click'); e.target.style.border = inputFocusStyle; }}
+              onBlur={(e) => e.target.style.border = '2px solid rgba(0,0,0,0.06)'}
+            />
+          </div>
+
+          <div style={{ position: 'relative' }}>
+            <label style={labelStyle}>{lang === 'bm' ? 'Kata Laluan' : 'Password'}</label>
+            <input
+              type={showPassword ? 'text' : 'password'} value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder={lang === 'bm' ? 'Minimum 6 aksara' : 'Minimum 6 characters'}
+              style={inputStyle}
+              onFocus={(e) => { playSound('click'); e.target.style.border = inputFocusStyle; }}
+              onBlur={(e) => e.target.style.border = '2px solid rgba(0,0,0,0.06)'}
+            />
+            <button
+              onClick={() => { playSound('click'); setShowPassword(!showPassword); }}
+              style={{
+                position: 'absolute', right: 12, top: 32, background: 'none', border: 'none',
+                cursor: 'pointer', color: '#999', padding: 4,
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style={{width:20,height:20}} fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round">
+                {showPassword ? (
+                  <><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></>
+                ) : (
+                  <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>
+                )}
+              </svg>
+            </button>
+          </div>
+
+          {mode === 'register' && (
+            <>
+              <div>
+                <label style={labelStyle}>{lang === 'bm' ? 'Sahkan Kata Laluan' : 'Confirm Password'}</label>
+                <input
+                  type="password" value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder={lang === 'bm' ? 'Taip semula kata laluan' : 'Re-enter password'}
+                  style={inputStyle}
+                  onFocus={(e) => { playSound('click'); e.target.style.border = inputFocusStyle; }}
+                  onBlur={(e) => e.target.style.border = '2px solid rgba(0,0,0,0.06)'}
+                />
+              </div>
+
+              <div>
+                <label style={labelStyle}>{lang === 'bm' ? 'Nama Anak' : 'Child\'s Name'}</label>
+                <input
+                  type="text" value={childName} onChange={(e) => setChildNameInput(e.target.value)}
+                  placeholder={lang === 'bm' ? 'cth: Adam' : 'e.g. Adam'}
+                  style={inputStyle}
+                  onFocus={(e) => { playSound('click'); e.target.style.border = inputFocusStyle; }}
+                  onBlur={(e) => e.target.style.border = '2px solid rgba(0,0,0,0.06)'}
+                />
+              </div>
+
+              <div>
+                <label style={labelStyle}>{lang === 'bm' ? 'Umur Anak' : 'Child\'s Age'}</label>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  {[
+                    { id: 'benih', label: lang === 'bm' ? '1-2 tahun' : '1-2 years', icon: <SeedlingIcon size={18} /> },
+                    { id: 'tunas', label: lang === 'bm' ? '3-4 tahun' : '3-4 years', icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style={{width:18,height:18}}><path d="M12 22V10M12 10C12 6 8 2 4 2c0 4 4 8 8 8zM12 14c0-4 4-8 8-8-4 0-8 4-8 8z" fill={ageTier==='tunas'?'#fff':'#66BB6A'} stroke={ageTier==='tunas'?'#fff':'#4CAF50'} strokeWidth="1.5"/></svg> },
+                    { id: 'pokok', label: lang === 'bm' ? '5-6 tahun' : '5-6 years', icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style={{width:18,height:18}}><path d="M12 22V8M12 8C12 5 9 2 5 2c0 3 2 6 7 6zM12 12c0-4 4-8 8-8-4 0-8 4-8 8z" fill={ageTier==='pokok'?'#fff':'#388E3C'} stroke={ageTier==='pokok'?'#fff':'#2E7D32'} strokeWidth="1.5"/><circle cx="12" cy="6" r="4" fill={ageTier==='pokok'?'rgba(255,255,255,0.7)':'#4CAF50'}/></svg> },
+                  ].map(tier => (
+                    <button
+                      key={tier.id}
+                      onClick={() => { playSound('click'); setAgeTierInput(tier.id); }}
+                      style={{
+                        flex: 1, padding: '8px 4px', borderRadius: 12, border: 'none',
+                        background: ageTier === tier.id
+                          ? 'linear-gradient(135deg, #7C4DFF, #B388FF)'
+                          : 'rgba(0,0,0,0.04)',
+                        color: ageTier === tier.id ? 'white' : '#666',
+                        fontWeight: 700, fontSize: 'clamp(0.6rem, 1.2vw, 0.72rem)', cursor: 'pointer',
+                        fontFamily: 'var(--font-body)', transition: 'all 0.3s',
+                        boxShadow: ageTier === tier.id ? '0 3px 10px rgba(124,77,255,0.3)' : 'none',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
+                      }}
+                    >
+                      {tier.icon}
+                      <span>{tier.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Error Message */}
+          {error && (
+            <div style={{
+              padding: '8px 12px', borderRadius: 10, background: '#FFEBEE',
+              color: '#C62828', fontSize: '0.8rem', fontWeight: 600,
+              fontFamily: 'var(--font-body)', textAlign: 'center',
+              animation: 'shake 0.4s ease',
+            }}>
+              {error}
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <button
+            className="login-submit-btn"
+            onClick={() => {
+              playSound('submit');
+              if (mode === 'login') handleLogin();
+              else handleRegister();
+            }}
+            disabled={loading}
+            style={{
+              width: '100%', padding: '13px 0', borderRadius: 16, border: 'none',
+              background: loading
+                ? '#B0BEC5'
+                : 'linear-gradient(135deg, #2196F3, #1976D2, #1565C0)',
+              color: 'white', fontSize: 'clamp(0.9rem, 1.8vw, 1.05rem)', fontWeight: 900,
+              fontFamily: 'var(--font-heading)', cursor: loading ? 'default' : 'pointer',
+              boxShadow: loading ? 'none' : '0 5px 24px rgba(33,150,243,0.4)',
+              transition: 'all 0.3s', letterSpacing: 0.5,
+            }}
+          >
+            {loading
+              ? (lang === 'bm' ? 'Memuat...' : 'Loading...')
+              : mode === 'login'
+                ? (lang === 'bm' ? 'Log Masuk' : 'Login')
+                : (lang === 'bm' ? 'Daftar & Mula!' : 'Register & Start!')
+            }
+          </button>
+        </div>
+
+        {/* Bottom Text */}
+        <p style={{
+          textAlign: 'center', marginTop: 10, fontSize: 'clamp(0.72rem, 1.3vw, 0.82rem)',
+          color: '#555', fontFamily: 'var(--font-body)',
+        }}>
+          {mode === 'login'
+            ? (lang === 'bm' ? 'Belum ada akaun? ' : "Don't have an account? ")
+            : (lang === 'bm' ? 'Sudah ada akaun? ' : 'Already have an account? ')
+          }
+          <span
+            onClick={() => { playSound('tab'); setMode(mode === 'login' ? 'register' : 'login'); setError(''); }}
+            style={{ color: '#2196F3', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}
+          >
+            {mode === 'login'
+              ? (lang === 'bm' ? 'Daftar di sini' : 'Register here')
+              : (lang === 'bm' ? 'Log masuk' : 'Login')
+            }
+          </span>
+        </p>
+      </div>
+
+      {/* Language Toggle */}
+      <div className="login-lang-toggle">
+        <button
+          onClick={() => { playSound('click'); useGameStore.setState({ language: 'bm' }); }}
+          style={{
+            padding: '5px 12px', borderRadius: 12, border: 'none',
+            background: lang === 'bm' ? 'linear-gradient(135deg, #2196F3, #1976D2)' : 'transparent',
+            color: lang === 'bm' ? 'white' : '#666',
+            fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer',
+            transition: 'all 0.3s',
+          }}
+        >
+          BM
+        </button>
+        <button
+          onClick={() => { playSound('click'); useGameStore.setState({ language: 'en' }); }}
+          style={{
+            padding: '5px 12px', borderRadius: 12, border: 'none',
+            background: lang === 'en' ? 'linear-gradient(135deg, #2196F3, #1976D2)' : 'transparent',
+            color: lang === 'en' ? 'white' : '#666',
+            fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer',
+            transition: 'all 0.3s',
+          }}
+        >
+          EN
+        </button>
+      </div>
     </div>
   );
 }
@@ -345,6 +800,7 @@ function WorldMap({ onOpenParent }) {
   const userPlan = store.subscription.plan;
 
   const handleWorldClick = (world) => {
+    if (store.soundEnabled) playTapSound();
     if (store.canAccessWorld(world.id)) {
       store.goToWorld(world.id);
     } else {
@@ -735,7 +1191,7 @@ function UpgradeModal({ onClose, userPlan }) {
 
 // ── World Detail (Game List) ──
 function WorldDetail({ onOpenParent }) {
-  const { currentWorldId, language, goHome, goToGame, getGameProgress } = useGameStore();
+  const { currentWorldId, language, goHome, goToGame, getGameProgress, soundEnabled } = useGameStore();
   const lang = language;
   const world = WORLDS.find(w => w.id === currentWorldId);
   if (!world) return null;
@@ -774,7 +1230,7 @@ function WorldDetail({ onOpenParent }) {
               <div
                 key={game.id}
                 className="game-list-item"
-                onClick={() => goToGame(world.id, game.id)}
+                onClick={() => { if (soundEnabled) playNavigateSound(); goToGame(world.id, game.id); }}
                 style={{ 
                   animation: `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${idx * 0.08}s both` 
                 }}
