@@ -121,9 +121,10 @@ function SplashScreen({ onEnter }) {
         src={assetPath('/images/celikminda_logo.jpg')} 
         alt="CelikMinda" 
         style={{ 
-          width: '80%', maxWidth: 320, borderRadius: 20,
-          boxShadow: '0 8px 40px rgba(0,0,0,0.15)',
-          marginTop: '10vh',
+          width: 'clamp(200px, 60vw, 320px)', borderRadius: 24,
+          boxShadow: '0 8px 40px rgba(0,0,0,0.2), 0 0 60px rgba(255,200,100,0.3)',
+          marginTop: 'clamp(6vh, 12vh, 16vh)',
+          border: '3px solid rgba(255,255,255,0.3)',
         }} 
       />
       {ready && (
@@ -299,8 +300,11 @@ function LoginPage({ onLoginSuccess }) {
     } catch(e) { /* silent fallback */ }
   };
 
+  const isMobileView = typeof window !== 'undefined' && window.innerWidth < 768;
+  const loginBg = isMobileView ? assetPath('/images/auth_mobile_bg.jpg') : assetPath('/images/login_bg_unified.jpg');
+
   return (
-    <div className="login-wrapper" style={{ backgroundImage: `url(${assetPath('/images/login_bg_unified.jpg')})` }}>
+    <div className="login-wrapper" style={{ backgroundImage: `url(${loginBg})` }}>
       {/* ═══ LOGIN FORM — Sits within the white rectangle in background ═══ */}
       <div className={`login-form-card${mode === 'register' ? ' register-mode' : ''}`}>
         {/* Tab Switcher */}
