@@ -914,7 +914,7 @@ export function ColourMixingGame() {
         }}>
           <img src={assetPath('/images/game/colour_mixing_lab.jpg')} alt="" style={{
             position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-            objectFit: 'cover', zIndex: 0, opacity: 0.25,
+            objectFit: 'cover', zIndex: 0, opacity: 0.855,
           }} />
           {/* Round & Score */}
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-lg)' }}>
@@ -1399,7 +1399,7 @@ export function ShapeHuntGame() {
         }}>
           <img src={assetPath('/images/game/shape_hunt_bg.jpg')} alt="" style={{
             position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-            objectFit: 'cover', zIndex: 0, opacity: 0.2,
+            objectFit: 'cover', zIndex: 0, opacity: 0.85,
           }} />
           {/* Instruction */}
           <div style={{
@@ -2022,7 +2022,7 @@ export function MatchColourGame() {
         }}>
           <img src={assetPath('/images/game/sock_room_bg.jpg')} alt="" style={{
             position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-            objectFit: 'cover', zIndex: 0, opacity: 0.25,
+            objectFit: 'cover', zIndex: 0, opacity: 0.855,
           }} />
           {/* Round & Score */}
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-lg)' }}>
@@ -2432,7 +2432,7 @@ export function MathMachineGame() {
 
   return (
     <div className="game-screen" style={{ position: 'relative' }}>
-      <img src={assetPath('/images/game/dice_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.2 }} />
+      <img src={assetPath('/images/game/dice_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
       <div className="game-header">
         <button className="back-btn" onClick={() => goToWorld('numbers')}>←</button>
         <span className="game-title">
@@ -2626,7 +2626,7 @@ export function AnimalFoodGame() {
 
   return (
     <div className="game-screen" style={{ position: 'relative' }}>
-      <img src={assetPath('/images/game/safari_jungle_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.2 }} />
+      <img src={assetPath('/images/game/safari_jungle_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
       <div className="game-header">
         <button className="back-btn" onClick={() => goToWorld('animals')}>←</button>
         <span className="game-title">
@@ -2783,7 +2783,7 @@ export function FreeDrawGame() {
 
   return (
     <div className="game-screen" style={{ position: 'relative' }}>
-      <img src={assetPath('/images/game/drawing_studio_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.2 }} />
+      <img src={assetPath('/images/game/drawing_studio_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
       <div className="game-header">
         <button className="back-btn" onClick={() => goToWorld('colours')}>←</button>
         <span className="game-title">
@@ -2975,7 +2975,7 @@ export function SubtractionShopGame() {
 
   return (
     <div className="game-screen" style={{ position: 'relative' }}>
-      <img src={assetPath('/images/game/grocery_store_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.2 }} />
+      <img src={assetPath('/images/game/grocery_store_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
       <div className="game-header">
         <button className="back-btn" onClick={() => goToWorld('numbers')}>←</button>
         <span className="game-title">
@@ -3175,7 +3175,7 @@ export function RoadSafetyGame() {
 
   return (
     <div className="game-screen" style={{ position: 'relative' }}>
-      <img src={assetPath('/images/game/road_scene_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.2 }} />
+      <img src={assetPath('/images/game/road_scene_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
       <div className="game-header">
         <button className="back-btn" onClick={() => goToWorld('transport')}>←</button>
         <span className="game-title">
@@ -3327,7 +3327,7 @@ export function GroceryStoreGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/grocery_store_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/grocery_store_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('food')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <div style={{ textAlign: 'center' }}><GI e={recipe.emoji} size={32}/></div>
@@ -3460,7 +3460,7 @@ export function OurGardenGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/garden_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/garden_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('food')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         
@@ -3601,7 +3601,7 @@ export function LittleChefGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/kitchen_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/kitchen_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('food')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         
@@ -3741,7 +3741,7 @@ export function HealthyOrNotGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/kitchen_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/kitchen_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('food')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         
@@ -3876,7 +3876,7 @@ export function FruitOrVegGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/kitchen_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/kitchen_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('food')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         
@@ -3950,121 +3950,522 @@ export function FruitOrVegGame() {
 export function LetterTrailGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
-  const TRACE_LETTERS = ['A','B','C','D','E','F','G','H'];
-  const [letterIdx, setLetterIdx] = useState(0);
-  const [dotsTapped, setDotsTapped] = useState(0);
+  const canvasRef = useRef(null);
+  const containerRef = useRef(null);
+  const drawingRef = useRef(false);
+
+  // Full A-Z letter stroke paths (0-100 coordinate system)
+  const LETTER_PATHS = useMemo(() => ({
+    'A': [[20,95],[50,5],[80,95]], 
+    'B': [[20,95],[20,5],[65,5],[80,18],[80,30],[65,45],[20,45],[70,45],[85,60],[85,75],[65,95],[20,95]],
+    'C': [[80,20],[60,5],[40,5],[20,25],[20,75],[40,95],[60,95],[80,80]],
+    'D': [[20,95],[20,5],[55,5],[75,20],[85,50],[75,80],[55,95],[20,95]],
+    'E': [[75,5],[20,5],[20,50],[60,50],[20,50],[20,95],[75,95]],
+    'F': [[75,5],[20,5],[20,50],[60,50],[20,50],[20,95]],
+    'G': [[75,20],[55,5],[35,5],[15,25],[15,75],[35,95],[60,95],[80,75],[80,50],[55,50]],
+    'H': [[20,5],[20,95],[20,50],[80,50],[80,5],[80,95]],
+    'I': [[30,5],[70,5],[50,5],[50,95],[30,95],[70,95]],
+    'J': [[25,5],[75,5],[55,5],[55,75],[45,90],[30,90],[15,75]],
+    'K': [[20,5],[20,95],[20,50],[75,5],[20,50],[75,95]],
+    'L': [[20,5],[20,95],[75,95]],
+    'M': [[10,95],[10,5],[50,55],[90,5],[90,95]],
+    'N': [[20,95],[20,5],[80,95],[80,5]],
+    'O': [[50,5],[25,5],[10,25],[10,75],[25,95],[50,95],[75,95],[90,75],[90,25],[75,5],[50,5]],
+    'P': [[20,95],[20,5],[65,5],[80,18],[80,32],[65,48],[20,48]],
+    'Q': [[50,5],[25,5],[10,25],[10,75],[25,95],[50,95],[75,95],[90,75],[90,25],[75,5],[50,5],[62,78],[85,98]],
+    'R': [[20,95],[20,5],[65,5],[80,18],[80,32],[65,48],[20,48],[60,48],[85,95]],
+    'S': [[78,18],[62,5],[38,5],[18,22],[22,38],[42,48],[62,55],[82,68],[78,82],[62,95],[38,95],[18,82]],
+    'T': [[10,5],[90,5],[50,5],[50,95]],
+    'U': [[15,5],[15,70],[28,88],[50,95],[72,88],[85,70],[85,5]],
+    'V': [[10,5],[50,95],[90,5]],
+    'W': [[5,5],[22,95],[40,40],[58,95],[95,5]],
+    'X': [[10,5],[90,95],[50,50],[90,5],[10,95]],
+    'Y': [[10,5],[50,50],[90,5],[50,50],[50,95]],
+    'Z': [[10,5],[90,5],[10,95],[90,95]],
+  }), []);
+
+  const LETTERS = Object.keys(LETTER_PATHS);
+  const ROUNDS = 15;
+  const ZONE_RADIUS = 0.045; // % of canvas size for zone hit detection
+
+  const sessionLetters = useMemo(() => {
+    const shuffled = [...LETTERS].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, ROUNDS);
+  }, []);
+
+  const [round, setRound] = useState(0);
   const [score, setScore] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
-  const [feedback, setFeedback] = useState(null);
-  const DOTS_PER_LETTER = 5;
-  
-  const handleDotTap = (dotIdx) => {
-    if (dotIdx === dotsTapped) {
-      if (soundEnabled) playTapSound();
-      const newDots = dotsTapped + 1;
-      setDotsTapped(newDots);
+  const [letterDone, setLetterDone] = useState(false);
+  const [drawnPts, setDrawnPts] = useState([]); // current stroke
+  const [allStrokes, setAllStrokes] = useState([]); // all completed strokes
+  const [zonesHit, setZonesHit] = useState(new Set());
+  const [canvasSize, setCanvasSize] = useState({ w: 500, h: 500 });
+  const [trailColor, setTrailColor] = useState('#FF6B6B');
+  const [showStars, setShowStars] = useState(false);
+
+  const COLORS = ['#FF6B6B','#4ECDC4','#45B7D1','#96CEB4','#FF9FF3','#54A0FF','#FF6348','#2ED573','#FFA502','#5F27CD','#DDA0DD','#FFEAA7'];
+
+  // Responsive canvas
+  useEffect(() => {
+    const resize = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const avail = Math.min(vw * 0.88, vh - 140, 650);
+      setCanvasSize({ w: Math.max(avail, 260), h: Math.max(avail, 260) });
+    };
+    resize();
+    window.addEventListener('resize', resize);
+    return () => window.removeEventListener('resize', resize);
+  }, []);
+
+  useEffect(() => { setTrailColor(COLORS[round % COLORS.length]); }, [round]);
+
+  // Redraw canvas
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width;
+    const H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    const letter = sessionLetters[round];
+    const pts = LETTER_PATHS[letter];
+    if (!pts) return;
+
+    const s = (p) => [p[0] * W / 100, p[1] * H / 100];
+
+    // 1. Draw BIG ghost letter (very visible!)
+    ctx.save();
+    ctx.font = `900 ${W * 0.75}px 'Fredoka', 'Nunito', sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+    ctx.fillText(letter, W / 2, H / 2 + W * 0.02);
+    // Outline
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+    ctx.lineWidth = 3;
+    ctx.strokeText(letter, W / 2, H / 2 + W * 0.02);
+    ctx.restore();
+
+    // 2. Draw guide path — thick dashed, high contrast
+    ctx.save();
+    ctx.setLineDash([12, 8]);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+    ctx.lineWidth = Math.max(5, W * 0.015);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.shadowColor = 'rgba(255,255,255,0.3)';
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    pts.forEach((p, i) => { const [x,y] = s(p); i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y); });
+    ctx.stroke();
+    ctx.restore();
+
+    // 3. Draw zone checkpoints — sequential highlighting
+    const nextZoneIdx = zonesHit.size;
+    pts.forEach((p, i) => {
+      const [x, y] = s(p);
+      const r = W * ZONE_RADIUS;
+      const hit = zonesHit.has(i);
+      const isNext = i === nextZoneIdx;
       
-      if (newDots === DOTS_PER_LETTER) {
-        if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
-        setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
-        const newScore = score + 1;
-        setScore(newScore);
-        
+      if (hit) {
+        // Completed zone — colored with checkmark
+        ctx.beginPath();
+        ctx.arc(x, y, r * 0.55, 0, Math.PI * 2);
+        ctx.fillStyle = trailColor;
+        ctx.fill();
+        ctx.fillStyle = 'white';
+        ctx.font = `bold ${r * 0.6}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('✓', x, y);
+      } else if (isNext) {
+        // NEXT zone — pulsing, orange glow (moderate size)
+        const pulse = 1 + 0.1 * Math.sin(Date.now() * 0.006);
+        // Outer glow
+        ctx.beginPath();
+        ctx.arc(x, y, r * 1.3 * pulse, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 200, 0, 0.12)';
+        ctx.fill();
+        // Main circle
+        ctx.beginPath();
+        ctx.arc(x, y, r * 0.85 * pulse, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFD93D';
+        ctx.fill();
+        ctx.strokeStyle = '#FF9800';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([]);
+        ctx.stroke();
+        // Label
+        ctx.fillStyle = '#333';
+        ctx.font = `bold ${r * 0.5}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(i === 0 ? (lang === 'bm' ? 'MULA' : 'START') : `${i + 1}`, x, y);
+      } else {
+        // Future zone — dim, small
+        ctx.beginPath();
+        ctx.arc(x, y, r * 0.4, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,0.12)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([]);
+        ctx.stroke();
+      }
+    });
+
+    // 4. Draw ALL completed strokes — thick, colorful, glowing!
+    allStrokes.forEach(stroke => {
+      if (stroke.length > 1) {
+        ctx.save();
+        ctx.setLineDash([]);
+        ctx.strokeStyle = trailColor;
+        ctx.lineWidth = Math.max(6, W * 0.018);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.shadowColor = trailColor;
+        ctx.shadowBlur = 12;
+        ctx.globalAlpha = 0.85;
+        ctx.beginPath();
+        stroke.forEach((p, i) => { i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]); });
+        ctx.stroke();
+        ctx.restore();
+      }
+    });
+
+    // 5. Draw CURRENT active stroke
+    if (drawnPts.length > 1) {
+      ctx.save();
+      ctx.setLineDash([]);
+      ctx.strokeStyle = trailColor;
+      ctx.lineWidth = Math.max(8, W * 0.025);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.shadowColor = trailColor;
+      ctx.shadowBlur = 15;
+      ctx.globalAlpha = 0.9;
+      ctx.beginPath();
+      drawnPts.forEach((p, i) => { i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]); });
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 5. Progress ring (bottom-right)
+    const progPct = pts.length > 0 ? zonesHit.size / pts.length : 0;
+    const ringR = W * 0.05;
+    const ringX = W - ringR - 15;
+    const ringY = H - ringR - 15;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(ringX, ringY, ringR, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(ringX, ringY, ringR - 3, -Math.PI/2, -Math.PI/2 + (Math.PI * 2 * progPct));
+    ctx.strokeStyle = progPct >= 0.7 ? '#6BCB77' : '#FFD93D';
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.setLineDash([]);
+    ctx.stroke();
+    ctx.fillStyle = 'white';
+    ctx.font = `bold ${ringR * 0.8}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`${Math.round(progPct * 100)}%`, ringX, ringY);
+    ctx.restore();
+
+  }, [drawnPts, allStrokes, zonesHit, round, canvasSize, sessionLetters, LETTER_PATHS, trailColor, lang]);
+
+  // Check zone hits — SEQUENTIAL: must hit in order!
+  const checkZones = useCallback((px, py) => {
+    const letter = sessionLetters[round];
+    const pts = LETTER_PATHS[letter];
+    if (!pts || letterDone) return;
+    const W = canvasSize.w;
+    const H = canvasSize.h;
+    const hitR = W * ZONE_RADIUS * 1.8; // generous radius for toddlers
+
+    // Only check the NEXT zone in sequence
+    const nextZone = zonesHit.size; // next zone index to hit
+    if (nextZone >= pts.length) return;
+
+    const target = pts[nextZone];
+    const tx = target[0] * W / 100;
+    const ty = target[1] * H / 100;
+    const d = Math.sqrt((px - tx) ** 2 + (py - ty) ** 2);
+
+    if (d < hitR) {
+      const newHits = new Set(zonesHit);
+      newHits.add(nextZone);
+      setZonesHit(newHits);
+      if (soundEnabled) playTapSound();
+
+      // Check completion (100% of zones hit IN ORDER = pass)
+      const pct = newHits.size / pts.length;
+      if (pct >= 1.0 && !letterDone) {
+        setLetterDone(true);
+        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
+        setScore(s => s + 1);
+        setShowStars(true);
+
         setTimeout(() => {
-          setFeedback(null);
-          if (letterIdx + 1 < TRACE_LETTERS.length) {
-            setLetterIdx(letterIdx + 1);
-            setDotsTapped(0);
+          setShowStars(false);
+          setLetterDone(false);
+          setDrawnPts([]);
+          setAllStrokes([]);
+          setZonesHit(new Set());
+          if (round + 1 < ROUNDS) {
+            setRound(r => r + 1);
           } else {
-            if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
-            const stars = newScore >= 7 ? 3 : newScore >= 5 ? 2 : 1;
-            completeGame('abc', 'letter-trail', stars, newScore * 10);
+            const finalScore = score + 1;
+            const stars = finalScore >= 13 ? 3 : finalScore >= 10 ? 2 : 1;
+            completeGame('abc', 'letter-trail', stars, finalScore * 10);
             setGameComplete(true);
           }
-        }, 800);
+        }, 1800);
       }
     }
-  };
-  
+  }, [zonesHit, round, sessionLetters, LETTER_PATHS, canvasSize, letterDone, soundEnabled, lang, score, completeGame]);
+
+  // Canvas touch/mouse handlers
+  const getPos = useCallback((e) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return null;
+    const rect = canvas.getBoundingClientRect();
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    const cy = e.touches ? e.touches[0].clientY : e.clientY;
+    return [(cx - rect.left) * (canvas.width / rect.width), (cy - rect.top) * (canvas.height / rect.height)];
+  }, []);
+
+  const onStart = useCallback((e) => {
+    e.preventDefault();
+    if (letterDone) return;
+    drawingRef.current = true;
+    const p = getPos(e);
+    if (p) { setDrawnPts([p]); }
+  }, [getPos, letterDone]);
+
+  const onMove = useCallback((e) => {
+    e.preventDefault();
+    if (!drawingRef.current || letterDone) return;
+    const p = getPos(e);
+    if (p) {
+      setDrawnPts(prev => {
+        const next = [...prev, p];
+        // Only check zones if user has drawn at least 3 points (real drag, not click)
+        if (next.length >= 3) checkZones(p[0], p[1]);
+        return next;
+      });
+    }
+  }, [getPos, checkZones, letterDone]);
+
+  const onEnd = useCallback((e) => {
+    e.preventDefault();
+    if (drawingRef.current && drawnPts.length > 1) {
+      setAllStrokes(prev => [...prev, drawnPts]);
+    }
+    drawingRef.current = false;
+    setDrawnPts([]);
+  }, [drawnPts]);
+
+  // Clear drawing
+  const handleClear = useCallback(() => {
+    if (letterDone) return;
+    setDrawnPts([]);
+    setAllStrokes([]);
+    setZonesHit(new Set());
+  }, [letterDone]);
+
+  // Game complete screen
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
-        <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
-        <h1 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>
-          {lang === 'bm' ? 'Huruf kamu cantik!' : 'Beautiful letters!'}
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        color: 'white', textAlign: 'center', padding: 20,
+      }}>
+        <div style={{ fontSize: 80, marginBottom: 16, animation: 'bounceIn 0.6s ease' }}>🏆</div>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.8rem, 6vw, 3rem)', margin: '0 0 8px' }}>
+          {lang === 'bm' ? 'Tahniah! Huruf kamu cantik!' : 'Congrats! Beautiful letters!'}
         </h1>
-        <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
-        <button className="btn-premium" onClick={() => goToWorld('abc')}>
-          {lang === 'bm' ? '← Kembali' : '← Back'}
+        <div style={{ display: 'flex', gap: 8, margin: '16px 0' }}>
+          {[1,2,3].map(i => <span key={i} style={{ fontSize: 40, animation: `bounceIn ${0.3 + i * 0.2}s ease` }}>⭐</span>)}
+        </div>
+        <p style={{ fontSize: 'clamp(1.1rem, 3vw, 1.4rem)', opacity: 0.9, marginBottom: 24 }}>
+          {lang === 'bm' ? `Skor: ${score}/${ROUNDS}` : `Score: ${score}/${ROUNDS}`}
+        </p>
+        <button onClick={() => goToWorld('abc')} style={{
+          padding: '16px 48px', fontSize: '1.2rem',
+          background: 'rgba(255,255,255,0.2)', color: 'white',
+          border: '2px solid rgba(255,255,255,0.5)', borderRadius: 50,
+          cursor: 'pointer', fontWeight: 700, backdropFilter: 'blur(10px)',
+          transition: 'all 0.3s ease',
+        }}>
+          {lang === 'bm' ? '← Kembali ke Dunia ABC' : '← Back to ABC World'}
         </button>
       </div>
     );
   }
-  
-  const letter = TRACE_LETTERS[letterIdx];
-  // Generate dot positions in a letter-like pattern
-  const dotPositions = Array.from({ length: DOTS_PER_LETTER }, (_, i) => ({
-    left: 30 + (i % 3) * 25 + (Math.sin(i) * 10),
-    top: 20 + Math.floor(i / 2) * 20 + (Math.cos(i) * 5),
-  }));
-  
+
+  const letter = sessionLetters[round];
+  const pts = LETTER_PATHS[letter] || [];
+  const progPct = pts.length > 0 ? Math.round(zonesHit.size / pts.length * 100) : 0;
+
   return (
-    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/letter_trail_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
-      <div style={{ padding: 16, textAlign: 'center' }}>
-        <button className="icon-btn" onClick={() => goToWorld('abc')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        
-        <h2 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>
-          {lang === 'bm' ? `Jejak huruf ${letter}!` : `Trace letter ${letter}!`}
-        </h2>
-        <div style={{ fontSize: '0.8rem', color: '#999' }}>{letterIdx + 1}/{TRACE_LETTERS.length}</div>
-        
-        {/* Trace canvas */}
-        <div style={{
-          margin: '20px auto', width: 250, height: 250,
-          background: 'white', borderRadius: 24,
-          position: 'relative', boxShadow: 'var(--shadow-lg)',
-        }}>
-          {/* Big ghost letter */}
-          <div style={{
-            position: 'absolute', inset: 0, display: 'flex',
-            alignItems: 'center', justifyContent: 'center',
-            fontSize: '8rem', color: 'rgba(74,144,217,0.12)',
-            fontFamily: 'var(--font-heading)', fontWeight: 900,
-          }}>{letter}</div>
-          
-          {/* Dots to tap */}
-          {dotPositions.map((pos, i) => (
-            <button key={i} onClick={() => handleDotTap(i)} style={{
-              position: 'absolute', left: `${pos.left}%`, top: `${pos.top}%`,
-              width: i < dotsTapped ? 20 : 28, height: i < dotsTapped ? 20 : 28,
-              borderRadius: '50%',
-              background: i < dotsTapped ? '#4A90D9' : i === dotsTapped ? '#FFD93D' : '#E0E0E0',
-              border: i === dotsTapped ? '3px solid #FF9800' : '2px solid rgba(0,0,0,0.1)',
-              cursor: i === dotsTapped ? 'pointer' : 'default',
-              transform: 'translate(-50%, -50%)',
-              transition: 'all 0.2s ease',
-              fontSize: '0.7rem', color: 'white', fontWeight: 800,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: i === dotsTapped ? '0 0 12px rgba(255,152,0,0.5)' : 'none',
+    <div ref={containerRef} style={{
+      position: 'fixed', inset: 0, zIndex: 9999,
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      overflow: 'hidden', background: '#1a1a2e',
+    }}>
+      {/* Background image — full vibrant */}
+      <img src={assetPath('/images/game/letter_tracing_bg.jpg')} alt=""
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.9, pointerEvents: 'none' }}
+      />
+
+      {/* Header — compact, mobile-first */}
+      <div style={{
+        position: 'relative', zIndex: 10, width: '100%', padding: '6px 10px',
+        background: 'linear-gradient(135deg, rgba(102,126,234,0.92), rgba(118,75,162,0.92))',
+        backdropFilter: 'blur(10px)',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+      }}>
+        {/* Row 1: Back + Title + Score */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
+          <button onClick={() => goToWorld('abc')} style={{
+            background: 'rgba(255,255,255,0.15)', border: 'none',
+            borderRadius: 8, padding: '5px 10px', cursor: 'pointer',
+            fontWeight: 700, fontSize: 'clamp(0.7rem, 2vw, 0.85rem)', color: 'white',
+            whiteSpace: 'nowrap', flexShrink: 0,
+          }}>
+            ←
+          </button>
+
+          <div style={{ textAlign: 'center', flex: 1, minWidth: 0 }}>
+            <h2 style={{
+              fontFamily: 'var(--font-heading)', margin: 0,
+              fontSize: 'clamp(0.9rem, 3vw, 1.4rem)', color: 'white',
+              textShadow: '0 1px 4px rgba(0,0,0,0.2)',
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>
-              {i < dotsTapped ? '✓' : i + 1}
+              {lang === 'bm' ? `Jejak Huruf ${letter}` : `Trace ${letter}`}
+            </h2>
+            <div style={{ fontSize: 'clamp(0.55rem, 1.5vw, 0.7rem)', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>
+              {round + 1} / {ROUNDS}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
+            <button onClick={handleClear} style={{
+              background: 'rgba(255,255,255,0.15)', border: 'none',
+              borderRadius: 8, padding: '5px 8px', cursor: 'pointer',
+              color: 'white', fontSize: 'clamp(0.65rem, 1.8vw, 0.8rem)', fontWeight: 600,
+              whiteSpace: 'nowrap',
+            }}>
+              🗑️
             </button>
+            <div style={{
+              background: 'linear-gradient(135deg, #FFD93D, #FF9800)',
+              borderRadius: 14, padding: '4px 10px', fontWeight: 800,
+              color: 'white', fontSize: 'clamp(0.7rem, 2vw, 0.85rem)',
+              whiteSpace: 'nowrap',
+            }}>
+              ⭐ {score}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div style={{ width: '100%', height: 5, background: 'rgba(0,0,0,0.2)', position: 'relative', zIndex: 10 }}>
+        <div style={{
+          height: '100%', width: `${(round / ROUNDS) * 100}%`,
+          background: 'linear-gradient(90deg, #FFD93D, #FF6B6B, #764ba2)',
+          transition: 'width 0.5s ease',
+        }} />
+      </div>
+
+      {/* Canvas area */}
+      <div style={{
+        flex: 1, display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        position: 'relative', zIndex: 5, padding: '8px 12px',
+      }}>
+        {/* Instruction */}
+        <div style={{
+          fontSize: 'clamp(0.7rem, 2.2vw, 1rem)', color: 'white',
+          fontWeight: 700, marginBottom: 4, textAlign: 'center',
+          textShadow: '0 1px 4px rgba(0,0,0,0.4)',
+          background: 'rgba(0,0,0,0.2)', borderRadius: 12,
+          padding: '4px 14px', backdropFilter: 'blur(4px)',
+        }}>
+          {letterDone 
+            ? `🎉 ${lang === 'bm' ? 'HEBAT!' : 'AMAZING!'} 🎉`
+            : `✏️ ${lang === 'bm' ? 'Lukis huruf ' + letter + ' ikut garisan!' : 'Draw ' + letter + '!'}`
+          }
+        </div>
+
+        {/* Canvas — glassmorphic container */}
+        <div style={{
+          background: 'rgba(0,0,0,0.25)', borderRadius: 24,
+          backdropFilter: 'blur(6px)',
+          boxShadow: '0 8px 40px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1)',
+          padding: 6, position: 'relative',
+          border: letterDone ? '3px solid #6BCB77' : '3px solid rgba(255,255,255,0.2)',
+          transition: 'border-color 0.3s ease',
+        }}>
+          <canvas
+            ref={canvasRef}
+            width={canvasSize.w}
+            height={canvasSize.h}
+            style={{
+              width: canvasSize.w, height: canvasSize.h, maxWidth: '90vw', maxHeight: '62vh',
+              borderRadius: 20, touchAction: 'none', display: 'block', cursor: 'crosshair',
+            }}
+            onMouseDown={onStart} onMouseMove={onMove} onMouseUp={onEnd} onMouseLeave={onEnd}
+            onTouchStart={onStart} onTouchMove={onMove} onTouchEnd={onEnd}
+          />
+
+          {/* Letter done celebration overlay */}
+          {letterDone && (
+            <div style={{
+              position: 'absolute', inset: 0, display: 'flex',
+              alignItems: 'center', justifyContent: 'center',
+              background: 'rgba(107, 203, 119, 0.2)', borderRadius: 24,
+              flexDirection: 'column', gap: 8,
+            }}>
+              <span style={{ fontSize: 'clamp(3rem, 12vw, 7rem)', animation: 'bounceIn 0.5s ease' }}>✨</span>
+              {showStars && <div style={{ display: 'flex', gap: 6 }}>
+                {[1,2,3].map(i => <span key={i} style={{ fontSize: 32, animation: `bounceIn ${0.2 + i * 0.15}s ease` }}>⭐</span>)}
+              </div>}
+            </div>
+          )}
+        </div>
+
+        {/* Letter progress bar */}
+        <div style={{
+          display: 'flex', gap: 3, marginTop: 6, flexWrap: 'wrap',
+          justifyContent: 'center', maxWidth: '95vw',
+        }}>
+          {sessionLetters.map((l, i) => (
+            <div key={i} style={{
+              width: 22, height: 22, borderRadius: 6,
+              background: i < round ? '#6BCB77' : i === round ? trailColor : 'rgba(255,255,255,0.15)',
+              color: i <= round ? 'white' : 'rgba(255,255,255,0.5)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '0.55rem', fontWeight: 800,
+              transition: 'all 0.3s ease',
+              transform: i === round ? 'scale(1.2)' : 'scale(1)',
+              boxShadow: i === round ? '0 0 8px rgba(255,255,255,0.3)' : 'none',
+            }}>
+              {i < round ? '✓' : l}
+            </div>
           ))}
         </div>
-        
-        <div style={{ fontSize: '0.8rem', color: '#999', marginTop: 8 }}>
-          {lang === 'bm' ? `Ketik titik ${dotsTapped + 1}!` : `Tap dot ${dotsTapped + 1}!`}
-        </div>
-        
-        {feedback && (
-          <div style={{
-            marginTop: 12, padding: '8px 16px', borderRadius: 12,
-            background: '#6BCB77', color: 'white', fontWeight: 700,
-            display: 'inline-block',
-          }}><CheckIcon size={14} /> {feedback.message}</div>
-        )}
       </div>
     </div>
   );
@@ -4155,7 +4556,7 @@ export function SyllableFactoryGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/letter_trail_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/syllable_factory_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('abc')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         
@@ -4290,7 +4691,7 @@ export function LetterPuzzleGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/letter_trail_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/letter_puzzle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('abc')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         
@@ -4410,7 +4811,7 @@ export function NumberTraceGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/dice_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/number_trace_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('numbers')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>
@@ -4516,7 +4917,7 @@ export function BiggerSmallerGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/block_tower_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/bigger_smaller_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('numbers')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>
@@ -4609,7 +5010,7 @@ export function PatternsGame() {
   const p = PATTERN_SETS[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/dice_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/pattern_puzzle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('numbers')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#6A1B9A' }}>{lang === 'bm' ? 'Lengkapkan corak!' : 'Complete the pattern!'}</h2>
@@ -4713,7 +5114,7 @@ export function MagicDiceGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/dice_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/colour_hunt_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('numbers')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? 'Berapa jumlah?' : 'What is the total?'}</h2>
@@ -4799,7 +5200,7 @@ export function MagicColouringGame() {
   const scene = SCENES[sceneIdx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/drawing_studio_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/drawing_studio_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('colours')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2' }}>{lang === 'bm' ? `Warnakan ${scene.name}!` : `Colour the ${scene.name}!`}</h2>
@@ -4895,7 +5296,7 @@ export function SockPairsGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/sock_room_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/sock_room_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('colours')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#283593' }}>{lang === 'bm' ? 'Cari Pasangan!' : 'Find Pairs!'}</h2>
@@ -4993,7 +5394,7 @@ export function ColourHunterGame() {
   const r = ROUNDS[roundIdx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/sock_room_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/colour_hunt_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('colours')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: r.bg }}>
@@ -5083,7 +5484,7 @@ export function BuildVehicleGame() {
   const choices = [v.parts[partIdx], ...v.wrong.slice(0, 2)].sort(() => Math.random() - 0.5);
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/transport_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/transport_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('transport')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? `Bina ${v.name}!` : `Build a ${v.name}!`}</h2>
@@ -5178,7 +5579,7 @@ export function WorldVehiclesGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/transport_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/transport_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('transport')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{v.name}</h2>
@@ -5276,7 +5677,7 @@ export function AnimalPuzzleGame() {
   const p = PUZZLES[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/safari_jungle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/safari_jungle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('animals')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{lang === 'bm' ? 'Apa yang hilang?' : 'What is missing?'}</h2>
@@ -5364,7 +5765,7 @@ export function AnimalEncyclopediaGame() {
   const a = ANIMALS[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/safari_jungle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/safari_jungle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('animals')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#1B5E20' }}>{a.name}</h2>
@@ -5464,7 +5865,7 @@ export function MimicAnimalGame() {
   const a = ACTIONS[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/safari_jungle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/safari_jungle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('animals')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}>{lang === 'bm' ? 'Tiru Haiwan!' : 'Act Like an Animal!'}</h2>
@@ -5553,7 +5954,7 @@ export function AbcSongGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/music_room_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/abc_song_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('abc')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Nyanyian ABC!' : 'ABC Song!'}</h2>
@@ -5685,7 +6086,7 @@ export function LetterStoriesGame() {
   const story = STORIES[storyIdx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/music_room_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/letter_stories_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('abc')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <div style={{
@@ -5800,7 +6201,7 @@ export function LabelBodyGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/body_parts_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/body_parts_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('body')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{lang === 'bm' ? 'Labelkan bahagian badan!' : 'Label the body parts!'}</h2>
@@ -5889,7 +6290,7 @@ export function MoveTogetherGame() {
   const m = MOVES[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/body_parts_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/body_parts_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('body')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{lang === 'bm' ? 'Ikut Gerakan!' : 'Follow Along!'}</h2>
@@ -5992,7 +6393,7 @@ export function HealthyHabitsGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/healthy_habits_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/healthy_habits_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('body')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{lang === 'bm' ? 'Susun aktiviti!' : 'Order the routine!'}</h2>
@@ -6082,7 +6483,7 @@ export function LittleDoctorGame() {
   const p = PATIENTS[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/doctor_clinic_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/doctor_clinic_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('body')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>{lang === 'bm' ? 'Doktor Kecil' : 'Little Doctor'}</h2>
@@ -6153,7 +6554,7 @@ export function BodySongGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/body_parts_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/body_song_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('body')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2' }}>{lang === 'bm' ? 'Lagu Badan!' : 'Body Song!'}</h2>
@@ -6215,7 +6616,7 @@ export function MagicTangramGame() {
   const p = PUZZLES[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/drawing_studio_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/tangram_puzzle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('shapes')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Tangram Ajaib' : 'Magic Tangram'}</h2>
@@ -6273,7 +6674,7 @@ export function DrawShapesGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/drawing_studio_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/drawing_studio_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('shapes')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#283593' }}>{lang === 'bm' ? `Lukis ${s.name}!` : `Draw a ${s.name}!`}</h2>
@@ -6346,7 +6747,7 @@ export function BuildPicturesGame() {
   const choices = [pic.parts[partIdx], ...pic.wrong].sort(() => Math.random() - 0.5);
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/drawing_studio_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/drawing_studio_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('shapes')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? `Bina ${pic.name}!` : `Build a ${pic.name}!`}</h2>
@@ -6395,7 +6796,7 @@ export function ThreeDShapesGame() {
   const s = SHAPES_3D[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/block_tower_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.2, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/tangram_puzzle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('shapes')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#283593' }}>{lang === 'bm' ? 'Bentuk 3D' : '3D Shapes'}</h2>
@@ -6745,7 +7146,7 @@ export function DayNightGame() {
   ];
   const [idx, setIdx] = useState(0); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
   const handle = (answer) => { const ok = answer === ITEMS_DN[idx].answer; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < ITEMS_DN.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('science', 'day-night', f >= 7 ? 3 : f >= 4 ? 2 : 1, f * 10); setGameComplete(true); } }, 800); };
-  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src={assetPath('/images/game/science_nature_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#FFD93D', textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>{lang === 'bm' ? 'Pakar Siang Malam!' : 'Day & Night Expert!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('science')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src={assetPath('/images/game/day_night_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#FFD93D', textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>{lang === 'bm' ? 'Pakar Siang Malam!' : 'Day & Night Expert!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('science')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const item = ITEMS_DN[idx];
   return (<div className="game-container" style={{ background: `linear-gradient(180deg, ${item.answer === 'day' ? '#87CEEB, #E3F2FD' : '#1A237E, #283593'})` }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('science')} style={{ position: 'absolute', left: 16, top: 16, color: item.answer === 'night' ? 'white' : undefined }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: item.answer === 'day' ? '#1565C0' : '#FFD93D' }}>{lang === 'bm' ? 'Siang atau Malam?' : 'Day or Night?'}</h2><div style={{ fontSize: '0.8rem', color: item.answer === 'day' ? '#999' : '#B0BEC5' }}>{idx + 1}/{ITEMS_DN.length}</div><div style={{ textAlign: 'center', margin: '20px 0' }}><GI e={item.item} size={80}/></div><div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16, color: item.answer === 'night' ? 'white' : '#333' }}>{item.name}</div><div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}><button onClick={() => handle('day')} style={{ padding: '14px 24px', borderRadius: 16, position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', color: '#333', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>{lang === 'bm' ? 'Siang' : 'Day'}</button><button onClick={() => handle('night')} style={{ padding: '14px 24px', borderRadius: 16, background: 'linear-gradient(135deg, #3F51B5, #1A237E)', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>{lang === 'bm' ? 'Malam' : 'Night'}</button></div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
