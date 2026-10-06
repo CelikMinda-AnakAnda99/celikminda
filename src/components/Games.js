@@ -1825,7 +1825,7 @@ export function AnimalHomesGame() {
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           padding: 'var(--space-lg)',
         }}>
-          <img src={assetPath('/images/game/safari_jungle_bg.jpg')} alt="" style={{
+          <img src={assetPath('/images/game/animal_homes_bg.jpg')} alt="" style={{
             position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
             objectFit: 'cover', zIndex: 0, opacity: 0.3,
           }} />
@@ -2626,7 +2626,7 @@ export function AnimalFoodGame() {
 
   return (
     <div className="game-screen" style={{ position: 'relative' }}>
-      <img src={assetPath('/images/game/safari_jungle_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
+      <img src={assetPath('/images/game/animal_food_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
       <div className="game-header">
         <button className="back-btn" onClick={() => goToWorld('animals')}>←</button>
         <span className="game-title">
@@ -5677,7 +5677,7 @@ export function AnimalPuzzleGame() {
   const p = PUZZLES[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/safari_jungle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/animal_puzzle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('animals')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{lang === 'bm' ? 'Apa yang hilang?' : 'What is missing?'}</h2>
@@ -5765,7 +5765,7 @@ export function AnimalEncyclopediaGame() {
   const a = ANIMALS[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/safari_jungle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/animal_encyclopedia_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('animals')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#1B5E20' }}>{a.name}</h2>
@@ -5865,7 +5865,7 @@ export function MimicAnimalGame() {
   const a = ACTIONS[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/safari_jungle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/mimic_animal_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('animals')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}>{lang === 'bm' ? 'Tiru Haiwan!' : 'Act Like an Animal!'}</h2>
@@ -6912,9 +6912,9 @@ export function InstrumentsGame() {
   const [idx, setIdx] = useState(0); const [played, setPlayed] = useState(false); const [gameComplete, setGameComplete] = useState(false);
   const playInst = () => { if (soundEnabled) playTapSound(); setPlayed(true); };
   const next = () => { setPlayed(false); if (idx + 1 < INSTRUMENTS.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } completeGame('music', 'instruments', 3, INSTRUMENTS.length * 15); setGameComplete(true); } };
-  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src={assetPath('/images/game/music_room_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Pemuzik Hebat!' : 'Great Musician!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('music')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
+  if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src={assetPath('/images/game/instruments_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Pemuzik Hebat!' : 'Great Musician!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('music')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const inst = INSTRUMENTS[idx];
-  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/music_room_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('music')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2' }}>{inst.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{INSTRUMENTS.length}</div><div style={{ textAlign: 'center', margin: '20px 0', cursor: 'pointer' }} onClick={playInst}><GI e={inst.emoji} size={96}/></div>{played && <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#9C27B0', animation: 'bounce 0.5s ease' }}>{inst.sound}</div>}<button onClick={played ? next : playInst} style={{ marginTop: 16, padding: '12px 28px', borderRadius: 16, background: 'linear-gradient(135deg, #9C27B0, #7B1FA2)', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontFamily: 'var(--font-heading)' }}>{played ? (lang === 'bm' ? 'Seterusnya →' : 'Next →') : (lang === 'bm' ? 'Main!' : 'Play!')}</button></div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/instruments_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('music')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2' }}>{inst.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{INSTRUMENTS.length}</div><div style={{ textAlign: 'center', margin: '20px 0', cursor: 'pointer' }} onClick={playInst}><GI e={inst.emoji} size={96}/></div>{played && <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#9C27B0', animation: 'bounce 0.5s ease' }}>{inst.sound}</div>}<button onClick={played ? next : playInst} style={{ marginTop: 16, padding: '12px 28px', borderRadius: 16, background: 'linear-gradient(135deg, #9C27B0, #7B1FA2)', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontFamily: 'var(--font-heading)' }}>{played ? (lang === 'bm' ? 'Seterusnya →' : 'Next →') : (lang === 'bm' ? 'Main!' : 'Play!')}</button></div></div>);
 }
 
 // ============================================
