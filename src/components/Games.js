@@ -3798,7 +3798,7 @@ export function HealthyOrNotGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/kitchen_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/healthy_or_not_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('food')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         
@@ -3933,7 +3933,7 @@ export function FruitOrVegGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/kitchen_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/fruit_or_veg_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('food')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         
@@ -5541,7 +5541,7 @@ export function BuildVehicleGame() {
   const choices = [v.parts[partIdx], ...v.wrong.slice(0, 2)].sort(() => Math.random() - 0.5);
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/transport_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/build_vehicle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('transport')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? `Bina ${v.name}!` : `Build a ${v.name}!`}</h2>
@@ -5636,7 +5636,7 @@ export function WorldVehiclesGame() {
   
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/transport_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/world_vehicles_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('transport')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{v.name}</h2>
@@ -6804,7 +6804,7 @@ export function BuildPicturesGame() {
   const choices = [pic.parts[partIdx], ...pic.wrong].sort(() => Math.random() - 0.5);
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/drawing_studio_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
+      <img src={assetPath('/images/game/build_pictures_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('shapes')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? `Bina ${pic.name}!` : `Build a ${pic.name}!`}</h2>
