@@ -486,7 +486,7 @@ export function BeeFlowerGame() {
   const generateRound = useCallback((roundNum) => {
     const target = LETTERS[Math.floor(Math.random() * LETTERS.length)];
     setTargetUpper(target);
-    setBeePos({ x: 40 + Math.random() * 20, y: 5 });
+    setBeePos({ x: 40 + Math.random() * 20, y: 22 });
     setBeeFlying(false);
     setHoneyDrop(null);
 
@@ -520,7 +520,7 @@ export function BeeFlowerGame() {
 
     if (flower.isTarget) {
       setBeeFlying(true);
-      setBeePos({ x: flower.x + 3, y: 42 });
+      setBeePos({ x: flower.x + 5, y: 55 });
       setScore(prev => prev + 10);
       setFlowers(prev => prev.map(f => f.id === flower.id ? { ...f, matched: true } : f));
       setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
@@ -560,9 +560,9 @@ export function BeeFlowerGame() {
 
   const getStars = () => score >= 120 ? 3 : score >= 70 ? 2 : 1;
 
-  // CSS gradient flower petals renderer
+  // CSS gradient flower petals renderer — bigger & more visible
   const renderFlower = (flower) => {
-    const petalSize = 22;
+    const petalSize = 30;
     const petals = [];
     for (let i = 0; i < flower.petalCount; i++) {
       const angle = (360 / flower.petalCount) * i;
@@ -574,8 +574,8 @@ export function BeeFlowerGame() {
           background: `linear-gradient(135deg, ${flower.style.petals}, ${flower.style.center})`,
           transform: `rotate(${angle}deg) translateY(-${petalSize * 0.7}px)`,
           transformOrigin: 'center bottom',
-          opacity: 0.9,
-          boxShadow: `0 2px 6px ${flower.style.glow}`,
+          opacity: 0.95,
+          boxShadow: `0 3px 10px ${flower.style.glow}`,
         }} />
       );
     }
@@ -667,11 +667,11 @@ export function BeeFlowerGame() {
               position: 'absolute',
               left: `${beePos.x}%`, top: `${beePos.y}%`,
               transform: 'translate(-50%, -50%)',
-              width: 80, height: 80,
+              width: 90, height: 90,
               zIndex: 15,
               transition: beeFlying ? 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none',
               animation: beeFlying ? 'none' : 'characterBob 2s ease-in-out infinite',
-              filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.15))',
+              filter: 'drop-shadow(0 6px 16px rgba(0,0,0,0.2))',
             }}>
               <img src={assetPath('/images/game/cute_bee.jpg')} alt="Bee" style={{
                 width: '100%', height: '100%', objectFit: 'contain',
@@ -679,14 +679,14 @@ export function BeeFlowerGame() {
               }} />
               {/* Letter card the bee is showing */}
               <div style={{
-                position: 'absolute', bottom: -8, right: -8,
-                width: 32, height: 32, borderRadius: 8,
+                position: 'absolute', bottom: -10, right: -10,
+                width: 36, height: 36, borderRadius: 10,
                 background: 'white',
-                border: '2px solid #FFD93D',
+                border: '3px solid #FFD93D',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontFamily: 'var(--font-heading)', fontWeight: 900,
-                fontSize: '1rem', color: '#1976D2',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                fontSize: '1.1rem', color: '#1976D2',
+                boxShadow: '0 3px 12px rgba(0,0,0,0.2)',
               }}>
                 {targetUpper}
               </div>
@@ -721,7 +721,7 @@ export function BeeFlowerGame() {
               onClick={() => handleFlowerTap(flower)}
               style={{
                 position: 'absolute',
-                left: `${flower.x}%`, bottom: '8%',
+                left: `${flower.x}%`, bottom: '12%',
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
                 cursor: flower.matched ? 'default' : 'pointer',
                 zIndex: 5,
@@ -733,7 +733,7 @@ export function BeeFlowerGame() {
             >
               {/* Flower head — CSS gradient petals around center */}
               <div style={{
-                width: 72, height: 72, position: 'relative',
+                width: 100, height: 100, position: 'relative',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 {/* Petals */}
@@ -741,19 +741,19 @@ export function BeeFlowerGame() {
                 {/* Center with letter */}
                 <div style={{
                   position: 'relative', zIndex: 2,
-                  width: 38, height: 38, borderRadius: '50%',
+                  width: 50, height: 50, borderRadius: '50%',
                   background: flower.matched
                     ? 'linear-gradient(135deg, #6BCB77, #48C9B0)'
                     : `radial-gradient(circle, ${flower.style.center}, white)`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   boxShadow: flower.matched
-                    ? '0 0 12px rgba(107,203,119,0.5)'
-                    : `0 4px 12px ${flower.style.glow}`,
-                  border: flower.matched ? '2px solid #4CAF50' : '2px solid rgba(255,255,255,0.8)',
+                    ? '0 0 16px rgba(107,203,119,0.5)'
+                    : `0 6px 20px ${flower.style.glow}, 0 0 30px rgba(255,255,255,0.5)`,
+                  border: flower.matched ? '3px solid #4CAF50' : '3px solid rgba(255,255,255,0.9)',
                 }}>
                   <span style={{
                     fontFamily: 'var(--font-heading)', fontWeight: 900,
-                    fontSize: '1.1rem',
+                    fontSize: '1.4rem',
                     color: flower.matched ? 'white' : '#333',
                   }}>
                     {flower.lowerLetter}
