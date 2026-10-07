@@ -430,7 +430,7 @@ export function BeeFlowerGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const TOTAL_ROUNDS = 8;
+  const TOTAL_ROUNDS = 15;
   const FLOWERS_PER_ROUND = 4;
   const FLOWER_EMOJIS = ['🌸', '🌺', '🌻', '🌷', '🌼', '💐', '🏵️', '🌹'];
 
@@ -666,7 +666,7 @@ export function CountObjectsGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const TOTAL_ROUNDS = 8;
+  const TOTAL_ROUNDS = 15;
   const OBJECT_SETS = [
     { emoji: '🐱', image: assetPath('/animals/cat.jpg'), nameBm: 'kucing', nameEn: 'cats' },
     { emoji: '🐶', image: assetPath('/animals/dog.jpg'), nameBm: 'anjing', nameEn: 'dogs' },
@@ -893,7 +893,7 @@ export function ColourMixingGame() {
   const [confettiPieces, setConfettiPieces] = useState([]);
   const [pourAnimation, setPourAnimation] = useState(false);
 
-  const TOTAL_ROUNDS = 6;
+  const TOTAL_ROUNDS = 15;
 
   const generateRound = useCallback((roundNum) => {
     const idx = (roundNum - 1) % COLOR_RECIPES.length;
@@ -1123,7 +1123,7 @@ export function AnimalSoundsGame() {
     { id: 'bird', emoji: '🐦', image: assetPath('/animals/bird.jpg'), nameBm: 'Burung', nameEn: 'Bird', soundBm: 'Cip! Cip!', soundEn: 'Tweet! Tweet!', bgColor: '#E0F7FA' },
   ];
 
-  const TOTAL_ROUNDS = 8;
+  const TOTAL_ROUNDS = 15;
   const CHOICES_PER_ROUND = 4;
 
   const [round, setRound] = useState(1);
@@ -1574,7 +1574,7 @@ export function BlockTowerGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const TOTAL_ROUNDS = 8;
+  const TOTAL_ROUNDS = 15;
   const BLOCK_COLORS = ['#FF6B9D', '#4A90D9', '#6BCB77', '#FFD93D', '#9B72CF', '#FF8C42', '#48C9B0', '#ee5a24'];
 
   const [round, setRound] = useState(1);
@@ -1814,7 +1814,7 @@ export function AnimalHomesGame() {
     { emoji: '🐘', image: assetPath('/animals/elephant.jpg'), nameBm: 'Gajah', nameEn: 'Elephant', habitat: 'jungle' },
   ];
 
-  const TOTAL_ROUNDS = 8;
+  const TOTAL_ROUNDS = 15;
 
   const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
@@ -2004,7 +2004,7 @@ export function MatchColourGame() {
     { hex: '#8B4513', nameBm: 'Coklat', nameEn: 'Brown' },
   ];
 
-  const TOTAL_ROUNDS = 8;
+  const TOTAL_ROUNDS = 15;
 
   const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
@@ -2189,7 +2189,7 @@ export function SortTransportGame() {
     { emoji: '🚤', image: assetPath('/transport/speedboat.jpg'), nameBm: 'Bot Laju', nameEn: 'Speedboat', category: 'water' },
   ];
 
-  const TOTAL_ROUNDS = 10;
+  const TOTAL_ROUNDS = 15;
 
   const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
@@ -2404,7 +2404,7 @@ export function MathMachineGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const TOTAL_ROUNDS = 8;
+  const TOTAL_ROUNDS = 15;
   const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
   const [num1, setNum1] = useState(0);
@@ -2601,7 +2601,7 @@ export function AnimalFoodGame() {
     { nameBm: 'Singa', nameEn: 'Lion', image: assetPath('/animals/lion.jpg'), food: 'meat', foodEmoji: '🥩', foodBm: 'Daging', foodEn: 'Meat' },
   ];
 
-  const TOTAL_ROUNDS = 6;
+  const TOTAL_ROUNDS = 15;
   const [round, setRound] = useState(0);
   const [score, setScore] = useState(0);
   const [currentAnimal, setCurrentAnimal] = useState(null);
@@ -2937,7 +2937,7 @@ export function SubtractionShopGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const TOTAL_ROUNDS = 8;
+  const TOTAL_ROUNDS = 15;
   const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
   const [num1, setNum1] = useState(0);
@@ -4921,7 +4921,7 @@ export function BiggerSmallerGame() {
   const [rightCount, setRightCount] = useState(0);
   const [leftEmoji, setLeftEmoji] = useState('🍎');
   const [rightEmoji, setRightEmoji] = useState('🌟');
-  const TOTAL_ROUNDS = 8;
+  const TOTAL_ROUNDS = 15;
   
   const generateRound = useCallback(() => {
     const l = Math.floor(Math.random() * 5) + 1;
@@ -5113,7 +5113,7 @@ export function MagicDiceGame() {
   const [gameComplete, setGameComplete] = useState(false);
   const [rolling, setRolling] = useState(false);
   const [choices, setChoices] = useState([]);
-  const TOTAL_ROUNDS = 8;
+  const TOTAL_ROUNDS = 15;
   
   const rollDice = useCallback(() => {
     setRolling(true);
@@ -7045,7 +7045,7 @@ export function LearnNotesGame() {
   const NOTES = ['Do','Re','Mi','Fa','Sol','La','Si','Do'];
   const COLORS = ['#FF6B6B','#FF9800','#FFD93D','#6BCB77','#4ECDC4','#42A5F5','#9B72CF','#FF6B6B'];
   const [playedNotes, setPlayedNotes] = useState([]); const [targetSeq, setTargetSeq] = useState([]); const [score, setScore] = useState(0); const [round, setRound] = useState(0); const [gameComplete, setGameComplete] = useState(false); const [feedback, setFeedback] = useState(null);
-  const TOTAL_ROUNDS = 4;
+  const TOTAL_ROUNDS = 15;
   
   useEffect(() => { generateSequence(); }, []);
   const generateSequence = () => { const seq = Array.from({ length: 3 }, () => Math.floor(Math.random() * 8)); setTargetSeq(seq); setPlayedNotes([]); };
