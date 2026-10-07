@@ -824,8 +824,7 @@ img {
   display: flex;
   flex-direction: column;
   position: relative;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
   background: var(--bg-sky);
 }
 

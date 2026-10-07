@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { useGameStore } from '@/stores/gameStore';
 import { assetPath } from '@/utils/assetPath';
 import { WORLDS, GUIDES, LETTERS, BUBBLE_COLORS } from '@/data/gameData';
@@ -2383,7 +2384,11 @@ export function SortTransportGame() {
 // Shared Game Complete Modal
 // ============================================
 function GameCompleteModal({ lang, stars, score, accentColor, onPlayAgain, onBack, confettiPieces }) {
-  return (
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  if (!mounted) return null;
+
+  return createPortal(
     <>
       <div className="confetti-container">
         {confettiPieces.map(p => (
@@ -2414,7 +2419,8 @@ function GameCompleteModal({ lang, stars, score, accentColor, onPlayAgain, onBac
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }
 

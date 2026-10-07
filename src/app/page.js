@@ -1274,8 +1274,13 @@ function GameRouter() {
   const { currentWorldId, currentGameId } = store;
   
   // ── Entitlement Guard: Block direct URL access to locked games ──
+  useEffect(() => {
+    if (!store.canAccessWorld(currentWorldId)) {
+      store.goHome();
+    }
+  }, [currentWorldId, store]);
+  
   if (!store.canAccessWorld(currentWorldId)) {
-    store.goHome();
     return null;
   }
   
