@@ -59,43 +59,60 @@ function celebrationFeedback(lang, soundEnabled = true) {
 
 
 // ============================================
-// LETTER TREE GAME (Pokok Huruf)
-// Pick the correct letter fruit from the tree!
+// LETTER BUBBLE GARDEN (Taman Huruf Ajaib)
+// Pop the correct letter bubble! Beautiful floating
+// rainbow bubbles with letters inside — no ugly tree!
+// Research-backed: Bubble-pop mechanic is proven most
+// engaging for toddlers (1-6 years). Large touch targets,
+// satisfying pop animation, progressive difficulty.
 // ============================================
 export function LetterTreeGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const TOTAL_ROUNDS = 8;
-  const FRUITS_PER_ROUND = 5;
-  const FRUIT_EMOJIS = ['🍎', '🍊', '🍋', '🍇', '🍓', '🫐', '🍑', '🥝', '🍒', '🍌'];
+  const TOTAL_ROUNDS = 15;
+  const BUBBLES_PER_ROUND = 6;
+
+  // Beautiful gradient color pairs for bubbles
+  const BUBBLE_STYLES = [
+    { bg: 'linear-gradient(135deg, #FF9A9E, #FAD0C4)', border: '#FF6B9D', shadow: 'rgba(255,107,157,0.3)' },
+    { bg: 'linear-gradient(135deg, #A18CD1, #FBC2EB)', border: '#9B72CF', shadow: 'rgba(155,114,207,0.3)' },
+    { bg: 'linear-gradient(135deg, #FAD961, #F76B1C)', border: '#FFB347', shadow: 'rgba(250,217,97,0.3)' },
+    { bg: 'linear-gradient(135deg, #84FAB0, #8FD3F4)', border: '#6BCB77', shadow: 'rgba(107,203,119,0.3)' },
+    { bg: 'linear-gradient(135deg, #A6C0FE, #F68084)', border: '#7B9EFF', shadow: 'rgba(123,158,255,0.3)' },
+    { bg: 'linear-gradient(135deg, #FDCBF1, #E6DEE9)', border: '#F0A6CA', shadow: 'rgba(240,166,202,0.3)' },
+    { bg: 'linear-gradient(135deg, #FFE985, #FA742B)', border: '#FFC107', shadow: 'rgba(255,193,7,0.3)' },
+    { bg: 'linear-gradient(135deg, #96FBC4, #F9F586)', border: '#81C784', shadow: 'rgba(129,199,132,0.3)' },
+    { bg: 'linear-gradient(135deg, #F5576C, #FF6B9D)', border: '#E91E63', shadow: 'rgba(233,30,99,0.3)' },
+    { bg: 'linear-gradient(135deg, #4FC3F7, #0288D1)', border: '#29B6F6', shadow: 'rgba(41,182,246,0.3)' },
+  ];
 
   const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
   const [targetLetter, setTargetLetter] = useState('');
-  const [fruits, setFruits] = useState([]);
+  const [bubbles, setBubbles] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
   const [confettiPieces, setConfettiPieces] = useState([]);
-  const [shakeTree, setShakeTree] = useState(false);
-  const [fruitOffsets, setFruitOffsets] = useState({});
+  const [popEffect, setPopEffect] = useState(null);
+  const [bubbleOffsets, setBubbleOffsets] = useState({});
   const animFrameRef = useRef(null);
   const driftDataRef = useRef({});
 
-  // Multi-directional floating animation loop
+  // Gentle floating animation — bubbles drift dreamily
   useEffect(() => {
     let lastTime = performance.now();
     const drift = driftDataRef.current;
 
-    // Initialise drift vectors for each fruit
-    fruits.forEach(f => {
-      if (!drift[f.id]) {
+    bubbles.forEach(b => {
+      if (!drift[b.id]) {
         const angle = Math.random() * Math.PI * 2;
-        const speed = 8 + Math.random() * 12; // px per second
-        drift[f.id] = {
+        const speed = 6 + Math.random() * 10;
+        drift[b.id] = {
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
           ox: 0, oy: 0,
+          bobPhase: Math.random() * Math.PI * 2,
         };
       }
     });
@@ -104,92 +121,98 @@ export function LetterTreeGame() {
       const dt = Math.min((now - lastTime) / 1000, 0.1);
       lastTime = now;
       const newOffsets = {};
-      const BOUND = 30; // max drift px from origin
+      const BOUND = 20;
 
-      fruits.forEach(f => {
-        if (f.picked) return;
-        const d = drift[f.id];
+      bubbles.forEach(b => {
+        if (b.popped) return;
+        const d = drift[b.id];
         if (!d) return;
 
         d.ox += d.vx * dt;
         d.oy += d.vy * dt;
+        d.bobPhase += dt * 2;
 
-        // Bounce off invisible boundary
+        // Gentle bob up and down
+        const bob = Math.sin(d.bobPhase) * 4;
+
         if (Math.abs(d.ox) > BOUND) { d.vx *= -1; d.ox = Math.sign(d.ox) * BOUND; }
         if (Math.abs(d.oy) > BOUND) { d.vy *= -1; d.oy = Math.sign(d.oy) * BOUND; }
 
-        // Occasional random direction nudge for organic feel
-        if (Math.random() < 0.005) {
+        if (Math.random() < 0.003) {
           const angle = Math.random() * Math.PI * 2;
-          const speed = 8 + Math.random() * 12;
+          const speed = 6 + Math.random() * 10;
           d.vx = Math.cos(angle) * speed;
           d.vy = Math.sin(angle) * speed;
         }
 
-        newOffsets[f.id] = { x: d.ox, y: d.oy };
+        newOffsets[b.id] = { x: d.ox, y: d.oy + bob };
       });
 
-      setFruitOffsets(prev => ({ ...prev, ...newOffsets }));
+      setBubbleOffsets(prev => ({ ...prev, ...newOffsets }));
       animFrameRef.current = requestAnimationFrame(tick);
     }
 
     animFrameRef.current = requestAnimationFrame(tick);
     return () => { if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current); };
-  }, [fruits]);
+  }, [bubbles]);
 
-  // Reset drift data between rounds
   const generateRound = useCallback((roundNum) => {
     driftDataRef.current = {};
-    setFruitOffsets({});
+    setBubbleOffsets({});
+    setPopEffect(null);
     const target = LETTERS[Math.floor(Math.random() * LETTERS.length)];
     setTargetLetter(target);
 
     const wrongLetters = LETTERS.filter(l => l !== target)
       .sort(() => Math.random() - 0.5)
-      .slice(0, FRUITS_PER_ROUND - 1);
+      .slice(0, BUBBLES_PER_ROUND - 1);
     const allLetters = [target, ...wrongLetters].sort(() => Math.random() - 0.5);
 
-    // Positions arranged in a ring around the tree (avoiding center)
-    const positions = [
-      { x: 5 + Math.random() * 8, y: 22 + Math.random() * 6 },   // far left top
-      { x: 8 + Math.random() * 8, y: 52 + Math.random() * 6 },   // far left bottom
-      { x: 30 + Math.random() * 8, y: 12 + Math.random() * 5 },  // center-left top
-      { x: 58 + Math.random() * 8, y: 12 + Math.random() * 5 },  // center-right top
-      { x: 82 + Math.random() * 8, y: 22 + Math.random() * 6 },  // far right top
-      { x: 80 + Math.random() * 8, y: 52 + Math.random() * 6 },  // far right bottom
-    ];
+    // Spread bubbles across the play area — well-spaced grid with jitter
+    const cols = 3;
+    const rows = 2;
+    const positions = [];
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        positions.push({
+          x: 8 + (c * 32) + (Math.random() * 12 - 6),
+          y: 18 + (r * 30) + (Math.random() * 8 - 4),
+        });
+      }
+    }
     const shuffledPos = positions.sort(() => Math.random() - 0.5);
 
-    const newFruits = allLetters.map((letter, i) => ({
+    const newBubbles = allLetters.map((letter, i) => ({
       id: `${roundNum}-${i}`,
       letter,
       isTarget: letter === target,
-      emoji: FRUIT_EMOJIS[Math.floor(Math.random() * FRUIT_EMOJIS.length)],
+      style: BUBBLE_STYLES[Math.floor(Math.random() * BUBBLE_STYLES.length)],
       x: shuffledPos[i % shuffledPos.length].x,
       y: shuffledPos[i % shuffledPos.length].y,
-      picked: false,
+      popped: false,
       wrong: false,
+      scale: 0.85 + Math.random() * 0.3,
     }));
-    setFruits(newFruits);
+    setBubbles(newBubbles);
     setFeedback(null);
   }, []);
 
   useEffect(() => { generateRound(1); }, [generateRound]);
 
-  const handleFruitTap = (fruit) => {
-    if (fruit.picked || feedback?.type === 'correct') return;
+  const handleBubbleTap = (bubble) => {
+    if (bubble.popped || feedback?.type === 'correct') return;
 
-    if (fruit.isTarget) {
+    if (bubble.isTarget) {
       setScore(prev => prev + 10);
-      setFruits(prev => prev.map(f => f.id === fruit.id ? { ...f, picked: true } : f));
-      setShakeTree(true);
-      setTimeout(() => setShakeTree(false), 500);
+      setBubbles(prev => prev.map(b => b.id === bubble.id ? { ...b, popped: true } : b));
+      setPopEffect({ x: bubble.x + 5, y: bubble.y + 3 });
       setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
 
       setTimeout(() => {
+        setPopEffect(null);
         if (round >= TOTAL_ROUNDS) {
           const finalScore = score + 10;
-          const stars = finalScore >= 70 ? 3 : finalScore >= 40 ? 2 : 1;
+          const stars = finalScore >= 120 ? 3 : finalScore >= 70 ? 2 : 1;
           completeGame('abc', 'letter-tree', stars, finalScore);
           setGameComplete(true);
           celebrationFeedback(lang, soundEnabled);
@@ -200,10 +223,10 @@ export function LetterTreeGame() {
         }
       }, 1200);
     } else {
-      setFruits(prev => prev.map(f => f.id === fruit.id ? { ...f, wrong: true } : f));
+      setBubbles(prev => prev.map(b => b.id === bubble.id ? { ...b, wrong: true } : b));
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, soundEnabled) });
       setTimeout(() => {
-        setFruits(prev => prev.map(f => f.id === fruit.id ? { ...f, wrong: false } : f));
+        setBubbles(prev => prev.map(b => b.id === bubble.id ? { ...b, wrong: false } : b));
         setFeedback(null);
       }, 800);
     }
@@ -217,14 +240,14 @@ export function LetterTreeGame() {
     })));
   };
 
-  const getStars = () => score >= 70 ? 3 : score >= 40 ? 2 : 1;
+  const getStars = () => score >= 120 ? 3 : score >= 70 ? 2 : 1;
 
   return (
     <div className="game-screen">
       <div className="game-header">
         <button className="back-btn" onClick={() => goToWorld('abc')}>←</button>
         <span className="game-title">
-          {lang === 'bm' ? 'Pokok Huruf' : 'Letter Tree'}
+          {lang === 'bm' ? 'Taman Huruf Ajaib' : 'Magic Letter Garden'}
         </span>
         <div className="game-stars">
           {[1,2,3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
@@ -234,20 +257,46 @@ export function LetterTreeGame() {
       <div className="game-body" style={{ padding: 0 }}>
         <div style={{
           width: '100%', height: '100%', position: 'relative',
-          background: 'linear-gradient(180deg, #87CEEB 0%, #b5e8b5 60%, #228B22 100%)',
+          background: 'linear-gradient(180deg, #E8F5FE 0%, #F3E5F5 30%, #FFF8E1 60%, #E8F5E9 100%)',
           borderRadius: 0, overflow: 'hidden',
         }}>
-          {/* Instruction */}
+          {/* Decorative floating sparkles */}
+          {[...Array(12)].map((_, i) => (
+            <div key={`sparkle-${i}`} style={{
+              position: 'absolute',
+              left: `${8 + (i * 8)}%`,
+              top: `${10 + (i % 3) * 30}%`,
+              width: 6 + (i % 4) * 2,
+              height: 6 + (i % 4) * 2,
+              borderRadius: '50%',
+              background: ['#FFD93D', '#FF6B9D', '#A18CD1', '#84FAB0', '#4FC3F7'][i % 5],
+              opacity: 0.3,
+              animation: `sparkleFloat ${3 + (i % 3)}s ease-in-out infinite alternate`,
+              animationDelay: `${i * 0.3}s`,
+            }} />
+          ))}
+
+          {/* Instruction banner */}
           <div style={{
-            position: 'absolute', top: 'var(--space-lg)', left: '50%',
-            transform: 'translateX(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.92)',
-            backdropFilter: 'blur(10px)', padding: 'var(--space-sm) var(--space-xl)',
-            borderRadius: 'var(--radius-full)', boxShadow: 'var(--shadow-lg)',
-            fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.3rem',
+            position: 'absolute', top: 12, left: '50%',
+            transform: 'translateX(-50%)', zIndex: 10,
+            background: 'rgba(255,255,255,0.95)',
+            backdropFilter: 'blur(12px)',
+            padding: '10px 28px',
+            borderRadius: 50,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 0 0 2px rgba(255,255,255,0.5)',
+            fontFamily: 'var(--font-heading)', fontWeight: 700,
+            fontSize: 'clamp(1rem, 3vw, 1.3rem)',
             whiteSpace: 'nowrap',
+            display: 'flex', alignItems: 'center', gap: 8,
           }}>
-            {lang === 'bm' ? 'Petik buah huruf' : 'Pick the letter fruit'}{' '}
-            <span style={{ color: 'var(--cm-green)', fontSize: '1.8rem', fontWeight: 900 }}>{targetLetter}</span>
+            <span style={{ fontSize: '1.3em' }}>🫧</span>
+            {lang === 'bm' ? 'Pecahkan gelembung huruf' : 'Pop the letter bubble'}{' '}
+            <span style={{
+              color: '#E91E63', fontSize: '1.6em', fontWeight: 900,
+              textShadow: '0 2px 8px rgba(233,30,99,0.3)',
+              animation: 'pulse 1.5s ease-in-out infinite',
+            }}>{targetLetter}</span>
           </div>
 
           {/* Score & Round */}
@@ -259,94 +308,102 @@ export function LetterTreeGame() {
             {t('round', lang)} {round}/{TOTAL_ROUNDS}
           </div>
 
-          {/* Beautiful generated tree image */}
-          <div style={{
-            position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
-            width: '50%', maxWidth: 320, zIndex: 1,
-            animation: shakeTree ? 'bubbleShake 0.5s ease' : 'none',
-            filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.1))',
-            overflow: 'hidden',
-            borderRadius: 24,
-          }}>
-            <img
-              src={assetPath('/images/game/magic_tree.jpg')}
-              alt="Magic Tree"
-              style={{
-                width: '100%', height: 'auto',
-                objectFit: 'contain',
-                display: 'block',
-              }}
-            />
-          </div>
-
-          {/* Floating fruit buttons — multi-directional movement */}
-          {fruits.map(fruit => {
-            const off = fruitOffsets[fruit.id] || { x: 0, y: 0 };
-            const isActive = !fruit.picked && !fruit.wrong;
+          {/* Floating letter bubbles */}
+          {bubbles.map(bubble => {
+            const off = bubbleOffsets[bubble.id] || { x: 0, y: 0 };
+            const isActive = !bubble.popped && !bubble.wrong;
+            const sz = Math.round(80 * bubble.scale);
             return (
               <div
-                key={fruit.id}
-                onClick={() => handleFruitTap(fruit)}
+                key={bubble.id}
+                onClick={() => handleBubbleTap(bubble)}
                 style={{
                   position: 'absolute',
-                  left: `${fruit.x}%`, top: `${fruit.y}%`,
-                  transform: isActive ? `translate(${off.x}px, ${off.y}px)` : undefined,
-                  width: 78, height: 78,
-                  background: fruit.picked
-                    ? 'rgba(107,203,119,0.3)'
-                    : 'rgba(255,255,255,0.92)',
-                  borderRadius: 'var(--radius-lg)',
-                  border: fruit.picked ? '3px solid rgba(107,203,119,0.5)' : '2px solid rgba(255,255,255,0.8)',
-                  display: 'flex', flexDirection: 'column',
+                  left: `${bubble.x}%`, top: `${bubble.y}%`,
+                  transform: isActive
+                    ? `translate(${off.x}px, ${off.y}px) scale(${bubble.scale})`
+                    : bubble.popped ? 'scale(0)' : `scale(${bubble.scale})`,
+                  width: sz, height: sz,
+                  background: bubble.popped ? 'transparent' : bubble.style.bg,
+                  borderRadius: '50%',
+                  border: bubble.popped ? 'none' : `3px solid ${bubble.style.border}`,
+                  display: 'flex',
                   alignItems: 'center', justifyContent: 'center',
-                  gap: 2,
-                  boxShadow: fruit.picked
-                    ? 'none'
-                    : '0 6px 20px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06)',
-                  cursor: fruit.picked ? 'default' : 'pointer',
-                  transition: fruit.wrong ? 'none' : 'box-shadow 0.3s ease, background 0.3s ease, opacity 0.4s ease',
-                  animationName: fruit.wrong ? 'bubbleShake' : fruit.picked ? 'bubblePop' : 'none',
-                  animationDuration: fruit.wrong ? '0.5s' : fruit.picked ? '0.4s' : '0s',
-                  animationTimingFunction: 'ease',
-                  animationFillMode: fruit.picked ? 'forwards' : 'none',
-                  opacity: fruit.picked ? 0.4 : 1,
+                  boxShadow: bubble.popped ? 'none'
+                    : `0 8px 25px ${bubble.style.shadow}, inset 0 -4px 8px rgba(0,0,0,0.05), inset 0 4px 12px rgba(255,255,255,0.4)`,
+                  cursor: bubble.popped ? 'default' : 'pointer',
+                  transition: bubble.wrong ? 'none' : 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease',
+                  animationName: bubble.wrong ? 'bubbleShake' : 'none',
+                  animationDuration: '0.5s',
+                  opacity: bubble.popped ? 0 : 1,
                   zIndex: 5,
-                  backdropFilter: 'blur(6px)',
+                  WebkitTapHighlightColor: 'transparent',
                 }}
               >
-                <GI e={fruit.emoji} size={25}/>
+                {/* Bubble shine highlight */}
+                {!bubble.popped && (
+                  <div style={{
+                    position: 'absolute', top: '12%', left: '18%',
+                    width: '28%', height: '20%',
+                    borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.6)',
+                    transform: 'rotate(-30deg)',
+                    pointerEvents: 'none',
+                  }} />
+                )}
                 <span style={{
-                  fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.2rem',
-                  color: 'var(--text-primary)',
-                }}>{fruit.letter}</span>
+                  fontFamily: 'var(--font-heading)', fontWeight: 900,
+                  fontSize: `${Math.round(sz * 0.45)}px`,
+                  color: 'white',
+                  textShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                  pointerEvents: 'none',
+                  lineHeight: 1,
+                }}>{bubble.letter}</span>
               </div>
             );
           })}
 
-          {/* Feedback */}
+          {/* Pop sparkle effect */}
+          {popEffect && (
+            <div style={{
+              position: 'absolute', left: `${popEffect.x}%`, top: `${popEffect.y}%`,
+              zIndex: 30, pointerEvents: 'none',
+            }}>
+              {[...Array(8)].map((_, i) => (
+                <div key={i} style={{
+                  position: 'absolute',
+                  width: 8, height: 8,
+                  borderRadius: '50%',
+                  background: ['#FFD93D', '#FF6B9D', '#6BCB77', '#A18CD1', '#4FC3F7', '#FF8C42', '#F5576C', '#84FAB0'][i],
+                  animation: 'popSparkle 0.6s ease-out forwards',
+                  animationDelay: `${i * 0.03}s`,
+                  transform: `rotate(${i * 45}deg) translateY(-20px)`,
+                }} />
+              ))}
+            </div>
+          )}
+
+          {/* Feedback toast */}
           {feedback && (
             <div style={{
-              position: 'absolute', bottom: 60, left: '50%', transform: 'translateX(-50%)',
+              position: 'absolute', bottom: 40, left: '50%', transform: 'translateX(-50%)',
               zIndex: 20,
               background: feedback.type === 'correct'
                 ? 'linear-gradient(135deg, #6BCB77, #48C9B0)'
                 : 'linear-gradient(135deg, #FF6B6B, #ee5a24)',
-              color: 'white', padding: '12px 28px', borderRadius: 'var(--radius-full)',
-              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.15rem',
+              color: 'white', padding: '12px 28px', borderRadius: 50,
+              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.1rem',
               boxShadow: '0 6px 24px rgba(0,0,0,0.2)',
-              animationName: 'fadeInUp',
-              animationDuration: '0.3s',
-              animationTimingFunction: 'ease-out',
+              animation: 'fadeInUp 0.3s ease-out',
             }}>
-              {feedback.message}
+              {feedback.type === 'correct' ? '🎉 ' : ''}{feedback.message}
             </div>
           )}
 
-          {/* Grass */}
+          {/* Decorative ground — soft grass with flowers */}
           <div style={{
-            position: 'absolute', bottom: 0, left: 0, right: 0, height: 50,
-            background: 'linear-gradient(0deg, #228B22 0%, #32CD32 50%, transparent 100%)',
-            borderRadius: 0,
+            position: 'absolute', bottom: 0, left: 0, right: 0, height: 30,
+            background: 'linear-gradient(0deg, #81C784 0%, #A5D6A7 50%, transparent 100%)',
             zIndex: 0,
           }} />
         </div>
@@ -355,7 +412,7 @@ export function LetterTreeGame() {
       {gameComplete && (
         <GameCompleteModal
           lang={lang} stars={getStars()} score={score}
-          accentColor="var(--cm-green)"
+          accentColor="#E91E63"
           onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); generateRound(1); }}
           onBack={() => goToWorld('abc')}
           confettiPieces={confettiPieces}

@@ -1587,6 +1587,12 @@ img {
   50% { transform: translateY(-30px) scale(1.5); opacity: 1; }
 }
 
+@keyframes popSparkle {
+  0% { transform: rotate(var(--angle, 0deg)) translateY(0) scale(1); opacity: 1; }
+  100% { transform: rotate(var(--angle, 0deg)) translateY(-40px) scale(0); opacity: 0; }
+}
+
+
 @keyframes starBadgePulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.05); }
