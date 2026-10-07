@@ -260,8 +260,8 @@ export function LetterTreeGame() {
           background: 'linear-gradient(180deg, #E8F5FE 0%, #F3E5F5 30%, #FFF8E1 60%, #E8F5E9 100%)',
           borderRadius: 0, overflow: 'hidden',
         }}>
-          {/* Decorative floating sparkles */}
-          {[...Array(12)].map((_, i) => (
+          {/* Decorative floating sparkles — hidden on complete */}
+          {!gameComplete && [...Array(12)].map((_, i) => (
             <div key={`sparkle-${i}`} style={{
               position: 'absolute',
               left: `${8 + (i * 8)}%`,
@@ -276,40 +276,62 @@ export function LetterTreeGame() {
             }} />
           ))}
 
-          {/* Instruction banner */}
-          <div style={{
-            position: 'absolute', top: 12, left: '50%',
-            transform: 'translateX(-50%)', zIndex: 10,
-            background: 'rgba(255,255,255,0.95)',
-            backdropFilter: 'blur(12px)',
-            padding: '10px 28px',
-            borderRadius: 50,
-            boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 0 0 2px rgba(255,255,255,0.5)',
-            fontFamily: 'var(--font-heading)', fontWeight: 700,
-            fontSize: 'clamp(1rem, 3vw, 1.3rem)',
-            whiteSpace: 'nowrap',
-            display: 'flex', alignItems: 'center', gap: 8,
-          }}>
-            <span style={{ fontSize: '1.3em' }}>🫧</span>
-            {lang === 'bm' ? 'Pecahkan gelembung huruf' : 'Pop the letter bubble'}{' '}
-            <span style={{
-              color: '#E91E63', fontSize: '1.6em', fontWeight: 900,
-              textShadow: '0 2px 8px rgba(233,30,99,0.3)',
-              animation: 'pulse 1.5s ease-in-out infinite',
-            }}>{targetLetter}</span>
-          </div>
+          {/* Top HUD — stacked vertically so nothing overlaps */}
+          {!gameComplete && (
+            <div style={{
+              position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10,
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              padding: '8px 12px', gap: 6,
+            }}>
+              {/* Row 1: Round + Score */}
+              <div style={{
+                display: 'flex', justifyContent: 'space-between', width: '100%',
+                alignItems: 'center',
+              }}>
+                <div style={{
+                  background: 'rgba(255,255,255,0.9)', borderRadius: 50,
+                  padding: '4px 14px', fontSize: '0.8rem', fontWeight: 700,
+                  fontFamily: 'var(--font-heading)', color: '#666',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                }}>
+                  {t('round', lang)} {round}/{TOTAL_ROUNDS}
+                </div>
+                <div style={{
+                  background: 'rgba(255,255,255,0.9)', borderRadius: 50,
+                  padding: '4px 14px', fontSize: '0.85rem', fontWeight: 700,
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#60A5FA"><path d="M6 3l-6 8 12 11L24 11l-6-8H6z"/></svg>
+                  <span style={{ color: '#333', fontFamily: 'var(--font-heading)' }}>{score}</span>
+                </div>
+              </div>
 
-          {/* Score & Round */}
-          <div className="game-score">
-            <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#60A5FA" style={{display:"inline-block",verticalAlign:"middle"}}><path d="M6 3l-6 8 12 11L24 11l-6-8H6z"/></svg></span>
-            <span className="score-value">{score}</span>
-          </div>
-          <div className="round-counter">
-            {t('round', lang)} {round}/{TOTAL_ROUNDS}
-          </div>
+              {/* Row 2: Instruction banner */}
+              <div style={{
+                background: 'rgba(255,255,255,0.95)',
+                backdropFilter: 'blur(12px)',
+                padding: '8px 20px',
+                borderRadius: 50,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                fontFamily: 'var(--font-heading)', fontWeight: 700,
+                fontSize: 'clamp(0.85rem, 2.5vw, 1.15rem)',
+                display: 'flex', alignItems: 'center', gap: 6,
+                flexWrap: 'wrap', justifyContent: 'center',
+              }}>
+                {lang === 'bm' ? 'Cari huruf' : 'Find letter'}{' '}
+                <span style={{
+                  color: '#E91E63', fontSize: '1.5em', fontWeight: 900,
+                  textShadow: '0 2px 8px rgba(233,30,99,0.3)',
+                  animation: 'pulse 1.5s ease-in-out infinite',
+                  lineHeight: 1,
+                }}>{targetLetter}</span>
+              </div>
+            </div>
+          )}
 
-          {/* Floating letter bubbles */}
-          {bubbles.map(bubble => {
+          {/* Floating letter bubbles — hidden on complete */}
+          {!gameComplete && bubbles.map(bubble => {
             const off = bubbleOffsets[bubble.id] || { x: 0, y: 0 };
             const isActive = !bubble.popped && !bubble.wrong;
             const sz = Math.round(80 * bubble.scale);
