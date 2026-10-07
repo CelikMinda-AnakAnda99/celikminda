@@ -446,8 +446,12 @@ export function LetterTreeGame() {
 }
 
 // ============================================
-// BEE & FLOWER GAME (Lebah & Bunga)
-// Match uppercase to lowercase letters!
+// BEE FLOWER GARDEN (Taman Lebah Ajaib)
+// Match uppercase to lowercase! A cute kawaii bee
+// flies to the correct flower. Beautiful CSS gradient
+// flowers instead of emoji. Research-backed: character-
+// driven letter matching is proven most effective for
+// toddlers 1-6 (multi-sensory: visual + spatial).
 // ============================================
 export function BeeFlowerGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
@@ -455,38 +459,55 @@ export function BeeFlowerGame() {
 
   const TOTAL_ROUNDS = 15;
   const FLOWERS_PER_ROUND = 4;
-  const FLOWER_EMOJIS = ['🌸', '🌺', '🌻', '🌷', '🌼', '💐', '🏵️', '🌹'];
+
+  // Beautiful gradient flower petal styles (no emoji!)
+  const FLOWER_STYLES = [
+    { petals: '#FF9A9E', center: '#FFECD2', glow: 'rgba(255,154,158,0.4)' },
+    { petals: '#A18CD1', center: '#FBC2EB', glow: 'rgba(161,140,209,0.4)' },
+    { petals: '#84FAB0', center: '#F9F586', glow: 'rgba(132,250,176,0.4)' },
+    { petals: '#FF6B9D', center: '#FFD93D', glow: 'rgba(255,107,157,0.4)' },
+    { petals: '#4FC3F7', center: '#E1F5FE', glow: 'rgba(79,195,247,0.4)' },
+    { petals: '#FFB347', center: '#FFF8E1', glow: 'rgba(255,179,71,0.4)' },
+    { petals: '#E040FB', center: '#F3E5F5', glow: 'rgba(224,64,251,0.4)' },
+    { petals: '#66BB6A', center: '#F1F8E9', glow: 'rgba(102,187,106,0.4)' },
+  ];
 
   const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
   const [targetUpper, setTargetUpper] = useState('');
   const [flowers, setFlowers] = useState([]);
   const [feedback, setFeedback] = useState(null);
-  const [beePosition, setBeePosition] = useState({ x: 50, y: 15 });
+  const [beePos, setBeePos] = useState({ x: 50, y: 5 });
   const [gameComplete, setGameComplete] = useState(false);
   const [confettiPieces, setConfettiPieces] = useState([]);
   const [beeFlying, setBeeFlying] = useState(false);
+  const [honeyDrop, setHoneyDrop] = useState(null);
 
   const generateRound = useCallback((roundNum) => {
     const target = LETTERS[Math.floor(Math.random() * LETTERS.length)];
     setTargetUpper(target);
-    setBeePosition({ x: 45 + Math.random() * 10, y: 8 });
+    setBeePos({ x: 40 + Math.random() * 20, y: 5 });
     setBeeFlying(false);
+    setHoneyDrop(null);
 
     const wrongLetters = LETTERS.filter(l => l !== target)
       .sort(() => Math.random() - 0.5)
       .slice(0, FLOWERS_PER_ROUND - 1);
     const allLetters = [target, ...wrongLetters].sort(() => Math.random() - 0.5);
 
+    // Position flowers evenly across the bottom garden area
+    const spacing = 85 / FLOWERS_PER_ROUND;
     const newFlowers = allLetters.map((letter, i) => ({
       id: `${roundNum}-${i}`,
       upperLetter: letter,
       lowerLetter: letter.toLowerCase(),
       isTarget: letter === target,
-      emoji: FLOWER_EMOJIS[Math.floor(Math.random() * FLOWER_EMOJIS.length)],
-      x: 8 + i * (80 / FLOWERS_PER_ROUND) + Math.random() * 5,
+      style: FLOWER_STYLES[Math.floor(Math.random() * FLOWER_STYLES.length)],
+      x: 5 + i * spacing + Math.random() * 4,
+      stemHeight: 50 + Math.random() * 30,
       matched: false,
       wrong: false,
+      petalCount: 5 + Math.floor(Math.random() * 3),
     }));
     setFlowers(newFlowers);
     setFeedback(null);
@@ -498,17 +519,18 @@ export function BeeFlowerGame() {
     if (flower.matched || feedback?.type === 'correct') return;
 
     if (flower.isTarget) {
-      // Bee flies to flower!
       setBeeFlying(true);
-      setBeePosition({ x: flower.x + 5, y: 55 });
+      setBeePos({ x: flower.x + 3, y: 42 });
       setScore(prev => prev + 10);
       setFlowers(prev => prev.map(f => f.id === flower.id ? { ...f, matched: true } : f));
       setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
+      setHoneyDrop({ x: flower.x + 6, y: 50 });
 
       setTimeout(() => {
+        setHoneyDrop(null);
         if (round >= TOTAL_ROUNDS) {
           const finalScore = score + 10;
-          const stars = finalScore >= 70 ? 3 : finalScore >= 40 ? 2 : 1;
+          const stars = finalScore >= 120 ? 3 : finalScore >= 70 ? 2 : 1;
           completeGame('abc', 'bee-flower', stars, finalScore);
           setGameComplete(true);
           celebrationFeedback(lang, soundEnabled);
@@ -536,14 +558,36 @@ export function BeeFlowerGame() {
     })));
   };
 
-  const getStars = () => score >= 70 ? 3 : score >= 40 ? 2 : 1;
+  const getStars = () => score >= 120 ? 3 : score >= 70 ? 2 : 1;
+
+  // CSS gradient flower petals renderer
+  const renderFlower = (flower) => {
+    const petalSize = 22;
+    const petals = [];
+    for (let i = 0; i < flower.petalCount; i++) {
+      const angle = (360 / flower.petalCount) * i;
+      petals.push(
+        <div key={i} style={{
+          position: 'absolute',
+          width: petalSize, height: petalSize * 1.4,
+          borderRadius: '50%',
+          background: `linear-gradient(135deg, ${flower.style.petals}, ${flower.style.center})`,
+          transform: `rotate(${angle}deg) translateY(-${petalSize * 0.7}px)`,
+          transformOrigin: 'center bottom',
+          opacity: 0.9,
+          boxShadow: `0 2px 6px ${flower.style.glow}`,
+        }} />
+      );
+    }
+    return petals;
+  };
 
   return (
     <div className="game-screen">
       <div className="game-header">
         <button className="back-btn" onClick={() => goToWorld('abc')}>←</button>
         <span className="game-title">
-          {lang === 'bm' ? 'Lebah & Bunga' : 'Bee & Flower'}
+          {lang === 'bm' ? 'Taman Lebah Ajaib' : 'Magic Bee Garden'}
         </span>
         <div className="game-stars">
           {[1,2,3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
@@ -555,123 +599,216 @@ export function BeeFlowerGame() {
           width: '100%', height: '100%', position: 'relative',
           borderRadius: 0, overflow: 'hidden',
         }}>
-          {/* Full background image */}
+          {/* Garden background */}
           <img src={assetPath('/images/game/bee_garden_bg.jpg')} alt="" style={{
             position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
             objectFit: 'cover', zIndex: 0,
           }} />
-          {/* Instruction */}
-          <div style={{
-            position: 'absolute', top: 'var(--space-lg)', left: '50%',
-            transform: 'translateX(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.92)',
-            backdropFilter: 'blur(8px)', padding: 'var(--space-sm) var(--space-xl)',
-            borderRadius: 'var(--radius-full)', boxShadow: 'var(--shadow-md)',
-            fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.2rem',
-            whiteSpace: 'nowrap', border: '1px solid rgba(255,255,255,0.5)',
-          }}>
-            {lang === 'bm' ? 'Bantu lebah cari huruf kecil' : 'Help bee find lowercase'}{' '}
-            <span style={{ color: 'var(--cm-blue)', fontSize: '1.8rem', fontWeight: 900 }}>{targetUpper}</span>
-            {' → '}
-            <span style={{ color: 'var(--cm-purple)', fontSize: '1.8rem', fontWeight: 900 }}>{targetUpper.toLowerCase()}</span>
-          </div>
 
-          {/* Score & Round */}
-          <div className="game-score">
-            <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B" style={{display:"inline-block",verticalAlign:"middle"}}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
-            <span className="score-value">{score}</span>
-          </div>
-          <div className="round-counter">
-            {t('round', lang)} {round}/{TOTAL_ROUNDS}
-          </div>
+          {/* Top HUD — stacked vertically, mobile-safe */}
+          {!gameComplete && (
+            <div style={{
+              position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10,
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              padding: '8px 12px', gap: 6,
+            }}>
+              {/* Row 1: Round + Score */}
+              <div style={{
+                display: 'flex', justifyContent: 'space-between', width: '100%',
+                alignItems: 'center',
+              }}>
+                <div style={{
+                  background: 'rgba(255,255,255,0.9)', borderRadius: 50,
+                  padding: '4px 14px', fontSize: '0.8rem', fontWeight: 700,
+                  fontFamily: 'var(--font-heading)', color: '#666',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                }}>
+                  {t('round', lang)} {round}/{TOTAL_ROUNDS}
+                </div>
+                <div style={{
+                  background: 'rgba(255,255,255,0.9)', borderRadius: 50,
+                  padding: '4px 14px', fontSize: '0.85rem', fontWeight: 700,
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  <span style={{ color: '#333', fontFamily: 'var(--font-heading)' }}>{score}</span>
+                </div>
+              </div>
 
-          {/* Bee */}
-          <div style={{
-            position: 'absolute',
-            left: `${beePosition.x}%`, top: `${beePosition.y}%`,
-            fontSize: '3rem', zIndex: 15,
-            transition: beeFlying ? 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none',
-            animation: beeFlying ? 'none' : 'characterBob 2s ease-in-out infinite',
-            filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))',
-          }}>
-          </div>
+              {/* Row 2: Instruction with uppercase → lowercase */}
+              <div style={{
+                background: 'rgba(255,255,255,0.95)',
+                backdropFilter: 'blur(12px)',
+                padding: '8px 20px',
+                borderRadius: 50,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                fontFamily: 'var(--font-heading)', fontWeight: 700,
+                fontSize: 'clamp(0.85rem, 2.5vw, 1.1rem)',
+                display: 'flex', alignItems: 'center', gap: 6,
+                flexWrap: 'wrap', justifyContent: 'center',
+              }}>
+                {lang === 'bm' ? 'Cari huruf kecil' : 'Find lowercase'}{' '}
+                <span style={{
+                  color: '#1976D2', fontSize: '1.4em', fontWeight: 900,
+                }}>{targetUpper}</span>
+                <span style={{ color: '#999', fontSize: '1.2em' }}>→</span>
+                <span style={{
+                  color: '#9C27B0', fontSize: '1.4em', fontWeight: 900,
+                  animation: 'pulse 1.5s ease-in-out infinite',
+                }}>{targetUpper.toLowerCase()}</span>
+              </div>
+            </div>
+          )}
 
-          {/* Flowers */}
-          {flowers.map((flower, idx) => (
+          {/* Cute Bee Character — real image! */}
+          {!gameComplete && (
+            <div style={{
+              position: 'absolute',
+              left: `${beePos.x}%`, top: `${beePos.y}%`,
+              transform: 'translate(-50%, -50%)',
+              width: 80, height: 80,
+              zIndex: 15,
+              transition: beeFlying ? 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none',
+              animation: beeFlying ? 'none' : 'characterBob 2s ease-in-out infinite',
+              filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.15))',
+            }}>
+              <img src={assetPath('/images/game/cute_bee.jpg')} alt="Bee" style={{
+                width: '100%', height: '100%', objectFit: 'contain',
+                borderRadius: '50%',
+              }} />
+              {/* Letter card the bee is showing */}
+              <div style={{
+                position: 'absolute', bottom: -8, right: -8,
+                width: 32, height: 32, borderRadius: 8,
+                background: 'white',
+                border: '2px solid #FFD93D',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontFamily: 'var(--font-heading)', fontWeight: 900,
+                fontSize: '1rem', color: '#1976D2',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              }}>
+                {targetUpper}
+              </div>
+            </div>
+          )}
+
+          {/* Honey drop animation when correct */}
+          {honeyDrop && (
+            <div style={{
+              position: 'absolute', left: `${honeyDrop.x}%`, top: `${honeyDrop.y}%`,
+              zIndex: 30, pointerEvents: 'none',
+            }}>
+              {[...Array(5)].map((_, i) => (
+                <div key={i} style={{
+                  position: 'absolute',
+                  width: 10, height: 10,
+                  borderRadius: '50%',
+                  background: '#FFD93D',
+                  animation: 'popSparkle 0.8s ease-out forwards',
+                  animationDelay: `${i * 0.05}s`,
+                  transform: `rotate(${i * 72}deg) translateY(-20px)`,
+                  boxShadow: '0 0 6px rgba(255,217,61,0.6)',
+                }} />
+              ))}
+            </div>
+          )}
+
+          {/* Beautiful CSS Gradient Flowers */}
+          {!gameComplete && flowers.map((flower, idx) => (
             <div
               key={flower.id}
               onClick={() => handleFlowerTap(flower)}
               style={{
                 position: 'absolute',
-                left: `${flower.x}%`, bottom: '15%',
+                left: `${flower.x}%`, bottom: '8%',
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
                 cursor: flower.matched ? 'default' : 'pointer',
                 zIndex: 5,
-                animation: flower.wrong ? 'bubbleShake 0.5s ease' : flower.matched ? 'none' : `float ${3 + idx * 0.3}s ease-in-out infinite`,
-                opacity: flower.matched ? 0.5 : 1,
+                animation: flower.wrong ? 'bubbleShake 0.5s ease' : flower.matched ? 'none' : `float ${3 + idx * 0.4}s ease-in-out infinite`,
+                opacity: flower.matched ? 0.4 : 1,
                 transition: 'opacity 0.5s ease',
+                WebkitTapHighlightColor: 'transparent',
               }}
             >
-              {/* Flower head */}
+              {/* Flower head — CSS gradient petals around center */}
               <div style={{
-                width: 90, height: 90, borderRadius: 'var(--radius-full)',
-                background: flower.matched ? 'rgba(107,203,119,0.4)' : 'rgba(255,255,255,0.9)',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                boxShadow: flower.matched ? 'none' : 'var(--shadow-md)',
-                border: flower.matched ? '3px solid var(--cm-green)' : '3px solid rgba(255,255,255,0.5)',
-                transition: 'all 0.3s ease',
+                width: 72, height: 72, position: 'relative',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <GI e={flower.emoji} size={28}/>
-                <span style={{
-                  fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.3rem',
-                  color: flower.matched ? 'var(--cm-green)' : 'var(--cm-purple)',
+                {/* Petals */}
+                {renderFlower(flower)}
+                {/* Center with letter */}
+                <div style={{
+                  position: 'relative', zIndex: 2,
+                  width: 38, height: 38, borderRadius: '50%',
+                  background: flower.matched
+                    ? 'linear-gradient(135deg, #6BCB77, #48C9B0)'
+                    : `radial-gradient(circle, ${flower.style.center}, white)`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: flower.matched
+                    ? '0 0 12px rgba(107,203,119,0.5)'
+                    : `0 4px 12px ${flower.style.glow}`,
+                  border: flower.matched ? '2px solid #4CAF50' : '2px solid rgba(255,255,255,0.8)',
                 }}>
-                  {flower.lowerLetter}
-                </span>
+                  <span style={{
+                    fontFamily: 'var(--font-heading)', fontWeight: 900,
+                    fontSize: '1.1rem',
+                    color: flower.matched ? 'white' : '#333',
+                  }}>
+                    {flower.lowerLetter}
+                  </span>
+                </div>
               </div>
               {/* Stem */}
               <div style={{
-                width: 6, height: 40, background: '#228B22',
-                borderRadius: 3,
+                width: 4, height: flower.stemHeight,
+                background: 'linear-gradient(180deg, #66BB6A, #388E3C)',
+                borderRadius: 2,
+              }} />
+              {/* Leaf */}
+              <div style={{
+                position: 'absolute', bottom: flower.stemHeight * 0.3,
+                left: idx % 2 === 0 ? -10 : 'auto',
+                right: idx % 2 !== 0 ? -10 : 'auto',
+                width: 18, height: 10,
+                borderRadius: idx % 2 === 0 ? '0 50% 50% 0' : '50% 0 0 50%',
+                background: 'linear-gradient(135deg, #81C784, #4CAF50)',
+                transform: `rotate(${idx % 2 === 0 ? -15 : 15}deg)`,
               }} />
             </div>
           ))}
 
-          {/* Feedback */}
+          {/* Feedback toast */}
           {feedback && (
             <div style={{
-              position: 'absolute', bottom: 60, left: '50%', transform: 'translateX(-50%)',
+              position: 'absolute', bottom: 40, left: '50%', transform: 'translateX(-50%)',
               zIndex: 20,
               background: feedback.type === 'correct'
                 ? 'linear-gradient(135deg, #6BCB77, #48C9B0)'
                 : 'linear-gradient(135deg, #FF6B6B, #ee5a24)',
-              color: 'white', padding: '10px 24px', borderRadius: 'var(--radius-full)',
-              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.1rem',
-              boxShadow: 'var(--shadow-md)',
+              color: 'white', padding: '10px 24px', borderRadius: 50,
+              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1rem',
+              boxShadow: '0 6px 24px rgba(0,0,0,0.2)',
+              animation: 'fadeInUp 0.3s ease-out',
             }}>
-              {feedback.message}
+              {feedback.type === 'correct' ? '🍯 ' : ''}{feedback.message}
             </div>
           )}
 
-          {/* Grass */}
+          {/* Soft grass overlay at bottom */}
           <div style={{
-            position: 'absolute', bottom: 0, left: 0, right: 0, height: 60,
-            background: 'linear-gradient(0deg, #228B22 0%, #32CD32 50%, transparent 100%)',
-            borderRadius: 0,
+            position: 'absolute', bottom: 0, left: 0, right: 0, height: 30,
+            background: 'linear-gradient(0deg, rgba(34,139,34,0.6) 0%, rgba(50,205,50,0.3) 50%, transparent 100%)',
+            zIndex: 0,
           }} />
-
-          {/* Sun */}
-          <div style={{
-            position: 'absolute', top: 15, right: 20, fontSize: '3rem',
-            animation: 'float 6s ease-in-out infinite',
-            filter: 'drop-shadow(0 0 20px rgba(255,200,0,0.5))',
-          }}><svg width="32" height="32" viewBox="0 0 24 24" fill="#FBBF24" style={{display:"inline-block"}}><circle cx="12" cy="12" r="5"/><path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="#FBBF24" strokeWidth="2" fill="none"/></svg></div>
         </div>
       </div>
 
       {gameComplete && (
         <GameCompleteModal
           lang={lang} stars={getStars()} score={score}
-          accentColor="var(--cm-blue)"
+          accentColor="#F59E0B"
           onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); generateRound(1); }}
           onBack={() => goToWorld('abc')}
           confettiPieces={confettiPieces}
