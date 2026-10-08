@@ -6,7 +6,7 @@ import { assetPath } from '@/utils/assetPath';
 import { WORLDS, GUIDES, LETTERS, BUBBLE_COLORS, PACKAGES, MINI_WORLDS, COMPLETE_ONLY_WORLDS, MINI_GAME_COUNT, COMPLETE_GAME_COUNT, COMPLETE_ONLY_GAME_COUNT } from '@/data/gameData';
 import { t, getRandomEncouragement, getRandomWrongResponse, getGreeting } from '@/data/translations';
 import { LetterTreeGame, BeeFlowerGame, CountObjectsGame, ColourMixingGame, AnimalSoundsGame, ShapeHuntGame, BlockTowerGame, AnimalHomesGame, MatchColourGame, SortTransportGame, MathMachineGame, AnimalFoodGame, FreeDrawGame, SubtractionShopGame, RoadSafetyGame, GroceryStoreGame, OurGardenGame, LittleChefGame, HealthyOrNotGame, FruitOrVegGame, LetterTrailGame, SyllableFactoryGame, LetterPuzzleGame, NumberTraceGame, BiggerSmallerGame, PatternsGame, MagicDiceGame, MagicColouringGame, SockPairsGame, ColourHunterGame, BuildVehicleGame, WorldVehiclesGame, AnimalPuzzleGame, AnimalEncyclopediaGame, MimicAnimalGame, AbcSongGame, LetterStoriesGame, LabelBodyGame, MoveTogetherGame, HealthyHabitsGame, LittleDoctorGame, BodySongGame, MagicTangramGame, DrawShapesGame, BuildPicturesGame, ThreeDShapesGame, RolePlayGame, JobToolsGame, VisitWorkplaceGame, WhoAmIGame, InstrumentsGame, FollowBeatGame, ChildrensSongsGame, LearnNotesGame, WorldMapGame, WorldHousesGame, WorldFestivalsGame, WeatherGame, PlantsGame, ExperimentsGame, DayNightGame } from '@/components/Games';
-import { initAudio, playCorrectSound, playWrongSound, playCelebrationSound, playTapSound, playNavigateSound, preloadBMVoices, playBMGreeting, playBMVoice, playSelamatDatang } from '@/utils/audio';
+import { initAudio, playCorrectSound, playWrongSound, playCelebrationSound, playTapSound, playNavigateSound, preloadBMVoices, playBMGreeting, playBMVoice, playSelamatDatang, playBMCorrectFeedback, playBMWrongFeedback, playBMCelebration } from '@/utils/audio';
 import { GameIcon, WorldIcon, StarRating, GameThumbnail, AchievementBadge } from '@/components/GameIcons';
 import { StarIcon, LockIcon, GearIcon, SparkleIcon, TrophyIcon, GamepadIcon, RefreshIcon, ChartIcon, CheckIcon, CloseIcon, BackspaceIcon, SeedlingIcon, CrownIcon, GradCapIcon, CloudIcon, DiamondIcon, FamilyIcon, PencilIcon, LightbulbIcon, BubbleIcon, FlagMY, FlagEN } from '@/components/Icons';
 
@@ -1466,7 +1466,7 @@ function LetterBubblesGame() {
         color: TARGET_COLORS[i % TARGET_COLORS.length],
         hit: false,
         wrong: false,
-        size: 52 + Math.random() * 12,
+        size: 1, // Normalized size multiplier (rendered with vw units)
       };
     });
 
@@ -1509,7 +1509,7 @@ function LetterBubblesGame() {
         t.id === target.id ? { ...t, hit: true } : t
       ));
 
-      if (soundEnabled) playCorrectSound();
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setFeedback({ type: 'correct', message: getRandomEncouragement(lang) });
 
       setTimeout(() => {
@@ -1518,7 +1518,7 @@ function LetterBubblesGame() {
           const stars = finalScore >= 120 ? 3 : finalScore >= 70 ? 2 : 1;
           completeGame('abc', 'letter-bubbles', stars, finalScore);
           setGameComplete(true);
-          if (soundEnabled) playCelebrationSound();
+          if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
           spawnConfetti();
         } else {
           setRound(prev => prev + 1);
@@ -1529,7 +1529,7 @@ function LetterBubblesGame() {
       setTargets(prev => prev.map(t =>
         t.id === target.id ? { ...t, wrong: true } : t
       ));
-      if (soundEnabled) playWrongSound();
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: getRandomWrongResponse(lang) });
 
       setTimeout(() => {
@@ -1646,8 +1646,8 @@ function LetterBubblesGame() {
                 left: `${target.startX}%`,
                 top: `${target.y}%`,
                 transform: 'translate(-50%, -50%)',
-                width: target.size,
-                height: target.size,
+                width: 'clamp(50px, 8vw, 90px)',
+                height: 'clamp(50px, 8vw, 90px)',
                 borderRadius: '50%',
                 background: target.hit
                   ? 'rgba(100,100,100,0.3)'
@@ -1679,7 +1679,7 @@ function LetterBubblesGame() {
                 </>
               )}
               <span style={{
-                fontSize: target.size * 0.5,
+                fontSize: 'clamp(1.2rem, 3.5vw, 2.2rem)',
                 fontWeight: 900,
                 fontFamily: 'var(--font-heading)',
                 color: target.hit ? '#999' : 'white',
