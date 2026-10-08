@@ -1407,90 +1407,115 @@ function ComingSoonGame() {
 }
 
 // ============================================
-// 🫧 LETTER BUBBLES GAME (Tembak Huruf)
+// 🎯 LETTER SHOOTING GALLERY GAME (Tembak Huruf)
+// Carnival style — letters slide across rails, tap the correct one!
 // ============================================
 function LetterBubblesGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
-  const TOTAL_ROUNDS = 8;
-  const BUBBLES_PER_ROUND = 6;
-  const GAME_AREA_REF = useRef(null);
-  
+
+  const TOTAL_ROUNDS = 15;
+  const TARGETS_PER_ROUND = 5;
+
   const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
   const [targetLetter, setTargetLetter] = useState('');
-  const [bubbles, setBubbles] = useState([]);
+  const [targets, setTargets] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
   const [confettiPieces, setConfettiPieces] = useState([]);
-  const [plusPoints, setPlusPoints] = useState([]);
+  const [hitEffect, setHitEffect] = useState(null);
 
-  // Generate a new round
+  const TARGET_COLORS = [
+    { bg: 'linear-gradient(135deg, #FF6B9D, #FF8A80)', border: '#FF5252' },
+    { bg: 'linear-gradient(135deg, #7C4DFF, #B388FF)', border: '#651FFF' },
+    { bg: 'linear-gradient(135deg, #00BCD4, #80DEEA)', border: '#00ACC1' },
+    { bg: 'linear-gradient(135deg, #FF9800, #FFB74D)', border: '#F57C00' },
+    { bg: 'linear-gradient(135deg, #4CAF50, #81C784)', border: '#388E3C' },
+  ];
+
+  // Rail positions (3 rails at different heights)
+  const RAILS = [
+    { y: 22, speed: 6, direction: 1 },   // top rail, moves right
+    { y: 48, speed: 8, direction: -1 },   // middle rail, moves left
+    { y: 74, speed: 5, direction: 1 },    // bottom rail, moves right
+  ];
+
   const generateRound = useCallback((roundNum) => {
-    // Pick a random target letter
     const target = LETTERS[Math.floor(Math.random() * LETTERS.length)];
     setTargetLetter(target);
 
-    // Generate bubbles with one correct and rest wrong
-    const wrongLetters = LETTERS.filter(l => l !== target);
-    const shuffledWrong = wrongLetters.sort(() => Math.random() - 0.5).slice(0, BUBBLES_PER_ROUND - 1);
-    const allLetters = [target, ...shuffledWrong].sort(() => Math.random() - 0.5);
+    const wrongLetters = LETTERS.filter(l => l !== target)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, TARGETS_PER_ROUND - 1);
 
-    const newBubbles = allLetters.map((letter, i) => ({
-      id: `${roundNum}-${i}`,
-      letter,
-      isTarget: letter === target,
-      x: 15 + Math.random() * 65, // % position
-      y: 20 + Math.random() * 55,
-      size: 55 + Math.random() * 25,
-      color: BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)],
-      delay: i * 0.1,
-      popped: false,
-      wrong: false,
-    }));
+    const allLetters = [target, ...wrongLetters].sort(() => Math.random() - 0.5);
 
-    setBubbles(newBubbles);
+    const newTargets = allLetters.map((letter, i) => {
+      const railIdx = i % RAILS.length;
+      const rail = RAILS[railIdx];
+      return {
+        id: `${roundNum}-${i}`,
+        letter,
+        isTarget: letter === target,
+        rail: railIdx,
+        startX: rail.direction > 0 ? -15 - (i * 20) : 115 + (i * 20),
+        speed: rail.speed + Math.random() * 3,
+        direction: rail.direction,
+        y: rail.y + (Math.random() * 6 - 3),
+        color: TARGET_COLORS[i % TARGET_COLORS.length],
+        hit: false,
+        wrong: false,
+        size: 52 + Math.random() * 12,
+      };
+    });
+
+    setTargets(newTargets);
     setFeedback(null);
+    setHitEffect(null);
   }, []);
 
-  // Init first round
+  useEffect(() => { generateRound(1); }, [generateRound]);
+
+  // Animation loop — move targets along rails
   useEffect(() => {
-    generateRound(1);
-  }, [generateRound]);
+    if (gameComplete) return;
+    const interval = setInterval(() => {
+      setTargets(prev => prev.map(t => {
+        if (t.hit) return t;
+        let newX = (t.startX || 0) + t.direction * 0.4;
+        // Wrap around
+        if (t.direction > 0 && newX > 110) newX = -15;
+        if (t.direction < 0 && newX < -15) newX = 110;
+        return { ...t, startX: newX };
+      }));
+    }, 30);
+    return () => clearInterval(interval);
+  }, [gameComplete]);
 
-  // Handle bubble tap
-  const handleBubbleTap = (bubble) => {
-    if (bubble.popped || feedback) return;
+  const handleTargetTap = (target) => {
+    if (target.hit || target.wrong || feedback) return;
 
-    if (bubble.isTarget) {
-      // CORRECT!
+    if (target.isTarget) {
       const points = 10;
       setScore(prev => prev + points);
-      
-      // Show +points animation
-      setPlusPoints(prev => [...prev, { 
-        id: Date.now(), x: bubble.x, y: bubble.y, points 
-      }]);
-      setTimeout(() => {
-        setPlusPoints(prev => prev.filter(p => p.id !== Date.now()));
-      }, 1000);
 
-      // Pop the bubble
-      setBubbles(prev => prev.map(b => 
-        b.id === bubble.id ? { ...b, popped: true } : b
+      // Hit effect
+      setHitEffect({ x: target.startX, y: target.y });
+      setTimeout(() => setHitEffect(null), 600);
+
+      // Mark as hit
+      setTargets(prev => prev.map(t =>
+        t.id === target.id ? { ...t, hit: true } : t
       ));
 
-      // Audio + visual feedback
       if (soundEnabled) playCorrectSound();
       setFeedback({ type: 'correct', message: getRandomEncouragement(lang) });
 
-      // Next round or complete
       setTimeout(() => {
         if (round >= TOTAL_ROUNDS) {
-          // Game complete!
           const finalScore = score + points;
-          const stars = finalScore >= 70 ? 3 : finalScore >= 40 ? 2 : 1;
+          const stars = finalScore >= 120 ? 3 : finalScore >= 70 ? 2 : 1;
           completeGame('abc', 'letter-bubbles', stars, finalScore);
           setGameComplete(true);
           if (soundEnabled) playCelebrationSound();
@@ -1501,205 +1526,229 @@ function LetterBubblesGame() {
         }
       }, 1200);
     } else {
-      // WRONG
-      setBubbles(prev => prev.map(b => 
-        b.id === bubble.id ? { ...b, wrong: true } : b
+      setTargets(prev => prev.map(t =>
+        t.id === target.id ? { ...t, wrong: true } : t
       ));
       if (soundEnabled) playWrongSound();
       setFeedback({ type: 'wrong', message: getRandomWrongResponse(lang) });
-      
+
       setTimeout(() => {
-        setBubbles(prev => prev.map(b => 
-          b.id === bubble.id ? { ...b, wrong: false } : b
+        setTargets(prev => prev.map(t =>
+          t.id === target.id ? { ...t, wrong: false } : t
         ));
         setFeedback(null);
       }, 800);
     }
   };
 
-  // Confetti explosion
   const spawnConfetti = () => {
-    const colors = ['#FF6B9D', '#FFD93D', '#4A90D9', '#6BCB77', '#9B72CF', '#FF8C42'];
-    const pieces = Array.from({ length: 50 }, (_, i) => ({
-      id: i,
-      left: Math.random() * 100,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      delay: Math.random() * 0.5,
-      rotation: Math.random() * 360,
-      size: 6 + Math.random() * 8,
-    }));
-    setConfettiPieces(pieces);
+    const colors = ['#FF6B9D', '#FFD93D', '#4A90D9', '#6BCB77', '#9B72CF'];
+    setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
+      id: i, left: Math.random() * 100, color: colors[i % colors.length],
+      delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
+    })));
   };
 
-  // Calculate stars
-  const getStars = () => {
-    if (score >= 70) return 3;
-    if (score >= 40) return 2;
-    return 1;
-  };
+  const getStars = () => score >= 120 ? 3 : score >= 70 ? 2 : 1;
 
   return (
     <div className="game-screen">
-      {/* Header */}
       <div className="game-header">
         <button className="back-btn" onClick={() => goToWorld('abc')}>←</button>
         <span className="game-title">
-          {lang === 'bm' ? 'Tembak Huruf' : 'Letter Bubbles'}
+          {lang === 'bm' ? 'Tembak Huruf' : 'Letter Shoot'}
         </span>
         <div className="game-stars">
-          {[1, 2, 3].map(s => (
-            <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>
-          ))}
+          {[1,2,3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
         </div>
       </div>
 
-      {/* Game Area */}
       <div className="game-body" style={{ padding: 0 }}>
-        <div className="bubbles-game" ref={GAME_AREA_REF}>
-          {/* Instruction */}
-          <div className="instruction">
-            {lang === 'bm' ? 'Cari huruf' : 'Find letter'}{' '}
-            <span className="target-letter">{targetLetter}</span>
+        <div style={{
+          width: '100%', height: '100%', position: 'relative',
+          overflow: 'hidden',
+        }}>
+          {/* Carnival booth background */}
+          <img src={assetPath('/images/game/letter_shoot_bg.jpg')} alt="" style={{
+            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+            objectFit: 'cover', zIndex: 0,
+          }} />
+
+          {/* HUD */}
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, zIndex: 15,
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            padding: '6px 12px', gap: 4,
+          }}>
+            <div style={{
+              display: 'flex', justifyContent: 'space-between', width: '100%',
+            }}>
+              <div style={{
+                background: 'rgba(255,255,255,0.9)', borderRadius: 50,
+                padding: '3px 12px', fontSize: '0.75rem', fontWeight: 700,
+                fontFamily: 'var(--font-heading)', color: '#666',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+              }}>
+                {t('round', lang)} {round}/{TOTAL_ROUNDS}
+              </div>
+              <div style={{
+                background: 'rgba(255,255,255,0.9)', borderRadius: 50,
+                padding: '3px 12px', fontSize: '0.8rem', fontWeight: 700,
+                display: 'flex', alignItems: 'center', gap: 5,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+              }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span style={{ color: '#333', fontFamily: 'var(--font-heading)' }}>{score}</span>
+              </div>
+            </div>
+
+            {/* Target instruction — crosshair style */}
+            <div style={{
+              background: 'rgba(0,0,0,0.7)',
+              backdropFilter: 'blur(8px)',
+              padding: '6px 18px',
+              borderRadius: 50,
+              boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+              fontFamily: 'var(--font-heading)', fontWeight: 700,
+              fontSize: 'clamp(0.8rem, 2.5vw, 1rem)',
+              color: '#fff',
+              display: 'flex', alignItems: 'center', gap: 8,
+            }}>
+              <span style={{ fontSize: '1.2em' }}>🎯</span>
+              {lang === 'bm' ? 'Tembak huruf' : 'Shoot letter'}{' '}
+              <span style={{
+                color: '#FFD93D', fontSize: '1.4em',
+                textShadow: '0 0 10px rgba(255,217,61,0.5)',
+              }}>{targetLetter}</span>
+            </div>
           </div>
 
-          {/* Score */}
-          <div className="game-score">
-            <span className="score-icon"><DiamondIcon size={20} /></span>
-            <span className="score-value">{score}</span>
-          </div>
+          {/* Rails (visual lines) */}
+          {RAILS.map((rail, i) => (
+            <div key={i} style={{
+              position: 'absolute',
+              top: `${rail.y + 4}%`,
+              left: '5%', right: '5%',
+              height: 3,
+              background: 'rgba(255,255,255,0.2)',
+              borderRadius: 4,
+              zIndex: 1,
+            }} />
+          ))}
 
-          {/* Round counter */}
-          <div className="round-counter">
-            {t('round', lang)} {round}/{TOTAL_ROUNDS}
-          </div>
-
-          {/* Bubbles */}
-          {bubbles.map(bubble => (
+          {/* Moving targets */}
+          {targets.map(target => (
             <div
-              key={bubble.id}
-              className={`bubble ${bubble.popped ? 'popping' : ''} ${bubble.wrong ? 'wrong' : ''}`}
+              key={target.id}
+              onClick={() => handleTargetTap(target)}
               style={{
-                left: `${bubble.x}%`,
-                top: `${bubble.y}%`,
-                width: bubble.size,
-                height: bubble.size,
-                background: bubble.color,
-                boxShadow: `0 4px 15px rgba(0,0,0,0.15), inset 0 -3px 6px rgba(0,0,0,0.1)`,
-                animation: bubble.popped ? undefined : `float ${3 + Math.random() * 2}s ease-in-out infinite`,
-                animationDelay: `${bubble.delay}s`,
+                position: 'absolute',
+                left: `${target.startX}%`,
+                top: `${target.y}%`,
+                transform: 'translate(-50%, -50%)',
+                width: target.size,
+                height: target.size,
+                borderRadius: '50%',
+                background: target.hit
+                  ? 'rgba(100,100,100,0.3)'
+                  : target.wrong
+                    ? 'linear-gradient(135deg, #FF1744, #FF5252)'
+                    : target.color.bg,
+                border: `3px solid ${target.hit ? '#999' : target.wrong ? '#D50000' : target.color.border}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: target.hit ? 'default' : 'crosshair',
+                zIndex: target.hit ? 2 : 5,
+                transition: 'background 0.2s ease',
+                boxShadow: target.hit
+                  ? 'none'
+                  : `0 4px 16px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.3)`,
+                opacity: target.hit ? 0.3 : 1,
               }}
-              onClick={() => handleBubbleTap(bubble)}
             >
-              <span className="bubble-letter" style={{ fontSize: bubble.size * 0.45 }}>
-                {bubble.letter}
+              {/* Crosshair marks on target */}
+              {!target.hit && (
+                <>
+                  <div style={{
+                    position: 'absolute', width: '60%', height: 2,
+                    background: 'rgba(255,255,255,0.3)', borderRadius: 1,
+                  }} />
+                  <div style={{
+                    position: 'absolute', width: 2, height: '60%',
+                    background: 'rgba(255,255,255,0.3)', borderRadius: 1,
+                  }} />
+                </>
+              )}
+              <span style={{
+                fontSize: target.size * 0.5,
+                fontWeight: 900,
+                fontFamily: 'var(--font-heading)',
+                color: target.hit ? '#999' : 'white',
+                textShadow: target.hit ? 'none' : '0 2px 4px rgba(0,0,0,0.3)',
+                zIndex: 2,
+              }}>
+                {target.letter}
               </span>
             </div>
           ))}
 
-          {/* Feedback toast */}
-          {feedback && (
+          {/* Hit effect — star burst */}
+          {hitEffect && (
             <div style={{
               position: 'absolute',
-              bottom: 30,
-              left: '50%',
-              transform: 'translateX(-50%)',
+              left: `${hitEffect.x}%`, top: `${hitEffect.y}%`,
+              transform: 'translate(-50%, -50%)',
               zIndex: 20,
-              background: feedback.type === 'correct' 
-                ? 'linear-gradient(135deg, #6BCB77, #48C9B0)' 
+              pointerEvents: 'none',
+            }}>
+              {[...Array(8)].map((_, i) => (
+                <div key={i} style={{
+                  position: 'absolute',
+                  width: 6, height: 6,
+                  borderRadius: '50%',
+                  background: '#FFD93D',
+                  animation: 'confettiFall 0.6s ease-out forwards',
+                  transform: `rotate(${i * 45}deg) translateY(-20px)`,
+                  opacity: 0,
+                }} />
+              ))}
+              <div style={{
+                width: 50, height: 50,
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(255,217,61,0.6) 0%, transparent 70%)',
+                animation: 'fadeInUp 0.3s ease-out',
+              }} />
+            </div>
+          )}
+
+          {/* Feedback */}
+          {feedback && (
+            <div style={{
+              position: 'absolute', bottom: 'clamp(10px, 3vh, 30px)',
+              left: '50%', transform: 'translateX(-50%)',
+              zIndex: 20,
+              background: feedback.type === 'correct'
+                ? 'linear-gradient(135deg, #6BCB77, #48C9B0)'
                 : 'linear-gradient(135deg, #FF6B6B, #ee5a24)',
-              color: 'white',
-              padding: '10px 24px',
-              borderRadius: 'var(--radius-full)',
-              fontFamily: 'var(--font-heading)',
-              fontWeight: 700,
-              fontSize: '1.1rem',
-              boxShadow: 'var(--shadow-md)',
+              color: 'white', padding: '8px 20px', borderRadius: 50,
+              fontFamily: 'var(--font-heading)', fontWeight: 700,
+              fontSize: 'clamp(0.8rem, 2.5vw, 1rem)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
               animation: 'fadeInUp 0.3s ease-out',
-              whiteSpace: 'nowrap',
             }}>
               {feedback.message}
             </div>
           )}
-
-          {/* Plus points animations */}
-          {plusPoints.map(p => (
-            <div key={p.id} className="plus-points" style={{ left: `${p.x}%`, top: `${p.y}%` }}>
-              +{p.points}
-            </div>
-          ))}
-
-          {/* Seabed decorations */}
-          <div style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 60,
-            background: 'linear-gradient(0deg, #2D8B72 0%, transparent 100%)',
-            opacity: 0.3,
-            borderRadius: '0 0 var(--radius-xl) var(--radius-xl)',
-          }} />
         </div>
       </div>
 
-      {/* Game Complete Modal */}
       {gameComplete && (
-        <>
-          <div className="confetti-container">
-            {confettiPieces.map(piece => (
-              <div
-                key={piece.id}
-                className="confetti-piece"
-                style={{
-                  left: `${piece.left}%`,
-                  background: piece.color,
-                  width: piece.size,
-                  height: piece.size,
-                  animationDelay: `${piece.delay}s`,
-                  transform: `rotate(${piece.rotation}deg)`,
-                }}
-              />
-            ))}
-          </div>
-          <div className="game-complete-overlay">
-            <div className="game-complete-modal">
-              <div className="trophy"><TrophyIcon size={48} /></div>
-              <h2>{lang === 'bm' ? 'Syabas!' : 'Well Done!'}</h2>
-              <p>
-                {t('youEarned', lang)} {getStars()} {t('starsEarned', lang)}!
-              </p>
-              <div className="stars-row">
-                {[1, 2, 3].map(s => (
-                  <span key={s} className="star" style={{ 
-                    opacity: s <= getStars() ? 1 : 0.3 
-                  }}>
-                    <StarIcon size={24} />
-                  </span>
-                ))}
-              </div>
-              <p style={{ 
-                fontFamily: 'var(--font-heading)', fontWeight: 700, 
-                color: 'var(--cm-purple)', fontSize: '1.2rem' 
-              }}>
-                {t('score', lang)}: {score}
-              </p>
-              <div className="action-buttons" style={{ marginTop: 'var(--space-lg)' }}>
-                <button className="btn-secondary" onClick={() => {
-                  setRound(1);
-                  setScore(0);
-                  setGameComplete(false);
-                  setConfettiPieces([]);
-                  generateRound(1);
-                }}>
-                  <RefreshIcon size={16} /> {t('playAgain', lang)}
-                </button>
-                <button className="btn-success" onClick={() => goToWorld('abc')}>
-                  <CheckIcon size={16} /> {t('backToWorld', lang)}
-                </button>
-              </div>
-            </div>
-          </div>
-        </>
+        <GameCompleteModal
+          lang={lang} stars={getStars()} score={score}
+          accentColor="#7C4DFF"
+          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); generateRound(1); }}
+          onBack={() => goToWorld('abc')}
+          confettiPieces={confettiPieces}
+        />
       )}
     </div>
   );
