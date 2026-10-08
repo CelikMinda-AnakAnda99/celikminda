@@ -2520,7 +2520,7 @@ export function SortTransportGame() {
 // ============================================
 // Shared Game Complete Modal
 // ============================================
-function GameCompleteModal({ lang, stars, score, accentColor, onPlayAgain, onBack, confettiPieces }) {
+export function GameCompleteModal({ lang, stars, score, accentColor, onPlayAgain, onBack, confettiPieces }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
   if (!mounted) return null;
