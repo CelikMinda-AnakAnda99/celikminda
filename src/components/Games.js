@@ -5009,129 +5009,234 @@ export function SyllableFactoryGame() {
 export function LetterPuzzleGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
-  const PUZZLES = [
-    { word: 'BUKU', missing: 1, hint: '📖', choices: ['U','A','I','O'] },
-    { word: 'MAMA', missing: 0, hint: '👩', choices: ['M','B','K','S'] },
-    { word: 'KUDA', missing: 2, hint: '🐴', choices: ['D','B','G','P'] },
-    { word: 'BOLA', missing: 3, hint: '⚽', choices: ['A','U','E','I'] },
-    { word: 'NASI', missing: 0, hint: '🍚', choices: ['N','R','T','L'] },
-    { word: 'IKAN', missing: 2, hint: '🐟', choices: ['A','U','E','O'] },
-    { word: 'KUIH', missing: 3, hint: '🍰', choices: ['H','N','K','S'] },
-    { word: 'SAPI', missing: 1, hint: '🐄', choices: ['A','U','I','E'] },
-  ];
-  
-  const [puzzleIdx, setPuzzleIdx] = useState(0);
+  const TOTAL_ROUNDS = 15;
+
+  const ALL_PUZZLES = useMemo(() => [
+    { word: 'BUKU', missing: 1, choices: ['U','A','I','O'] },
+    { word: 'MAMA', missing: 0, choices: ['M','B','K','S'] },
+    { word: 'KUDA', missing: 2, choices: ['D','B','G','P'] },
+    { word: 'BOLA', missing: 3, choices: ['A','U','E','I'] },
+    { word: 'NASI', missing: 0, choices: ['N','R','T','L'] },
+    { word: 'IKAN', missing: 2, choices: ['A','U','E','O'] },
+    { word: 'KUIH', missing: 3, choices: ['H','N','K','S'] },
+    { word: 'SAPI', missing: 1, choices: ['A','U','I','E'] },
+    { word: 'TOPI', missing: 0, choices: ['T','P','K','B'] },
+    { word: 'GULA', missing: 1, choices: ['U','A','I','O'] },
+    { word: 'PADI', missing: 3, choices: ['I','A','U','E'] },
+    { word: 'ROTI', missing: 2, choices: ['T','D','K','P'] },
+    { word: 'MEJA', missing: 0, choices: ['M','N','K','R'] },
+    { word: 'DADU', missing: 1, choices: ['A','I','U','E'] },
+    { word: 'SUSU', missing: 3, choices: ['U','A','I','O'] },
+    { word: 'KAKI', missing: 2, choices: ['K','G','P','T'] },
+    { word: 'BAJU', missing: 0, choices: ['B','D','P','G'] },
+    { word: 'GIGI', missing: 1, choices: ['I','A','U','E'] },
+    { word: 'SATU', missing: 3, choices: ['U','A','I','E'] },
+    { word: 'LIMA', missing: 2, choices: ['M','N','K','R'] },
+    { word: 'AYAM', missing: 0, choices: ['A','I','U','E'] },
+    { word: 'BUAH', missing: 1, choices: ['U','A','I','O'] },
+    { word: 'DUKU', missing: 2, choices: ['K','G','P','T'] },
+    { word: 'HARI', missing: 3, choices: ['I','A','U','E'] },
+    { word: 'TIGA', missing: 0, choices: ['T','D','K','S'] },
+    { word: 'RUSA', missing: 1, choices: ['U','A','I','E'] },
+    { word: 'PAKU', missing: 2, choices: ['K','G','P','T'] },
+    { word: 'KOTA', missing: 3, choices: ['A','U','I','E'] },
+    { word: 'DUIT', missing: 0, choices: ['D','B','P','G'] },
+    { word: 'GAJI', missing: 1, choices: ['A','I','U','E'] },
+    { word: 'LAGU', missing: 2, choices: ['G','K','P','T'] },
+    { word: 'BESI', missing: 3, choices: ['I','A','U','E'] },
+    { word: 'KAYU', missing: 0, choices: ['K','G','P','T'] },
+    { word: 'TAHU', missing: 1, choices: ['A','I','U','E'] },
+    { word: 'GARI', missing: 2, choices: ['R','L','N','M'] },
+    { word: 'PETA', missing: 3, choices: ['A','U','I','E'] },
+    { word: 'BATU', missing: 0, choices: ['B','D','P','G'] },
+    { word: 'BABI', missing: 1, choices: ['A','I','U','E'] },
+    { word: 'KAIN', missing: 2, choices: ['I','A','U','E'] },
+    { word: 'LORI', missing: 3, choices: ['I','A','U','E'] },
+    { word: 'SIKU', missing: 0, choices: ['S','T','K','P'] },
+    { word: 'NAGA', missing: 2, choices: ['G','K','P','T'] },
+    { word: 'SENI', missing: 3, choices: ['I','A','U','E'] },
+    { word: 'BIRU', missing: 0, choices: ['B','D','P','G'] },
+    { word: 'PURI', missing: 1, choices: ['U','A','I','E'] },
+    { word: 'JARI', missing: 2, choices: ['R','L','N','M'] },
+    { word: 'BUMI', missing: 3, choices: ['I','A','U','E'] },
+    { word: 'DADA', missing: 0, choices: ['D','B','P','G'] },
+    { word: 'KIRI', missing: 1, choices: ['I','A','U','E'] },
+    { word: 'LUPA', missing: 2, choices: ['P','K','G','T'] },
+    { word: 'SAYA', missing: 3, choices: ['A','U','I','E'] },
+    { word: 'GURU', missing: 0, choices: ['G','K','P','T'] },
+    { word: 'RAJA', missing: 1, choices: ['A','I','U','E'] },
+    { word: 'PASU', missing: 2, choices: ['S','T','K','P'] },
+    { word: 'MATA', missing: 3, choices: ['A','U','I','E'] },
+    { word: 'LAUT', missing: 0, choices: ['L','R','N','M'] },
+    { word: 'SISI', missing: 1, choices: ['I','A','U','E'] },
+    { word: 'TIPU', missing: 3, choices: ['U','A','I','E'] },
+    { word: 'JALA', missing: 0, choices: ['J','K','G','T'] },
+    { word: 'KUKU', missing: 1, choices: ['U','A','I','E'] },
+    { word: 'RAGA', missing: 2, choices: ['G','K','P','T'] },
+    { word: 'DAGU', missing: 3, choices: ['U','A','I','E'] },
+    { word: 'BAYU', missing: 1, choices: ['A','I','U','E'] },
+    { word: 'LAKI', missing: 2, choices: ['K','G','P','T'] },
+    { word: 'SAPU', missing: 3, choices: ['U','A','I','E'] },
+    { word: 'TALI', missing: 0, choices: ['T','D','K','S'] },
+    { word: 'SURI', missing: 1, choices: ['U','A','I','E'] },
+    { word: 'BACA', missing: 2, choices: ['C','K','G','S'] },
+    { word: 'DURI', missing: 3, choices: ['I','A','U','E'] },
+    { word: 'MADU', missing: 0, choices: ['M','N','K','R'] },
+    { word: 'DAHI', missing: 1, choices: ['A','I','U','E'] },
+    { word: 'HATI', missing: 2, choices: ['T','D','K','P'] },
+    { word: 'LABA', missing: 0, choices: ['L','R','N','M'] },
+    { word: 'MUKA', missing: 1, choices: ['U','A','I','E'] },
+    { word: 'PARI', missing: 2, choices: ['R','L','N','M'] },
+    { word: 'SUDU', missing: 3, choices: ['U','A','I','E'] },
+    { word: 'KACA', missing: 0, choices: ['K','G','P','T'] },
+    { word: 'BAHU', missing: 2, choices: ['H','K','G','P'] },
+    { word: 'TIRU', missing: 3, choices: ['U','A','I','E'] },
+    { word: 'JAMU', missing: 0, choices: ['J','K','G','T'] },
+    { word: 'NADI', missing: 1, choices: ['A','I','U','E'] },
+    { word: 'PAHA', missing: 2, choices: ['H','K','G','P'] },
+    { word: 'WAJA', missing: 3, choices: ['A','U','I','E'] },
+    { word: 'LADA', missing: 0, choices: ['L','R','N','M'] },
+    { word: 'SAGA', missing: 2, choices: ['G','K','P','T'] },
+    { word: 'RATU', missing: 3, choices: ['U','A','I','E'] },
+    { word: 'PALA', missing: 0, choices: ['P','B','D','G'] },
+    { word: 'BAGI', missing: 2, choices: ['G','K','P','T'] },
+    { word: 'SAGU', missing: 3, choices: ['U','A','I','E'] },
+    { word: 'GULI', missing: 0, choices: ['G','K','P','T'] },
+    { word: 'MALU', missing: 1, choices: ['A','I','U','E'] },
+    { word: 'RAPI', missing: 0, choices: ['R','L','N','M'] },
+    { word: 'BUMI', missing: 0, choices: ['B','D','P','G'] },
+    { word: 'SUKA', missing: 1, choices: ['U','A','I','E'] },
+    { word: 'DARA', missing: 2, choices: ['R','L','N','M'] },
+    { word: 'KUTU', missing: 3, choices: ['U','A','I','E'] },
+    { word: 'JADI', missing: 0, choices: ['J','K','G','T'] },
+    { word: 'TARI', missing: 1, choices: ['A','I','U','E'] },
+    { word: 'LIKU', missing: 2, choices: ['K','G','P','T'] },
+    { word: 'PALU', missing: 3, choices: ['U','A','I','E'] },
+  ], []);
+
+  const [roundPuzzles, setRoundPuzzles] = useState([]);
+  const [round, setRound] = useState(0);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
   const [revealed, setRevealed] = useState(false);
-  
+  const [confettiPieces, setConfettiPieces] = useState([]);
+
+  const initGame = useCallback(() => {
+    const shuffled = [...ALL_PUZZLES].sort(() => Math.random() - 0.5).slice(0, TOTAL_ROUNDS);
+    setRoundPuzzles(shuffled);
+    setRound(0); setScore(0); setFeedback(null);
+    setGameComplete(false); setRevealed(false); setConfettiPieces([]);
+  }, [ALL_PUZZLES]);
+
+  useEffect(() => { initGame(); }, [initGame]);
+
   const handleChoice = (letter) => {
-    if (revealed) return;
-    const puzzle = PUZZLES[puzzleIdx];
+    if (revealed || !roundPuzzles[round]) return;
+    const puzzle = roundPuzzles[round];
     const correct = letter === puzzle.word[puzzle.missing];
-    
     if (correct) {
       if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
-      setScore(score + 1);
-      setRevealed(true);
-      
+      setScore(prev => prev + 10); setRevealed(true);
       setTimeout(() => {
-        setFeedback(null);
-        setRevealed(false);
-        if (puzzleIdx + 1 < PUZZLES.length) {
-          setPuzzleIdx(puzzleIdx + 1);
-        } else {
+        setFeedback(null); setRevealed(false);
+        if (round + 1 < TOTAL_ROUNDS) { setRound(prev => prev + 1); }
+        else {
           if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
-          const stars = score + 1 >= 7 ? 3 : score + 1 >= 4 ? 2 : 1;
-          completeGame('abc', 'letter-puzzle', stars, (score + 1) * 10);
+          const finalScore = score + 10;
+          completeGame('abc', 'letter-puzzle', finalScore >= 120 ? 3 : finalScore >= 80 ? 2 : 1, finalScore);
           setGameComplete(true);
+          const colors = ['#FF6B9D','#FFD93D','#4A90D9','#6BCB77','#9B72CF'];
+          setConfettiPieces(Array.from({length:50},(_,i)=>({id:i,left:Math.random()*100,color:colors[i%colors.length],delay:Math.random()*0.5,size:6+Math.random()*8})));
         }
       }, 1000);
     } else {
       if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
-      setTimeout(() => setFeedback(null), 1200);
+      setTimeout(() => setFeedback(null), 1000);
     }
   };
-  
-  if (gameComplete) {
-    return (
-      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
-        <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
-        <h1 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>
-          {lang === 'bm' ? 'Bijak Mengeja!' : 'Spelling Star!'}
-        </h1>
-        <p>{score}/{PUZZLES.length} {lang === 'bm' ? 'betul' : 'correct'}</p>
-        <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
-        <button className="btn-premium" onClick={() => goToWorld('abc')}>
-          {lang === 'bm' ? '← Kembali' : '← Back'}
-        </button>
-      </div>
-    );
-  }
-  
-  const puzzle = PUZZLES[puzzleIdx];
-  
+
+  const getStars = () => score >= 120 ? 3 : score >= 80 ? 2 : 1;
+  const puzzle = roundPuzzles[round];
+  const CHOICE_COLORS = ['linear-gradient(135deg,#FFB6C1,#FF69B4)','linear-gradient(135deg,#B39DDB,#9575CD)','linear-gradient(135deg,#A5D6A7,#66BB6A)','linear-gradient(135deg,#90CAF9,#42A5F5)'];
+
   return (
-    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/letter_puzzle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
-      <div style={{ padding: 16, textAlign: 'center' }}>
-        <button className="icon-btn" onClick={() => goToWorld('abc')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        
-        <h2 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>
-          {lang === 'bm' ? 'Huruf Mana Yang Hilang?' : 'Which Letter is Missing?'}
-        </h2>
-        <div style={{ fontSize: '0.8rem', color: '#999' }}>{puzzleIdx + 1}/{PUZZLES.length}</div>
-        
-        {/* Hint */}
-        <div style={{ fontSize: '3rem', margin: '12px 0' }}>{puzzle.hint}</div>
-        
-        {/* Word with missing letter */}
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'center', margin: '16px 0' }}>
-          {puzzle.word.split('').map((char, i) => (
-            <div key={i} style={{
-              width: 55, height: 60, borderRadius: 14,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '2rem', fontWeight: 900, fontFamily: 'var(--font-heading)',
-              background: i === puzzle.missing
-                ? (revealed ? 'linear-gradient(135deg, #6BCB77, #48C9B0)' : 'linear-gradient(135deg, #FFD93D, #FFA726)')
-                : 'white',
-              color: i === puzzle.missing ? (revealed ? 'white' : '#FF9800') : '#333',
-              border: i === puzzle.missing ? '3px solid #FF9800' : '2px solid #E0E0E0',
-              boxShadow: i === puzzle.missing ? '0 4px 12px rgba(255,152,0,0.3)' : 'var(--shadow-sm)',
-            }}>
-              {i === puzzle.missing ? (revealed ? char : '?') : char}
-            </div>
-          ))}
-        </div>
-        
-        {/* Letter choices */}
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 20 }}>
-          {shuffleWithSeed(puzzle.choices, puzzleIdx).map((letter, i) => (
-            <button key={i} onClick={() => handleChoice(letter)} style={{
-              width: 55, height: 55, borderRadius: 14,
-              fontSize: '1.5rem', fontWeight: 900, fontFamily: 'var(--font-heading)',
-              background: 'white', border: '2px solid rgba(0,0,0,0.1)',
-              cursor: 'pointer', boxShadow: 'var(--shadow-sm)',
-              transition: 'transform 0.15s ease',
-            }}>{letter}</button>
-          ))}
-        </div>
-        
-        {feedback && (
-          <div style={{
-            marginTop: 16, padding: '8px 16px', borderRadius: 12,
-            background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B',
-            color: 'white', fontWeight: 700, display: 'inline-block',
-          }}>{feedback.type === 'correct' ? '' : ''}{feedback.message}</div>
-        )}
+    <div className="game-screen">
+      <div className="game-header">
+        <button className="back-btn" onClick={() => goToWorld('abc')}>←</button>
+        <span className="game-title">{lang === 'bm' ? 'Huruf Hilang' : 'Missing Letter'}</span>
+        <div className="game-stars">{[1,2,3].map(s=><span key={s} className={s<=getStars()?'star-earned':'star-empty'}><StarIcon size={20}/></span>)}</div>
       </div>
+      <div className="game-body" style={{ padding: 0 }}>
+        <div style={{ width:'100%',height:'100%',position:'relative',overflow:'hidden' }}>
+          <img src={assetPath('/images/game/letter_puzzle_bg.jpg')} alt="" style={{ position:'absolute',top:0,left:0,width:'100%',height:'100%',objectFit:'cover',zIndex:0 }} />
+          {/* HUD */}
+          <div style={{ position:'absolute',top:0,left:0,right:0,zIndex:15,display:'flex',justifyContent:'space-between',padding:'6px 12px' }}>
+            <div style={{ background:'rgba(255,255,255,0.9)',borderRadius:50,padding:'3px 12px',fontSize:'0.75rem',fontWeight:700,fontFamily:'var(--font-heading)',color:'#666',boxShadow:'0 2px 8px rgba(0,0,0,0.06)' }}>
+              Pusingan {round+1}/{TOTAL_ROUNDS}
+            </div>
+            <div style={{ background:'rgba(255,255,255,0.9)',borderRadius:50,padding:'3px 12px',fontSize:'0.8rem',fontWeight:700,display:'flex',alignItems:'center',gap:5,boxShadow:'0 2px 8px rgba(0,0,0,0.06)' }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <span style={{ color:'#333',fontFamily:'var(--font-heading)' }}>{score}</span>
+            </div>
+          </div>
+          {/* Game content */}
+          {puzzle && (
+            <div style={{ position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)',zIndex:5,width:'90%',maxWidth:420,display:'flex',flexDirection:'column',alignItems:'center',gap:'clamp(12px,3vh,24px)' }}>
+              <div style={{ background:'rgba(255,255,255,0.95)',backdropFilter:'blur(12px)',padding:'8px 20px',borderRadius:50,boxShadow:'0 4px 16px rgba(0,0,0,0.08)',fontFamily:'var(--font-heading)',fontWeight:700,fontSize:'clamp(0.85rem,2.5vw,1.1rem)',color:'#1565C0' }}>
+                {lang === 'bm' ? 'Huruf mana yang hilang?' : 'Which letter is missing?'}
+              </div>
+              <div style={{ display:'flex',gap:'clamp(8px,2vw,14px)',justifyContent:'center' }}>
+                {puzzle.word.split('').map((char,i) => (
+                  <div key={i} style={{
+                    width:'clamp(55px,15vw,80px)',height:'clamp(60px,16vw,85px)',borderRadius:18,
+                    display:'flex',alignItems:'center',justifyContent:'center',
+                    fontSize:'clamp(1.5rem,5vw,2.2rem)',fontWeight:900,fontFamily:'var(--font-heading)',
+                    background:i===puzzle.missing?(revealed?'linear-gradient(135deg,#6BCB77,#48C9B0)':'linear-gradient(135deg,#FFD93D,#FFA726)'):'rgba(255,255,255,0.95)',
+                    color:i===puzzle.missing?(revealed?'white':'#FF9800'):'#333',
+                    border:i===puzzle.missing?'3px solid #FF9800':'2px solid rgba(0,0,0,0.08)',
+                    boxShadow:i===puzzle.missing?'0 6px 20px rgba(255,152,0,0.3)':'0 4px 12px rgba(0,0,0,0.06)',
+                    transition:'all 0.3s cubic-bezier(0.34,1.56,0.64,1)',
+                    transform:(i===puzzle.missing&&revealed)?'scale(1.1)':'scale(1)',backdropFilter:'blur(8px)',
+                  }}>{i===puzzle.missing?(revealed?char:'?'):char}</div>
+                ))}
+              </div>
+              <div style={{ background:'rgba(255,255,255,0.88)',backdropFilter:'blur(12px)',borderRadius:24,padding:'clamp(12px,3vw,20px)',boxShadow:'0 8px 32px rgba(0,0,0,0.08)',border:'1px solid rgba(255,255,255,0.6)' }}>
+                <div style={{ fontSize:'clamp(0.7rem,2vw,0.8rem)',color:'#888',marginBottom:10,fontWeight:600,textAlign:'center' }}>
+                  {lang === 'bm' ? 'Pilih huruf yang betul:' : 'Pick the correct letter:'}
+                </div>
+                <div style={{ display:'flex',gap:'clamp(8px,2vw,14px)',justifyContent:'center' }}>
+                  {shuffleWithSeed(puzzle.choices,round).map((letter,i) => (
+                    <button key={i} onClick={()=>handleChoice(letter)} style={{
+                      width:'clamp(50px,14vw,70px)',height:'clamp(50px,14vw,70px)',borderRadius:16,
+                      fontSize:'clamp(1.3rem,4vw,1.8rem)',fontWeight:900,fontFamily:'var(--font-heading)',
+                      background:CHOICE_COLORS[i],border:'2px solid rgba(255,255,255,0.6)',
+                      cursor:'pointer',boxShadow:'0 4px 16px rgba(0,0,0,0.1)',
+                      transition:'transform 0.15s ease',color:'white',textShadow:'0 1px 3px rgba(0,0,0,0.2)',
+                      WebkitTapHighlightColor:'transparent',
+                    }}>{letter}</button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+          {feedback && (
+            <div style={{ position:'absolute',bottom:'clamp(10px,3vh,30px)',left:'50%',transform:'translateX(-50%)',zIndex:20,background:feedback.type==='correct'?'linear-gradient(135deg,#6BCB77,#48C9B0)':'linear-gradient(135deg,#FF6B6B,#ee5a24)',color:'white',padding:'8px 20px',borderRadius:50,fontFamily:'var(--font-heading)',fontWeight:700,fontSize:'clamp(0.8rem,2.5vw,1rem)',boxShadow:'0 4px 16px rgba(0,0,0,0.2)',animation:'fadeInUp 0.3s ease-out' }}>
+              {feedback.message}
+            </div>
+          )}
+        </div>
+      </div>
+      {gameComplete && (
+        <GameCompleteModal lang={lang} stars={getStars()} score={score} accentColor="#1565C0"
+          onPlayAgain={initGame} onBack={()=>goToWorld('abc')} confettiPieces={confettiPieces} />
+      )}
     </div>
   );
 }
+
 
 // ============================================
 // ✍️ NUMBER TRACE GAME (Jejak Nombor)
