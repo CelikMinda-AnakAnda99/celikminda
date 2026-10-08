@@ -1734,134 +1734,163 @@ export function BlockTowerGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  // Cute items to count — using watercolor images
-  const ITEMS = [
-    { name: 'Bintang', img: assetPath('/images/counting/star.jpg'), color: '#FFD93D', bgGrad: 'linear-gradient(135deg,#FFF9C4,#FFFDE7)' },
-    { name: 'Kupu-kupu', img: assetPath('/images/counting/butterfly.jpg'), color: '#CE93D8', bgGrad: 'linear-gradient(135deg,#F3E5F5,#EDE7F6)' },
-    { name: 'Bunga', img: assetPath('/images/counting/flower.jpg'), color: '#FFB74D', bgGrad: 'linear-gradient(135deg,#FFF8E1,#FFF3E0)' },
-    { name: 'Epal', img: assetPath('/images/counting/apple.jpg'), color: '#EF5350', bgGrad: 'linear-gradient(135deg,#FFEBEE,#FCE4EC)' },
-    { name: 'Ikan', img: assetPath('/images/counting/fish.jpg'), color: '#4FC3F7', bgGrad: 'linear-gradient(135deg,#E1F5FE,#E0F7FA)' },
-    { name: 'Arnab', img: assetPath('/images/counting/rabbit.jpg'), color: '#A1887F', bgGrad: 'linear-gradient(135deg,#EFEBE9,#FBE9E7)' },
-    { name: 'Kucing', img: assetPath('/images/counting/cat.jpg'), color: '#FFA726', bgGrad: 'linear-gradient(135deg,#FFF3E0,#FFF8E1)' },
+  // ── Block tower config ──
+  const TOTAL_ROUNDS = 15;
+  const MAX_BLOCKS = 10;
+
+  const BLOCK_THEMES = [
+    { fill: '#FF6B6B', stroke: '#D94848', glow: '#FF6B6B44', pattern: '🌟' },
+    { fill: '#FFA94D', stroke: '#D98A33', glow: '#FFA94D44', pattern: '⭐' },
+    { fill: '#FFD93D', stroke: '#D4B52E', glow: '#FFD93D44', pattern: '✨' },
+    { fill: '#6BCB77', stroke: '#4FA85C', glow: '#6BCB7744', pattern: '🍀' },
+    { fill: '#4ECDC4', stroke: '#38AEA6', glow: '#4ECDC444', pattern: '💎' },
+    { fill: '#45B7D1', stroke: '#3096AD', glow: '#45B7D144', pattern: '🐟' },
+    { fill: '#9B72CF', stroke: '#7B55AC', glow: '#9B72CF44', pattern: '🦋' },
+    { fill: '#FF8EB4', stroke: '#D96E90', glow: '#FF8EB444', pattern: '🌸' },
   ];
 
-  const TOTAL_ROUNDS = 10;
+  const OWL_MSGS_BM = [
+    'Jom susun blok! 🧱', 'Tekan + untuk tambah!', 'Kamu boleh! 💪',
+    'Susun tinggi-tinggi! 🏗️', 'Bijak sangat! ⭐', 'Kira elok-elok ya! 🔢',
+    'Hebat! Teruskan! 🌟', 'Wah, tingginya! 🤩',
+  ];
+  const OWL_MSGS_EN = [
+    'Let\'s stack blocks! 🧱', 'Tap + to add!', 'You can do it! 💪',
+    'Build it high! 🏗️', 'So smart! ⭐', 'Count carefully! 🔢',
+    'Amazing! Keep going! 🌟', 'Wow, so tall! 🤩',
+  ];
+  const OWL_MSGS = lang === 'bm' ? OWL_MSGS_BM : OWL_MSGS_EN;
 
   const [round, setRound] = useState(0);
   const [score, setScore] = useState(0);
-  const [currentItem, setCurrentItem] = useState(null);
-  const [targetCount, setTargetCount] = useState(0);
-  const [tappedItems, setTappedItems] = useState(new Set());
-  const [showAnswer, setShowAnswer] = useState(false);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [targetCount, setTargetCount] = useState(3);
+  const [placedBlocks, setPlacedBlocks] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
-  const [itemPositions, setItemPositions] = useState([]);
+  const [roundColors, setRoundColors] = useState([]);
+  const [shakeWrong, setShakeWrong] = useState(false);
+  const [celebrating, setCelebrating] = useState(false);
+  const [lastAddedIdx, setLastAddedIdx] = useState(-1);
+  const [owlMsg, setOwlMsg] = useState(OWL_MSGS[0]);
+  const feedbackTimerRef = useRef(null);
 
   const generateRound = useCallback(() => {
-    const item = ITEMS[Math.floor(Math.random() * ITEMS.length)];
-    const count = 2 + Math.floor(Math.random() * 7); // 2-8
-    setCurrentItem(item);
+    // Progressive difficulty
+    let min, max;
+    if (round < 5) { min = 2; max = 4; }
+    else if (round < 10) { min = 3; max = 6; }
+    else { min = 4; max = 8; }
+
+    const count = min + Math.floor(Math.random() * (max - min + 1));
     setTargetCount(count);
-    setTappedItems(new Set());
-    setShowAnswer(false);
-    setSelectedAnswer(null);
+    setPlacedBlocks([]);
     setFeedback(null);
-    
-    // Generate scattered positions for items
-    const positions = [];
-    for (let i = 0; i < count; i++) {
-      let pos;
-      let attempts = 0;
-      do {
-        pos = {
-          x: 10 + Math.random() * 70,
-          y: 5 + Math.random() * 55,
-          rotation: -15 + Math.random() * 30,
-          scale: 0.85 + Math.random() * 0.3,
-        };
-        attempts++;
-      } while (
-        attempts < 50 &&
-        positions.some(p => Math.abs(p.x - pos.x) < 18 && Math.abs(p.y - pos.y) < 18)
-      );
-      positions.push(pos);
+    setShakeWrong(false);
+    setCelebrating(false);
+    setLastAddedIdx(-1);
+    setOwlMsg(OWL_MSGS[Math.floor(Math.random() * OWL_MSGS.length)]);
+
+    const colors = [];
+    for (let i = 0; i < MAX_BLOCKS; i++) {
+      colors.push(BLOCK_THEMES[i % BLOCK_THEMES.length]);
     }
-    setItemPositions(positions);
-  }, []);
+    setRoundColors(colors);
+  }, [round, lang]);
 
   useEffect(() => { generateRound(); }, [generateRound]);
+  useEffect(() => { return () => { if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current); }; }, []);
 
-  const handleTapItem = (idx) => {
-    if (showAnswer || feedback) return;
-    if (soundEnabled) playTapSound();
-    const next = new Set(tappedItems);
-    if (next.has(idx)) {
-      next.delete(idx);
-    } else {
-      next.add(idx);
-    }
-    setTappedItems(next);
-    
-    // Auto-show answer choices when all items tapped
-    if (next.size === targetCount) {
-      setTimeout(() => setShowAnswer(true), 400);
+  const addBlock = () => {
+    if (feedback || placedBlocks.length >= MAX_BLOCKS) return;
+    if (soundEnabled) playBlockPlaceSound();
+    const newIdx = placedBlocks.length;
+    setPlacedBlocks(prev => [...prev, { id: Date.now(), colorIdx: newIdx }]);
+    setLastAddedIdx(newIdx);
+    // Owl reacts
+    if (newIdx + 1 === targetCount) {
+      setOwlMsg(lang === 'bm' ? 'Dah cukup! Tekan ✓!' : 'That\'s enough! Tap ✓!');
+    } else if (newIdx + 1 > targetCount) {
+      setOwlMsg(lang === 'bm' ? 'Hmm, terlalu banyak ke? 🤔' : 'Hmm, too many? 🤔');
     }
   };
 
-  const handleAnswer = (num) => {
-    if (feedback) return;
-    setSelectedAnswer(num);
-    const correct = num === targetCount;
-    
+  const removeBlock = () => {
+    if (feedback || placedBlocks.length === 0) return;
+    if (soundEnabled) playTapSound();
+    setPlacedBlocks(prev => prev.slice(0, -1));
+    setLastAddedIdx(-1);
+  };
+
+  const checkAnswer = () => {
+    if (feedback || placedBlocks.length === 0) return;
+    const correct = placedBlocks.length === targetCount;
+
     if (correct) {
-      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
+      if (soundEnabled) { lang === 'bm' ? playBMCorrectFeedback() : playCorrectSound(); }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
       setScore(prev => prev + 10);
+      setCelebrating(true);
+      setOwlMsg(lang === 'bm' ? 'BETUL! Bijak sangat! 🎉' : 'CORRECT! So smart! 🎉');
     } else {
-      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
-      setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) + ': ' + targetCount });
+      if (soundEnabled) { lang === 'bm' ? playBMWrongFeedback() : playWrongSound(); }
+      const diff = placedBlocks.length - targetCount;
+      const msg = diff > 0
+        ? (lang === 'bm' ? `Terlalu banyak! Jawapan: ${targetCount}` : `Too many! Answer: ${targetCount}`)
+        : (lang === 'bm' ? `Kurang sikit! Jawapan: ${targetCount}` : `Too few! Answer: ${targetCount}`);
+      setFeedback({ type: 'wrong', message: msg });
+      setShakeWrong(true);
+      setOwlMsg(lang === 'bm' ? 'Tak apa! Cuba lagi! 💪' : 'It\'s okay! Try again! 💪');
+      setTimeout(() => setShakeWrong(false), 600);
     }
 
-    setTimeout(() => {
+    feedbackTimerRef.current = setTimeout(() => {
       if (round + 1 >= TOTAL_ROUNDS) {
         const finalScore = correct ? score + 10 : score;
-        const stars = finalScore >= 80 ? 3 : finalScore >= 50 ? 2 : 1;
+        const stars = finalScore >= 120 ? 3 : finalScore >= 80 ? 2 : 1;
         completeGame('numbers', 'block-tower', stars, finalScore);
         setGameComplete(true);
-        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
+        if (soundEnabled) { lang === 'bm' ? playBMCelebration() : playCelebrationSound(); }
       } else {
         setRound(prev => prev + 1);
-        generateRound();
       }
-    }, 1200);
+    }, 1500);
   };
 
-  const getStars = () => score >= 80 ? 3 : score >= 50 ? 2 : 1;
-  const item = currentItem || ITEMS[0];
+  const getStars = () => score >= 120 ? 3 : score >= 80 ? 2 : 1;
 
-  // Answer choices: correct + 3 distractors
-  const answerChoices = (() => {
-    const choices = new Set([targetCount]);
-    while (choices.size < 4) {
-      const d = Math.max(1, targetCount + Math.floor(Math.random() * 5) - 2);
-      if (d !== targetCount && d >= 1 && d <= 10) choices.add(d);
-    }
-    return [...choices].sort(() => Math.random() - 0.5);
-  })();
-
+  // ── GAME COMPLETE ──
   if (gameComplete) {
+    const fs = getStars();
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <img src={assetPath('/images/counting/counting_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.4 }} />
-        <div style={{ background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(20px)', borderRadius: 28, padding: 32, maxWidth: 400, width: '90%', boxShadow: '0 12px 48px rgba(0,0,0,0.12)', zIndex: 1 }}>
-          <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
-          <h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100', fontSize: '1.5rem' }}>Bijak Mengira!</h1>
-          <p style={{ color: '#888', margin: '8px 0 20px' }}>Skor: {score}/{TOTAL_ROUNDS * 10}</p>
-          <div style={{ margin: '12px 0', display: 'flex', justifyContent: 'center', gap: 4 }}>
-            {[1,2,3].map(s => <StarIcon key={s} size={28} />)}
+        <img src={assetPath('/images/counting/block_tower_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.3 }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(180deg, rgba(124,58,237,0.1) 0%, rgba(243,232,255,0.6) 100%)', zIndex: 0 }} />
+        <div style={{ background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(24px)', borderRadius: 'clamp(20px,4vw,32px)', padding: 'clamp(20px,4vw,36px)', maxWidth: 420, width: '90%', boxShadow: '0 16px 64px rgba(124,58,237,0.15)', zIndex: 1 }}>
+          <img src={assetPath('/images/counting/block_owl.jpg')} alt="Owl" style={{ width: 'clamp(60px,15vw,90px)', height: 'clamp(60px,15vw,90px)', objectFit: 'cover', borderRadius: '50%', margin: '0 auto 12px', display: 'block', boxShadow: '0 4px 16px rgba(124,58,237,0.15)', border: '3px solid #F3E8FF' }} />
+          <h1 style={{ fontFamily: 'var(--font-heading)', color: '#7C3AED', fontSize: 'clamp(1.2rem,3.5vw,1.6rem)', margin: '0 0 4px' }}>
+            {lang === 'bm' ? '🏆 Arkitek Hebat!' : '🏆 Master Builder!'}
+          </h1>
+          <p style={{ color: '#888', margin: '4px 0 12px', fontFamily: 'var(--font-body)', fontSize: 'clamp(0.8rem,2vw,0.95rem)' }}>
+            {lang === 'bm' ? 'Skor' : 'Score'}: {score}/{TOTAL_ROUNDS * 10}
+          </p>
+          <div style={{ margin: '8px 0 16px', display: 'flex', justifyContent: 'center', gap: 'clamp(4px,1vw,8px)' }}>
+            {[1,2,3].map(s => (
+              <span key={s} style={{ fontSize: 'clamp(1.5rem,4vw,2.2rem)', opacity: s <= fs ? 1 : 0.2, transition: 'all 0.5s', transitionDelay: `${s * 0.2}s` }}>⭐</span>
+            ))}
           </div>
-          <button className="btn-premium" onClick={() => goToWorld('numbers')} style={{ marginTop: 16 }}>{'\u2190'} Kembali</button>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button onClick={() => { setRound(0); setScore(0); setGameComplete(false); }} style={{
+              padding: 'clamp(10px,2vw,14px) clamp(18px,3vw,28px)', borderRadius: 16, border: 'none', cursor: 'pointer',
+              background: 'linear-gradient(135deg,#9B72CF,#7C3AED)', color: 'white',
+              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(0.8rem,2vw,0.95rem)',
+              boxShadow: '0 4px 16px #9B72CF44',
+            }}>🔄 {lang === 'bm' ? 'Main Lagi' : 'Play Again'}</button>
+            <button onClick={() => goToWorld('numbers')} style={{
+              padding: 'clamp(10px,2vw,14px) clamp(18px,3vw,28px)', borderRadius: 16, border: '2px solid #E5E7EB', cursor: 'pointer',
+              background: 'white', color: '#666',
+              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(0.8rem,2vw,0.95rem)',
+            }}>← {lang === 'bm' ? 'Kembali' : 'Back'}</button>
+          </div>
         </div>
       </div>
     );
@@ -1869,160 +1898,268 @@ export function BlockTowerGame() {
 
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden' }}>
-      <img src={assetPath('/images/counting/counting_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.3 }} />
-      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: item.bgGrad, zIndex: 0, opacity: 0.5 }} />
-      
-      <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', zIndex: 1 }}>
-        {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-          <button className="icon-btn" onClick={() => goToWorld('numbers')} style={{ background: 'rgba(255,255,255,0.8)', borderRadius: '50%', width: 40, height: 40, border: 'none', cursor: 'pointer', fontSize: '1.2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>{'\u2190'}</button>
-          <div style={{ background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)', borderRadius: 20, padding: '8px 20px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
-            <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1rem', color: item.color }}>Kira & Sentuh</span>
+      {/* ── Background layers ── */}
+      <img src={assetPath('/images/counting/block_tower_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.35 }} />
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(180deg, rgba(232,244,253,0.45) 0%, rgba(243,232,255,0.35) 50%, rgba(255,248,225,0.25) 100%)', zIndex: 0 }} />
+
+      <div style={{ padding: 'clamp(8px,2vw,14px) clamp(10px,2.5vw,18px)', display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', zIndex: 1 }}>
+
+        {/* ── Header ── */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'clamp(6px,1.5vw,10px)' }}>
+          <button onClick={() => goToWorld('numbers')} style={{
+            background: 'rgba(255,255,255,0.9)', borderRadius: '50%',
+            width: 'clamp(36px,8vw,44px)', height: 'clamp(36px,8vw,44px)',
+            border: 'none', cursor: 'pointer', fontSize: 'clamp(1rem,2.8vw,1.3rem)',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>←</button>
+          <div style={{
+            background: 'rgba(255,255,255,0.93)', backdropFilter: 'blur(12px)', borderRadius: 22,
+            padding: 'clamp(6px,1.2vw,10px) clamp(14px,3vw,22px)',
+            boxShadow: '0 4px 18px rgba(0,0,0,0.07)',
+            display: 'flex', alignItems: 'center', gap: 'clamp(5px,1.2vw,10px)',
+          }}>
+            <span style={{ fontSize: 'clamp(1rem,2.8vw,1.3rem)' }}>🧱</span>
+            <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 'clamp(0.85rem,2.2vw,1.1rem)', color: '#7C3AED' }}>
+              {lang === 'bm' ? 'Menara Blok' : 'Block Tower'}
+            </span>
           </div>
-          <div style={{ background: 'rgba(255,255,255,0.9)', borderRadius: 16, padding: '6px 14px', fontFamily: 'var(--font-heading)', fontSize: '0.85rem', color: '#666' }}>
-            {round + 1}/{TOTAL_ROUNDS}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px,1.5vw,10px)' }}>
+            <div style={{
+              background: 'rgba(255,255,255,0.9)', borderRadius: 14, padding: 'clamp(4px,0.8vw,7px) clamp(10px,2vw,16px)',
+              fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.75rem,1.8vw,0.9rem)', color: '#F59E0B',
+            }}>⭐ {score}</div>
+            <div style={{
+              background: 'rgba(255,255,255,0.9)', borderRadius: 14, padding: 'clamp(4px,0.8vw,7px) clamp(10px,2vw,16px)',
+              fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.75rem,1.8vw,0.9rem)', color: '#666',
+            }}>{round + 1}/{TOTAL_ROUNDS}</div>
           </div>
         </div>
 
-        {/* Instruction */}
-        <div style={{ textAlign: 'center', marginBottom: 8 }}>
+        {/* ── Owl guide + instruction ── */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'clamp(8px,2vw,14px)', marginBottom: 'clamp(6px,1.5vw,10px)' }}>
+          <img src={assetPath('/images/counting/block_owl.jpg')} alt="Owl Guide" style={{
+            width: 'clamp(44px,10vw,60px)', height: 'clamp(44px,10vw,60px)',
+            objectFit: 'cover', borderRadius: '50%', flexShrink: 0,
+            boxShadow: '0 4px 14px rgba(124,58,237,0.15)', border: '3px solid #F3E8FF',
+          }} />
           <div style={{
-            display: 'inline-block', background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(12px)',
-            borderRadius: 20, padding: '10px 28px', boxShadow: '0 6px 24px rgba(0,0,0,0.08)',
-            border: `2px solid ${item.color}33`
+            background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(14px)',
+            borderRadius: 'clamp(14px,2.5vw,22px)', padding: 'clamp(8px,1.5vw,14px) clamp(14px,3vw,28px)',
+            boxShadow: '0 4px 18px rgba(124,58,237,0.08)',
+            border: '2px solid rgba(124,58,237,0.12)',
+            position: 'relative',
           }}>
-            <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1rem', color: '#333' }}>
-              Sentuh setiap <span style={{ color: item.color, fontWeight: 900 }}>{item.name}</span> untuk mengira!
+            <div style={{
+              position: 'absolute', left: -9, top: '50%', transform: 'translateY(-50%)',
+              width: 0, height: 0,
+              borderTop: '7px solid transparent', borderBottom: '7px solid transparent',
+              borderRight: '9px solid rgba(255,255,255,0.95)',
+            }} />
+            <span style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.85rem,2.2vw,1.1rem)', color: '#333' }}>
+              {lang === 'bm' ? 'Bina menara dengan ' : 'Build a tower with '}
+              <span style={{
+                color: '#7C3AED', fontWeight: 900, fontSize: 'clamp(1.2rem,3vw,1.6rem)',
+                textShadow: '0 2px 6px rgba(124,58,237,0.2)',
+              }}>{targetCount}</span>
+              {lang === 'bm' ? ' blok!' : ' blocks!'}
             </span>
           </div>
         </div>
 
-        {/* Counting area — scattered items */}
+        {/* ── Tower area ── */}
         <div style={{
-          flex: 1, position: 'relative', background: 'rgba(255,255,255,0.4)',
-          borderRadius: 24, overflow: 'hidden', minHeight: '40vh',
-          boxShadow: 'inset 0 2px 12px rgba(0,0,0,0.04)',
-          border: '2px dashed rgba(0,0,0,0.06)'
+          flex: 1, position: 'relative', display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+          minHeight: 'clamp(200px,40vh,420px)', overflow: 'hidden',
         }}>
-          {itemPositions.map((pos, idx) => {
-            const isTapped = tappedItems.has(idx);
-            return (
-              <div
-                key={idx}
-                onClick={() => handleTapItem(idx)}
-                style={{
-                  position: 'absolute',
-                  left: `${pos.x}%`, top: `${pos.y}%`,
-                  transform: `rotate(${pos.rotation}deg) scale(${isTapped ? pos.scale * 1.1 : pos.scale})`,
-                  transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                  cursor: 'pointer', zIndex: isTapped ? 10 : 5,
-                }}
-              >
-                <div style={{ position: 'relative' }}>
-                  <img src={item.img} alt={item.name} style={{
-                    width: 'min(72px, 16vw)', height: 'min(72px, 16vw)',
-                    objectFit: 'cover', borderRadius: 16,
-                    boxShadow: isTapped
-                      ? `0 6px 24px ${item.color}66, 0 0 0 3px ${item.color}`
-                      : '0 4px 12px rgba(0,0,0,0.12)',
-                    border: isTapped ? `3px solid ${item.color}` : '3px solid white',
-                    filter: isTapped ? 'brightness(1.05)' : 'none',
-                    transition: 'all 0.25s ease',
-                  }} />
-                  {isTapped && (
-                    <div style={{
-                      position: 'absolute', top: -8, right: -8,
-                      width: 26, height: 26, borderRadius: '50%',
-                      background: `linear-gradient(135deg, ${item.color}, ${item.color}CC)`,
-                      color: 'white', fontFamily: 'var(--font-heading)', fontWeight: 900,
-                      fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      boxShadow: `0 2px 8px ${item.color}66`,
-                      animation: 'bounceIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                    }}>
-                      {[...tappedItems].sort().indexOf(idx) + 1}
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+          {/* Wooden platform */}
+          <img src={assetPath('/images/counting/block_platform.jpg')} alt="" style={{
+            position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
+            width: 'clamp(200px,50vw,260px)', height: 'clamp(36px,7vw,48px)',
+            objectFit: 'cover', borderRadius: 'clamp(8px,1.5vw,12px)',
+            boxShadow: '0 4px 16px rgba(139,69,19,0.25)',
+            zIndex: 2,
+          }} />
 
-        {/* Counter */}
-        <div style={{ textAlign: 'center', margin: '8px 0' }}>
-          <span style={{
-            fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.8rem',
-            color: tappedItems.size === targetCount ? '#4CAF50' : item.color,
-            transition: 'color 0.3s',
+          {/* Block tower */}
+          <div style={{
+            position: 'relative', display: 'flex', flexDirection: 'column-reverse',
+            alignItems: 'center', paddingBottom: 'clamp(36px,7vw,48px)', zIndex: 3,
+            animation: shakeWrong ? 'btHeadShake 0.6s ease' : 'none',
           }}>
-            {tappedItems.size}
-          </span>
-          <span style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', color: '#999', margin: '0 4px' }}>/</span>
-          <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1rem', color: '#999' }}>?</span>
+            {placedBlocks.map((block, idx) => {
+              const c = roundColors[block.colorIdx] || BLOCK_THEMES[0];
+              const isNew = idx === lastAddedIdx;
+              const wobble = idx === placedBlocks.length - 1 && isNew;
+              return (
+                <div key={block.id} style={{
+                  width: 'clamp(160px,42vw,200px)', height: 'clamp(52px,10vw,64px)',
+                  borderRadius: 'clamp(8px,1.5vw,12px)',
+                  background: `linear-gradient(180deg, ${c.fill} 0%, ${c.stroke} 100%)`,
+                  border: `2.5px solid ${c.stroke}`,
+                  boxShadow: `0 5px 14px ${c.glow}, inset 0 4px 0 rgba(255,255,255,0.4), inset 0 -4px 0 rgba(0,0,0,0.12)`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  marginBottom: 'clamp(1px,0.4vw,3px)', position: 'relative',
+                  animation: wobble ? 'btBlockDrop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none',
+                  cursor: 'default',
+                }}>
+                  <span style={{ fontSize: 'clamp(1.3rem,3.2vw,1.8rem)', filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.2))' }}>{c.pattern}</span>
+                  <span style={{
+                    position: 'absolute', right: 'clamp(8px,2vw,12px)', top: '50%', transform: 'translateY(-50%)',
+                    fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: 'clamp(0.85rem,2vw,1.1rem)',
+                    color: 'rgba(255,255,255,0.8)',
+                  }}>{idx + 1}</span>
+                  <div style={{
+                    position: 'absolute', top: 'clamp(4px,0.8vw,7px)', left: 'clamp(10px,2vw,16px)', right: 'clamp(10px,2vw,16px)',
+                    height: 'clamp(5px,1.2vw,8px)', borderRadius: 6, background: 'rgba(255,255,255,0.3)',
+                  }} />
+                </div>
+              );
+            })}
+
+            {/* Celebration sparkles */}
+            {celebrating && [...Array(10)].map((_, i) => (
+              <div key={`sparkle-${i}`} style={{
+                position: 'absolute', top: `${-25 - i * 10}px`,
+                left: `${10 + (i * 37 % 80)}%`,
+                fontSize: 'clamp(1rem,2.5vw,1.5rem)',
+                animation: `btFloatUp ${0.8 + (i * 0.15)}s ease-out forwards`,
+                animationDelay: `${i * 0.08}s`, opacity: 0,
+                pointerEvents: 'none',
+              }}>
+                {['✨','⭐','🌟','💫','🎉','🎊','🧱','🏗️','💜','🦉'][i]}
+              </div>
+            ))}
+          </div>
+
+          {/* Block count indicator (right) */}
+          <div style={{
+            position: 'absolute', bottom: 'clamp(16px,4vw,30px)', right: 'clamp(10px,2.5vw,20px)',
+            background: 'rgba(255,255,255,0.94)', backdropFilter: 'blur(10px)',
+            borderRadius: 'clamp(12px,2.5vw,18px)', padding: 'clamp(6px,1.5vw,12px) clamp(12px,2.5vw,20px)',
+            boxShadow: '0 3px 12px rgba(0,0,0,0.08)',
+            border: placedBlocks.length === targetCount ? '2px solid #10B981' : '2px solid rgba(124,58,237,0.1)',
+            transition: 'border-color 0.3s',
+          }}>
+            <span style={{
+              fontFamily: 'var(--font-heading)', fontWeight: 900,
+              fontSize: 'clamp(1.5rem,3.5vw,2.2rem)',
+              color: placedBlocks.length === targetCount ? '#10B981' : '#7C3AED',
+              transition: 'color 0.3s',
+            }}>{placedBlocks.length}</span>
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(0.8rem,1.8vw,1rem)', color: '#999' }}> / {targetCount}</span>
+          </div>
+
+          {/* Owl speech bubble (left) */}
+          <div style={{
+            position: 'absolute', bottom: 'clamp(16px,4vw,30px)', left: 'clamp(10px,2.5vw,20px)',
+            background: 'rgba(255,255,255,0.94)', backdropFilter: 'blur(10px)',
+            borderRadius: 'clamp(12px,2.5vw,18px)', padding: 'clamp(6px,1.5vw,10px) clamp(10px,2vw,16px)',
+            boxShadow: '0 3px 12px rgba(0,0,0,0.08)',
+            maxWidth: 'clamp(120px,32vw,200px)',
+          }}>
+            <span style={{
+              fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.7rem,1.6vw,0.85rem)',
+              color: '#7C3AED',
+            }}>{owlMsg}</span>
+          </div>
         </div>
 
-        {/* Answer choices — shown after tapping all or via button */}
-        {(showAnswer || tappedItems.size > 0) && (
-          <div style={{ textAlign: 'center', marginBottom: 8 }}>
-            {!showAnswer && tappedItems.size < targetCount ? (
-              <p style={{ fontSize: '0.85rem', color: '#999', fontFamily: 'var(--font-body)' }}>
-                Teruskan sentuh semua {item.name}!
-              </p>
-            ) : (
-              <>
-                <p style={{ fontFamily: 'var(--font-heading)', fontSize: '0.95rem', color: '#555', marginBottom: 8 }}>
-                  Berapa banyak {item.name}?
-                </p>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: 12 }}>
-                  {answerChoices.map((num, i) => (
-                    <button key={i} onClick={() => handleAnswer(num)} disabled={!!feedback} style={{
-                      width: 64, height: 64, borderRadius: 18, border: 'none',
-                      background: selectedAnswer === num
-                        ? (feedback?.type === 'correct' ? 'linear-gradient(135deg,#6BCB77,#4CAF50)' : 'linear-gradient(135deg,#FF6B6B,#F44336)')
-                        : `linear-gradient(135deg, ${item.color}, ${item.color}BB)`,
-                      color: 'white', fontFamily: 'var(--font-heading)', fontSize: '1.8rem',
-                      cursor: feedback ? 'default' : 'pointer',
-                      boxShadow: `0 6px 20px ${item.color}33`,
-                      transition: 'all 0.2s', opacity: feedback && selectedAnswer !== num ? 0.5 : 1,
-                      transform: selectedAnswer === num ? 'scale(1.1)' : 'scale(1)',
-                    }}>{num}</button>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-        )}
+        {/* ── Controls ── */}
+        <div style={{
+          display: 'flex', justifyContent: 'center', alignItems: 'center',
+          gap: 'clamp(14px,4vw,24px)', padding: 'clamp(10px,2vw,16px) 0',
+        }}>
+          {/* Remove block */}
+          <button onClick={removeBlock} disabled={!!feedback || placedBlocks.length === 0} style={{
+            width: 'clamp(60px,15vw,80px)', height: 'clamp(60px,15vw,80px)',
+            borderRadius: '50%', border: 'none', cursor: feedback ? 'default' : 'pointer',
+            background: placedBlocks.length === 0 ? '#E5E7EB' : 'linear-gradient(135deg,#FF6B6B,#EF4444)',
+            color: 'white', fontSize: 'clamp(1.6rem,4vw,2.2rem)', fontWeight: 900,
+            boxShadow: placedBlocks.length > 0 ? '0 6px 20px #FF6B6B55' : 'none',
+            opacity: placedBlocks.length === 0 || !!feedback ? 0.35 : 1,
+            transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation',
+          }}>−</button>
 
-        {/* Feedback */}
+          {/* Check answer */}
+          <button onClick={checkAnswer} disabled={!!feedback || placedBlocks.length === 0} style={{
+            width: 'clamp(74px,18vw,96px)', height: 'clamp(74px,18vw,96px)',
+            borderRadius: '50%', border: 'none', cursor: feedback ? 'default' : 'pointer',
+            background: feedback
+              ? (feedback.type === 'correct' ? 'linear-gradient(135deg,#10B981,#059669)' : 'linear-gradient(135deg,#F87171,#EF4444)')
+              : placedBlocks.length === targetCount
+                ? 'linear-gradient(135deg,#10B981,#059669)'
+                : 'linear-gradient(135deg,#9B72CF,#7C3AED)',
+            color: 'white', fontSize: 'clamp(1.8rem,4.5vw,2.5rem)',
+            boxShadow: placedBlocks.length === targetCount && !feedback
+              ? '0 8px 28px rgba(16,185,129,0.45), 0 0 0 5px rgba(16,185,129,0.15)'
+              : '0 6px 24px rgba(124,58,237,0.25)',
+            transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transform: placedBlocks.length === targetCount && !feedback ? 'scale(1.12)' : 'scale(1)',
+            WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation',
+          }}>✓</button>
+
+          {/* Add block */}
+          <button onClick={addBlock} disabled={!!feedback || placedBlocks.length >= MAX_BLOCKS} style={{
+            width: 'clamp(60px,15vw,80px)', height: 'clamp(60px,15vw,80px)',
+            borderRadius: '50%', border: 'none', cursor: feedback ? 'default' : 'pointer',
+            background: placedBlocks.length >= MAX_BLOCKS ? '#E5E7EB' : 'linear-gradient(135deg,#6BCB77,#10B981)',
+            color: 'white', fontSize: 'clamp(1.6rem,4vw,2.2rem)', fontWeight: 900,
+            boxShadow: placedBlocks.length < MAX_BLOCKS ? '0 6px 20px #6BCB7755' : 'none',
+            opacity: placedBlocks.length >= MAX_BLOCKS || !!feedback ? 0.35 : 1,
+            transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation',
+          }}>+</button>
+        </div>
+
+        {/* ── Feedback ── */}
         {feedback && (
-          <div style={{ textAlign: 'center', marginBottom: 8 }}>
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(6px,1.5vw,10px)' }}>
             <div style={{
-              display: 'inline-block', padding: '10px 24px', borderRadius: 20,
-              background: feedback.type === 'correct' ? 'linear-gradient(135deg,#6BCB77,#4CAF50)' : 'linear-gradient(135deg,#FF6B6B,#F44336)',
-              color: 'white', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.95rem',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+              display: 'inline-block', padding: 'clamp(8px,1.5vw,14px) clamp(20px,4vw,32px)',
+              borderRadius: 22,
+              background: feedback.type === 'correct'
+                ? 'linear-gradient(135deg,#10B981,#059669)'
+                : 'linear-gradient(135deg,#F87171,#EF4444)',
+              color: 'white', fontFamily: 'var(--font-heading)', fontWeight: 700,
+              fontSize: 'clamp(0.85rem,2vw,1.05rem)',
+              boxShadow: '0 6px 20px rgba(0,0,0,0.12)',
+              animation: 'btBounceIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
             }}>{feedback.message}</div>
           </div>
         )}
-
-        {/* Manual show answer button */}
-        {!showAnswer && tappedItems.size > 0 && tappedItems.size !== targetCount && (
-          <div style={{ textAlign: 'center', marginBottom: 8 }}>
-            <button onClick={() => setShowAnswer(true)} style={{
-              padding: '10px 28px', borderRadius: 16, border: 'none',
-              background: 'rgba(255,255,255,0.8)', color: '#666',
-              fontFamily: 'var(--font-heading)', fontSize: '0.9rem',
-              cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-            }}>
-              Dah siap kira? Jawab!
-            </button>
-          </div>
-        )}
       </div>
+
+      {/* ── CSS Animations ── */}
+      <style>{`
+        @keyframes btBlockDrop {
+          0% { transform: translateY(-50px) rotate(-6deg); opacity: 0; }
+          55% { transform: translateY(5px) rotate(2deg); opacity: 1; }
+          75% { transform: translateY(-3px) rotate(-1deg); }
+          100% { transform: translateY(0) rotate(0); }
+        }
+        @keyframes btHeadShake {
+          0% { transform: translateX(0); }
+          15% { transform: translateX(-10px) rotate(-1.5deg); }
+          30% { transform: translateX(8px) rotate(1.5deg); }
+          45% { transform: translateX(-5px); }
+          60% { transform: translateX(3px); }
+          100% { transform: translateX(0); }
+        }
+        @keyframes btFloatUp {
+          0% { opacity: 1; transform: translateY(0) scale(0.5); }
+          100% { opacity: 0; transform: translateY(-80px) scale(1.4); }
+        }
+        @keyframes btBounceIn {
+          0% { transform: scale(0.3); opacity: 0; }
+          50% { transform: scale(1.15); }
+          100% { transform: scale(1); opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }
-
 
 // ============================================
 // ANIMAL HOMES GAME (Rumah Haiwan)
