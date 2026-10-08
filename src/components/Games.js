@@ -4754,15 +4754,16 @@ export function SyllableFactoryGame() {
   useEffect(() => { setupRound(1); }, [setupRound]);
 
   const handlePick = (syllable, optionIdx) => {
-    if (!currentWord || wordComplete || usedIndices.includes(optionIdx)) return;
+    if (!currentWord || wordComplete) return;
     const nextIdx = built.length;
 
     if (nextIdx < currentWord.syllables.length && syllable === currentWord.syllables[nextIdx]) {
-      // Correct syllable — just place it, NO celebration sound yet
+      // Correct syllable — place it and REMOVE from options
       if (soundEnabled) playTapSound();
       const newBuilt = [...built, syllable];
       setBuilt(newBuilt);
-      setUsedIndices(prev => [...prev, optionIdx]);
+      // Remove picked option by index
+      setOptions(prev => prev.filter((_, idx) => idx !== optionIdx));
 
       // Check if word is now complete
       if (newBuilt.length === currentWord.syllables.length) {
@@ -4944,26 +4945,21 @@ export function SyllableFactoryGame() {
                   display: 'flex', gap: 'clamp(6px, 2vw, 10px)',
                   justifyContent: 'center', flexWrap: 'wrap',
                 }}>
-                  {options.map((syl, i) => {
-                    const isUsed = usedIndices.includes(i);
-                    return (
-                    <button key={i} onClick={() => handlePick(syl, i)} disabled={isUsed} style={{
+                  {options.map((syl, i) => (
+                    <button key={`${syl}-${i}`} onClick={() => handlePick(syl, i)} style={{
                       padding: 'clamp(10px, 3vw, 14px) clamp(20px, 5vw, 30px)',
                       borderRadius: 16,
-                      background: isUsed ? 'rgba(200,200,200,0.4)' : SYLLABLE_COLORS[i % SYLLABLE_COLORS.length],
-                      border: isUsed ? '2px solid rgba(0,0,0,0.05)' : '2px solid rgba(255,255,255,0.6)',
+                      background: SYLLABLE_COLORS[i % SYLLABLE_COLORS.length],
+                      border: '2px solid rgba(255,255,255,0.6)',
                       fontSize: 'clamp(1.05rem, 3.5vw, 1.3rem)', fontWeight: 800,
                       fontFamily: 'var(--font-heading)',
-                      cursor: isUsed ? 'default' : 'pointer',
-                      boxShadow: isUsed ? 'none' : '0 4px 16px rgba(0,0,0,0.1)',
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
                       transition: 'all 0.3s ease',
-                      color: isUsed ? 'rgba(0,0,0,0.15)' : '#333',
-                      opacity: isUsed ? 0.4 : 1,
-                      transform: isUsed ? 'scale(0.9)' : 'scale(1)',
+                      color: '#333',
                       WebkitTapHighlightColor: 'transparent',
                     }}>{syl}</button>
-                    );
-                  })}
+                  ))}
                 </div>
               </div>
             </div>
