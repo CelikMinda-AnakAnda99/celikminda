@@ -4743,27 +4743,28 @@ export function SyllableFactoryGame() {
     const w = shuffled[(roundNum - 1) % shuffled.length];
     setCurrentWord(w);
     // Mix correct syllables with 3 wrong ones, shuffle
-    const allSyllables = [...w.syllables, ...w.wrong.slice(0, 3)].sort(() => Math.random() - 0.5);
+    const allSyllables = [...w.syllables, ...w.wrong.slice(0, 3)]
+      .sort(() => Math.random() - 0.5)
+      .map((s, i) => ({ id: i, syl: s, used: false }));
     setOptions(allSyllables);
     setBuilt([]);
     setFeedback(null);
     setWordComplete(false);
-    setUsedIndices([]);
   }, [ALL_WORDS]);
 
   useEffect(() => { setupRound(1); }, [setupRound]);
 
-  const handlePick = (syllable, optionIdx) => {
-    if (!currentWord || wordComplete) return;
+  const handlePick = (opt) => {
+    if (!currentWord || wordComplete || opt.used) return;
     const nextIdx = built.length;
 
-    if (nextIdx < currentWord.syllables.length && syllable === currentWord.syllables[nextIdx]) {
-      // Correct syllable — place it and REMOVE from options
+    if (nextIdx < currentWord.syllables.length && opt.syl === currentWord.syllables[nextIdx]) {
+      // Correct syllable — place it and mark as used (grey out)
       if (soundEnabled) playTapSound();
-      const newBuilt = [...built, syllable];
+      const newBuilt = [...built, opt.syl];
       setBuilt(newBuilt);
-      // Remove picked option by index
-      setOptions(prev => prev.filter((_, idx) => idx !== optionIdx));
+      // Mark this option as used
+      setOptions(prev => prev.map(o => o.id === opt.id ? { ...o, used: true } : o));
 
       // Check if word is now complete
       if (newBuilt.length === currentWord.syllables.length) {
@@ -4945,20 +4946,22 @@ export function SyllableFactoryGame() {
                   display: 'flex', gap: 'clamp(6px, 2vw, 10px)',
                   justifyContent: 'center', flexWrap: 'wrap',
                 }}>
-                  {options.map((syl, i) => (
-                    <button key={`${syl}-${i}`} onClick={() => handlePick(syl, i)} style={{
+                  {options.map((opt, i) => (
+                    <button key={opt.id} onClick={() => handlePick(opt)} disabled={opt.used} style={{
                       padding: 'clamp(10px, 3vw, 14px) clamp(20px, 5vw, 30px)',
                       borderRadius: 16,
-                      background: SYLLABLE_COLORS[i % SYLLABLE_COLORS.length],
-                      border: '2px solid rgba(255,255,255,0.6)',
+                      background: opt.used ? '#D5D5D5' : SYLLABLE_COLORS[i % SYLLABLE_COLORS.length],
+                      border: opt.used ? '2px solid #C0C0C0' : '2px solid rgba(255,255,255,0.6)',
                       fontSize: 'clamp(1.05rem, 3.5vw, 1.3rem)', fontWeight: 800,
                       fontFamily: 'var(--font-heading)',
-                      cursor: 'pointer',
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+                      cursor: opt.used ? 'default' : 'pointer',
+                      boxShadow: opt.used ? 'none' : '0 4px 16px rgba(0,0,0,0.1)',
                       transition: 'all 0.3s ease',
-                      color: '#333',
+                      color: opt.used ? '#AAA' : '#333',
+                      opacity: opt.used ? 0.5 : 1,
+                      textDecoration: opt.used ? 'line-through' : 'none',
                       WebkitTapHighlightColor: 'transparent',
-                    }}>{syl}</button>
+                    }}>{opt.syl}</button>
                   ))}
                 </div>
               </div>
