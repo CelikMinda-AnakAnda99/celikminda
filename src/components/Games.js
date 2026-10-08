@@ -4700,140 +4700,297 @@ export function LetterTrailGame() {
 export function SyllableFactoryGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
-  const WORDS = [
-    { word: 'BUKU', syllables: ['BU','KU'], wrong: ['MA','TI','LA'] },
-    { word: 'MAMA', syllables: ['MA','MA'], wrong: ['BU','KU','SI'] },
-    { word: 'BOLA', syllables: ['BO','LA'], wrong: ['KE','RI','TA'] },
-    { word: 'KUDA', syllables: ['KU','DA'], wrong: ['PI','SA','NG'] },
-    { word: 'SUSU', syllables: ['SU','SU'], wrong: ['BA','JU','TE'] },
-    { word: 'TOPI', syllables: ['TO','PI'], wrong: ['RU','MA','HI'] },
-  ];
-  
-  const [wordIdx, setWordIdx] = useState(0);
+
+  const TOTAL_ROUNDS = 15;
+
+  // 20+ Malay words with syllables and wrong options
+  const ALL_WORDS = useMemo(() => [
+    { word: 'BUKU', syllables: ['BU','KU'], wrong: ['MA','TI','LA','RI'] },
+    { word: 'MAMA', syllables: ['MA','MA'], wrong: ['BU','KU','SI','TE'] },
+    { word: 'BOLA', syllables: ['BO','LA'], wrong: ['KE','RI','TA','SU'] },
+    { word: 'KUDA', syllables: ['KU','DA'], wrong: ['PI','SA','NG','BI'] },
+    { word: 'SUSU', syllables: ['SU','SU'], wrong: ['BA','JU','TE','KA'] },
+    { word: 'TOPI', syllables: ['TO','PI'], wrong: ['RU','MA','HI','BE'] },
+    { word: 'NASI', syllables: ['NA','SI'], wrong: ['KU','LA','BO','TI'] },
+    { word: 'IKAN', syllables: ['I','KAN'], wrong: ['BU','MA','SE','RI'] },
+    { word: 'SAPI', syllables: ['SA','PI'], wrong: ['KU','DA','BO','LA'] },
+    { word: 'BAJU', syllables: ['BA','JU'], wrong: ['KE','RI','TA','SU'] },
+    { word: 'ROTI', syllables: ['RO','TI'], wrong: ['MA','KA','PI','SE'] },
+    { word: 'MATA', syllables: ['MA','TA'], wrong: ['BU','KU','SI','LA'] },
+    { word: 'KAKI', syllables: ['KA','KI'], wrong: ['BO','LA','SU','TI'] },
+    { word: 'GULA', syllables: ['GU','LA'], wrong: ['BI','SA','KE','RI'] },
+    { word: 'BESI', syllables: ['BE','SI'], wrong: ['KU','DA','MA','LA'] },
+    { word: 'TALI', syllables: ['TA','LI'], wrong: ['BU','KE','NA','RO'] },
+    { word: 'DURI', syllables: ['DU','RI'], wrong: ['SA','PI','BO','LA'] },
+    { word: 'PAKU', syllables: ['PA','KU'], wrong: ['MA','SI','TA','BE'] },
+    { word: 'GURU', syllables: ['GU','RU'], wrong: ['KA','BI','SE','LA'] },
+    { word: 'PADI', syllables: ['PA','DI'], wrong: ['BU','KU','MA','TO'] },
+  ], []);
+
+  const [round, setRound] = useState(1);
+  const [score, setScore] = useState(0);
   const [built, setBuilt] = useState([]);
   const [options, setOptions] = useState([]);
-  const [score, setScore] = useState(0);
+  const [currentWord, setCurrentWord] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
-  
-  const setupWord = useCallback((idx) => {
-    const w = WORDS[idx];
+  const [confettiPieces, setConfettiPieces] = useState([]);
+  const [wordComplete, setWordComplete] = useState(false);
+
+  const setupRound = useCallback((roundNum) => {
+    const shuffled = [...ALL_WORDS].sort(() => Math.random() - 0.5);
+    const w = shuffled[(roundNum - 1) % shuffled.length];
+    setCurrentWord(w);
+    // Mix correct syllables with 3 wrong ones, shuffle
     const allSyllables = [...w.syllables, ...w.wrong.slice(0, 3)].sort(() => Math.random() - 0.5);
     setOptions(allSyllables);
     setBuilt([]);
-  }, []);
-  
-  useEffect(() => { setupWord(0); }, []);
-  
+    setFeedback(null);
+    setWordComplete(false);
+  }, [ALL_WORDS]);
+
+  useEffect(() => { setupRound(1); }, [setupRound]);
+
   const handlePick = (syllable) => {
-    const w = WORDS[wordIdx];
+    if (!currentWord || wordComplete) return;
     const nextIdx = built.length;
-    
-    if (nextIdx < w.syllables.length && syllable === w.syllables[nextIdx]) {
-      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
+
+    if (nextIdx < currentWord.syllables.length && syllable === currentWord.syllables[nextIdx]) {
+      // Correct syllable — just place it, NO celebration sound yet
+      if (soundEnabled) playTapSound();
       const newBuilt = [...built, syllable];
       setBuilt(newBuilt);
-      setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
-      
-      if (newBuilt.length === w.syllables.length) {
-        const newScore = score + 1;
-        setScore(newScore);
+
+      // Check if word is now complete
+      if (newBuilt.length === currentWord.syllables.length) {
+        // WORD COMPLETE — NOW play celebration!
+        setWordComplete(true);
+        setScore(prev => prev + 10);
+        if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
+        setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
+
         setTimeout(() => {
           setFeedback(null);
-          if (wordIdx + 1 < WORDS.length) {
-            setWordIdx(wordIdx + 1);
-            setupWord(wordIdx + 1);
-          } else {
-            if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
-            const stars = newScore >= 5 ? 3 : newScore >= 3 ? 2 : 1;
-            completeGame('abc', 'syllable-factory', stars, newScore * 15);
+          if (round >= TOTAL_ROUNDS) {
+            const finalScore = score + 10;
+            const stars = finalScore >= 120 ? 3 : finalScore >= 70 ? 2 : 1;
+            completeGame('abc', 'syllable-factory', stars, finalScore);
             setGameComplete(true);
+            if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
+            spawnConfetti();
+          } else {
+            setRound(prev => prev + 1);
+            setupRound(round + 1);
           }
-        }, 800);
+        }, 1200);
       }
     } else {
+      // Wrong syllable
       if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
+      setTimeout(() => setFeedback(null), 800);
     }
-    setTimeout(() => setFeedback(null), 1200);
   };
-  
-  if (gameComplete) {
-    return (
-      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
-        <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
-        <h1 style={{ fontFamily: 'var(--font-heading)', color: '#4527A0' }}>
-          {lang === 'bm' ? 'Bijak Membina Perkataan!' : 'Word Building Master!'}
-        </h1>
-        <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
-        <button className="btn-premium" onClick={() => goToWorld('abc')}>
-          {lang === 'bm' ? '← Kembali' : '← Back'}
-        </button>
-      </div>
-    );
-  }
-  
-  const w = WORDS[wordIdx];
-  
+
+  const spawnConfetti = () => {
+    const colors = ['#FF6B9D', '#FFD93D', '#4A90D9', '#6BCB77', '#9B72CF'];
+    setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
+      id: i, left: Math.random() * 100, color: colors[i % colors.length],
+      delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
+    })));
+  };
+
+  const getStars = () => score >= 120 ? 3 : score >= 70 ? 2 : 1;
+
+  // Syllable button gradient colors
+  const SYLLABLE_COLORS = [
+    'linear-gradient(135deg, #FF9A9E, #FECFEF)',
+    'linear-gradient(135deg, #A18CD1, #FBC2EB)',
+    'linear-gradient(135deg, #84FAB0, #8FD3F4)',
+    'linear-gradient(135deg, #FFD93D, #FFE082)',
+    'linear-gradient(135deg, #4FC3F7, #B3E5FC)',
+  ];
+
   return (
-    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/syllable_factory_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
-      <div style={{ padding: 16, textAlign: 'center' }}>
-        <button className="icon-btn" onClick={() => goToWorld('abc')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        
-        <h2 style={{ fontFamily: 'var(--font-heading)', color: '#4527A0' }}>
-          {lang === 'bm' ? 'Bina Perkataan!' : 'Build the Word!'}
-        </h2>
-        <div style={{ fontSize: '0.8rem', color: '#999' }}>{wordIdx + 1}/{WORDS.length}</div>
-        
-        {/* Target word display */}
-        <div style={{
-          margin: '16px auto', display: 'flex', gap: 8, justifyContent: 'center',
-        }}>
-          {w.syllables.map((syl, i) => (
-            <div key={i} style={{
-              width: 70, height: 50, borderRadius: 12,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '1.3rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
-              background: i < built.length ? 'linear-gradient(135deg, #6BCB77, #48C9B0)' : 'rgba(255,255,255,0.5)',
-              border: i < built.length ? '2px solid #4CAF50' : '2px dashed #9E9E9E',
-              color: i < built.length ? 'white' : '#BBB',
-            }}>
-              {i < built.length ? built[i] : '?'}
-            </div>
-          ))}
+    <div className="game-screen">
+      <div className="game-header">
+        <button className="back-btn" onClick={() => goToWorld('abc')}>←</button>
+        <span className="game-title">
+          {lang === 'bm' ? 'Bina Perkataan' : 'Build Words'}
+        </span>
+        <div className="game-stars">
+          {[1,2,3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
         </div>
-        
-        {/* Conveyor belt (options) */}
-        <div style={{
-          background: 'rgba(0,0,0,0.05)', borderRadius: 16, padding: 16,
-          margin: '16px auto', maxWidth: 350,
-        }}>
-          <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: 8 }}>
-            {lang === 'bm' ? 'Pilih suku kata yang betul:' : 'Pick the correct syllable:'}
-          </div>
-          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-            {options.map((syl, i) => (
-              <button key={i} onClick={() => handlePick(syl)} style={{
-                padding: '10px 20px', borderRadius: 14,
-                background: 'white', border: '2px solid rgba(0,0,0,0.1)',
-                fontSize: '1.1rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
-                cursor: 'pointer', boxShadow: 'var(--shadow-sm)',
-                transition: 'transform 0.15s ease',
-              }}>{syl}</button>
-            ))}
-          </div>
-        </div>
-        
-        {feedback && (
-          <div style={{
-            marginTop: 12, padding: '8px 16px', borderRadius: 12,
-            background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B',
-            color: 'white', fontWeight: 700, display: 'inline-block',
-          }}>{feedback.type === 'correct' ? '' : ''}{feedback.message}</div>
-        )}
       </div>
+
+      <div className="game-body" style={{ padding: 0 }}>
+        <div style={{
+          width: '100%', height: '100%', position: 'relative',
+          overflow: 'hidden',
+        }}>
+          {/* Clean background */}
+          <img src={assetPath('/images/game/syllable_factory_bg.jpg')} alt="" style={{
+            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+            objectFit: 'cover', zIndex: 0,
+          }} />
+
+          {/* HUD */}
+          {!gameComplete && currentWord && (
+            <div style={{
+              position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10,
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              padding: '8px 12px', gap: 6,
+            }}>
+              {/* Row 1: Round + Score */}
+              <div style={{
+                display: 'flex', justifyContent: 'space-between', width: '100%',
+                alignItems: 'center',
+              }}>
+                <div style={{
+                  background: 'rgba(255,255,255,0.9)', borderRadius: 50,
+                  padding: '4px 14px', fontSize: '0.8rem', fontWeight: 700,
+                  fontFamily: 'var(--font-heading)', color: '#666',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                }}>
+                  {t('round', lang)} {round}/{TOTAL_ROUNDS}
+                </div>
+                <div style={{
+                  background: 'rgba(255,255,255,0.9)', borderRadius: 50,
+                  padding: '4px 14px', fontSize: '0.85rem', fontWeight: 700,
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  <span style={{ color: '#333', fontFamily: 'var(--font-heading)' }}>{score}</span>
+                </div>
+              </div>
+
+              {/* Row 2: Instruction */}
+              <div style={{
+                background: 'rgba(255,255,255,0.95)',
+                backdropFilter: 'blur(12px)',
+                padding: '8px 20px',
+                borderRadius: 50,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                fontFamily: 'var(--font-heading)', fontWeight: 700,
+                fontSize: 'clamp(0.85rem, 2.5vw, 1.1rem)',
+                color: '#4527A0',
+              }}>
+                {lang === 'bm' ? 'Susun suku kata:' : 'Arrange syllables:'}{' '}
+                <span style={{ color: '#E91E63', fontSize: '1.2em' }}>{currentWord.word}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Word building area — center */}
+          {!gameComplete && currentWord && (
+            <div style={{
+              position: 'absolute', top: '50%', left: '50%',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 5, width: '90%', maxWidth: 420,
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20,
+            }}>
+              {/* Target slots */}
+              <div style={{
+                display: 'flex', gap: 'clamp(8px, 2vw, 14px)', justifyContent: 'center',
+                flexWrap: 'wrap',
+              }}>
+                {currentWord.syllables.map((syl, i) => (
+                  <div key={i} style={{
+                    width: 'clamp(60px, 18vw, 90px)',
+                    height: 'clamp(50px, 14vw, 70px)',
+                    borderRadius: 16,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 'clamp(1.1rem, 4vw, 1.6rem)', fontWeight: 900,
+                    fontFamily: 'var(--font-heading)',
+                    background: i < built.length
+                      ? 'linear-gradient(135deg, #6BCB77, #48C9B0)'
+                      : 'rgba(255,255,255,0.7)',
+                    border: i < built.length
+                      ? '3px solid #4CAF50'
+                      : '3px dashed rgba(69,39,160,0.3)',
+                    color: i < built.length ? 'white' : '#BBB',
+                    boxShadow: i < built.length
+                      ? '0 6px 20px rgba(107,203,119,0.4)'
+                      : '0 4px 12px rgba(0,0,0,0.06)',
+                    transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    transform: i < built.length ? 'scale(1.05)' : 'scale(1)',
+                    backdropFilter: 'blur(8px)',
+                  }}>
+                    {i < built.length ? built[i] : '?'}
+                  </div>
+                ))}
+              </div>
+
+              {/* Syllable options */}
+              <div style={{
+                background: 'rgba(255,255,255,0.85)',
+                backdropFilter: 'blur(12px)',
+                borderRadius: 24, padding: 'clamp(12px, 3vw, 20px)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+                border: '1px solid rgba(255,255,255,0.6)',
+                width: '100%',
+              }}>
+                <div style={{
+                  fontSize: 'clamp(0.7rem, 2vw, 0.8rem)', color: '#888',
+                  marginBottom: 10, fontWeight: 600, textAlign: 'center',
+                }}>
+                  {lang === 'bm' ? 'Pilih suku kata yang betul:' : 'Pick the correct syllable:'}
+                </div>
+                <div style={{
+                  display: 'flex', gap: 'clamp(6px, 2vw, 10px)',
+                  justifyContent: 'center', flexWrap: 'wrap',
+                }}>
+                  {options.map((syl, i) => (
+                    <button key={i} onClick={() => handlePick(syl)} style={{
+                      padding: 'clamp(8px, 2.5vw, 12px) clamp(16px, 4vw, 24px)',
+                      borderRadius: 14,
+                      background: SYLLABLE_COLORS[i % SYLLABLE_COLORS.length],
+                      border: '2px solid rgba(255,255,255,0.6)',
+                      fontSize: 'clamp(0.95rem, 3vw, 1.2rem)', fontWeight: 800,
+                      fontFamily: 'var(--font-heading)',
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+                      transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                      color: '#333',
+                      WebkitTapHighlightColor: 'transparent',
+                    }}>{syl}</button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Feedback */}
+          {feedback && (
+            <div style={{
+              position: 'absolute', bottom: 'clamp(20px, 5vh, 50px)',
+              left: '50%', transform: 'translateX(-50%)',
+              zIndex: 20,
+              background: feedback.type === 'correct'
+                ? 'linear-gradient(135deg, #6BCB77, #48C9B0)'
+                : 'linear-gradient(135deg, #FF6B6B, #ee5a24)',
+              color: 'white', padding: '10px 24px', borderRadius: 50,
+              fontFamily: 'var(--font-heading)', fontWeight: 700,
+              fontSize: 'clamp(0.85rem, 2.5vw, 1rem)',
+              boxShadow: '0 6px 24px rgba(0,0,0,0.2)',
+              animation: 'fadeInUp 0.3s ease-out',
+            }}>
+              {feedback.message}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {gameComplete && (
+        <GameCompleteModal
+          lang={lang} stars={getStars()} score={score}
+          accentColor="#4527A0"
+          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); setupRound(1); }}
+          onBack={() => goToWorld('abc')}
+          confettiPieces={confettiPieces}
+        />
+      )}
     </div>
   );
 }
