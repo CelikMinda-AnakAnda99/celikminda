@@ -1727,214 +1727,302 @@ export function ShapeHuntGame() {
 }
 
 // ============================================
-// BLOCK TOWER GAME (Menara Blok)
-// Stack the right number of blocks!
+// KIRA & SENTUH (Count & Touch) — FULL OVERHAUL
+// Sentuh setiap item untuk mengiranya!
 // ============================================
 export function BlockTowerGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const TOTAL_ROUNDS = 15;
-  const BLOCK_COLORS = ['#FF6B9D', '#4A90D9', '#6BCB77', '#FFD93D', '#9B72CF', '#FF8C42', '#48C9B0', '#ee5a24'];
+  // Cute items to count — using watercolor images
+  const ITEMS = [
+    { name: 'Bintang', img: assetPath('/images/counting/star.jpg'), color: '#FFD93D', bgGrad: 'linear-gradient(135deg,#FFF9C4,#FFFDE7)' },
+    { name: 'Kupu-kupu', img: assetPath('/images/counting/butterfly.jpg'), color: '#CE93D8', bgGrad: 'linear-gradient(135deg,#F3E5F5,#EDE7F6)' },
+    { name: 'Bunga', img: assetPath('/images/counting/flower.jpg'), color: '#FFB74D', bgGrad: 'linear-gradient(135deg,#FFF8E1,#FFF3E0)' },
+    { name: 'Epal', img: assetPath('/images/counting/apple.jpg'), color: '#EF5350', bgGrad: 'linear-gradient(135deg,#FFEBEE,#FCE4EC)' },
+    { name: 'Ikan', img: assetPath('/images/counting/fish.jpg'), color: '#4FC3F7', bgGrad: 'linear-gradient(135deg,#E1F5FE,#E0F7FA)' },
+    { name: 'Arnab', img: assetPath('/images/counting/rabbit.jpg'), color: '#A1887F', bgGrad: 'linear-gradient(135deg,#EFEBE9,#FBE9E7)' },
+    { name: 'Kucing', img: assetPath('/images/counting/cat.jpg'), color: '#FFA726', bgGrad: 'linear-gradient(135deg,#FFF3E0,#FFF8E1)' },
+  ];
 
-  const [round, setRound] = useState(1);
+  const TOTAL_ROUNDS = 10;
+
+  const [round, setRound] = useState(0);
   const [score, setScore] = useState(0);
-  const [targetNumber, setTargetNumber] = useState(3);
-  const [currentBlocks, setCurrentBlocks] = useState(0);
-  const [blockColors, setBlockColors] = useState([]);
+  const [currentItem, setCurrentItem] = useState(null);
+  const [targetCount, setTargetCount] = useState(0);
+  const [tappedItems, setTappedItems] = useState(new Set());
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
-  const [confettiPieces, setConfettiPieces] = useState([]);
-  const [towerShake, setTowerShake] = useState(false);
+  const [itemPositions, setItemPositions] = useState([]);
 
-  const generateRound = useCallback((roundNum) => {
-    const target = 2 + Math.floor(Math.random() * 7); // 2-8
-    setTargetNumber(target);
-    setCurrentBlocks(0);
-    setBlockColors([]);
+  const generateRound = useCallback(() => {
+    const item = ITEMS[Math.floor(Math.random() * ITEMS.length)];
+    const count = 2 + Math.floor(Math.random() * 7); // 2-8
+    setCurrentItem(item);
+    setTargetCount(count);
+    setTappedItems(new Set());
+    setShowAnswer(false);
+    setSelectedAnswer(null);
     setFeedback(null);
+    
+    // Generate scattered positions for items
+    const positions = [];
+    for (let i = 0; i < count; i++) {
+      let pos;
+      let attempts = 0;
+      do {
+        pos = {
+          x: 10 + Math.random() * 70,
+          y: 5 + Math.random() * 55,
+          rotation: -15 + Math.random() * 30,
+          scale: 0.85 + Math.random() * 0.3,
+        };
+        attempts++;
+      } while (
+        attempts < 50 &&
+        positions.some(p => Math.abs(p.x - pos.x) < 18 && Math.abs(p.y - pos.y) < 18)
+      );
+      positions.push(pos);
+    }
+    setItemPositions(positions);
   }, []);
 
-  useEffect(() => { generateRound(1); }, [generateRound]);
+  useEffect(() => { generateRound(); }, [generateRound]);
 
-  const addBlock = () => {
-    if (feedback) return;
-    const newCount = currentBlocks + 1;
-    setCurrentBlocks(newCount);
-    setBlockColors(prev => [...prev, BLOCK_COLORS[newCount % BLOCK_COLORS.length]]);
-    setTowerShake(true);
-    setTimeout(() => setTowerShake(false), 300);
-  };
-
-  const removeBlock = () => {
-    if (feedback || currentBlocks <= 0) return;
-    setCurrentBlocks(prev => prev - 1);
-    setBlockColors(prev => prev.slice(0, -1));
-  };
-
-  const checkAnswer = () => {
-    if (feedback) return;
-
-    if (currentBlocks === targetNumber) {
-      setScore(prev => prev + 10);
-      setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
-
-      setTimeout(() => {
-        if (round >= TOTAL_ROUNDS) {
-          const finalScore = score + 10;
-          const stars = finalScore >= 70 ? 3 : finalScore >= 40 ? 2 : 1;
-          completeGame('numbers', 'block-tower', stars, finalScore);
-          setGameComplete(true);
-          celebrationFeedback(lang, soundEnabled);
-          const colors = ['#FF6B9D', '#FFD93D', '#4A90D9', '#6BCB77', '#9B72CF'];
-          setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
-            id: i, left: Math.random() * 100, color: colors[i % colors.length],
-            delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
-          })));
-        } else {
-          setRound(prev => prev + 1);
-          generateRound(round + 1);
-        }
-      }, 1200);
+  const handleTapItem = (idx) => {
+    if (showAnswer || feedback) return;
+    if (soundEnabled) playTapSound();
+    const next = new Set(tappedItems);
+    if (next.has(idx)) {
+      next.delete(idx);
     } else {
-      setFeedback({ type: 'wrong', message: `${wrongFeedback(lang, soundEnabled)} (${lang === 'bm' ? 'Perlu' : 'Need'} ${targetNumber})` });
-      setTimeout(() => setFeedback(null), 1200);
+      next.add(idx);
+    }
+    setTappedItems(next);
+    
+    // Auto-show answer choices when all items tapped
+    if (next.size === targetCount) {
+      setTimeout(() => setShowAnswer(true), 400);
     }
   };
 
-  const getStars = () => score >= 70 ? 3 : score >= 40 ? 2 : 1;
+  const handleAnswer = (num) => {
+    if (feedback) return;
+    setSelectedAnswer(num);
+    const correct = num === targetCount;
+    
+    if (correct) {
+      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
+      setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
+      setScore(prev => prev + 10);
+    } else {
+      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
+      setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) + ': ' + targetCount });
+    }
+
+    setTimeout(() => {
+      if (round + 1 >= TOTAL_ROUNDS) {
+        const finalScore = correct ? score + 10 : score;
+        const stars = finalScore >= 80 ? 3 : finalScore >= 50 ? 2 : 1;
+        completeGame('numbers', 'block-tower', stars, finalScore);
+        setGameComplete(true);
+        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
+      } else {
+        setRound(prev => prev + 1);
+        generateRound();
+      }
+    }, 1200);
+  };
+
+  const getStars = () => score >= 80 ? 3 : score >= 50 ? 2 : 1;
+  const item = currentItem || ITEMS[0];
+
+  // Answer choices: correct + 3 distractors
+  const answerChoices = (() => {
+    const choices = new Set([targetCount]);
+    while (choices.size < 4) {
+      const d = Math.max(1, targetCount + Math.floor(Math.random() * 5) - 2);
+      if (d !== targetCount && d >= 1 && d <= 10) choices.add(d);
+    }
+    return [...choices].sort(() => Math.random() - 0.5);
+  })();
+
+  if (gameComplete) {
+    return (
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <img src={assetPath('/images/counting/counting_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.4 }} />
+        <div style={{ background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(20px)', borderRadius: 28, padding: 32, maxWidth: 400, width: '90%', boxShadow: '0 12px 48px rgba(0,0,0,0.12)', zIndex: 1 }}>
+          <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
+          <h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100', fontSize: '1.5rem' }}>Bijak Mengira!</h1>
+          <p style={{ color: '#888', margin: '8px 0 20px' }}>Skor: {score}/{TOTAL_ROUNDS * 10}</p>
+          <div style={{ margin: '12px 0', display: 'flex', justifyContent: 'center', gap: 4 }}>
+            {[1,2,3].map(s => <StarIcon key={s} size={28} />)}
+          </div>
+          <button className="btn-premium" onClick={() => goToWorld('numbers')} style={{ marginTop: 16 }}>{'\u2190'} Kembali</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="game-screen">
-      <div className="game-header">
-        <button className="back-btn" onClick={() => goToWorld('numbers')}>←</button>
-        <span className="game-title">
-          {lang === 'bm' ? 'Menara Blok' : 'Block Tower'}
-        </span>
-        <div className="game-stars">
-          {[1,2,3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden' }}>
+      <img src={assetPath('/images/counting/counting_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.3 }} />
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: item.bgGrad, zIndex: 0, opacity: 0.5 }} />
+      
+      <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', zIndex: 1 }}>
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <button className="icon-btn" onClick={() => goToWorld('numbers')} style={{ background: 'rgba(255,255,255,0.8)', borderRadius: '50%', width: 40, height: 40, border: 'none', cursor: 'pointer', fontSize: '1.2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>{'\u2190'}</button>
+          <div style={{ background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)', borderRadius: 20, padding: '8px 20px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
+            <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1rem', color: item.color }}>Kira & Sentuh</span>
+          </div>
+          <div style={{ background: 'rgba(255,255,255,0.9)', borderRadius: 16, padding: '6px 14px', fontFamily: 'var(--font-heading)', fontSize: '0.85rem', color: '#666' }}>
+            {round + 1}/{TOTAL_ROUNDS}
+          </div>
         </div>
-      </div>
 
-      <div className="game-body">
+        {/* Instruction */}
+        <div style={{ textAlign: 'center', marginBottom: 8 }}>
+          <div style={{
+            display: 'inline-block', background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(12px)',
+            borderRadius: 20, padding: '10px 28px', boxShadow: '0 6px 24px rgba(0,0,0,0.08)',
+            border: `2px solid ${item.color}33`
+          }}>
+            <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1rem', color: '#333' }}>
+              Sentuh setiap <span style={{ color: item.color, fontWeight: 900 }}>{item.name}</span> untuk mengira!
+            </span>
+          </div>
+        </div>
+
+        {/* Counting area — scattered items */}
         <div style={{
-          width: '100%', height: '100%', position: 'relative',
-          borderRadius: 0, overflow: 'hidden',
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          padding: 'var(--space-lg)',
+          flex: 1, position: 'relative', background: 'rgba(255,255,255,0.4)',
+          borderRadius: 24, overflow: 'hidden', minHeight: '40vh',
+          boxShadow: 'inset 0 2px 12px rgba(0,0,0,0.04)',
+          border: '2px dashed rgba(0,0,0,0.06)'
         }}>
-          <img src={assetPath('/images/game/block_tower_bg.jpg')} alt="" style={{
-            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-            objectFit: 'cover', zIndex: 0, opacity: 0.3,
-          }} />
-          {/* Round & Score */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-md)' }}>
-            <div className="round-counter" style={{ position: 'static' }}>{t('round', lang)} {round}/{TOTAL_ROUNDS}</div>
-            <div className="game-score" style={{ position: 'static' }}>
-              <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#60A5FA" style={{display:"inline-block",verticalAlign:"middle"}}><path d="M6 3l-6 8 12 11L24 11l-6-8H6z"/></svg></span><span className="score-value">{score}</span>
-            </div>
-          </div>
-
-          {/* Instruction */}
-          <div style={{
-            background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)',
-            padding: 'var(--space-sm) var(--space-xl)', borderRadius: 'var(--radius-full)',
-            boxShadow: 'var(--shadow-md)', marginBottom: 'var(--space-lg)',
-            fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.2rem',
-          }}>
-            {lang === 'bm' ? 'Susun' : 'Stack'}{' '}
-            <span style={{ color: 'var(--cm-pink)', fontSize: '2rem', fontWeight: 900 }}>{targetNumber}</span>
-            {' '}{lang === 'bm' ? 'blok!' : 'blocks!'}
-          </div>
-
-          {/* Tower */}
-          <div style={{
-            flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
-            alignItems: 'center', minHeight: '35vh', position: 'relative',
-            animation: towerShake ? 'bubbleShake 0.3s ease' : 'none',
-          }}>
-            {blockColors.map((color, i) => (
-              <div key={i} style={{
-                width: 100 - i * 2, height: 40, background: color,
-                borderRadius: 'var(--radius-sm)',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.15), inset 0 -2px 4px rgba(0,0,0,0.1)',
-                marginBottom: 2,
-                animation: `bounceIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontFamily: 'var(--font-heading)', fontWeight: 900, color: 'white',
-                fontSize: '1.1rem', textShadow: '0 1px 2px rgba(0,0,0,0.3)',
-              }}>
-                {i + 1}
+          {itemPositions.map((pos, idx) => {
+            const isTapped = tappedItems.has(idx);
+            return (
+              <div
+                key={idx}
+                onClick={() => handleTapItem(idx)}
+                style={{
+                  position: 'absolute',
+                  left: `${pos.x}%`, top: `${pos.y}%`,
+                  transform: `rotate(${pos.rotation}deg) scale(${isTapped ? pos.scale * 1.1 : pos.scale})`,
+                  transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  cursor: 'pointer', zIndex: isTapped ? 10 : 5,
+                }}
+              >
+                <div style={{ position: 'relative' }}>
+                  <img src={item.img} alt={item.name} style={{
+                    width: 'min(72px, 16vw)', height: 'min(72px, 16vw)',
+                    objectFit: 'cover', borderRadius: 16,
+                    boxShadow: isTapped
+                      ? `0 6px 24px ${item.color}66, 0 0 0 3px ${item.color}`
+                      : '0 4px 12px rgba(0,0,0,0.12)',
+                    border: isTapped ? `3px solid ${item.color}` : '3px solid white',
+                    filter: isTapped ? 'brightness(1.05)' : 'none',
+                    transition: 'all 0.25s ease',
+                  }} />
+                  {isTapped && (
+                    <div style={{
+                      position: 'absolute', top: -8, right: -8,
+                      width: 26, height: 26, borderRadius: '50%',
+                      background: `linear-gradient(135deg, ${item.color}, ${item.color}CC)`,
+                      color: 'white', fontFamily: 'var(--font-heading)', fontWeight: 900,
+                      fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      boxShadow: `0 2px 8px ${item.color}66`,
+                      animation: 'bounceIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    }}>
+                      {[...tappedItems].sort().indexOf(idx) + 1}
+                    </div>
+                  )}
+                </div>
               </div>
-            ))}
-            {/* Platform */}
-            <div style={{
-              width: 140, height: 12, background: '#8B4513',
-              borderRadius: 'var(--radius-sm)', boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-            }} />
-          </div>
-
-          {/* Counter display */}
-          <div style={{
-            fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '2.5rem',
-            color: currentBlocks === targetNumber ? 'var(--cm-green)' : 'var(--cm-pink)',
-            margin: 'var(--space-md) 0',
-            transition: 'color 0.3s ease',
-          }}>
-            {currentBlocks} / {targetNumber}
-          </div>
-
-          {/* Controls */}
-          <div style={{ display: 'flex', gap: 'var(--space-md)', marginBottom: 'var(--space-md)' }}>
-            <button onClick={removeBlock} style={{
-              width: 60, height: 60, borderRadius: 'var(--radius-full)',
-              background: 'linear-gradient(135deg, #FF6B6B, #ee5a24)',
-              color: 'white', fontWeight: 900, fontSize: '2rem',
-              border: 'none', boxShadow: 'var(--shadow-md)', cursor: 'pointer',
-            }}>−</button>
-            <button onClick={addBlock} style={{
-              width: 60, height: 60, borderRadius: 'var(--radius-full)',
-              background: 'linear-gradient(135deg, #6BCB77, #48C9B0)',
-              color: 'white', fontWeight: 900, fontSize: '2rem',
-              border: 'none', boxShadow: 'var(--shadow-md)', cursor: 'pointer',
-            }}>+</button>
-          </div>
-
-          <button className="btn-primary" onClick={checkAnswer} style={{
-            background: 'linear-gradient(135deg, var(--cm-pink), #FF8C42)',
-            fontSize: '1.1rem', padding: '14px 36px',
-          }}>
-            <CheckIcon size={14} /> {lang === 'bm' ? 'Semak!' : 'Check!'}
-          </button>
-
-          {/* Feedback */}
-          {feedback && (
-            <div style={{
-              marginTop: 'var(--space-md)', padding: '10px 24px', borderRadius: 'var(--radius-full)',
-              background: feedback.type === 'correct'
-                ? 'linear-gradient(135deg, #6BCB77, #48C9B0)'
-                : 'linear-gradient(135deg, #FF6B6B, #ee5a24)',
-              color: 'white', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.1rem',
-              boxShadow: 'var(--shadow-md)',
-            }}>
-              {feedback.message}
-            </div>
-          )}
+            );
+          })}
         </div>
-      </div>
 
-      {gameComplete && (
-        <GameCompleteModal
-          lang={lang} stars={getStars()} score={score}
-          accentColor="var(--cm-pink)"
-          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); generateRound(1); }}
-          onBack={() => goToWorld('numbers')}
-          confettiPieces={confettiPieces}
-        />
-      )}
+        {/* Counter */}
+        <div style={{ textAlign: 'center', margin: '8px 0' }}>
+          <span style={{
+            fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.8rem',
+            color: tappedItems.size === targetCount ? '#4CAF50' : item.color,
+            transition: 'color 0.3s',
+          }}>
+            {tappedItems.size}
+          </span>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', color: '#999', margin: '0 4px' }}>/</span>
+          <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1rem', color: '#999' }}>?</span>
+        </div>
+
+        {/* Answer choices — shown after tapping all or via button */}
+        {(showAnswer || tappedItems.size > 0) && (
+          <div style={{ textAlign: 'center', marginBottom: 8 }}>
+            {!showAnswer && tappedItems.size < targetCount ? (
+              <p style={{ fontSize: '0.85rem', color: '#999', fontFamily: 'var(--font-body)' }}>
+                Teruskan sentuh semua {item.name}!
+              </p>
+            ) : (
+              <>
+                <p style={{ fontFamily: 'var(--font-heading)', fontSize: '0.95rem', color: '#555', marginBottom: 8 }}>
+                  Berapa banyak {item.name}?
+                </p>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 12 }}>
+                  {answerChoices.map((num, i) => (
+                    <button key={i} onClick={() => handleAnswer(num)} disabled={!!feedback} style={{
+                      width: 64, height: 64, borderRadius: 18, border: 'none',
+                      background: selectedAnswer === num
+                        ? (feedback?.type === 'correct' ? 'linear-gradient(135deg,#6BCB77,#4CAF50)' : 'linear-gradient(135deg,#FF6B6B,#F44336)')
+                        : `linear-gradient(135deg, ${item.color}, ${item.color}BB)`,
+                      color: 'white', fontFamily: 'var(--font-heading)', fontSize: '1.8rem',
+                      cursor: feedback ? 'default' : 'pointer',
+                      boxShadow: `0 6px 20px ${item.color}33`,
+                      transition: 'all 0.2s', opacity: feedback && selectedAnswer !== num ? 0.5 : 1,
+                      transform: selectedAnswer === num ? 'scale(1.1)' : 'scale(1)',
+                    }}>{num}</button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Feedback */}
+        {feedback && (
+          <div style={{ textAlign: 'center', marginBottom: 8 }}>
+            <div style={{
+              display: 'inline-block', padding: '10px 24px', borderRadius: 20,
+              background: feedback.type === 'correct' ? 'linear-gradient(135deg,#6BCB77,#4CAF50)' : 'linear-gradient(135deg,#FF6B6B,#F44336)',
+              color: 'white', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.95rem',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+            }}>{feedback.message}</div>
+          </div>
+        )}
+
+        {/* Manual show answer button */}
+        {!showAnswer && tappedItems.size > 0 && tappedItems.size !== targetCount && (
+          <div style={{ textAlign: 'center', marginBottom: 8 }}>
+            <button onClick={() => setShowAnswer(true)} style={{
+              padding: '10px 28px', borderRadius: 16, border: 'none',
+              background: 'rgba(255,255,255,0.8)', color: '#666',
+              fontFamily: 'var(--font-heading)', fontSize: '0.9rem',
+              cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            }}>
+              Dah siap kira? Jawab!
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+
 
 // ============================================
 // ANIMAL HOMES GAME (Rumah Haiwan)
