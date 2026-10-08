@@ -1975,7 +1975,7 @@ export function BlockTowerGame() {
           {/* Wooden platform */}
           <img src={assetPath('/images/counting/block_platform.jpg')} alt="" style={{
             position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
-            width: 'clamp(200px,50vw,260px)', height: 'clamp(36px,7vw,48px)',
+            width: 'clamp(170px,42vw,190px)', height: 'clamp(30px,5vw,38px)',
             objectFit: 'cover', borderRadius: 'clamp(8px,1.5vw,12px)',
             boxShadow: '0 4px 16px rgba(139,69,19,0.25)',
             zIndex: 2,
@@ -1984,7 +1984,7 @@ export function BlockTowerGame() {
           {/* Block tower */}
           <div style={{
             position: 'relative', display: 'flex', flexDirection: 'column-reverse',
-            alignItems: 'center', paddingBottom: 'clamp(36px,7vw,48px)', zIndex: 3,
+            alignItems: 'center', paddingBottom: 'clamp(30px,5vw,38px)', zIndex: 3,
             animation: shakeWrong ? 'btHeadShake 0.6s ease' : 'none',
           }}>
             {placedBlocks.map((block, idx) => {
@@ -1993,8 +1993,8 @@ export function BlockTowerGame() {
               const wobble = idx === placedBlocks.length - 1 && isNew;
               return (
                 <div key={block.id} style={{
-                  width: 'clamp(160px,42vw,200px)', height: 'clamp(52px,10vw,64px)',
-                  borderRadius: 'clamp(8px,1.5vw,12px)',
+                  width: 'clamp(130px,35vw,150px)', height: 'clamp(40px,7vw,48px)',
+                  borderRadius: 'clamp(7px,1.3vw,10px)',
                   background: `linear-gradient(180deg, ${c.fill} 0%, ${c.stroke} 100%)`,
                   border: `2.5px solid ${c.stroke}`,
                   boxShadow: `0 5px 14px ${c.glow}, inset 0 4px 0 rgba(255,255,255,0.4), inset 0 -4px 0 rgba(0,0,0,0.12)`,
@@ -2003,10 +2003,10 @@ export function BlockTowerGame() {
                   animation: wobble ? 'btBlockDrop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none',
                   cursor: 'default',
                 }}>
-                  <span style={{ fontSize: 'clamp(1.3rem,3.2vw,1.8rem)', filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.2))' }}>{c.pattern}</span>
+                  <span style={{ fontSize: 'clamp(1.1rem,2.8vw,1.4rem)', filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.2))' }}>{c.pattern}</span>
                   <span style={{
                     position: 'absolute', right: 'clamp(8px,2vw,12px)', top: '50%', transform: 'translateY(-50%)',
-                    fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: 'clamp(0.85rem,2vw,1.1rem)',
+                    fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: 'clamp(0.75rem,1.6vw,0.9rem)',
                     color: 'rgba(255,255,255,0.8)',
                   }}>{idx + 1}</span>
                   <div style={{
@@ -2072,10 +2072,10 @@ export function BlockTowerGame() {
         }}>
           {/* Remove block */}
           <button onClick={removeBlock} disabled={!!feedback || placedBlocks.length === 0} style={{
-            width: 'clamp(60px,15vw,80px)', height: 'clamp(60px,15vw,80px)',
+            width: 'clamp(52px,12vw,64px)', height: 'clamp(52px,12vw,64px)',
             borderRadius: '50%', border: 'none', cursor: feedback ? 'default' : 'pointer',
             background: placedBlocks.length === 0 ? '#E5E7EB' : 'linear-gradient(135deg,#FF6B6B,#EF4444)',
-            color: 'white', fontSize: 'clamp(1.6rem,4vw,2.2rem)', fontWeight: 900,
+            color: 'white', fontSize: 'clamp(1.3rem,3vw,1.6rem)', fontWeight: 900,
             boxShadow: placedBlocks.length > 0 ? '0 6px 20px #FF6B6B55' : 'none',
             opacity: placedBlocks.length === 0 || !!feedback ? 0.35 : 1,
             transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -2084,14 +2084,14 @@ export function BlockTowerGame() {
 
           {/* Check answer */}
           <button onClick={checkAnswer} disabled={!!feedback || placedBlocks.length === 0} style={{
-            width: 'clamp(74px,18vw,96px)', height: 'clamp(74px,18vw,96px)',
+            width: 'clamp(68px,16vw,84px)', height: 'clamp(68px,16vw,84px)',
             borderRadius: '50%', border: 'none', cursor: feedback ? 'default' : 'pointer',
             background: feedback
               ? (feedback.type === 'correct' ? 'linear-gradient(135deg,#10B981,#059669)' : 'linear-gradient(135deg,#F87171,#EF4444)')
               : placedBlocks.length === targetCount
                 ? 'linear-gradient(135deg,#10B981,#059669)'
                 : 'linear-gradient(135deg,#9B72CF,#7C3AED)',
-            color: 'white', fontSize: 'clamp(1.8rem,4.5vw,2.5rem)',
+            color: 'white', fontSize: 'clamp(1.6rem,4vw,2rem)',
             boxShadow: placedBlocks.length === targetCount && !feedback
               ? '0 8px 28px rgba(16,185,129,0.45), 0 0 0 5px rgba(16,185,129,0.15)'
               : '0 6px 24px rgba(124,58,237,0.25)',
@@ -2102,10 +2102,10 @@ export function BlockTowerGame() {
 
           {/* Add block */}
           <button onClick={addBlock} disabled={!!feedback || placedBlocks.length >= MAX_BLOCKS} style={{
-            width: 'clamp(60px,15vw,80px)', height: 'clamp(60px,15vw,80px)',
+            width: 'clamp(52px,12vw,64px)', height: 'clamp(52px,12vw,64px)',
             borderRadius: '50%', border: 'none', cursor: feedback ? 'default' : 'pointer',
             background: placedBlocks.length >= MAX_BLOCKS ? '#E5E7EB' : 'linear-gradient(135deg,#6BCB77,#10B981)',
-            color: 'white', fontSize: 'clamp(1.6rem,4vw,2.2rem)', fontWeight: 900,
+            color: 'white', fontSize: 'clamp(1.3rem,3vw,1.6rem)', fontWeight: 900,
             boxShadow: placedBlocks.length < MAX_BLOCKS ? '0 6px 20px #6BCB7755' : 'none',
             opacity: placedBlocks.length >= MAX_BLOCKS || !!feedback ? 0.35 : 1,
             transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center',
