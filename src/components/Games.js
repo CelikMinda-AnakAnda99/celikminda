@@ -1975,7 +1975,7 @@ export function BlockTowerGame() {
           {/* Wooden platform */}
           <img src={assetPath('/images/counting/block_platform.jpg')} alt="" style={{
             position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
-            width: 'clamp(170px,42vw,190px)', height: 'clamp(30px,5vw,38px)',
+            width: 'clamp(140px,36vw,160px)', height: 'clamp(24px,3.5vh,32px)',
             objectFit: 'cover', borderRadius: 'clamp(8px,1.5vw,12px)',
             boxShadow: '0 4px 16px rgba(139,69,19,0.25)',
             zIndex: 2,
@@ -1984,7 +1984,7 @@ export function BlockTowerGame() {
           {/* Block tower */}
           <div style={{
             position: 'relative', display: 'flex', flexDirection: 'column-reverse',
-            alignItems: 'center', paddingBottom: 'clamp(30px,5vw,38px)', zIndex: 3,
+            alignItems: 'center', paddingBottom: 'clamp(24px,3.5vh,32px)', zIndex: 3,
             animation: shakeWrong ? 'btHeadShake 0.6s ease' : 'none',
           }}>
             {placedBlocks.map((block, idx) => {
@@ -1993,8 +1993,8 @@ export function BlockTowerGame() {
               const wobble = idx === placedBlocks.length - 1 && isNew;
               return (
                 <div key={block.id} style={{
-                  width: 'clamp(130px,35vw,150px)', height: 'clamp(40px,7vw,48px)',
-                  borderRadius: 'clamp(7px,1.3vw,10px)',
+                  width: 'clamp(100px,28vw,130px)', height: 'clamp(34px,4.5vh,42px)',
+                  borderRadius: 'clamp(6px,1vw,8px)',
                   background: `linear-gradient(180deg, ${c.fill} 0%, ${c.stroke} 100%)`,
                   border: `2.5px solid ${c.stroke}`,
                   boxShadow: `0 5px 14px ${c.glow}, inset 0 4px 0 rgba(255,255,255,0.4), inset 0 -4px 0 rgba(0,0,0,0.12)`,
