@@ -4736,6 +4736,7 @@ export function SyllableFactoryGame() {
   const [gameComplete, setGameComplete] = useState(false);
   const [confettiPieces, setConfettiPieces] = useState([]);
   const [wordComplete, setWordComplete] = useState(false);
+  const [usedIndices, setUsedIndices] = useState([]);
 
   const setupRound = useCallback((roundNum) => {
     const shuffled = [...ALL_WORDS].sort(() => Math.random() - 0.5);
@@ -4747,12 +4748,13 @@ export function SyllableFactoryGame() {
     setBuilt([]);
     setFeedback(null);
     setWordComplete(false);
+    setUsedIndices([]);
   }, [ALL_WORDS]);
 
   useEffect(() => { setupRound(1); }, [setupRound]);
 
-  const handlePick = (syllable) => {
-    if (!currentWord || wordComplete) return;
+  const handlePick = (syllable, optionIdx) => {
+    if (!currentWord || wordComplete || usedIndices.includes(optionIdx)) return;
     const nextIdx = built.length;
 
     if (nextIdx < currentWord.syllables.length && syllable === currentWord.syllables[nextIdx]) {
@@ -4760,6 +4762,7 @@ export function SyllableFactoryGame() {
       if (soundEnabled) playTapSound();
       const newBuilt = [...built, syllable];
       setBuilt(newBuilt);
+      setUsedIndices(prev => [...prev, optionIdx]);
 
       // Check if word is now complete
       if (newBuilt.length === currentWord.syllables.length) {
@@ -4897,11 +4900,11 @@ export function SyllableFactoryGame() {
               }}>
                 {currentWord.syllables.map((syl, i) => (
                   <div key={i} style={{
-                    width: 'clamp(60px, 18vw, 90px)',
-                    height: 'clamp(50px, 14vw, 70px)',
-                    borderRadius: 16,
+                    width: 'clamp(80px, 22vw, 110px)',
+                    height: 'clamp(60px, 16vw, 80px)',
+                    borderRadius: 18,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 'clamp(1.1rem, 4vw, 1.6rem)', fontWeight: 900,
+                    fontSize: 'clamp(1.3rem, 5vw, 1.8rem)', fontWeight: 900,
                     fontFamily: 'var(--font-heading)',
                     background: i < built.length
                       ? 'linear-gradient(135deg, #6BCB77, #48C9B0)'
@@ -4941,21 +4944,26 @@ export function SyllableFactoryGame() {
                   display: 'flex', gap: 'clamp(6px, 2vw, 10px)',
                   justifyContent: 'center', flexWrap: 'wrap',
                 }}>
-                  {options.map((syl, i) => (
-                    <button key={i} onClick={() => handlePick(syl)} style={{
-                      padding: 'clamp(8px, 2.5vw, 12px) clamp(16px, 4vw, 24px)',
-                      borderRadius: 14,
-                      background: SYLLABLE_COLORS[i % SYLLABLE_COLORS.length],
-                      border: '2px solid rgba(255,255,255,0.6)',
-                      fontSize: 'clamp(0.95rem, 3vw, 1.2rem)', fontWeight: 800,
+                  {options.map((syl, i) => {
+                    const isUsed = usedIndices.includes(i);
+                    return (
+                    <button key={i} onClick={() => handlePick(syl, i)} disabled={isUsed} style={{
+                      padding: 'clamp(10px, 3vw, 14px) clamp(20px, 5vw, 30px)',
+                      borderRadius: 16,
+                      background: isUsed ? 'rgba(200,200,200,0.4)' : SYLLABLE_COLORS[i % SYLLABLE_COLORS.length],
+                      border: isUsed ? '2px solid rgba(0,0,0,0.05)' : '2px solid rgba(255,255,255,0.6)',
+                      fontSize: 'clamp(1.05rem, 3.5vw, 1.3rem)', fontWeight: 800,
                       fontFamily: 'var(--font-heading)',
-                      cursor: 'pointer',
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
-                      transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-                      color: '#333',
+                      cursor: isUsed ? 'default' : 'pointer',
+                      boxShadow: isUsed ? 'none' : '0 4px 16px rgba(0,0,0,0.1)',
+                      transition: 'all 0.3s ease',
+                      color: isUsed ? 'rgba(0,0,0,0.15)' : '#333',
+                      opacity: isUsed ? 0.4 : 1,
+                      transform: isUsed ? 'scale(0.9)' : 'scale(1)',
                       WebkitTapHighlightColor: 'transparent',
                     }}>{syl}</button>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
