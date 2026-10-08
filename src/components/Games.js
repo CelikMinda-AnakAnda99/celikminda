@@ -6565,141 +6565,235 @@ export function AbcSongGame() {
 }
 
 // ============================================
-// LETTER STORIES GAME (Cerita Huruf)
-// Interactive mini-stories that teach letters!
+// ============================================
+// CERITA HURUF (Letter Stories) — FULL OVERHAUL
+// 17 cerita interaktif dengan gambar watercolor!
+// Huruf = huruf pertama nama MELAYU!
 // ============================================
 export function LetterStoriesGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
   
+  // SEMUA huruf ikut huruf pertama nama MELAYU!
   const STORIES = [
-    {
-      letter: 'A',
-      title: lang === 'bm' ? 'Arnab yang Aktif' : 'Active Rabbit',
-      emoji: '🐰',
-      pages: [
-        { text: lang === 'bm' ? 'Arnab suka melompat!' : 'Rabbit loves to jump!', emoji: '🐰🦿' },
-        { text: lang === 'bm' ? 'A adalah untuk Arnab!' : 'A is for... Rabbit!', emoji: '🔤' },
-      ],
-      q: lang === 'bm' ? 'A untuk...' : 'A is for...', a: '🐰', choices: ['🐰','🐱','🐶'],
-    },
-    {
-      letter: 'B',
-      title: lang === 'bm' ? 'Bola yang Besar' : 'Big Ball',
-      emoji: '⚽',
-      pages: [
-        { text: lang === 'bm' ? 'Bola merah bergolek!' : 'Red ball is rolling!', emoji: '⚽💨' },
-        { text: lang === 'bm' ? 'B adalah untuk Bola!' : 'B is for... Ball!', emoji: '🔤' },
-      ],
-      q: lang === 'bm' ? 'B untuk...' : 'B is for...', a: '⚽', choices: ['⚽','🎈','🧸'],
-    },
-    {
-      letter: 'C',
-      title: lang === 'bm' ? 'Cawan yang Cantik' : 'Cute Cup',
-      emoji: '☕',
-      pages: [
-        { text: lang === 'bm' ? 'Cawan berisi susu!' : 'Cup full of milk!', emoji: '☕🥛' },
-        { text: lang === 'bm' ? 'C adalah untuk Cawan!' : 'C is for... Cup!', emoji: '🔤' },
-      ],
-      q: lang === 'bm' ? 'C untuk...' : 'C is for...', a: '☕', choices: ['☕','🍕','🎸'],
-    },
+    { letter:'A', img: assetPath('/images/stories/rabbit.jpg'), name:'Arnab', color:'#A1887F',
+      pages: ['A untuk Arnab! Arnab comel dengan telinga panjang dan bulu putih gebu.','Arnab suka melompat-lompat di padang rumput hijau yang luas.','Arnab makan lobak merah dengan girangnya! Huruf A untuk Arnab!'] },
+    { letter:'A', img: assetPath('/images/stories/dog.jpg'), name:'Anjing', color:'#DAA520',
+      pages: ['A untuk Anjing! Anjing setia kawan terbaik manusia.','Anjing suka berlari di taman dan bermain tangkap bola.','Anjing menggonggong gembira! Huruf A untuk Anjing!'] },
+    { letter:'A', img: assetPath('/images/stories/grape.jpg'), name:'Anggur', color:'#9C27B0',
+      pages: ['A untuk Anggur! Anggur ungu yang lazat dan berair.','Anggur tumbuh di atas pokok yang menjalar tinggi.','Kita makan anggur satu-satu. Huruf A untuk Anggur!'] },
+    { letter:'A', img: assetPath('/images/stories/icecream.jpg'), name:'Aiskrim', color:'#F48FB1',
+      pages: ['A untuk Aiskrim! Aiskrim sejuk dan manis.','Aiskrim ada banyak perisa — coklat, vanila, strawberi!','Kita makan aiskrim sama-sama! Huruf A untuk Aiskrim!'] },
+    { letter:'B', img: assetPath('/images/stories/bear.jpg'), name:'Beruang', color:'#8B6914',
+      pages: ['B untuk Beruang! Beruang kecil tinggal di dalam hutan yang hijau.','Beruang suka makan madu yang manis dari sarang lebah.','Beruang menari gembira! Huruf B untuk Beruang!'] },
+    { letter:'E', img: assetPath('/images/stories/apple.jpg'), name:'Epal', color:'#FF6B6B',
+      pages: ['E untuk Epal! Epal merah yang manis tumbuh di atas pokok yang tinggi.','Si Epal jatuh dari pokok dan bergolek ke padang hijau.','Epal sangat lazat dan berkhasiat! Huruf E untuk Epal!'] },
+    { letter:'G', img: assetPath('/images/stories/elephant.jpg'), name:'Gajah', color:'#7EB5D6',
+      pages: ['G untuk Gajah! Gajah besar dan kuat, tapi hatinya lembut.','Gajah menyemburkan air dengan belalainya yang panjang. Splash!','Gajah berjalan dengan anak-anaknya. Huruf G untuk Gajah!'] },
+    { letter:'I', img: assetPath('/images/stories/fish.jpg'), name:'Ikan', color:'#4FC3F7',
+      pages: ['I untuk Ikan! Ikan berenang di laut yang biru dan dalam.','Ikan mempunyai sisik yang berkilauan seperti pelangi.','Ikan melompat keluar dari air! Huruf I untuk Ikan!'] },
+    { letter:'K', img: assetPath('/images/stories/cat.jpg'), name:'Kucing', color:'#FFA726',
+      pages: ['K untuk Kucing! Kucing comel berbulu lembut dan gebu.','Kucing suka bermain dengan bola benang yang berwarna-warni.','Kucing tidur di atas bantal yang empuk. Huruf K untuk Kucing!'] },
+    { letter:'K', img: assetPath('/images/stories/horse.jpg'), name:'Kuda', color:'#795548',
+      pages: ['K untuk Kuda! Kuda yang gagah berlari di padang rumput.','Kuda mempunyai surai yang panjang dan cantik.','Kuda melompat pagar dengan hebat! Huruf K untuk Kuda!'] },
+    { letter:'K', img: assetPath('/images/stories/kiwi.jpg'), name:'Kiwi', color:'#8BC34A',
+      pages: ['K untuk Kiwi! Buah hijau yang masam dan segar.','Kiwi berbulu halus di luar, hijau terang di dalam.','Kita potong kiwi dan makan! Huruf K untuk Kiwi!'] },
+    { letter:'K', img: assetPath('/images/stories/turtle.jpg'), name:'Kura-kura', color:'#558B2F',
+      pages: ['K untuk Kura-kura! Kura-kura bawa rumah di belakangnya.','Kura-kura berjalan perlahan tapi pasti sampai.','Kura-kura masuk ke dalam cangkerangnya! Huruf K untuk Kura-kura!'] },
+    { letter:'M', img: assetPath('/images/stories/monkey.jpg'), name:'Monyet', color:'#6D4C41',
+      pages: ['M untuk Monyet! Monyet suka bergelantung di pokok.','Monyet makan pisang yang kuning dan manis.','Monyet melompat dari pokok ke pokok! Huruf M untuk Monyet!'] },
+    { letter:'O', img: assetPath('/images/stories/orange.jpg'), name:'Oren', color:'#FF9800',
+      pages: ['O untuk Oren! Oren bulat dan penuh dengan jus yang segar.','Kita kupas kulit oren dan makan isi yang manis.','Oren memberi kita tenaga! Huruf O untuk Oren!'] },
+    { letter:'P', img: assetPath('/images/stories/penguin.jpg'), name:'Penguin', color:'#455A64',
+      pages: ['P untuk Penguin! Penguin tinggal di tempat yang sangat sejuk.','Penguin berjalan terhuyung-hayang dengan lucu.','Penguin meluncur di atas ais! Huruf P untuk Penguin!'] },
+    { letter:'S', img: assetPath('/images/stories/lion.jpg'), name:'Singa', color:'#FF9800',
+      pages: ['S untuk Singa! Singa adalah raja hutan yang gagah.','Singa mempunyai surai yang besar dan mengaum dengan kuat!','Singa menjaga keluarganya. Huruf S untuk Singa!'] },
+    { letter:'U', img: assetPath('/images/stories/snake.jpg'), name:'Ular', color:'#4CAF50',
+      pages: ['U untuk Ular! Ular menjalar perlahan di atas tanah.','Ular mempunyai sisik yang licin dan berkilat.','Ular membentuk huruf S dengan badannya! Huruf U untuk Ular!'] },
   ];
   
+  const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
   const [storyIdx, setStoryIdx] = useState(0);
   const [pageIdx, setPageIdx] = useState(0);
   const [showQuiz, setShowQuiz] = useState(false);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
+  const [shuffledOrder] = useState(() => {
+    const arr = [...Array(STORIES.length).keys()];
+    for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
+    return arr;
+  });
+  
+  const totalRounds = Math.min(STORIES.length, 15);
+  const currentStory = STORIES[shuffledOrder[storyIdx % shuffledOrder.length]];
+  const s = currentStory;
   
   const nextPage = () => {
     if (soundEnabled) playTapSound();
-    const story = STORIES[storyIdx];
-    if (pageIdx + 1 < story.pages.length) setPageIdx(pageIdx + 1);
+    if (pageIdx + 1 < s.pages.length) setPageIdx(pageIdx + 1);
     else setShowQuiz(true);
   };
   
   const handleQuiz = (answer) => {
-    const correct = answer === STORIES[storyIdx].a;
+    const correct = answer === s.letter;
     if (correct) {
       if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
-      setScore(score + 1);
+      setScore(prev => prev + 1);
     } else {
       if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
-      setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
+      setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) + ' \u2192 ' + s.letter });
     }
     setTimeout(() => {
       setFeedback(null);
       setShowQuiz(false);
       setPageIdx(0);
-      if (storyIdx + 1 < STORIES.length) setStoryIdx(storyIdx + 1);
+      if (storyIdx + 1 < totalRounds) setStoryIdx(storyIdx + 1);
       else {
         if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
         const f = correct ? score + 1 : score;
-        completeGame('abc', 'letter-stories', f >= 3 ? 3 : f >= 2 ? 2 : 1, f * 30);
+        completeGame('abc', 'letter-stories', f >= totalRounds ? 3 : f >= totalRounds * 0.6 ? 2 : 1, f * 30);
         setGameComplete(true);
       }
-    }, 800);
+    }, 900);
   };
+  
+  const quizChoices = (() => {
+    const distractors = LETTERS.filter(l => l !== s.letter).sort(() => Math.random() - 0.5).slice(0, 3);
+    return [s.letter, ...distractors].sort(() => Math.random() - 0.5);
+  })();
   
   if (gameComplete) {
     return (
-      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
-        <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
-        <h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? 'Pandai Membaca!' : 'Reading Star!'}</h1>
-        <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
-        <button className="btn-premium" onClick={() => goToWorld('abc')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <img src={assetPath('/images/stories/storybook_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.4 }} />
+        <div style={{ background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(20px)', borderRadius: 28, padding: 32, maxWidth: 400, width: '90%', boxShadow: '0 12px 48px rgba(139,105,20,0.15)', zIndex: 1 }}>
+          <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
+          <h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100', fontSize: '1.5rem' }}>Pandai Membaca!</h1>
+          <p style={{ color: '#888', margin: '8px 0 20px' }}>Skor: {score}/{totalRounds}</p>
+          <div style={{ margin: '12px 0', display: 'flex', justifyContent: 'center', gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
+          <button className="btn-premium" onClick={() => goToWorld('abc')} style={{ marginTop: 16 }}>{'\u2190'} Kembali</button>
+        </div>
       </div>
     );
   }
   
-  const story = STORIES[storyIdx];
   return (
-    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/letter_stories_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
-      <div style={{ padding: 16, textAlign: 'center' }}>
-        <button className="icon-btn" onClick={() => goToWorld('abc')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        <div style={{
-          fontSize: '4rem', width: 80, height: 80, borderRadius: '50%',
-          background: 'linear-gradient(135deg, #FFD93D, #FFA726)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          margin: '8px auto', fontFamily: 'var(--font-heading)', fontWeight: 900, color: 'white',
-        }}>{story.letter}</div>
-        <h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100', margin: '8px 0' }}>{story.title}</h2>
-        <div style={{ fontSize: '0.8rem', color: '#999' }}>{storyIdx + 1}/{STORIES.length}</div>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden' }}>
+      <img src={assetPath('/images/stories/storybook_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.35 }} />
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(180deg, rgba(232,213,183,0.7) 0%, rgba(245,230,204,0.6) 50%, rgba(255,253,231,0.8) 100%)', zIndex: 0 }} />
+      <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100%', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
+        <button className="icon-btn" onClick={() => goToWorld('abc')} style={{ position: 'absolute', left: 16, top: 16, zIndex: 10, background: 'rgba(255,255,255,0.8)', borderRadius: '50%', width: 40, height: 40, border: 'none', cursor: 'pointer', fontSize: '1.2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>{'\u2190'}</button>
         
-        {!showQuiz ? (
-          <div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 20, padding: 24, margin: '16px auto', maxWidth: 320 }}>
-            <div style={{ textAlign: 'center', marginBottom: 12 }}><GI e={story.pages[pageIdx].emoji} size={48}/></div>
-            <p style={{ fontSize: '1.1rem', fontWeight: 700, color: '#555', lineHeight: 1.6 }}>{story.pages[pageIdx].text}</p>
-            <button onClick={nextPage} style={{
-              marginTop: 16, padding: '10px 28px', borderRadius: 14, background: '#FF9800', color: 'white',
-              border: 'none', fontWeight: 800, cursor: 'pointer', fontFamily: 'var(--font-heading)',
-            }}>{pageIdx + 1 < story.pages.length ? (lang === 'bm' ? 'Seterusnya →' : 'Next →') : (lang === 'bm' ? 'Kuiz!' : 'Quiz!')}</button>
-          </div>
-        ) : (
-          <div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 20, padding: 24, margin: '16px auto', maxWidth: 320 }}>
-            <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16 }}>{story.q}</div>
-            <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-              {story.choices.map((c, i) => (
-                <button key={i} onClick={() => handleQuiz(c)} style={{
-                  fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white',
-                  border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)',
-                }}>{c}</button>
-              ))}
-            </div>
-            {feedback && (
-              <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>
-                {feedback.type === 'correct' ? '' : ''}{feedback.message}
+        <div style={{
+          background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+          borderRadius: 28, padding: '24px 20px', width: '100%', maxWidth: 440,
+          boxShadow: '0 12px 48px rgba(139,105,20,0.12), 0 2px 8px rgba(0,0,0,0.06)',
+          position: 'relative', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.6)'
+        }}>
+          <div style={{ position: 'absolute', top: 0, right: 0, width: 48, height: 48, background: 'linear-gradient(225deg,#E8D5B7 50%,transparent 50%)', borderBottomLeftRadius: 12, opacity: 0.6 }} />
+          
+          {!showQuiz ? (
+            <>
+              <div style={{ textAlign: 'center', marginBottom: 14 }}>
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: 56, height: 56, borderRadius: '50%',
+                  background: `linear-gradient(135deg, ${s.color}, ${s.color}CC)`,
+                  color: 'white', fontFamily: 'var(--font-heading)', fontSize: '1.8rem',
+                  boxShadow: `0 6px 24px ${s.color}44`, marginBottom: 6, border: '3px solid white'
+                }}>{s.letter}</div>
+                <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.15rem', color: s.color, margin: '0 0 8px' }}>
+                  {s.letter} untuk {s.name}
+                </h3>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
+                  {[0,1,2].map(i => (
+                    <div key={i} style={{
+                      width: 10, height: 10, borderRadius: '50%',
+                      background: i <= pageIdx ? s.color : 'rgba(0,0,0,0.12)',
+                      transition: 'all 0.3s',
+                      boxShadow: i <= pageIdx ? `0 2px 8px ${s.color}66` : 'none'
+                    }} />
+                  ))}
+                </div>
               </div>
-            )}
-          </div>
-        )}
+              
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 14 }}>
+                <img src={s.img} alt={s.name} style={{
+                  width: 'min(200px, 50vw)', height: 'min(200px, 50vw)',
+                  objectFit: 'cover', borderRadius: 24,
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.18)', border: '4px solid white',
+                  display: 'block', margin: '0 auto'
+                }} />
+              </div>
+              
+              <div style={{
+                background: 'linear-gradient(135deg,#FFFDE7,#FFF9C4)',
+                borderRadius: 20, padding: '16px 20px', marginBottom: 14,
+                borderLeft: `5px solid ${s.color}`, boxShadow: '0 4px 16px rgba(0,0,0,0.04)'
+              }}>
+                <p style={{ fontSize: '0.95rem', color: '#3E2723', lineHeight: 1.65, margin: 0, fontFamily: 'var(--font-body)', textAlign: 'center' }}>
+                  {s.pages[pageIdx]}
+                </p>
+              </div>
+              
+              <div style={{ textAlign: 'center' }}>
+                <button onClick={nextPage} style={{
+                  padding: '14px 40px', border: 'none', borderRadius: 20,
+                  background: `linear-gradient(135deg, ${s.color}, ${s.color}BB)`,
+                  color: 'white', fontFamily: 'var(--font-heading)', fontSize: '1.05rem',
+                  cursor: 'pointer', boxShadow: `0 6px 24px ${s.color}33`,
+                  transition: 'all 0.2s', letterSpacing: 0.5
+                }}>
+                  {pageIdx < s.pages.length - 1 ? 'Seterusnya \u2192' : 'Jawab Soalan!'}
+                </button>
+              </div>
+            </>
+          ) : (
+            <div style={{ textAlign: 'center' }}>
+              <div style={{
+                width: 80, height: 80, borderRadius: '50%',
+                background: `linear-gradient(135deg, ${s.color}, ${s.color}CC)`,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: `0 6px 24px ${s.color}44`, margin: '0 auto 16px'
+              }}>
+                <span style={{ fontFamily: 'var(--font-heading)', fontSize: '2.2rem', color: 'white' }}>?</span>
+              </div>
+              <p style={{ fontFamily: 'var(--font-heading)', fontSize: '1.1rem', color: '#3E2723', marginBottom: 8 }}>
+                Huruf apa untuk cerita ini?
+              </p>
+              <p style={{ fontSize: '0.95rem', color: '#888', marginBottom: 20 }}>{s.name}</p>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+                {quizChoices.map((c, i) => (
+                  <button key={i} onClick={() => handleQuiz(c)} style={{
+                    width: 72, height: 72, borderRadius: 20, border: 'none',
+                    background: `linear-gradient(135deg, ${s.color}, ${s.color}AA)`,
+                    color: 'white', fontFamily: 'var(--font-heading)', fontSize: '2rem',
+                    cursor: 'pointer', boxShadow: `0 6px 20px ${s.color}33`,
+                    transition: 'transform 0.15s'
+                  }}>{c}</button>
+                ))}
+              </div>
+              {feedback && (
+                <div style={{
+                  marginTop: 16, padding: '10px 20px', borderRadius: 16,
+                  background: feedback.type === 'correct' ? 'linear-gradient(135deg,#6BCB77,#4CAF50)' : 'linear-gradient(135deg,#FF6B6B,#F44336)',
+                  color: 'white', fontWeight: 700, display: 'inline-block', fontSize: '0.9rem'
+                }}>{feedback.message}</div>
+              )}
+            </div>
+          )}
+        </div>
+        
+        <div style={{ marginTop: 10, fontSize: '0.75rem', color: 'rgba(139,105,20,0.5)', fontFamily: 'var(--font-body)' }}>
+          Pusingan {storyIdx + 1}/{totalRounds} {'\u2022'} {showQuiz ? 'Soalan' : `Muka ${pageIdx + 1}/${s.pages.length}`}
+        </div>
       </div>
     </div>
   );
 }
+
 
 // ╔════════════════════════════════════════════╗
 // ║  COMPLETE TIER WORLDS (RM99.90)           ║
