@@ -2962,7 +2962,7 @@ export function MathMachineGame() {
     <div className="game-screen" style={{ position: 'relative' }}>
       <img src={assetPath('/images/game/dice_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
       <div className="game-header" style={{ background: 'linear-gradient(135deg, #6C5CE7, #A29BFE)', color: 'white', borderBottom: '3px solid rgba(255,255,255,0.3)' }}>
-        <button className="back-btn" onClick={() => goToWorld('numbers')} style={{ color: 'white' }}>←</button>
+        <button className="back-btn" onClick={() => goToWorld('numbers')} style={{ color: 'white', background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>←</button>
         <span className="game-title" style={{ color: 'white', textShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
           {lang === 'bm' ? 'Mesin Matematik' : 'Math Machine'}
         </span>
@@ -2987,18 +2987,18 @@ export function MathMachineGame() {
           </div>
 
           {/* Visual Objects */}
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16, margin: '12px 0', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 24, margin: '12px 0', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', maxWidth: '40%' }}>
               {Array.from({ length: num1 }, (_, i) => (
                 <img key={`a${i}`} src={assetPath(fruitImages[i % fruitImages.length])} alt=""
-                  style={{ width: 38, height: 38, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.6)', animation: `popIn 0.3s ease ${i * 0.08}s both` }} />
+                  style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.6)', animation: `popIn 0.3s ease ${i * 0.08}s both` }} />
               ))}
             </div>
-            <span style={{ fontSize: '2.5rem', fontWeight: 900 }}>+</span>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <span style={{ fontSize: '2.5rem', fontWeight: 900, margin: '0 4px' }}>+</span>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', maxWidth: '40%' }}>
               {Array.from({ length: num2 }, (_, i) => (
                 <img key={`b${i}`} src={assetPath(fruitImages[(num1 + i) % fruitImages.length])} alt=""
-                  style={{ width: 38, height: 38, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.6)', animation: `popIn 0.3s ease ${(num1 + i) * 0.08}s both` }} />
+                  style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.6)', animation: `popIn 0.3s ease ${(num1 + i) * 0.08}s both` }} />
               ))}
             </div>
           </div>
@@ -3503,9 +3503,9 @@ export function SubtractionShopGame() {
 
   return (
     <div className="game-screen" style={{ position: 'relative' }}>
-      <img src={assetPath('/images/game/grocery_store_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
+      <img src={assetPath('/images/game/bakery_shop_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
       <div className="game-header" style={{ background: 'linear-gradient(135deg, #FF6B6B, #FF8E8E)', color: 'white', borderBottom: '3px solid rgba(255,255,255,0.3)' }}>
-        <button className="back-btn" onClick={() => goToWorld('numbers')} style={{ color: 'white' }}>←</button>
+        <button className="back-btn" onClick={() => goToWorld('numbers')} style={{ color: 'white', background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>←</button>
         <span className="game-title" style={{ color: 'white', textShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
           {lang === 'bm' ? 'Kedai Tolak' : 'Subtraction Shop'}
         </span>
@@ -3551,9 +3551,7 @@ export function SubtractionShopGame() {
           }}>
             {num1} - {num2} = ?
           </div>
-          <div style={{ fontSize: '0.85rem', marginTop: 8, opacity: 0.9, fontWeight: 600 }}>
-            {lang === 'bm' ? `${num2} kuih telah dijual!` : `${num2} were sold!`}
-          </div>
+
         </div>
 
         {/* Answer Buttons — square with colorful borders */}
