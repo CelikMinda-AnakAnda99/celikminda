@@ -5880,99 +5880,175 @@ export function BiggerSmallerGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const EMOJIS = ['🍎', '🌟', '🐱', '🎈', '🐟', '🌺', '🦋', '🍬'];
-  const [round, setRound] = useState(0);
+  const TOTAL_ROUNDS = 15;
+  const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
+  const [confettiPieces, setConfettiPieces] = useState([]);
+  const [wrongCount, setWrongCount] = useState(0);
   const [leftCount, setLeftCount] = useState(0);
   const [rightCount, setRightCount] = useState(0);
-  const [leftEmoji, setLeftEmoji] = useState('🍎');
-  const [rightEmoji, setRightEmoji] = useState('🌟');
-  const TOTAL_ROUNDS = 15;
+  const [leftImg, setLeftImg] = useState('');
+  const [rightImg, setRightImg] = useState('');
+  const [selectedSide, setSelectedSide] = useState(null);
+
+  const itemImages = [
+    '/images/game/apple.jpg', '/images/game/orange.jpg', '/images/game/lemon.jpg',
+    '/images/game/cherry.jpg', '/images/game/grape.jpg', '/images/game/watermelon.jpg',
+    '/images/game/cupcake.jpg', '/images/game/cookie.jpg', '/images/game/donut.jpg'
+  ];
 
   const generateRound = useCallback(() => {
-    const l = Math.floor(Math.random() * 5) + 1;
-    let r = Math.floor(Math.random() * 5) + 1;
-    while (r === l) r = Math.floor(Math.random() * 5) + 1;
+    const l = Math.floor(Math.random() * 8) + 1; // 1-8
+    let r = Math.floor(Math.random() * 8) + 1;
+    while (r === l) r = Math.floor(Math.random() * 8) + 1;
     setLeftCount(l);
     setRightCount(r);
-    setLeftEmoji(EMOJIS[Math.floor(Math.random() * EMOJIS.length)]);
-    setRightEmoji(EMOJIS[Math.floor(Math.random() * EMOJIS.length)]);
+    // Pick different images for left and right
+    const shuffled = [...itemImages].sort(() => Math.random() - 0.5);
+    setLeftImg(shuffled[0]);
+    setRightImg(shuffled[1]);
+    setFeedback(null);
+    setSelectedSide(null);
+    setWrongCount(0);
   }, []);
 
-  useEffect(() => { generateRound(); }, []);
+  useEffect(() => { generateRound(); }, [generateRound]);
 
   const handleChoice = (side) => {
+    if (feedback) return;
+    setSelectedSide(side);
     const correct = (side === 'left' && leftCount > rightCount) || (side === 'right' && rightCount > leftCount);
     if (correct) {
-      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
-      setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
-      setScore(score + 1);
+      setScore(s => s + 10);
+      setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
+      setTimeout(() => {
+        if (round >= TOTAL_ROUNDS) {
+          const finalScore = score + 10;
+          const stars = finalScore >= 100 ? 3 : finalScore >= 60 ? 2 : 1;
+          completeGame('numbers', 'bigger-smaller', stars, finalScore);
+          celebrationFeedback(lang, soundEnabled);
+          const colors = ['#FF7043', '#FFD93D', '#6BCB77', '#4A90D9', '#FF6B9D'];
+          setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
+            id: i, left: Math.random() * 100, color: colors[i % colors.length],
+            delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
+          })));
+          setGameComplete(true);
+        } else {
+          setRound(r => r + 1);
+          generateRound();
+        }
+      }, 1200);
     } else {
-      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
-      setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
+      setWrongCount(c => c + 1);
+      setFeedback({ type: 'wrong', message: wrongFeedback(lang, soundEnabled) });
+      setTimeout(() => { setFeedback(null); setSelectedSide(null); }, 900);
     }
-    setTimeout(() => {
-      setFeedback(null);
-      if (round + 1 < TOTAL_ROUNDS) {
-        setRound(round + 1);
-        generateRound();
-      } else {
-        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
-        const finalScore = correct ? score + 1 : score;
-        completeGame('numbers', 'bigger-smaller', finalScore >= 7 ? 3 : finalScore >= 4 ? 2 : 1, finalScore * 10);
-        setGameComplete(true);
-      }
-    }, 800);
   };
 
-  if (gameComplete) {
+  const getStars = () => score >= 100 ? 3 : score >= 60 ? 2 : 1;
+
+  const renderItemGroup = (count, img, side) => {
+    const isCorrectSide = (side === 'left' && leftCount > rightCount) || (side === 'right' && rightCount > leftCount);
+    const showHint = wrongCount >= 2 && isCorrectSide;
+    const isSelected = selectedSide === side;
+    const isCorrectPick = isSelected && feedback && feedback.type === 'correct';
+    const isWrongPick = isSelected && feedback && feedback.type === 'wrong';
+
     return (
-      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
-        <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
-        <h1 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>
-          {lang === 'bm' ? 'Bijak Membanding!' : 'Great Comparing!'}
-        </h1>
-        <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
-        <button className="btn-premium" onClick={() => goToWorld('numbers')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button>
-      </div>
+      <button onClick={() => handleChoice(side)} style={{
+        flex: 1, maxWidth: 200, padding: 14, borderRadius: 20,
+        background: isCorrectPick ? 'rgba(107,203,119,0.15)' : isWrongPick ? 'rgba(255,107,107,0.1)' : showHint ? 'rgba(107,203,119,0.08)' : 'rgba(255,255,255,0.92)',
+        border: `3px solid ${isCorrectPick ? '#4CAF50' : isWrongPick ? '#FF6B6B' : showHint ? '#6BCB77' : 'rgba(255,255,255,0.5)'}`,
+        cursor: feedback ? 'default' : 'pointer',
+        boxShadow: isCorrectPick ? '0 0 20px rgba(107,203,119,0.4)' : '0 4px 16px rgba(0,0,0,0.1)',
+        backdropFilter: 'blur(8px)',
+        transition: 'all 0.3s ease',
+        transform: isCorrectPick ? 'scale(1.05)' : 'scale(1)'
+      }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+          {Array.from({ length: count }, (_, i) => (
+            <div key={i} style={{
+              width: 44, height: 44, borderRadius: 10,
+              background: 'white', border: '2px solid #FFB8B8',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              overflow: 'hidden'
+            }}>
+              <img src={assetPath(img)} alt=""
+                style={{ width: 30, height: 30, borderRadius: '50%', objectFit: 'cover' }} />
+            </div>
+          ))}
+        </div>
+      </button>
     );
-  }
+  };
 
   return (
-    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/bigger_smaller_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
-      <div style={{ padding: 16, textAlign: 'center' }}>
-        <button className="icon-btn" onClick={() => goToWorld('numbers')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        <h2 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>
-          {lang === 'bm' ? 'Mana lebih banyak?' : 'Which has more?'}
-        </h2>
-        <div style={{ fontSize: '0.8rem', color: '#999' }}>{round + 1}/{TOTAL_ROUNDS}</div>
-        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', margin: '20px 0' }}>
-          <button onClick={() => handleChoice('left')} style={{
-            flex: 1, maxWidth: 160, padding: 20, borderRadius: 20, background: 'white',
-            border: '3px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-md)',
-          }}>
-            <div style={{ lineHeight: 1.4, display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'center' }}>
-              {Array.from({ length: leftCount }).map((_, i) => <GI key={i} e={leftEmoji} size={32} />)}
-            </div>
-          </button>
-          <button onClick={() => handleChoice('right')} style={{
-            flex: 1, maxWidth: 160, padding: 20, borderRadius: 20, background: 'white',
-            border: '3px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-md)',
-          }}>
-            <div style={{ lineHeight: 1.4, display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'center' }}>
-              {Array.from({ length: rightCount }).map((_, i) => <GI key={i} e={rightEmoji} size={32} />)}
-            </div>
-          </button>
+    <div className="game-screen" style={{ position: 'relative' }}>
+      <img src={assetPath('/images/game/comparison_playroom_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
+      <div className="game-header" style={{ background: 'linear-gradient(135deg, #FF7043, #FF8A65)', color: 'white', borderBottom: '3px solid rgba(255,255,255,0.3)' }}>
+        <button className="back-btn" onClick={() => goToWorld('numbers')} style={{ color: 'white', background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>←</button>
+        <span className="game-title" style={{ color: 'white', textShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
+          {lang === 'bm' ? 'Besar & Kecil' : 'Bigger & Smaller'}
+        </span>
+        <div className="game-stars" style={{ background: 'rgba(255,255,255,0.25)', borderRadius: 20, padding: '4px 14px' }}>
+          <span style={{ fontWeight: 700, color: 'white', fontSize: '1rem' }}>{round}/{TOTAL_ROUNDS}</span>
         </div>
+      </div>
+
+      <div className="game-body" style={{ textAlign: 'center', gap: 'var(--space-md)' }}>
+        {/* Question banner */}
+        <div style={{
+          background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)',
+          borderRadius: 20, padding: '10px 24px',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+          border: '2px solid #FFAB91'
+        }}>
+          <div style={{
+            fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
+            color: '#E64A19',
+            background: 'linear-gradient(135deg, #FF7043, #FF8A65)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
+          }}>
+            {lang === 'bm' ? '⚖️ Mana lebih banyak? Tap yang betul!' : '⚖️ Which has more? Tap the correct one!'}
+          </div>
+        </div>
+
+        {/* Two groups side by side */}
+        <div style={{ display: 'flex', gap: 20, justifyContent: 'center', alignItems: 'stretch' }}>
+          {renderItemGroup(leftCount, leftImg, 'left')}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '2rem', fontWeight: 900, color: 'white',
+            textShadow: '0 2px 8px rgba(0,0,0,0.3)',
+            width: 40
+          }}>VS</div>
+          {renderItemGroup(rightCount, rightImg, 'right')}
+        </div>
+
+        {/* Feedback */}
         {feedback && (
-          <div style={{ marginTop: 12, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>
-            {feedback.type === 'correct' ? '' : ''}{feedback.message}
+          <div style={{
+            padding: '10px 20px', borderRadius: 16,
+            background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B',
+            color: 'white', fontWeight: 700, fontSize: '1.1rem',
+            animation: 'popIn 0.3s ease'
+          }}>
+            {feedback.message}
           </div>
         )}
       </div>
+
+      {gameComplete && (
+        <GameCompleteModal
+          lang={lang} stars={getStars()} score={score}
+          accentColor="#FF7043"
+          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); generateRound(); }}
+          onBack={() => goToWorld('numbers')}
+          confettiPieces={confettiPieces}
+        />
+      )}
     </div>
   );
 }
