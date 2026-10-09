@@ -3528,42 +3528,35 @@ export function SubtractionShopGame() {
             {lang === 'bm' ? 'Rak Kuih' : 'Bakery Shelf'}
           </div>
 
-          {/* Visual Items on shelf — individual white cards */}
+          {/* Visual Items on shelf */}
           <div style={{
             background: 'linear-gradient(180deg, #FFF5F5 0%, #FFE8E8 100%)',
             borderRadius: 16, padding: '14px 10px',
             border: '2px dashed #FFB8B8', minHeight: 70
           }}>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-              {Array.from({ length: num1 }, (_, i) => (
-                <div key={i} style={{
-                  position: 'relative',
-                  width: 52, height: 52, borderRadius: 14,
-                  background: soldItems.includes(i) ? '#f0f0f0' : 'white',
-                  border: soldItems.includes(i) ? '2px solid #ddd' : '2px solid #FFB8B8',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: soldItems.includes(i) ? 'none' : '0 3px 8px rgba(255,107,107,0.15)',
-                  transition: 'all 0.5s ease',
-                  animation: !soldItems.includes(i) ? `popIn 0.3s ease ${i * 0.06}s both` : 'none'
-                }}>
-                  <img src={assetPath(currentItemImg)} alt=""
-                    style={{
-                      width: 38, height: 38, borderRadius: 10, objectFit: 'cover',
-                      opacity: soldItems.includes(i) ? 0.15 : 1,
-                      filter: soldItems.includes(i) ? 'grayscale(1)' : 'none',
-                      transition: 'all 0.5s ease'
-                    }} />
-                  {soldItems.includes(i) && (
-                    <div style={{
-                      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: '#FF6B6B', fontSize: '1.6rem', fontWeight: 900
-                    }}>
-                      X
-                    </div>
-                  )}
-                </div>
-              ))}
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+              {Array.from({ length: num1 }, (_, i) => {
+                const isSold = soldItems.includes(i);
+                return (
+                  <div key={i} style={{
+                    width: 56, height: 56, borderRadius: 14,
+                    background: isSold ? '#f5f5f5' : 'white',
+                    border: isSold ? '2px solid #e0e0e0' : '2px solid #FFB8B8',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: isSold ? 'none' : '0 3px 8px rgba(255,107,107,0.15)',
+                    transition: 'all 0.5s ease',
+                    animation: !isSold ? `popIn 0.3s ease ${i * 0.06}s both` : 'none',
+                    overflow: 'hidden'
+                  }}>
+                    {!isSold ? (
+                      <img src={assetPath(currentItemImg)} alt=""
+                        style={{ width: 42, height: 42, borderRadius: 10, objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ width: 20, height: 2, background: '#ddd', borderRadius: 2 }} />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
