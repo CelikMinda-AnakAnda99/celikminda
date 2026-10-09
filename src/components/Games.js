@@ -2939,6 +2939,8 @@ export function MathMachineGame() {
 
   const getStars = () => score >= 70 ? 3 : score >= 40 ? 2 : 1;
 
+  const emojis = ['\u25CF', '\u25A0', '\u25B2', '\u2605', '\u2666', '\u25CF', '\u25A0', '\u25B2', '\u2605', '\u2666'];
+
   return (
     <div className="game-screen" style={{ position: 'relative' }}>
       <img src={assetPath('/images/game/dice_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
