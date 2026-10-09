@@ -2896,6 +2896,7 @@ export function MathMachineGame() {
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
   const [machineAnim, setMachineAnim] = useState(false);
+  const [wrongCount, setWrongCount] = useState(0);
 
   const generateRound = useCallback(() => {
     const a = Math.floor(Math.random() * 5) + 1; // 1-5
@@ -2940,10 +2941,12 @@ export function MathMachineGame() {
           setGameComplete(true);
         } else {
           setRound(r => r + 1);
+          setWrongCount(0);
           generateRound();
         }
       }, 1200);
     } else {
+      setWrongCount(c => c + 1);
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, soundEnabled) });
       setTimeout(() => setFeedback(null), 900);
     }
@@ -3021,11 +3024,12 @@ export function MathMachineGame() {
           {options.map((opt, i) => {
             const btnColors = ['#6C5CE7', '#E17055', '#00B894', '#FDCB6E'];
             const isCorrectFeedback = feedback && opt.correct;
+            const showHint = wrongCount >= 2 && opt.correct;
             const isWrongFeedback = feedback && !opt.correct && feedback.type === 'wrong';
             return (
               <button key={i} onClick={() => handleAnswer(opt)} style={{
-                background: isCorrectFeedback ? '#6BCB77' : isWrongFeedback ? '#FF6B6B55' : 'white',
-                border: `4px solid ${isCorrectFeedback ? '#4CAF50' : isWrongFeedback ? '#FF6B6B' : btnColors[i % 4]}`,
+                background: isCorrectFeedback ? '#6BCB77' : isWrongFeedback ? '#FF6B6B55' : showHint ? '#E8F5E9' : 'white',
+                border: `4px solid ${isCorrectFeedback ? '#4CAF50' : isWrongFeedback ? '#FF6B6B' : showHint ? '#6BCB77' : btnColors[i % 4]}`,
                 borderRadius: 24, padding: 0,
                 fontSize: '2.8rem', fontWeight: 900, fontFamily: 'var(--font-heading)',
                 color: isCorrectFeedback ? 'white' : '#333',
@@ -3433,6 +3437,7 @@ export function SubtractionShopGame() {
   const [gameComplete, setGameComplete] = useState(false);
   const [soldItems, setSoldItems] = useState([]);
   const [confettiPieces, setConfettiPieces] = useState([]);
+  const [wrongCount, setWrongCount] = useState(0);
 
   const shopImages = [
     '/images/game/cupcake.jpg', '/images/game/cookie.jpg', '/images/game/donut.jpg',
@@ -3489,10 +3494,12 @@ export function SubtractionShopGame() {
           setGameComplete(true);
         } else {
           setRound(r => r + 1);
+          setWrongCount(0);
           generateRound();
         }
       }, 1200);
     } else {
+      setWrongCount(c => c + 1);
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, soundEnabled) });
       setTimeout(() => setFeedback(null), 900);
     }
@@ -3579,11 +3586,12 @@ export function SubtractionShopGame() {
           {options.map((opt, i) => {
             const btnColors = ['#FF6B6B', '#FDCB6E', '#00B894', '#E17055'];
             const isCorrectFeedback = feedback && opt.correct;
+            const showHint = wrongCount >= 2 && opt.correct;
             const isWrongFeedback = feedback && !opt.correct && feedback.type === 'wrong';
             return (
               <button key={i} onClick={() => handleAnswer(opt)} style={{
-                background: isCorrectFeedback ? '#6BCB77' : isWrongFeedback ? '#FF6B6B55' : 'white',
-                border: `4px solid ${isCorrectFeedback ? '#4CAF50' : isWrongFeedback ? '#FF6B6B' : btnColors[i % 4]}`,
+                background: isCorrectFeedback ? '#6BCB77' : isWrongFeedback ? '#FF6B6B55' : showHint ? '#E8F5E9' : 'white',
+                border: `4px solid ${isCorrectFeedback ? '#4CAF50' : isWrongFeedback ? '#FF6B6B' : showHint ? '#6BCB77' : btnColors[i % 4]}`,
                 borderRadius: 24, padding: 0,
                 fontSize: '2.8rem', fontWeight: 900, fontFamily: 'var(--font-heading)',
                 color: isCorrectFeedback ? 'white' : '#333',
