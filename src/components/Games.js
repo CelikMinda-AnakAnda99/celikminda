@@ -251,7 +251,7 @@ export function LetterTreeGame() {
           {lang === 'bm' ? 'Taman Huruf Ajaib' : 'Magic Letter Garden'}
         </span>
         <div className="game-stars">
-          {[1,2,3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
+          {[1, 2, 3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
         </div>
       </div>
 
@@ -303,7 +303,7 @@ export function LetterTreeGame() {
                   display: 'flex', alignItems: 'center', gap: 6,
                   boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                 }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#60A5FA"><path d="M6 3l-6 8 12 11L24 11l-6-8H6z"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#60A5FA"><path d="M6 3l-6 8 12 11L24 11l-6-8H6z" /></svg>
                   <span style={{ color: '#333', fontFamily: 'var(--font-heading)' }}>{score}</span>
                 </div>
               </div>
@@ -590,7 +590,7 @@ export function BeeFlowerGame() {
           {lang === 'bm' ? 'Taman Lebah Ajaib' : 'Magic Bee Garden'}
         </span>
         <div className="game-stars">
-          {[1,2,3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
+          {[1, 2, 3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
         </div>
       </div>
 
@@ -631,7 +631,7 @@ export function BeeFlowerGame() {
                   display: 'flex', alignItems: 'center', gap: 6,
                   boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                 }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
                   <span style={{ color: '#333', fontFamily: 'var(--font-heading)' }}>{score}</span>
                 </div>
               </div>
@@ -1107,24 +1107,36 @@ export function ColourMixingGame() {
   const lang = language;
 
   const COLOR_RECIPES = [
-    { a: { hex: '#FF0000', nameBm: 'Merah', nameEn: 'Red' },
+    {
+      a: { hex: '#FF0000', nameBm: 'Merah', nameEn: 'Red' },
       b: { hex: '#FFFF00', nameBm: 'Kuning', nameEn: 'Yellow' },
-      result: { hex: '#FF8C00', nameBm: 'Jingga', nameEn: 'Orange' } },
-    { a: { hex: '#FF0000', nameBm: 'Merah', nameEn: 'Red' },
+      result: { hex: '#FF8C00', nameBm: 'Jingga', nameEn: 'Orange' }
+    },
+    {
+      a: { hex: '#FF0000', nameBm: 'Merah', nameEn: 'Red' },
       b: { hex: '#0000FF', nameBm: 'Biru', nameEn: 'Blue' },
-      result: { hex: '#800080', nameBm: 'Ungu', nameEn: 'Purple' } },
-    { a: { hex: '#FFFF00', nameBm: 'Kuning', nameEn: 'Yellow' },
+      result: { hex: '#800080', nameBm: 'Ungu', nameEn: 'Purple' }
+    },
+    {
+      a: { hex: '#FFFF00', nameBm: 'Kuning', nameEn: 'Yellow' },
       b: { hex: '#0000FF', nameBm: 'Biru', nameEn: 'Blue' },
-      result: { hex: '#008000', nameBm: 'Hijau', nameEn: 'Green' } },
-    { a: { hex: '#FF0000', nameBm: 'Merah', nameEn: 'Red' },
+      result: { hex: '#008000', nameBm: 'Hijau', nameEn: 'Green' }
+    },
+    {
+      a: { hex: '#FF0000', nameBm: 'Merah', nameEn: 'Red' },
       b: { hex: '#FFFFFF', nameBm: 'Putih', nameEn: 'White' },
-      result: { hex: '#FFB6C1', nameBm: 'Merah Jambu', nameEn: 'Pink' } },
-    { a: { hex: '#000000', nameBm: 'Hitam', nameEn: 'Black' },
+      result: { hex: '#FFB6C1', nameBm: 'Merah Jambu', nameEn: 'Pink' }
+    },
+    {
+      a: { hex: '#000000', nameBm: 'Hitam', nameEn: 'Black' },
       b: { hex: '#FFFFFF', nameBm: 'Putih', nameEn: 'White' },
-      result: { hex: '#808080', nameBm: 'Kelabu', nameEn: 'Grey' } },
-    { a: { hex: '#FF8C00', nameBm: 'Jingga', nameEn: 'Orange' },
+      result: { hex: '#808080', nameBm: 'Kelabu', nameEn: 'Grey' }
+    },
+    {
+      a: { hex: '#FF8C00', nameBm: 'Jingga', nameEn: 'Orange' },
       b: { hex: '#FFFFFF', nameBm: 'Putih', nameEn: 'White' },
-      result: { hex: '#FFDAB9', nameBm: 'Peach', nameEn: 'Peach' } },
+      result: { hex: '#FFDAB9', nameBm: 'Peach', nameEn: 'Peach' }
+    },
   ];
 
   const [currentRecipeIdx, setCurrentRecipeIdx] = useState(0);
@@ -1202,7 +1214,7 @@ export function ColourMixingGame() {
           {lang === 'bm' ? 'Campur Warna' : 'Colour Mixing'}
         </span>
         <div className="game-stars">
-          {[1,2,3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
+          {[1, 2, 3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
         </div>
       </div>
 
@@ -1221,7 +1233,7 @@ export function ColourMixingGame() {
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-lg)' }}>
             <div className="round-counter" style={{ position: 'static' }}>{t('round', lang)} {round}/{TOTAL_ROUNDS}</div>
             <div className="game-score" style={{ position: 'static' }}>
-              <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#60A5FA" style={{display:"inline-block",verticalAlign:"middle"}}><path d="M6 3l-6 8 12 11L24 11l-6-8H6z"/></svg></span><span className="score-value">{score}</span>
+              <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#60A5FA" style={{ display: "inline-block", verticalAlign: "middle" }}><path d="M6 3l-6 8 12 11L24 11l-6-8H6z" /></svg></span><span className="score-value">{score}</span>
             </div>
           </div>
 
@@ -1449,7 +1461,7 @@ export function AnimalSoundsGame() {
           {lang === 'bm' ? 'Bunyi Haiwan' : 'Animal Sounds'}
         </span>
         <div className="game-stars">
-          {[1,2,3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
+          {[1, 2, 3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
         </div>
       </div>
 
@@ -1468,7 +1480,7 @@ export function AnimalSoundsGame() {
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-lg)' }}>
             <div className="round-counter" style={{ position: 'static' }}>{t('round', lang)} {round}/{TOTAL_ROUNDS}</div>
             <div className="game-score" style={{ position: 'static' }}>
-              <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B" style={{display:"inline-block",verticalAlign:"middle"}}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span className="score-value">{score}</span>
+              <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B" style={{ display: "inline-block", verticalAlign: "middle" }}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg></span><span className="score-value">{score}</span>
             </div>
           </div>
 
@@ -1484,7 +1496,7 @@ export function AnimalSoundsGame() {
               animation: soundPulse ? 'starBadgePulse 0.5s ease infinite' : 'none',
               border: '3px solid rgba(255,255,255,0.6)',
             }}>
-            <span style={{ marginBottom: "var(--space-xs)" }}><svg width="32" height="32" viewBox="0 0 24 24" fill="#6C63FF" style={{display:"inline-block"}}><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg></span>
+            <span style={{ marginBottom: "var(--space-xs)" }}><svg width="32" height="32" viewBox="0 0 24 24" fill="#6C63FF" style={{ display: "inline-block" }}><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" /></svg></span>
             <span style={{
               fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.3rem',
               color: 'var(--cm-purple)', textAlign: 'center', lineHeight: 1.2,
@@ -1522,7 +1534,7 @@ export function AnimalSoundsGame() {
                   <img src={animal.image} alt={lang === 'bm' ? animal.nameBm : animal.nameEn}
                     style={{ width: 80, height: 80, objectFit: 'contain', borderRadius: 'var(--radius-md)' }} />
                 ) : (
-                  <GI e={animal.emoji} size={48}/>
+                  <GI e={animal.emoji} size={48} />
                 )}
                 <span style={{
                   fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.9rem',
@@ -1654,7 +1666,7 @@ export function ShapeHuntGame() {
             const stars = score + 10 >= 100 ? 3 : score + 10 >= 60 ? 2 : 1;
             completeGame('shapes', 'shape-hunt', stars, score + 10);
             setGameComplete(true);
-          celebrationFeedback(lang, soundEnabled);
+            celebrationFeedback(lang, soundEnabled);
             const colors = ['#FF6B9D', '#FFD93D', '#4A90D9', '#6BCB77', '#9B72CF'];
             setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
               id: i, left: Math.random() * 100, color: colors[i % colors.length],
@@ -1686,7 +1698,7 @@ export function ShapeHuntGame() {
           {lang === 'bm' ? 'Cari Bentuk' : 'Shape Hunt'}
         </span>
         <div className="game-stars">
-          {[1,2,3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
+          {[1, 2, 3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
         </div>
       </div>
 
@@ -1736,7 +1748,7 @@ export function ShapeHuntGame() {
             position: 'absolute', top: 'var(--space-lg)', right: 'var(--space-lg)', zIndex: 10,
           }}>
             <div className="game-score" style={{ position: 'static' }}>
-              <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#60A5FA" style={{display:"inline-block",verticalAlign:"middle"}}><path d="M6 3l-6 8 12 11L24 11l-6-8H6z"/></svg></span><span className="score-value">{score}</span>
+              <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#60A5FA" style={{ display: "inline-block", verticalAlign: "middle" }}><path d="M6 3l-6 8 12 11L24 11l-6-8H6z" /></svg></span><span className="score-value">{score}</span>
             </div>
           </div>
 
@@ -1749,7 +1761,7 @@ export function ShapeHuntGame() {
                 left: `${15 + i * 18}%`, top: `${20 + (i % 2) * 30}%`,
                 opacity: 0.5, pointerEvents: 'none',
               }}>
-                <GI e={d} size={40}/>
+                <GI e={d} size={40} />
               </div>
             ))}
 
@@ -1948,7 +1960,7 @@ export function BlockTowerGame() {
         const finalScore = correct ? score + 10 : score;
         const stars = finalScore >= 120 ? 3 : finalScore >= 80 ? 2 : 1;
         completeGame('numbers', 'block-tower', stars, finalScore);
-        const colors = ['#FF6B6B','#FFA94D','#FFD93D','#6BCB77','#4ECDC4','#45B7D1','#9B72CF','#FF8EB4'];
+        const colors = ['#FF6B6B', '#FFA94D', '#FFD93D', '#6BCB77', '#4ECDC4', '#45B7D1', '#9B72CF', '#FF8EB4'];
         setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
           id: i, left: Math.random() * 100,
           color: colors[i % colors.length],
@@ -2098,7 +2110,7 @@ export function BlockTowerGame() {
                 animationDelay: `${i * 0.08}s`, opacity: 0,
                 pointerEvents: 'none',
               }}>
-                {['✨','⭐','🌟','💫','🎉','🎊','🧱','🏗️','💜','🦉'][i]}
+                {['✨', '⭐', '🌟', '💫', '🎉', '🎊', '🧱', '🏗️', '💜', '🦉'][i]}
               </div>
             ))}
           </div>
@@ -2337,7 +2349,7 @@ export function AnimalHomesGame() {
           {lang === 'bm' ? 'Rumah Haiwan' : 'Animal Homes'}
         </span>
         <div className="game-stars">
-          {[1,2,3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
+          {[1, 2, 3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
         </div>
       </div>
 
@@ -2356,7 +2368,7 @@ export function AnimalHomesGame() {
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-lg)' }}>
             <div className="round-counter" style={{ position: 'static' }}>{t('round', lang)} {round}/{TOTAL_ROUNDS}</div>
             <div className="game-score" style={{ position: 'static' }}>
-              <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD93D" style={{display:"inline-block",verticalAlign:"middle"}}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span className="score-value">{score}</span>
+              <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD93D" style={{ display: "inline-block", verticalAlign: "middle" }}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg></span><span className="score-value">{score}</span>
             </div>
           </div>
 
@@ -2373,7 +2385,7 @@ export function AnimalHomesGame() {
               <img src={currentAnimal.image} alt={lang === 'bm' ? currentAnimal.nameBm : currentAnimal.nameEn}
                 style={{ width: 90, height: 90, objectFit: 'contain', borderRadius: 'var(--radius-md)' }} />
             ) : (
-              <GI e={currentAnimal.emoji} size={56}/>
+              <GI e={currentAnimal.emoji} size={56} />
             )}
             <span style={{
               fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.9rem',
@@ -2408,7 +2420,7 @@ export function AnimalHomesGame() {
                 transition: 'all 0.2s ease',
                 animation: `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.1}s both`,
               }}>
-                <GI e={habitat.emoji} size={40}/>
+                <GI e={habitat.emoji} size={40} />
                 <span style={{
                   fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1rem',
                   color: feedback?.type === 'correct' && habitat.id === currentAnimal.habitat ? 'white' : 'var(--text-primary)',
@@ -2532,7 +2544,7 @@ export function MatchColourGame() {
           {lang === 'bm' ? 'Padankan Warna' : 'Match Colour'}
         </span>
         <div className="game-stars">
-          {[1,2,3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
+          {[1, 2, 3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
         </div>
       </div>
 
@@ -2551,7 +2563,7 @@ export function MatchColourGame() {
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-lg)' }}>
             <div className="round-counter" style={{ position: 'static' }}>{t('round', lang)} {round}/{TOTAL_ROUNDS}</div>
             <div className="game-score" style={{ position: 'static' }}>
-              <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#EC4899" style={{display:"inline-block",verticalAlign:"middle"}}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span className="score-value">{score}</span>
+              <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#EC4899" style={{ display: "inline-block", verticalAlign: "middle" }}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg></span><span className="score-value">{score}</span>
             </div>
           </div>
 
@@ -2712,7 +2724,7 @@ export function SortTransportGame() {
           {lang === 'bm' ? 'Susun Kenderaan' : 'Sort Transport'}
         </span>
         <div className="game-stars">
-          {[1,2,3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
+          {[1, 2, 3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
         </div>
       </div>
 
@@ -2731,7 +2743,7 @@ export function SortTransportGame() {
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-lg)' }}>
             <div className="round-counter" style={{ position: 'static' }}>{t('round', lang)} {round}/{TOTAL_ROUNDS}</div>
             <div className="game-score" style={{ position: 'static' }}>
-              <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#10B981" style={{display:"inline-block",verticalAlign:"middle"}}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span><span className="score-value">{score}</span>
+              <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#10B981" style={{ display: "inline-block", verticalAlign: "middle" }}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg></span><span className="score-value">{score}</span>
             </div>
           </div>
 
@@ -2748,7 +2760,7 @@ export function SortTransportGame() {
               <img src={currentVehicle.image} alt={lang === 'bm' ? currentVehicle.nameBm : currentVehicle.nameEn}
                 style={{ width: 100, height: 100, objectFit: 'contain', borderRadius: 'var(--radius-md)' }} />
             ) : (
-              <GI e={currentVehicle.emoji} size={64}/>
+              <GI e={currentVehicle.emoji} size={64} />
             )}
             <span style={{
               fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.85rem',
@@ -2783,7 +2795,7 @@ export function SortTransportGame() {
                 transition: 'all 0.2s ease',
                 animation: `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.1}s both`,
               }}>
-                <GI e={cat.emoji} size={40}/>
+                <GI e={cat.emoji} size={40} />
                 <span style={{
                   fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1rem',
                   color: feedback?.type === 'correct' && cat.id === currentVehicle.category ? 'white' : 'var(--text-primary)',
@@ -2847,7 +2859,7 @@ export function GameCompleteModal({ lang, stars, score, accentColor, onPlayAgain
           <h2>{lang === 'bm' ? 'Syabas!' : 'Well Done!'}</h2>
           <p>{t('youEarned', lang)} {stars} {t('starsEarned', lang)}!</p>
           <div className="stars-row">
-            {[1,2,3].map(s => <span key={s} className="star" style={{ opacity: s <= stars ? 1 : 0.3 }}><StarIcon size={16} /></span>)}
+            {[1, 2, 3].map(s => <span key={s} className="star" style={{ opacity: s <= stars ? 1 : 0.3 }}><StarIcon size={16} /></span>)}
           </div>
           <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, color: accentColor, fontSize: '1.2rem' }}>
             {t('score', lang)}: {score}
@@ -2939,7 +2951,12 @@ export function MathMachineGame() {
 
   const getStars = () => score >= 70 ? 3 : score >= 40 ? 2 : 1;
 
-  const emojis = ['\u25CF', '\u25A0', '\u25B2', '\u2605', '\u2666', '\u25CF', '\u25A0', '\u25B2', '\u2605', '\u2666'];
+  const fruitImages = [
+    '/images/game/apple.jpg', '/images/game/orange.jpg', '/images/game/lemon.jpg',
+    '/images/game/grape.jpg', '/images/game/strawberry.jpg', '/images/game/blueberry.jpg',
+    '/images/game/peach.jpg', '/images/game/kiwi.jpg', '/images/game/cherry.jpg',
+    '/images/game/banana.jpg'
+  ];
 
   return (
     <div className="game-screen" style={{ position: 'relative' }}>
@@ -2971,19 +2988,17 @@ export function MathMachineGame() {
 
           {/* Visual Objects */}
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16, margin: '12px 0', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
               {Array.from({ length: num1 }, (_, i) => (
-                <span key={`a${i}`} style={{ fontSize: '1.8rem', animation: `popIn 0.3s ease ${i * 0.08}s both` }}>
-                  {emojis[i % emojis.length]}
-                </span>
+                <img key={`a${i}`} src={assetPath(fruitImages[i % fruitImages.length])} alt=""
+                  style={{ width: 38, height: 38, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.6)', animation: `popIn 0.3s ease ${i * 0.08}s both` }} />
               ))}
             </div>
             <span style={{ fontSize: '2.5rem', fontWeight: 900 }}>+</span>
-            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
               {Array.from({ length: num2 }, (_, i) => (
-                <span key={`b${i}`} style={{ fontSize: '1.8rem', animation: `popIn 0.3s ease ${(num1 + i) * 0.08}s both` }}>
-                  {emojis[(num1 + i) % emojis.length]}
-                </span>
+                <img key={`b${i}`} src={assetPath(fruitImages[(num1 + i) % fruitImages.length])} alt=""
+                  style={{ width: 38, height: 38, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.6)', animation: `popIn 0.3s ease ${(num1 + i) * 0.08}s both` }} />
               ))}
             </div>
           </div>
@@ -3006,8 +3021,8 @@ export function MathMachineGame() {
           {options.map((opt, i) => (
             <button key={i} onClick={() => handleAnswer(opt)} style={{
               background: feedback && opt.correct ? '#6BCB77' :
-                         feedback && !opt.correct && feedback.type === 'wrong' ? '#FF6B6B55' :
-                         'white',
+                feedback && !opt.correct && feedback.type === 'wrong' ? '#FF6B6B55' :
+                  'white',
               border: '3px solid #E0E0E0', borderRadius: 16, padding: '16px 8px',
               fontSize: '2rem', fontWeight: 900, fontFamily: 'var(--font-heading)',
               cursor: 'pointer', boxShadow: 'var(--shadow-sm)',
@@ -3127,7 +3142,7 @@ export function AnimalFoodGame() {
             {lang === 'bm' ? 'Semua Haiwan Kenyang!' : 'All Animals Fed!'}
           </h2>
           <div style={{ fontSize: '2rem', margin: 'var(--space-md) 0' }}>
-            {[1,2,3].map(s => <span key={s}>{s <= stars ? <StarIcon size={20} /> : <svg width={20} height={20} viewBox='0 0 24 24' fill='#DDD'><path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/></svg>}</span>)}
+            {[1, 2, 3].map(s => <span key={s}>{s <= stars ? <StarIcon size={20} /> : <svg width={20} height={20} viewBox='0 0 24 24' fill='#DDD'><path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' /></svg>}</span>)}
           </div>
           <p style={{ fontSize: '1.3rem', fontWeight: 700 }}>{t('score', lang)}: {score}</p>
           <div className="action-buttons" style={{ marginTop: 'var(--space-lg)' }}>
@@ -3186,15 +3201,15 @@ export function AnimalFoodGame() {
           {foodOptions.map((food, i) => (
             <button key={i} onClick={() => handleFoodSelect(food)} style={{
               background: feedback?.type === 'correct' && food.key === currentAnimal.food ? '#6BCB77' :
-                         feedback?.type === 'wrong' && food.key !== currentAnimal.food ? '#fff5f5' :
-                         'white',
+                feedback?.type === 'wrong' && food.key !== currentAnimal.food ? '#fff5f5' :
+                  'white',
               border: '3px solid #E0E0E0', borderRadius: 16, padding: '14px 8px',
               cursor: 'pointer', boxShadow: 'var(--shadow-sm)',
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
               transition: 'all 0.2s ease',
               transform: feedback?.type === 'correct' && food.key === currentAnimal.food ? 'scale(1.1)' : 'scale(1)'
             }}>
-              <GI e={food.emoji} size={35}/>
+              <GI e={food.emoji} size={35} />
               <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#555' }}>{food.name}</span>
             </button>
           ))}
@@ -3476,7 +3491,7 @@ export function SubtractionShopGame() {
             {lang === 'bm' ? 'Kedai Tutup! Matematik Hebat!' : 'Shop Closed! Great Math!'}
           </h2>
           <div style={{ fontSize: '2rem', margin: 'var(--space-md) 0' }}>
-            {[1,2,3].map(s => <span key={s}>{s <= stars ? <StarIcon size={20} /> : <svg width={20} height={20} viewBox='0 0 24 24' fill='#DDD'><path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/></svg>}</span>)}
+            {[1, 2, 3].map(s => <span key={s}>{s <= stars ? <StarIcon size={20} /> : <svg width={20} height={20} viewBox='0 0 24 24' fill='#DDD'><path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' /></svg>}</span>)}
           </div>
           <p style={{ fontSize: '1.3rem', fontWeight: 700 }}>{t('score', lang)}: {score}</p>
           <div className="action-buttons" style={{ marginTop: 'var(--space-lg)' }}>
@@ -3593,48 +3608,60 @@ export function RoadSafetyGame() {
   const lang = language;
 
   const SCENARIOS = [
-    { situation: { bm: 'Lampu MERAH menyala. Apa patut buat?', en: 'The RED light is on. What should you do?' },
+    {
+      situation: { bm: 'Lampu MERAH menyala. Apa patut buat?', en: 'The RED light is on. What should you do?' },
       lightColor: '#FF4444', correct: 'stop',
       options: [
         { key: 'stop', bm: 'Berhenti', en: 'Stop' },
         { key: 'go', bm: 'Jalan', en: 'Walk' },
         { key: 'run', bm: 'Lari', en: 'Run' }
-      ]},
-    { situation: { bm: 'Lampu HIJAU menyala. Apa patut buat?', en: 'The GREEN light is on. What should you do?' },
+      ]
+    },
+    {
+      situation: { bm: 'Lampu HIJAU menyala. Apa patut buat?', en: 'The GREEN light is on. What should you do?' },
       lightColor: '#4CAF50', correct: 'go',
       options: [
         { key: 'stop', bm: 'Berhenti', en: 'Stop' },
         { key: 'go', bm: 'Jalan dengan selamat', en: 'Walk safely' },
         { key: 'run', bm: 'Lari laju', en: 'Run fast' }
-      ]},
-    { situation: { bm: 'Lampu KUNING menyala. Apa patut buat?', en: 'The YELLOW light is on. What should you do?' },
+      ]
+    },
+    {
+      situation: { bm: 'Lampu KUNING menyala. Apa patut buat?', en: 'The YELLOW light is on. What should you do?' },
       lightColor: '#FFD700', correct: 'wait',
       options: [
         { key: 'go', bm: 'Jalan terus', en: 'Keep walking' },
         { key: 'wait', bm: '⏳ Tunggu & bersedia', en: '⏳ Wait & get ready' },
         { key: 'run', bm: 'Lari', en: 'Run' }
-      ]},
-    { situation: { bm: 'Hendak melintas jalan. Apa patut buat dahulu?', en: 'Want to cross the road. What should you do first?' },
+      ]
+    },
+    {
+      situation: { bm: 'Hendak melintas jalan. Apa patut buat dahulu?', en: 'Want to cross the road. What should you do first?' },
       lightColor: '#4A90D9', correct: 'look',
       options: [
         { key: 'run', bm: 'Lari lintasi', en: 'Run across' },
         { key: 'look', bm: 'Tengok kiri-kanan', en: 'Look left-right' },
         { key: 'close', bm: 'Pejam mata', en: 'Close eyes' }
-      ]},
-    { situation: { bm: 'Nampak zebra crossing. Di mana patut melintas?', en: 'You see a zebra crossing. Where should you cross?' },
+      ]
+    },
+    {
+      situation: { bm: 'Nampak zebra crossing. Di mana patut melintas?', en: 'You see a zebra crossing. Where should you cross?' },
       lightColor: '#2D3436', correct: 'zebra',
       options: [
         { key: 'anywhere', bm: 'Mana-mana saja', en: 'Anywhere' },
         { key: 'zebra', bm: 'Di zebra crossing', en: 'At the zebra crossing' },
         { key: 'behind', bm: 'Belakang kereta', en: 'Behind the car' }
-      ]},
-    { situation: { bm: 'Berjalan di tepi jalan. Di mana patut berjalan?', en: 'Walking on the roadside. Where should you walk?' },
+      ]
+    },
+    {
+      situation: { bm: 'Berjalan di tepi jalan. Di mana patut berjalan?', en: 'Walking on the roadside. Where should you walk?' },
       lightColor: '#6BCB77', correct: 'sidewalk',
       options: [
         { key: 'middle', bm: '🛣️ Tengah jalan', en: '🛣️ Middle of road' },
         { key: 'sidewalk', bm: 'Di kaki lima', en: 'On the sidewalk' },
         { key: 'backwards', bm: 'Berjalan undur', en: 'Walk backwards' }
-      ]},
+      ]
+    },
   ];
 
   const TOTAL_ROUNDS = SCENARIOS.length;
@@ -3678,7 +3705,7 @@ export function RoadSafetyGame() {
             {lang === 'bm' ? 'Pandai Keselamatan Jalan!' : 'Road Safety Expert!'}
           </h2>
           <div style={{ fontSize: '2rem', margin: 'var(--space-md) 0' }}>
-            {[1,2,3].map(s => <span key={s}>{s <= stars ? <StarIcon size={20} /> : <svg width={20} height={20} viewBox='0 0 24 24' fill='#DDD'><path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/></svg>}</span>)}
+            {[1, 2, 3].map(s => <span key={s}>{s <= stars ? <StarIcon size={20} /> : <svg width={20} height={20} viewBox='0 0 24 24' fill='#DDD'><path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' /></svg>}</span>)}
           </div>
           <p style={{ fontSize: '1.3rem', fontWeight: 700 }}>{t('score', lang)}: {score}</p>
           <div className="action-buttons" style={{ marginTop: 'var(--space-lg)' }}>
@@ -3775,29 +3802,29 @@ export function RoadSafetyGame() {
 export function GroceryStoreGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const RECIPES = [
-    { name: lang === 'bm' ? 'Nasi Goreng' : 'Fried Rice', emoji: '🍚', items: ['🍚','🥚','🧅','🧄','🫑'], wrong: ['🍰','🍭','🍩','🧁','🍫'] },
-    { name: lang === 'bm' ? 'Sup Sayur' : 'Veggie Soup', emoji: '🥣', items: ['🥕','🥔','🌽','🧅','🥦'], wrong: ['🍦','🍬','🍪','🎂','🧃'] },
-    { name: lang === 'bm' ? 'Salad Buah' : 'Fruit Salad', emoji: '🥗', items: ['🍎','🍊','🍇','🍓','🥝'], wrong: ['🍟','🍔','🌭','🍕','🧀'] },
+    { name: lang === 'bm' ? 'Nasi Goreng' : 'Fried Rice', emoji: '🍚', items: ['🍚', '🥚', '🧅', '🧄', '🫑'], wrong: ['🍰', '🍭', '🍩', '🧁', '🍫'] },
+    { name: lang === 'bm' ? 'Sup Sayur' : 'Veggie Soup', emoji: '🥣', items: ['🥕', '🥔', '🌽', '🧅', '🥦'], wrong: ['🍦', '🍬', '🍪', '🎂', '🧃'] },
+    { name: lang === 'bm' ? 'Salad Buah' : 'Fruit Salad', emoji: '🥗', items: ['🍎', '🍊', '🍇', '🍓', '🥝'], wrong: ['🍟', '🍔', '🌭', '🍕', '🧀'] },
   ];
-  
+
   const [recipeIdx, setRecipeIdx] = useState(0);
   const [basket, setBasket] = useState([]);
   const [shelves, setShelves] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const [score, setScore] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
-  
+
   const setupShelf = useCallback((idx) => {
     const recipe = RECIPES[idx];
     const all = [...recipe.items, ...recipe.wrong].sort(() => Math.random() - 0.5);
     setShelves(all);
     setBasket([]);
   }, []);
-  
+
   useEffect(() => { setupShelf(0); }, []);
-  
+
   const handlePick = (item) => {
     const recipe = RECIPES[recipeIdx];
     if (recipe.items.includes(item) && !basket.includes(item)) {
@@ -3805,7 +3832,7 @@ export function GroceryStoreGame() {
       const newBasket = [...basket, item];
       setBasket(newBasket);
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
-      
+
       if (newBasket.length === recipe.items.length) {
         const newScore = score + 1;
         setScore(newScore);
@@ -3828,7 +3855,7 @@ export function GroceryStoreGame() {
     }
     setTimeout(() => setFeedback(null), 1500);
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -3843,22 +3870,22 @@ export function GroceryStoreGame() {
       </div>
     );
   }
-  
+
   const recipe = RECIPES[recipeIdx];
-  
+
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
       <img src={assetPath('/images/game/grocery_store_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('food')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        <div style={{ textAlign: 'center' }}><GI e={recipe.emoji} size={32}/></div>
+        <div style={{ textAlign: 'center' }}><GI e={recipe.emoji} size={32} /></div>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100', margin: '4px 0' }}>
           {lang === 'bm' ? `Beli bahan untuk ${recipe.name}!` : `Shop for ${recipe.name}!`}
         </h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>
           {lang === 'bm' ? `Resepi ${recipeIdx + 1}/${RECIPES.length}` : `Recipe ${recipeIdx + 1}/${RECIPES.length}`}
         </div>
-        
+
         {/* Basket */}
         <div style={{
           display: 'flex', gap: 8, justifyContent: 'center', margin: '12px 0',
@@ -3878,7 +3905,7 @@ export function GroceryStoreGame() {
             </div>
           ))}
         </div>
-        
+
         {/* Shelf */}
         <div style={{
           display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8,
@@ -3892,10 +3919,10 @@ export function GroceryStoreGame() {
               boxShadow: 'var(--shadow-sm)', cursor: basket.includes(item) ? 'default' : 'pointer',
               opacity: basket.includes(item) ? 0.4 : 1,
               transition: 'all 0.2s',
-            }}><GI e={item} size={32}/></button>
+            }}><GI e={item} size={32} /></button>
           ))}
         </div>
-        
+
         {feedback && (
           <div style={{
             marginTop: 12, padding: '8px 16px', borderRadius: 12,
@@ -3916,25 +3943,25 @@ export function GroceryStoreGame() {
 export function OurGardenGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const PLANTS = [
-    { name: lang === 'bm' ? 'Tomato' : 'Tomato', stages: ['🕳️','🌱','🪴','🌿','🍅'], water: 3 },
-    { name: lang === 'bm' ? 'Bunga Matahari' : 'Sunflower', stages: ['🕳️','🌱','🪴','🌿','🌻'], water: 3 },
-    { name: lang === 'bm' ? 'Lobak Merah' : 'Carrot', stages: ['🕳️','🌱','🪴','🌿','🥕'], water: 3 },
+    { name: lang === 'bm' ? 'Tomato' : 'Tomato', stages: ['🕳️', '🌱', '🪴', '🌿', '🍅'], water: 3 },
+    { name: lang === 'bm' ? 'Bunga Matahari' : 'Sunflower', stages: ['🕳️', '🌱', '🪴', '🌿', '🌻'], water: 3 },
+    { name: lang === 'bm' ? 'Lobak Merah' : 'Carrot', stages: ['🕳️', '🌱', '🪴', '🌿', '🥕'], water: 3 },
   ];
-  
+
   const [plantIdx, setPlantIdx] = useState(0);
   const [stage, setStage] = useState(0);
   const [waterCount, setWaterCount] = useState(0);
   const [score, setScore] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
   const [showSun, setShowSun] = useState(false);
-  
+
   const handleWater = () => {
     if (soundEnabled) playTapSound();
     const newWater = waterCount + 1;
     setWaterCount(newWater);
-    
+
     if (newWater >= PLANTS[plantIdx].water) {
       if (stage < PLANTS[plantIdx].stages.length - 1) {
         setStage(stage + 1);
@@ -3942,7 +3969,7 @@ export function OurGardenGame() {
         if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
         setShowSun(true);
         setTimeout(() => setShowSun(false), 1000);
-        
+
         if (stage + 1 === PLANTS[plantIdx].stages.length - 1) {
           const newScore = score + 1;
           setScore(newScore);
@@ -3961,7 +3988,7 @@ export function OurGardenGame() {
       }
     }
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -3976,22 +4003,22 @@ export function OurGardenGame() {
       </div>
     );
   }
-  
+
   const plant = PLANTS[plantIdx];
-  
+
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
       <img src={assetPath('/images/game/garden_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('food')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        
+
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>
           {lang === 'bm' ? `Tanam ${plant.name}!` : `Grow ${plant.name}!`}
         </h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>
           {lang === 'bm' ? `Pokok ${plantIdx + 1}/${PLANTS.length}` : `Plant ${plantIdx + 1}/${PLANTS.length}`}
         </div>
-        
+
         {/* Garden scene */}
         <div style={{
           margin: '24px auto', width: 200, height: 200,
@@ -3999,12 +4026,12 @@ export function OurGardenGame() {
           borderRadius: 24, display: 'flex', alignItems: 'center', justifyContent: 'center',
           position: 'relative', overflow: 'hidden',
         }}>
-          {showSun && <div style={{ position: 'absolute', top: 12, right: 12, fontSize: '2rem', animation: 'popIn 0.3s ease' }}><svg width="32" height="32" viewBox="0 0 24 24" fill="#FBBF24" style={{display:"inline-block"}}><circle cx="12" cy="12" r="5"/><path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="#FBBF24" strokeWidth="2" fill="none"/></svg></div>}
+          {showSun && <div style={{ position: 'absolute', top: 12, right: 12, fontSize: '2rem', animation: 'popIn 0.3s ease' }}><svg width="32" height="32" viewBox="0 0 24 24" fill="#FBBF24" style={{ display: "inline-block" }}><circle cx="12" cy="12" r="5" /><path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="#FBBF24" strokeWidth="2" fill="none" /></svg></div>}
           <div style={{ transition: 'all 0.5s ease', transform: stage > 0 ? 'scale(1)' : 'scale(0.7)' }}>
-            <GI e={plant.stages[stage]} size={80}/>
+            <GI e={plant.stages[stage]} size={80} />
           </div>
         </div>
-        
+
         {/* Water progress */}
         <div style={{ maxWidth: 200, margin: '0 auto 16px', textAlign: 'center' }}>
           <div style={{ display: 'flex', gap: 4, justifyContent: 'center', marginBottom: 8 }}>
@@ -4016,7 +4043,7 @@ export function OurGardenGame() {
             {lang === 'bm' ? `Peringkat ${stage + 1}/${plant.stages.length}` : `Stage ${stage + 1}/${plant.stages.length}`}
           </div>
         </div>
-        
+
         <button onClick={handleWater} style={{
           fontSize: '2rem', padding: '16px 40px', borderRadius: 20,
           background: 'linear-gradient(135deg, #42A5F5, #1E88E5)',
@@ -4039,44 +4066,44 @@ export function OurGardenGame() {
 export function LittleChefGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const RECIPES = [
     {
       name: lang === 'bm' ? 'Roti Bakar' : 'Toast',
       emoji: '🍞',
       steps: [
-        { action: lang === 'bm' ? 'Ambil roti' : 'Get bread', emoji: '🍞', choices: ['🍞','🍰','🥧'] },
-        { action: lang === 'bm' ? 'Sapu mentega' : 'Spread butter', emoji: '🧈', choices: ['🧈','🧴','🫙'] },
-        { action: lang === 'bm' ? 'Panggang roti' : 'Toast it', emoji: '🔥', choices: ['🔥','❄️','💨'] },
+        { action: lang === 'bm' ? 'Ambil roti' : 'Get bread', emoji: '🍞', choices: ['🍞', '🍰', '🥧'] },
+        { action: lang === 'bm' ? 'Sapu mentega' : 'Spread butter', emoji: '🧈', choices: ['🧈', '🧴', '🫙'] },
+        { action: lang === 'bm' ? 'Panggang roti' : 'Toast it', emoji: '🔥', choices: ['🔥', '❄️', '💨'] },
       ]
     },
     {
       name: lang === 'bm' ? 'Jus Oren' : 'Orange Juice',
       emoji: '🍊',
       steps: [
-        { action: lang === 'bm' ? 'Ambil oren' : 'Get oranges', emoji: '🍊', choices: ['🍊','🍆','🥑'] },
-        { action: lang === 'bm' ? 'Perah oren' : 'Squeeze them', emoji: '🤲', choices: ['🤲','🦶','👂'] },
-        { action: lang === 'bm' ? 'Tuang dalam gelas' : 'Pour in glass', emoji: '🥤', choices: ['🥤','🪣','🧃'] },
+        { action: lang === 'bm' ? 'Ambil oren' : 'Get oranges', emoji: '🍊', choices: ['🍊', '🍆', '🥑'] },
+        { action: lang === 'bm' ? 'Perah oren' : 'Squeeze them', emoji: '🤲', choices: ['🤲', '🦶', '👂'] },
+        { action: lang === 'bm' ? 'Tuang dalam gelas' : 'Pour in glass', emoji: '🥤', choices: ['🥤', '🪣', '🧃'] },
       ]
     },
   ];
-  
+
   const [recipeIdx, setRecipeIdx] = useState(0);
   const [stepIdx, setStepIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
   const [doneSteps, setDoneSteps] = useState([]);
-  
+
   const handleChoice = (emoji) => {
     const recipe = RECIPES[recipeIdx];
     const step = recipe.steps[stepIdx];
-    
+
     if (emoji === step.emoji) {
       if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
       setDoneSteps([...doneSteps, step.emoji]);
-      
+
       setTimeout(() => {
         setFeedback(null);
         if (stepIdx + 1 < recipe.steps.length) {
@@ -4101,7 +4128,7 @@ export function LittleChefGame() {
       setTimeout(() => setFeedback(null), 1200);
     }
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -4116,23 +4143,23 @@ export function LittleChefGame() {
       </div>
     );
   }
-  
+
   const recipe = RECIPES[recipeIdx];
   const step = recipe.steps[stepIdx];
-  
+
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
       <img src={assetPath('/images/game/kitchen_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('food')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        
+
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>
           {recipe.emoji} {recipe.name}
         </h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>
           {lang === 'bm' ? `Resepi ${recipeIdx + 1}/${RECIPES.length}` : `Recipe ${recipeIdx + 1}/${RECIPES.length}`}
         </div>
-        
+
         {/* Progress dots */}
         <div style={{ display: 'flex', gap: 8, justifyContent: 'center', margin: '12px 0' }}>
           {recipe.steps.map((s, i) => (
@@ -4146,7 +4173,7 @@ export function LittleChefGame() {
             </div>
           ))}
         </div>
-        
+
         <div style={{
           background: 'rgba(255,255,255,0.8)', borderRadius: 20, padding: 20,
           margin: '16px auto', maxWidth: 320,
@@ -4155,7 +4182,7 @@ export function LittleChefGame() {
             {lang === 'bm' ? `Langkah ${stepIdx + 1}:` : `Step ${stepIdx + 1}:`}
           </div>
           <div style={{ fontSize: '1.1rem', color: '#555', marginBottom: 16 }}>{step.action}</div>
-          
+
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
             {step.choices.map((c, i) => (
               <button key={i} onClick={() => handleChoice(c)} style={{
@@ -4167,7 +4194,7 @@ export function LittleChefGame() {
             ))}
           </div>
         </div>
-        
+
         {feedback && (
           <div style={{
             marginTop: 12, padding: '8px 16px', borderRadius: 12,
@@ -4187,7 +4214,7 @@ export function LittleChefGame() {
 export function HealthyOrNotGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const FOODS = [
     { emoji: '🍎', name: 'Apple', healthy: true },
     { emoji: '🥦', name: 'Broccoli', healthy: true },
@@ -4202,21 +4229,21 @@ export function HealthyOrNotGame() {
     { emoji: '🧁', name: 'Cupcake', healthy: false },
     { emoji: '🥤', name: 'Soda', healthy: false },
   ];
-  
+
   const [items, setItems] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
-  
+
   useEffect(() => {
     setItems(FOODS.sort(() => Math.random() - 0.5).slice(0, 8));
   }, []);
-  
+
   const handleChoice = (isHealthy) => {
     if (currentIdx >= items.length) return;
     const correct = items[currentIdx].healthy === isHealthy;
-    
+
     if (correct) {
       if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
@@ -4225,7 +4252,7 @@ export function HealthyOrNotGame() {
       if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
     }
-    
+
     setTimeout(() => {
       setFeedback(null);
       if (currentIdx + 1 < items.length) {
@@ -4239,7 +4266,7 @@ export function HealthyOrNotGame() {
       }
     }, 800);
   };
-  
+
   if (gameComplete) {
     const stars = score >= 7 ? 3 : score >= 5 ? 2 : 1;
     return (
@@ -4256,23 +4283,23 @@ export function HealthyOrNotGame() {
       </div>
     );
   }
-  
+
   if (items.length === 0) return null;
   const current = items[currentIdx];
-  
+
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
       <img src={assetPath('/images/game/healthy_or_not_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('food')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        
+
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>
           {lang === 'bm' ? 'Sihat atau Tidak?' : 'Healthy or Not?'}
         </h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>
           {currentIdx + 1}/{items.length}
         </div>
-        
+
         {/* Food card */}
         <div style={{
           margin: '24px auto', width: 180, height: 180,
@@ -4280,10 +4307,10 @@ export function HealthyOrNotGame() {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           textAlign: 'center', boxShadow: 'var(--shadow-lg)',
           animation: 'popIn 0.3s ease',
-        }}><GI e={current.emoji} size={80}/></div>
-        
+        }}><GI e={current.emoji} size={80} /></div>
+
         <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 20 }}>{current.name}</div>
-        
+
         <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
           <button onClick={() => handleChoice(true)} style={{
             fontSize: '1.1rem', padding: '14px 28px', borderRadius: 20,
@@ -4300,7 +4327,7 @@ export function HealthyOrNotGame() {
             <CloseIcon size={14} color="#EF4444" /> {lang === 'bm' ? 'Tidak!' : 'Not!'}
           </button>
         </div>
-        
+
         {feedback && (
           <div style={{
             marginTop: 16, padding: '8px 16px', borderRadius: 12,
@@ -4320,7 +4347,7 @@ export function HealthyOrNotGame() {
 export function FruitOrVegGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const ITEMS = [
     { emoji: '🍎', name: lang === 'bm' ? 'Epal' : 'Apple', type: 'fruit' },
     { emoji: '🍊', name: lang === 'bm' ? 'Oren' : 'Orange', type: 'fruit' },
@@ -4333,7 +4360,7 @@ export function FruitOrVegGame() {
     { emoji: '🫑', name: lang === 'bm' ? 'Lada' : 'Pepper', type: 'veg' },
     { emoji: '🥬', name: lang === 'bm' ? 'Salad' : 'Lettuce', type: 'veg' },
   ];
-  
+
   const [items, setItems] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [score, setScore] = useState(0);
@@ -4341,16 +4368,16 @@ export function FruitOrVegGame() {
   const [vegBasket, setVegBasket] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
-  
+
   useEffect(() => {
     setItems(ITEMS.sort(() => Math.random() - 0.5).slice(0, 8));
   }, []);
-  
+
   const handleSort = (type) => {
     if (currentIdx >= items.length) return;
     const item = items[currentIdx];
     const correct = item.type === type;
-    
+
     if (correct) {
       if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
@@ -4361,7 +4388,7 @@ export function FruitOrVegGame() {
       if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
     }
-    
+
     setTimeout(() => {
       setFeedback(null);
       if (currentIdx + 1 < items.length) {
@@ -4375,7 +4402,7 @@ export function FruitOrVegGame() {
       }
     }, 800);
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -4391,37 +4418,37 @@ export function FruitOrVegGame() {
       </div>
     );
   }
-  
+
   if (items.length === 0) return null;
   const current = items[currentIdx];
-  
+
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
       <img src={assetPath('/images/game/fruit_or_veg_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('food')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        
+
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>
           {lang === 'bm' ? 'Buah atau Sayur?' : 'Fruit or Veg?'}
         </h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{currentIdx + 1}/{items.length}</div>
-        
+
         {/* Baskets display */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 24, margin: '12px 0' }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '0.7rem', color: '#666' }}>{lang === 'bm' ? 'Buah' : 'Fruit'}</div>
             <div style={{ display: 'flex', gap: 2, minWidth: 60, justifyContent: 'center' }}>
-              {fruitBasket.map((e, i) => <GI key={i} e={e} size={16}/>)}
+              {fruitBasket.map((e, i) => <GI key={i} e={e} size={16} />)}
             </div>
           </div>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '0.7rem', color: '#666' }}>{lang === 'bm' ? 'Sayur' : 'Veg'}</div>
             <div style={{ display: 'flex', gap: 2, minWidth: 60, justifyContent: 'center' }}>
-              {vegBasket.map((e, i) => <GI key={i} e={e} size={16}/>)}
+              {vegBasket.map((e, i) => <GI key={i} e={e} size={16} />)}
             </div>
           </div>
         </div>
-        
+
         {/* Current item */}
         <div style={{
           margin: '16px auto', width: 150, height: 150,
@@ -4432,7 +4459,7 @@ export function FruitOrVegGame() {
           <div style={{ marginBottom: 8 }}><TrophyIcon size={48} /></div>
           <div style={{ fontSize: '0.85rem', fontWeight: 700, marginTop: 4 }}>{current.name}</div>
         </div>
-        
+
         <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 16 }}>
           <button onClick={() => handleSort('fruit')} style={{
             fontSize: '1rem', padding: '14px 28px', borderRadius: 20,
@@ -4451,7 +4478,7 @@ export function FruitOrVegGame() {
             {lang === 'bm' ? 'Sayur!' : 'Veg!'}
           </button>
         </div>
-        
+
         {feedback && (
           <div style={{
             marginTop: 16, padding: '8px 16px', borderRadius: 12,
@@ -4477,32 +4504,32 @@ export function LetterTrailGame() {
 
   // Full A-Z letter stroke paths (0-100 coordinate system)
   const LETTER_PATHS = useMemo(() => ({
-    'A': [[20,95],[50,5],[80,95]], 
-    'B': [[20,95],[20,5],[65,5],[80,18],[80,30],[65,45],[20,45],[70,45],[85,60],[85,75],[65,95],[20,95]],
-    'C': [[80,20],[60,5],[40,5],[20,25],[20,75],[40,95],[60,95],[80,80]],
-    'D': [[20,95],[20,5],[55,5],[75,20],[85,50],[75,80],[55,95],[20,95]],
-    'E': [[75,5],[20,5],[20,50],[60,50],[20,50],[20,95],[75,95]],
-    'F': [[75,5],[20,5],[20,50],[60,50],[20,50],[20,95]],
-    'G': [[75,20],[55,5],[35,5],[15,25],[15,75],[35,95],[60,95],[80,75],[80,50],[55,50]],
-    'H': [[20,5],[20,95],[20,50],[80,50],[80,5],[80,95]],
-    'I': [[30,5],[70,5],[50,5],[50,95],[30,95],[70,95]],
-    'J': [[25,5],[75,5],[55,5],[55,75],[45,90],[30,90],[15,75]],
-    'K': [[20,5],[20,95],[20,50],[75,5],[20,50],[75,95]],
-    'L': [[20,5],[20,95],[75,95]],
-    'M': [[10,95],[10,5],[50,55],[90,5],[90,95]],
-    'N': [[20,95],[20,5],[80,95],[80,5]],
-    'O': [[50,5],[25,5],[10,25],[10,75],[25,95],[50,95],[75,95],[90,75],[90,25],[75,5],[50,5]],
-    'P': [[20,95],[20,5],[65,5],[80,18],[80,32],[65,48],[20,48]],
-    'Q': [[50,5],[25,5],[10,25],[10,75],[25,95],[50,95],[75,95],[90,75],[90,25],[75,5],[50,5],[62,78],[85,98]],
-    'R': [[20,95],[20,5],[65,5],[80,18],[80,32],[65,48],[20,48],[60,48],[85,95]],
-    'S': [[78,18],[62,5],[38,5],[18,22],[22,38],[42,48],[62,55],[82,68],[78,82],[62,95],[38,95],[18,82]],
-    'T': [[10,5],[90,5],[50,5],[50,95]],
-    'U': [[15,5],[15,70],[28,88],[50,95],[72,88],[85,70],[85,5]],
-    'V': [[10,5],[50,95],[90,5]],
-    'W': [[5,5],[22,95],[40,40],[58,95],[95,5]],
-    'X': [[10,5],[90,95],[50,50],[90,5],[10,95]],
-    'Y': [[10,5],[50,50],[90,5],[50,50],[50,95]],
-    'Z': [[10,5],[90,5],[10,95],[90,95]],
+    'A': [[20, 95], [50, 5], [80, 95]],
+    'B': [[20, 95], [20, 5], [65, 5], [80, 18], [80, 30], [65, 45], [20, 45], [70, 45], [85, 60], [85, 75], [65, 95], [20, 95]],
+    'C': [[80, 20], [60, 5], [40, 5], [20, 25], [20, 75], [40, 95], [60, 95], [80, 80]],
+    'D': [[20, 95], [20, 5], [55, 5], [75, 20], [85, 50], [75, 80], [55, 95], [20, 95]],
+    'E': [[75, 5], [20, 5], [20, 50], [60, 50], [20, 50], [20, 95], [75, 95]],
+    'F': [[75, 5], [20, 5], [20, 50], [60, 50], [20, 50], [20, 95]],
+    'G': [[75, 20], [55, 5], [35, 5], [15, 25], [15, 75], [35, 95], [60, 95], [80, 75], [80, 50], [55, 50]],
+    'H': [[20, 5], [20, 95], [20, 50], [80, 50], [80, 5], [80, 95]],
+    'I': [[30, 5], [70, 5], [50, 5], [50, 95], [30, 95], [70, 95]],
+    'J': [[25, 5], [75, 5], [55, 5], [55, 75], [45, 90], [30, 90], [15, 75]],
+    'K': [[20, 5], [20, 95], [20, 50], [75, 5], [20, 50], [75, 95]],
+    'L': [[20, 5], [20, 95], [75, 95]],
+    'M': [[10, 95], [10, 5], [50, 55], [90, 5], [90, 95]],
+    'N': [[20, 95], [20, 5], [80, 95], [80, 5]],
+    'O': [[50, 5], [25, 5], [10, 25], [10, 75], [25, 95], [50, 95], [75, 95], [90, 75], [90, 25], [75, 5], [50, 5]],
+    'P': [[20, 95], [20, 5], [65, 5], [80, 18], [80, 32], [65, 48], [20, 48]],
+    'Q': [[50, 5], [25, 5], [10, 25], [10, 75], [25, 95], [50, 95], [75, 95], [90, 75], [90, 25], [75, 5], [50, 5], [62, 78], [85, 98]],
+    'R': [[20, 95], [20, 5], [65, 5], [80, 18], [80, 32], [65, 48], [20, 48], [60, 48], [85, 95]],
+    'S': [[78, 18], [62, 5], [38, 5], [18, 22], [22, 38], [42, 48], [62, 55], [82, 68], [78, 82], [62, 95], [38, 95], [18, 82]],
+    'T': [[10, 5], [90, 5], [50, 5], [50, 95]],
+    'U': [[15, 5], [15, 70], [28, 88], [50, 95], [72, 88], [85, 70], [85, 5]],
+    'V': [[10, 5], [50, 95], [90, 5]],
+    'W': [[5, 5], [22, 95], [40, 40], [58, 95], [95, 5]],
+    'X': [[10, 5], [90, 95], [50, 50], [90, 5], [10, 95]],
+    'Y': [[10, 5], [50, 50], [90, 5], [50, 50], [50, 95]],
+    'Z': [[10, 5], [90, 5], [10, 95], [90, 95]],
   }), []);
 
   const LETTERS = Object.keys(LETTER_PATHS);
@@ -4525,7 +4552,7 @@ export function LetterTrailGame() {
   const [trailColor, setTrailColor] = useState('#FF6B6B');
   const [showStars, setShowStars] = useState(false);
 
-  const COLORS = ['#FF6B6B','#4ECDC4','#45B7D1','#96CEB4','#FF9FF3','#54A0FF','#FF6348','#2ED573','#FFA502','#5F27CD','#DDA0DD','#FFEAA7'];
+  const COLORS = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FF9FF3', '#54A0FF', '#FF6348', '#2ED573', '#FFA502', '#5F27CD', '#DDA0DD', '#FFEAA7'];
 
   // Responsive canvas
   useEffect(() => {
@@ -4580,7 +4607,7 @@ export function LetterTrailGame() {
     ctx.shadowColor = 'rgba(255,255,255,0.3)';
     ctx.shadowBlur = 8;
     ctx.beginPath();
-    pts.forEach((p, i) => { const [x,y] = s(p); i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y); });
+    pts.forEach((p, i) => { const [x, y] = s(p); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
     ctx.stroke();
     ctx.restore();
 
@@ -4591,7 +4618,7 @@ export function LetterTrailGame() {
       const r = W * ZONE_RADIUS;
       const hit = zonesHit.has(i);
       const isNext = i === nextZoneIdx;
-      
+
       if (hit) {
         // Completed zone — colored with checkmark
         ctx.beginPath();
@@ -4686,7 +4713,7 @@ export function LetterTrailGame() {
     ctx.fillStyle = 'rgba(0,0,0,0.3)';
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(ringX, ringY, ringR - 3, -Math.PI/2, -Math.PI/2 + (Math.PI * 2 * progPct));
+    ctx.arc(ringX, ringY, ringR - 3, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * progPct));
     ctx.strokeStyle = progPct >= 0.7 ? '#6BCB77' : '#FFD93D';
     ctx.lineWidth = 4;
     ctx.lineCap = 'round';
@@ -4815,7 +4842,7 @@ export function LetterTrailGame() {
           {lang === 'bm' ? 'Tahniah! Huruf kamu cantik!' : 'Congrats! Beautiful letters!'}
         </h1>
         <div style={{ display: 'flex', gap: 8, margin: '16px 0' }}>
-          {[1,2,3].map(i => <span key={i} style={{ fontSize: 40, animation: `bounceIn ${0.3 + i * 0.2}s ease` }}>⭐</span>)}
+          {[1, 2, 3].map(i => <span key={i} style={{ fontSize: 40, animation: `bounceIn ${0.3 + i * 0.2}s ease` }}>⭐</span>)}
         </div>
         <p style={{ fontSize: 'clamp(1.1rem, 3vw, 1.4rem)', opacity: 0.9, marginBottom: 24 }}>
           {lang === 'bm' ? `Skor: ${score}/${ROUNDS}` : `Score: ${score}/${ROUNDS}`}
@@ -4924,7 +4951,7 @@ export function LetterTrailGame() {
           background: 'rgba(0,0,0,0.2)', borderRadius: 12,
           padding: '4px 14px', backdropFilter: 'blur(4px)',
         }}>
-          {letterDone 
+          {letterDone
             ? `🎉 ${lang === 'bm' ? 'HEBAT!' : 'AMAZING!'} 🎉`
             : `✏️ ${lang === 'bm' ? 'Lukis huruf ' + letter + ' ikut garisan!' : 'Draw ' + letter + '!'}`
           }
@@ -4961,7 +4988,7 @@ export function LetterTrailGame() {
             }}>
               <span style={{ fontSize: 'clamp(3rem, 12vw, 7rem)', animation: 'bounceIn 0.5s ease' }}>✨</span>
               {showStars && <div style={{ display: 'flex', gap: 6 }}>
-                {[1,2,3].map(i => <span key={i} style={{ fontSize: 32, animation: `bounceIn ${0.2 + i * 0.15}s ease` }}>⭐</span>)}
+                {[1, 2, 3].map(i => <span key={i} style={{ fontSize: 32, animation: `bounceIn ${0.2 + i * 0.15}s ease` }}>⭐</span>)}
               </div>}
             </div>
           )}
@@ -5004,106 +5031,106 @@ export function SyllableFactoryGame() {
 
   // 20+ Malay words with syllables and wrong options
   const ALL_WORDS = useMemo(() => [
-    { word: 'BUKU', syllables: ['BU','KU'], wrong: ['MA','TI','LA','RI'] },
-    { word: 'MAMA', syllables: ['MA','MA'], wrong: ['BU','KU','SI','TE'] },
-    { word: 'BOLA', syllables: ['BO','LA'], wrong: ['KE','RI','TA','SU'] },
-    { word: 'KUDA', syllables: ['KU','DA'], wrong: ['PI','SA','NG','BI'] },
-    { word: 'SUSU', syllables: ['SU','SU'], wrong: ['BA','JU','TE','KA'] },
-    { word: 'TOPI', syllables: ['TO','PI'], wrong: ['RU','MA','HI','BE'] },
-    { word: 'NASI', syllables: ['NA','SI'], wrong: ['KU','LA','BO','TI'] },
-    { word: 'IKAN', syllables: ['I','KAN'], wrong: ['BU','MA','SE','RI'] },
-    { word: 'LEMBU', syllables: ['LEM','BU'], wrong: ['KU','DA','BO','LA'] },
-    { word: 'BAJU', syllables: ['BA','JU'], wrong: ['KE','RI','TA','SU'] },
-    { word: 'ROTI', syllables: ['RO','TI'], wrong: ['MA','KA','PI','SE'] },
-    { word: 'MATA', syllables: ['MA','TA'], wrong: ['BU','KU','SI','LA'] },
-    { word: 'KAKI', syllables: ['KA','KI'], wrong: ['BO','LA','SU','TI'] },
-    { word: 'GULA', syllables: ['GU','LA'], wrong: ['BI','SA','KE','RI'] },
-    { word: 'BESI', syllables: ['BE','SI'], wrong: ['KU','DA','MA','LA'] },
-    { word: 'TALI', syllables: ['TA','LI'], wrong: ['BU','KE','NA','RO'] },
-    { word: 'DURI', syllables: ['DU','RI'], wrong: ['SA','PI','BO','LA'] },
-    { word: 'PAKU', syllables: ['PA','KU'], wrong: ['MA','SI','TA','BE'] },
-    { word: 'GURU', syllables: ['GU','RU'], wrong: ['KA','BI','SE','LA'] },
-    { word: 'PADI', syllables: ['PA','DI'], wrong: ['BU','KU','MA','TO'] },
-    { word: 'GIGI', syllables: ['GI','GI'], wrong: ['BA','KU','SO','LE'] },
-    { word: 'DADA', syllables: ['DA','DA'], wrong: ['BU','SI','MA','KE'] },
-    { word: 'LAGU', syllables: ['LA','GU'], wrong: ['BI','SA','KE','RI'] },
-    { word: 'SIKU', syllables: ['SI','KU'], wrong: ['BA','LA','TO','ME'] },
-    { word: 'JARI', syllables: ['JA','RI'], wrong: ['BU','KA','SE','TO'] },
-    { word: 'BIRU', syllables: ['BI','RU'], wrong: ['KA','LA','SO','ME'] },
-    { word: 'KOTA', syllables: ['KO','TA'], wrong: ['BU','SI','LA','RI'] },
-    { word: 'DUIT', syllables: ['DU','IT'], wrong: ['BA','KA','SO','ME'] },
-    { word: 'GAJI', syllables: ['GA','JI'], wrong: ['BU','KU','SO','LE'] },
-    { word: 'KAYU', syllables: ['KA','YU'], wrong: ['BI','SA','TO','ME'] },
-    { word: 'TAHU', syllables: ['TA','HU'], wrong: ['BU','KA','SI','LE'] },
-    { word: 'PETA', syllables: ['PE','TA'], wrong: ['BU','KU','SI','LA'] },
-    { word: 'BATU', syllables: ['BA','TU'], wrong: ['KE','RI','SO','MA'] },
-    { word: 'KAIN', syllables: ['KA','IN'], wrong: ['BU','SO','LE','RI'] },
-    { word: 'LORI', syllables: ['LO','RI'], wrong: ['BA','KU','SE','TA'] },
-    { word: 'NAGA', syllables: ['NA','GA'], wrong: ['BU','KU','SI','LE'] },
-    { word: 'SENI', syllables: ['SE','NI'], wrong: ['BA','KU','TO','LA'] },
-    { word: 'PURI', syllables: ['PU','RI'], wrong: ['BA','KU','SO','LE'] },
-    { word: 'BUMI', syllables: ['BU','MI'], wrong: ['KA','SO','LE','RI'] },
-    { word: 'KIRI', syllables: ['KI','RI'], wrong: ['BA','SO','LE','TU'] },
-    { word: 'LUPA', syllables: ['LU','PA'], wrong: ['BI','KA','SO','TE'] },
-    { word: 'SAYA', syllables: ['SA','YA'], wrong: ['BU','KU','TO','LE'] },
-    { word: 'RAJA', syllables: ['RA','JA'], wrong: ['BU','KU','SI','LE'] },
-    { word: 'PASU', syllables: ['PA','SU'], wrong: ['BI','KA','TO','ME'] },
-    { word: 'LAUT', syllables: ['LA','UT'], wrong: ['BU','KA','SI','RI'] },
-    { word: 'TIPU', syllables: ['TI','PU'], wrong: ['BA','KU','SO','LE'] },
-    { word: 'JALA', syllables: ['JA','LA'], wrong: ['BU','KU','SI','TE'] },
-    { word: 'KUKU', syllables: ['KU','KU'], wrong: ['BA','SO','LE','RI'] },
-    { word: 'RAGA', syllables: ['RA','GA'], wrong: ['BU','KU','SI','LE'] },
-    { word: 'DAGU', syllables: ['DA','GU'], wrong: ['BI','KA','SO','TE'] },
-    { word: 'BAYU', syllables: ['BA','YU'], wrong: ['KE','RI','SO','MA'] },
-    { word: 'LAKI', syllables: ['LA','KI'], wrong: ['BU','SO','TE','RI'] },
-    { word: 'SAPU', syllables: ['SA','PU'], wrong: ['BI','KA','TO','ME'] },
-    { word: 'SURI', syllables: ['SU','RI'], wrong: ['BA','KU','TO','LE'] },
-    { word: 'BACA', syllables: ['BA','CA'], wrong: ['KU','SI','TO','LE'] },
-    { word: 'MADU', syllables: ['MA','DU'], wrong: ['BI','KA','SO','TE'] },
-    { word: 'DAHI', syllables: ['DA','HI'], wrong: ['BU','KU','SO','LE'] },
-    { word: 'HATI', syllables: ['HA','TI'], wrong: ['BU','KA','SO','LE'] },
-    { word: 'LABA', syllables: ['LA','BA'], wrong: ['KU','SI','TO','ME'] },
-    { word: 'MUKA', syllables: ['MU','KA'], wrong: ['BI','SO','TE','RI'] },
-    { word: 'PARI', syllables: ['PA','RI'], wrong: ['BU','KU','SO','LE'] },
-    { word: 'SUDU', syllables: ['SU','DU'], wrong: ['BA','KA','TO','ME'] },
-    { word: 'KACA', syllables: ['KA','CA'], wrong: ['BU','SI','TO','LE'] },
-    { word: 'BAHU', syllables: ['BA','HU'], wrong: ['KU','SI','TO','LE'] },
-    { word: 'TIRU', syllables: ['TI','RU'], wrong: ['BA','KU','SO','LE'] },
-    { word: 'JAMU', syllables: ['JA','MU'], wrong: ['BI','KA','SO','TE'] },
-    { word: 'NADI', syllables: ['NA','DI'], wrong: ['BU','KU','SO','LE'] },
-    { word: 'PAHA', syllables: ['PA','HA'], wrong: ['BU','KU','SI','LE'] },
-    { word: 'WAJA', syllables: ['WA','JA'], wrong: ['BU','KU','SI','TE'] },
-    { word: 'LADA', syllables: ['LA','DA'], wrong: ['BU','KU','SI','TE'] },
-    { word: 'SAGA', syllables: ['SA','GA'], wrong: ['BU','KU','TO','LE'] },
-    { word: 'RATU', syllables: ['RA','TU'], wrong: ['BI','KA','SO','ME'] },
-    { word: 'PALA', syllables: ['PA','LA'], wrong: ['BU','KU','SI','TE'] },
-    { word: 'BAGI', syllables: ['BA','GI'], wrong: ['KU','SO','TE','RI'] },
-    { word: 'SAGU', syllables: ['SA','GU'], wrong: ['BI','KA','TO','ME'] },
-    { word: 'GULI', syllables: ['GU','LI'], wrong: ['BA','KU','SO','TE'] },
-    { word: 'MALU', syllables: ['MA','LU'], wrong: ['BI','KA','SO','TE'] },
-    { word: 'RAPI', syllables: ['RA','PI'], wrong: ['BU','KU','SO','LE'] },
-    { word: 'SUKA', syllables: ['SU','KA'], wrong: ['BI','TO','ME','RI'] },
-    { word: 'DARA', syllables: ['DA','RA'], wrong: ['BU','KU','SI','LE'] },
-    { word: 'KUTU', syllables: ['KU','TU'], wrong: ['BA','SO','LE','RI'] },
-    { word: 'JADI', syllables: ['JA','DI'], wrong: ['BU','KU','SO','LE'] },
-    { word: 'TARI', syllables: ['TA','RI'], wrong: ['BU','KU','SO','LE'] },
-    { word: 'LIKU', syllables: ['LI','KU'], wrong: ['BA','SO','TE','RI'] },
-    { word: 'PALU', syllables: ['PA','LU'], wrong: ['BI','KA','SO','TE'] },
-    { word: 'GELI', syllables: ['GE','LI'], wrong: ['BA','KU','SO','TE'] },
-    { word: 'RUGI', syllables: ['RU','GI'], wrong: ['BA','KA','SO','LE'] },
-    { word: 'SATU', syllables: ['SA','TU'], wrong: ['BI','KA','TO','ME'] },
-    { word: 'LIMA', syllables: ['LI','MA'], wrong: ['BU','KA','SO','TE'] },
-    { word: 'DUKA', syllables: ['DU','KA'], wrong: ['BI','SO','LE','RI'] },
-    { word: 'MEJA', syllables: ['ME','JA'], wrong: ['BU','KU','SO','LE'] },
-    { word: 'DADU', syllables: ['DA','DU'], wrong: ['BI','KA','SO','TE'] },
-    { word: 'RUSA', syllables: ['RU','SA'], wrong: ['BI','KA','TO','LE'] },
-    { word: 'AYAM', syllables: ['A','YAM'], wrong: ['BU','KA','SI','LE'] },
-    { word: 'BUAH', syllables: ['BU','AH'], wrong: ['KA','SI','TO','LE'] },
-    { word: 'DUKU', syllables: ['DU','KU'], wrong: ['BA','SO','LE','RI'] },
-    { word: 'HARI', syllables: ['HA','RI'], wrong: ['BU','KU','SO','LE'] },
-    { word: 'TIGA', syllables: ['TI','GA'], wrong: ['BA','KU','SO','LE'] },
-    { word: 'MISI', syllables: ['MI','SI'], wrong: ['BA','KU','TO','LE'] },
-    { word: 'KUCI', syllables: ['KU','CI'], wrong: ['BA','SO','TE','RI'] },
+    { word: 'BUKU', syllables: ['BU', 'KU'], wrong: ['MA', 'TI', 'LA', 'RI'] },
+    { word: 'MAMA', syllables: ['MA', 'MA'], wrong: ['BU', 'KU', 'SI', 'TE'] },
+    { word: 'BOLA', syllables: ['BO', 'LA'], wrong: ['KE', 'RI', 'TA', 'SU'] },
+    { word: 'KUDA', syllables: ['KU', 'DA'], wrong: ['PI', 'SA', 'NG', 'BI'] },
+    { word: 'SUSU', syllables: ['SU', 'SU'], wrong: ['BA', 'JU', 'TE', 'KA'] },
+    { word: 'TOPI', syllables: ['TO', 'PI'], wrong: ['RU', 'MA', 'HI', 'BE'] },
+    { word: 'NASI', syllables: ['NA', 'SI'], wrong: ['KU', 'LA', 'BO', 'TI'] },
+    { word: 'IKAN', syllables: ['I', 'KAN'], wrong: ['BU', 'MA', 'SE', 'RI'] },
+    { word: 'LEMBU', syllables: ['LEM', 'BU'], wrong: ['KU', 'DA', 'BO', 'LA'] },
+    { word: 'BAJU', syllables: ['BA', 'JU'], wrong: ['KE', 'RI', 'TA', 'SU'] },
+    { word: 'ROTI', syllables: ['RO', 'TI'], wrong: ['MA', 'KA', 'PI', 'SE'] },
+    { word: 'MATA', syllables: ['MA', 'TA'], wrong: ['BU', 'KU', 'SI', 'LA'] },
+    { word: 'KAKI', syllables: ['KA', 'KI'], wrong: ['BO', 'LA', 'SU', 'TI'] },
+    { word: 'GULA', syllables: ['GU', 'LA'], wrong: ['BI', 'SA', 'KE', 'RI'] },
+    { word: 'BESI', syllables: ['BE', 'SI'], wrong: ['KU', 'DA', 'MA', 'LA'] },
+    { word: 'TALI', syllables: ['TA', 'LI'], wrong: ['BU', 'KE', 'NA', 'RO'] },
+    { word: 'DURI', syllables: ['DU', 'RI'], wrong: ['SA', 'PI', 'BO', 'LA'] },
+    { word: 'PAKU', syllables: ['PA', 'KU'], wrong: ['MA', 'SI', 'TA', 'BE'] },
+    { word: 'GURU', syllables: ['GU', 'RU'], wrong: ['KA', 'BI', 'SE', 'LA'] },
+    { word: 'PADI', syllables: ['PA', 'DI'], wrong: ['BU', 'KU', 'MA', 'TO'] },
+    { word: 'GIGI', syllables: ['GI', 'GI'], wrong: ['BA', 'KU', 'SO', 'LE'] },
+    { word: 'DADA', syllables: ['DA', 'DA'], wrong: ['BU', 'SI', 'MA', 'KE'] },
+    { word: 'LAGU', syllables: ['LA', 'GU'], wrong: ['BI', 'SA', 'KE', 'RI'] },
+    { word: 'SIKU', syllables: ['SI', 'KU'], wrong: ['BA', 'LA', 'TO', 'ME'] },
+    { word: 'JARI', syllables: ['JA', 'RI'], wrong: ['BU', 'KA', 'SE', 'TO'] },
+    { word: 'BIRU', syllables: ['BI', 'RU'], wrong: ['KA', 'LA', 'SO', 'ME'] },
+    { word: 'KOTA', syllables: ['KO', 'TA'], wrong: ['BU', 'SI', 'LA', 'RI'] },
+    { word: 'DUIT', syllables: ['DU', 'IT'], wrong: ['BA', 'KA', 'SO', 'ME'] },
+    { word: 'GAJI', syllables: ['GA', 'JI'], wrong: ['BU', 'KU', 'SO', 'LE'] },
+    { word: 'KAYU', syllables: ['KA', 'YU'], wrong: ['BI', 'SA', 'TO', 'ME'] },
+    { word: 'TAHU', syllables: ['TA', 'HU'], wrong: ['BU', 'KA', 'SI', 'LE'] },
+    { word: 'PETA', syllables: ['PE', 'TA'], wrong: ['BU', 'KU', 'SI', 'LA'] },
+    { word: 'BATU', syllables: ['BA', 'TU'], wrong: ['KE', 'RI', 'SO', 'MA'] },
+    { word: 'KAIN', syllables: ['KA', 'IN'], wrong: ['BU', 'SO', 'LE', 'RI'] },
+    { word: 'LORI', syllables: ['LO', 'RI'], wrong: ['BA', 'KU', 'SE', 'TA'] },
+    { word: 'NAGA', syllables: ['NA', 'GA'], wrong: ['BU', 'KU', 'SI', 'LE'] },
+    { word: 'SENI', syllables: ['SE', 'NI'], wrong: ['BA', 'KU', 'TO', 'LA'] },
+    { word: 'PURI', syllables: ['PU', 'RI'], wrong: ['BA', 'KU', 'SO', 'LE'] },
+    { word: 'BUMI', syllables: ['BU', 'MI'], wrong: ['KA', 'SO', 'LE', 'RI'] },
+    { word: 'KIRI', syllables: ['KI', 'RI'], wrong: ['BA', 'SO', 'LE', 'TU'] },
+    { word: 'LUPA', syllables: ['LU', 'PA'], wrong: ['BI', 'KA', 'SO', 'TE'] },
+    { word: 'SAYA', syllables: ['SA', 'YA'], wrong: ['BU', 'KU', 'TO', 'LE'] },
+    { word: 'RAJA', syllables: ['RA', 'JA'], wrong: ['BU', 'KU', 'SI', 'LE'] },
+    { word: 'PASU', syllables: ['PA', 'SU'], wrong: ['BI', 'KA', 'TO', 'ME'] },
+    { word: 'LAUT', syllables: ['LA', 'UT'], wrong: ['BU', 'KA', 'SI', 'RI'] },
+    { word: 'TIPU', syllables: ['TI', 'PU'], wrong: ['BA', 'KU', 'SO', 'LE'] },
+    { word: 'JALA', syllables: ['JA', 'LA'], wrong: ['BU', 'KU', 'SI', 'TE'] },
+    { word: 'KUKU', syllables: ['KU', 'KU'], wrong: ['BA', 'SO', 'LE', 'RI'] },
+    { word: 'RAGA', syllables: ['RA', 'GA'], wrong: ['BU', 'KU', 'SI', 'LE'] },
+    { word: 'DAGU', syllables: ['DA', 'GU'], wrong: ['BI', 'KA', 'SO', 'TE'] },
+    { word: 'BAYU', syllables: ['BA', 'YU'], wrong: ['KE', 'RI', 'SO', 'MA'] },
+    { word: 'LAKI', syllables: ['LA', 'KI'], wrong: ['BU', 'SO', 'TE', 'RI'] },
+    { word: 'SAPU', syllables: ['SA', 'PU'], wrong: ['BI', 'KA', 'TO', 'ME'] },
+    { word: 'SURI', syllables: ['SU', 'RI'], wrong: ['BA', 'KU', 'TO', 'LE'] },
+    { word: 'BACA', syllables: ['BA', 'CA'], wrong: ['KU', 'SI', 'TO', 'LE'] },
+    { word: 'MADU', syllables: ['MA', 'DU'], wrong: ['BI', 'KA', 'SO', 'TE'] },
+    { word: 'DAHI', syllables: ['DA', 'HI'], wrong: ['BU', 'KU', 'SO', 'LE'] },
+    { word: 'HATI', syllables: ['HA', 'TI'], wrong: ['BU', 'KA', 'SO', 'LE'] },
+    { word: 'LABA', syllables: ['LA', 'BA'], wrong: ['KU', 'SI', 'TO', 'ME'] },
+    { word: 'MUKA', syllables: ['MU', 'KA'], wrong: ['BI', 'SO', 'TE', 'RI'] },
+    { word: 'PARI', syllables: ['PA', 'RI'], wrong: ['BU', 'KU', 'SO', 'LE'] },
+    { word: 'SUDU', syllables: ['SU', 'DU'], wrong: ['BA', 'KA', 'TO', 'ME'] },
+    { word: 'KACA', syllables: ['KA', 'CA'], wrong: ['BU', 'SI', 'TO', 'LE'] },
+    { word: 'BAHU', syllables: ['BA', 'HU'], wrong: ['KU', 'SI', 'TO', 'LE'] },
+    { word: 'TIRU', syllables: ['TI', 'RU'], wrong: ['BA', 'KU', 'SO', 'LE'] },
+    { word: 'JAMU', syllables: ['JA', 'MU'], wrong: ['BI', 'KA', 'SO', 'TE'] },
+    { word: 'NADI', syllables: ['NA', 'DI'], wrong: ['BU', 'KU', 'SO', 'LE'] },
+    { word: 'PAHA', syllables: ['PA', 'HA'], wrong: ['BU', 'KU', 'SI', 'LE'] },
+    { word: 'WAJA', syllables: ['WA', 'JA'], wrong: ['BU', 'KU', 'SI', 'TE'] },
+    { word: 'LADA', syllables: ['LA', 'DA'], wrong: ['BU', 'KU', 'SI', 'TE'] },
+    { word: 'SAGA', syllables: ['SA', 'GA'], wrong: ['BU', 'KU', 'TO', 'LE'] },
+    { word: 'RATU', syllables: ['RA', 'TU'], wrong: ['BI', 'KA', 'SO', 'ME'] },
+    { word: 'PALA', syllables: ['PA', 'LA'], wrong: ['BU', 'KU', 'SI', 'TE'] },
+    { word: 'BAGI', syllables: ['BA', 'GI'], wrong: ['KU', 'SO', 'TE', 'RI'] },
+    { word: 'SAGU', syllables: ['SA', 'GU'], wrong: ['BI', 'KA', 'TO', 'ME'] },
+    { word: 'GULI', syllables: ['GU', 'LI'], wrong: ['BA', 'KU', 'SO', 'TE'] },
+    { word: 'MALU', syllables: ['MA', 'LU'], wrong: ['BI', 'KA', 'SO', 'TE'] },
+    { word: 'RAPI', syllables: ['RA', 'PI'], wrong: ['BU', 'KU', 'SO', 'LE'] },
+    { word: 'SUKA', syllables: ['SU', 'KA'], wrong: ['BI', 'TO', 'ME', 'RI'] },
+    { word: 'DARA', syllables: ['DA', 'RA'], wrong: ['BU', 'KU', 'SI', 'LE'] },
+    { word: 'KUTU', syllables: ['KU', 'TU'], wrong: ['BA', 'SO', 'LE', 'RI'] },
+    { word: 'JADI', syllables: ['JA', 'DI'], wrong: ['BU', 'KU', 'SO', 'LE'] },
+    { word: 'TARI', syllables: ['TA', 'RI'], wrong: ['BU', 'KU', 'SO', 'LE'] },
+    { word: 'LIKU', syllables: ['LI', 'KU'], wrong: ['BA', 'SO', 'TE', 'RI'] },
+    { word: 'PALU', syllables: ['PA', 'LU'], wrong: ['BI', 'KA', 'SO', 'TE'] },
+    { word: 'GELI', syllables: ['GE', 'LI'], wrong: ['BA', 'KU', 'SO', 'TE'] },
+    { word: 'RUGI', syllables: ['RU', 'GI'], wrong: ['BA', 'KA', 'SO', 'LE'] },
+    { word: 'SATU', syllables: ['SA', 'TU'], wrong: ['BI', 'KA', 'TO', 'ME'] },
+    { word: 'LIMA', syllables: ['LI', 'MA'], wrong: ['BU', 'KA', 'SO', 'TE'] },
+    { word: 'DUKA', syllables: ['DU', 'KA'], wrong: ['BI', 'SO', 'LE', 'RI'] },
+    { word: 'MEJA', syllables: ['ME', 'JA'], wrong: ['BU', 'KU', 'SO', 'LE'] },
+    { word: 'DADU', syllables: ['DA', 'DU'], wrong: ['BI', 'KA', 'SO', 'TE'] },
+    { word: 'RUSA', syllables: ['RU', 'SA'], wrong: ['BI', 'KA', 'TO', 'LE'] },
+    { word: 'AYAM', syllables: ['A', 'YAM'], wrong: ['BU', 'KA', 'SI', 'LE'] },
+    { word: 'BUAH', syllables: ['BU', 'AH'], wrong: ['KA', 'SI', 'TO', 'LE'] },
+    { word: 'DUKU', syllables: ['DU', 'KU'], wrong: ['BA', 'SO', 'LE', 'RI'] },
+    { word: 'HARI', syllables: ['HA', 'RI'], wrong: ['BU', 'KU', 'SO', 'LE'] },
+    { word: 'TIGA', syllables: ['TI', 'GA'], wrong: ['BA', 'KU', 'SO', 'LE'] },
+    { word: 'MISI', syllables: ['MI', 'SI'], wrong: ['BA', 'KU', 'TO', 'LE'] },
+    { word: 'KUCI', syllables: ['KU', 'CI'], wrong: ['BA', 'SO', 'TE', 'RI'] },
   ], []);
 
   const [round, setRound] = useState(1);
@@ -5203,7 +5230,7 @@ export function SyllableFactoryGame() {
           {lang === 'bm' ? 'Bina Perkataan' : 'Build Words'}
         </span>
         <div className="game-stars">
-          {[1,2,3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
+          {[1, 2, 3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
         </div>
       </div>
 
@@ -5244,7 +5271,7 @@ export function SyllableFactoryGame() {
                   display: 'flex', alignItems: 'center', gap: 6,
                   boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                 }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
                   <span style={{ color: '#333', fontFamily: 'var(--font-heading)' }}>{score}</span>
                 </div>
               </div>
@@ -5391,106 +5418,106 @@ export function LetterPuzzleGame() {
   const TOTAL_ROUNDS = 15;
 
   const ALL_PUZZLES = useMemo(() => [
-    { word: 'BUKU', missing: 1, choices: ['U','A','I','O'] },
-    { word: 'MAMA', missing: 0, choices: ['M','B','K','S'] },
-    { word: 'KUDA', missing: 2, choices: ['D','B','G','P'] },
-    { word: 'BOLA', missing: 3, choices: ['A','U','E','I'] },
-    { word: 'NASI', missing: 0, choices: ['N','R','T','L'] },
-    { word: 'IKAN', missing: 2, choices: ['A','U','E','O'] },
-    { word: 'KUIH', missing: 3, choices: ['H','N','K','S'] },
-    { word: 'LEMBU', missing: 2, choices: ['M','N','K','R'] },
-    { word: 'TOPI', missing: 0, choices: ['T','P','K','B'] },
-    { word: 'GULA', missing: 1, choices: ['U','A','I','O'] },
-    { word: 'PADI', missing: 3, choices: ['I','A','U','E'] },
-    { word: 'ROTI', missing: 2, choices: ['T','D','K','P'] },
-    { word: 'MEJA', missing: 0, choices: ['M','N','K','R'] },
-    { word: 'DADU', missing: 1, choices: ['A','I','U','E'] },
-    { word: 'SUSU', missing: 3, choices: ['U','A','I','O'] },
-    { word: 'KAKI', missing: 2, choices: ['K','G','P','T'] },
-    { word: 'BAJU', missing: 0, choices: ['B','D','P','G'] },
-    { word: 'GIGI', missing: 1, choices: ['I','A','U','E'] },
-    { word: 'SATU', missing: 3, choices: ['U','A','I','E'] },
-    { word: 'LIMA', missing: 2, choices: ['M','N','K','R'] },
-    { word: 'AYAM', missing: 0, choices: ['A','I','U','E'] },
-    { word: 'BUAH', missing: 1, choices: ['U','A','I','O'] },
-    { word: 'DUKU', missing: 2, choices: ['K','G','P','T'] },
-    { word: 'HARI', missing: 3, choices: ['I','A','U','E'] },
-    { word: 'TIGA', missing: 0, choices: ['T','D','K','S'] },
-    { word: 'RUSA', missing: 1, choices: ['U','A','I','E'] },
-    { word: 'PAKU', missing: 2, choices: ['K','G','P','T'] },
-    { word: 'KOTA', missing: 3, choices: ['A','U','I','E'] },
-    { word: 'DUIT', missing: 0, choices: ['D','B','P','G'] },
-    { word: 'GAJI', missing: 1, choices: ['A','I','U','E'] },
-    { word: 'LAGU', missing: 2, choices: ['G','K','P','T'] },
-    { word: 'BESI', missing: 3, choices: ['I','A','U','E'] },
-    { word: 'KAYU', missing: 0, choices: ['K','G','P','T'] },
-    { word: 'TAHU', missing: 1, choices: ['A','I','U','E'] },
-    { word: 'GARI', missing: 2, choices: ['R','L','N','M'] },
-    { word: 'PETA', missing: 3, choices: ['A','U','I','E'] },
-    { word: 'BATU', missing: 0, choices: ['B','D','P','G'] },
-    { word: 'TEKO', missing: 1, choices: ['E','A','I','U'] },
-    { word: 'KAIN', missing: 2, choices: ['I','A','U','E'] },
-    { word: 'LORI', missing: 3, choices: ['I','A','U','E'] },
-    { word: 'SIKU', missing: 0, choices: ['S','T','K','P'] },
-    { word: 'NAGA', missing: 2, choices: ['G','K','P','T'] },
-    { word: 'SENI', missing: 3, choices: ['I','A','U','E'] },
-    { word: 'BIRU', missing: 0, choices: ['B','D','P','G'] },
-    { word: 'PURI', missing: 1, choices: ['U','A','I','E'] },
-    { word: 'JARI', missing: 2, choices: ['R','L','N','M'] },
-    { word: 'BUMI', missing: 3, choices: ['I','A','U','E'] },
-    { word: 'DADA', missing: 0, choices: ['D','B','P','G'] },
-    { word: 'KIRI', missing: 1, choices: ['I','A','U','E'] },
-    { word: 'LUPA', missing: 2, choices: ['P','K','G','T'] },
-    { word: 'SAYA', missing: 3, choices: ['A','U','I','E'] },
-    { word: 'GURU', missing: 0, choices: ['G','K','P','T'] },
-    { word: 'RAJA', missing: 1, choices: ['A','I','U','E'] },
-    { word: 'PASU', missing: 2, choices: ['S','T','K','P'] },
-    { word: 'MATA', missing: 3, choices: ['A','U','I','E'] },
-    { word: 'LAUT', missing: 0, choices: ['L','R','N','M'] },
-    { word: 'SISI', missing: 1, choices: ['I','A','U','E'] },
-    { word: 'TIPU', missing: 3, choices: ['U','A','I','E'] },
-    { word: 'JALA', missing: 0, choices: ['J','K','G','T'] },
-    { word: 'KUKU', missing: 1, choices: ['U','A','I','E'] },
-    { word: 'RAGA', missing: 2, choices: ['G','K','P','T'] },
-    { word: 'DAGU', missing: 3, choices: ['U','A','I','E'] },
-    { word: 'BAYU', missing: 1, choices: ['A','I','U','E'] },
-    { word: 'LAKI', missing: 2, choices: ['K','G','P','T'] },
-    { word: 'SAPU', missing: 3, choices: ['U','A','I','E'] },
-    { word: 'TALI', missing: 0, choices: ['T','D','K','S'] },
-    { word: 'SURI', missing: 1, choices: ['U','A','I','E'] },
-    { word: 'BACA', missing: 2, choices: ['C','K','G','S'] },
-    { word: 'DURI', missing: 3, choices: ['I','A','U','E'] },
-    { word: 'MADU', missing: 0, choices: ['M','N','K','R'] },
-    { word: 'DAHI', missing: 1, choices: ['A','I','U','E'] },
-    { word: 'HATI', missing: 2, choices: ['T','D','K','P'] },
-    { word: 'LABA', missing: 0, choices: ['L','R','N','M'] },
-    { word: 'MUKA', missing: 1, choices: ['U','A','I','E'] },
-    { word: 'PARI', missing: 2, choices: ['R','L','N','M'] },
-    { word: 'SUDU', missing: 3, choices: ['U','A','I','E'] },
-    { word: 'KACA', missing: 0, choices: ['K','G','P','T'] },
-    { word: 'BAHU', missing: 2, choices: ['H','K','G','P'] },
-    { word: 'TIRU', missing: 3, choices: ['U','A','I','E'] },
-    { word: 'JAMU', missing: 0, choices: ['J','K','G','T'] },
-    { word: 'NADI', missing: 1, choices: ['A','I','U','E'] },
-    { word: 'PAHA', missing: 2, choices: ['H','K','G','P'] },
-    { word: 'WAJA', missing: 3, choices: ['A','U','I','E'] },
-    { word: 'LADA', missing: 0, choices: ['L','R','N','M'] },
-    { word: 'SAGA', missing: 2, choices: ['G','K','P','T'] },
-    { word: 'RATU', missing: 3, choices: ['U','A','I','E'] },
-    { word: 'PALA', missing: 0, choices: ['P','B','D','G'] },
-    { word: 'BAGI', missing: 2, choices: ['G','K','P','T'] },
-    { word: 'SAGU', missing: 3, choices: ['U','A','I','E'] },
-    { word: 'GULI', missing: 0, choices: ['G','K','P','T'] },
-    { word: 'MALU', missing: 1, choices: ['A','I','U','E'] },
-    { word: 'RAPI', missing: 0, choices: ['R','L','N','M'] },
-    { word: 'BUMI', missing: 0, choices: ['B','D','P','G'] },
-    { word: 'SUKA', missing: 1, choices: ['U','A','I','E'] },
-    { word: 'DARA', missing: 2, choices: ['R','L','N','M'] },
-    { word: 'KUTU', missing: 3, choices: ['U','A','I','E'] },
-    { word: 'JADI', missing: 0, choices: ['J','K','G','T'] },
-    { word: 'TARI', missing: 1, choices: ['A','I','U','E'] },
-    { word: 'LIKU', missing: 2, choices: ['K','G','P','T'] },
-    { word: 'PALU', missing: 3, choices: ['U','A','I','E'] },
+    { word: 'BUKU', missing: 1, choices: ['U', 'A', 'I', 'O'] },
+    { word: 'MAMA', missing: 0, choices: ['M', 'B', 'K', 'S'] },
+    { word: 'KUDA', missing: 2, choices: ['D', 'B', 'G', 'P'] },
+    { word: 'BOLA', missing: 3, choices: ['A', 'U', 'E', 'I'] },
+    { word: 'NASI', missing: 0, choices: ['N', 'R', 'T', 'L'] },
+    { word: 'IKAN', missing: 2, choices: ['A', 'U', 'E', 'O'] },
+    { word: 'KUIH', missing: 3, choices: ['H', 'N', 'K', 'S'] },
+    { word: 'LEMBU', missing: 2, choices: ['M', 'N', 'K', 'R'] },
+    { word: 'TOPI', missing: 0, choices: ['T', 'P', 'K', 'B'] },
+    { word: 'GULA', missing: 1, choices: ['U', 'A', 'I', 'O'] },
+    { word: 'PADI', missing: 3, choices: ['I', 'A', 'U', 'E'] },
+    { word: 'ROTI', missing: 2, choices: ['T', 'D', 'K', 'P'] },
+    { word: 'MEJA', missing: 0, choices: ['M', 'N', 'K', 'R'] },
+    { word: 'DADU', missing: 1, choices: ['A', 'I', 'U', 'E'] },
+    { word: 'SUSU', missing: 3, choices: ['U', 'A', 'I', 'O'] },
+    { word: 'KAKI', missing: 2, choices: ['K', 'G', 'P', 'T'] },
+    { word: 'BAJU', missing: 0, choices: ['B', 'D', 'P', 'G'] },
+    { word: 'GIGI', missing: 1, choices: ['I', 'A', 'U', 'E'] },
+    { word: 'SATU', missing: 3, choices: ['U', 'A', 'I', 'E'] },
+    { word: 'LIMA', missing: 2, choices: ['M', 'N', 'K', 'R'] },
+    { word: 'AYAM', missing: 0, choices: ['A', 'I', 'U', 'E'] },
+    { word: 'BUAH', missing: 1, choices: ['U', 'A', 'I', 'O'] },
+    { word: 'DUKU', missing: 2, choices: ['K', 'G', 'P', 'T'] },
+    { word: 'HARI', missing: 3, choices: ['I', 'A', 'U', 'E'] },
+    { word: 'TIGA', missing: 0, choices: ['T', 'D', 'K', 'S'] },
+    { word: 'RUSA', missing: 1, choices: ['U', 'A', 'I', 'E'] },
+    { word: 'PAKU', missing: 2, choices: ['K', 'G', 'P', 'T'] },
+    { word: 'KOTA', missing: 3, choices: ['A', 'U', 'I', 'E'] },
+    { word: 'DUIT', missing: 0, choices: ['D', 'B', 'P', 'G'] },
+    { word: 'GAJI', missing: 1, choices: ['A', 'I', 'U', 'E'] },
+    { word: 'LAGU', missing: 2, choices: ['G', 'K', 'P', 'T'] },
+    { word: 'BESI', missing: 3, choices: ['I', 'A', 'U', 'E'] },
+    { word: 'KAYU', missing: 0, choices: ['K', 'G', 'P', 'T'] },
+    { word: 'TAHU', missing: 1, choices: ['A', 'I', 'U', 'E'] },
+    { word: 'GARI', missing: 2, choices: ['R', 'L', 'N', 'M'] },
+    { word: 'PETA', missing: 3, choices: ['A', 'U', 'I', 'E'] },
+    { word: 'BATU', missing: 0, choices: ['B', 'D', 'P', 'G'] },
+    { word: 'TEKO', missing: 1, choices: ['E', 'A', 'I', 'U'] },
+    { word: 'KAIN', missing: 2, choices: ['I', 'A', 'U', 'E'] },
+    { word: 'LORI', missing: 3, choices: ['I', 'A', 'U', 'E'] },
+    { word: 'SIKU', missing: 0, choices: ['S', 'T', 'K', 'P'] },
+    { word: 'NAGA', missing: 2, choices: ['G', 'K', 'P', 'T'] },
+    { word: 'SENI', missing: 3, choices: ['I', 'A', 'U', 'E'] },
+    { word: 'BIRU', missing: 0, choices: ['B', 'D', 'P', 'G'] },
+    { word: 'PURI', missing: 1, choices: ['U', 'A', 'I', 'E'] },
+    { word: 'JARI', missing: 2, choices: ['R', 'L', 'N', 'M'] },
+    { word: 'BUMI', missing: 3, choices: ['I', 'A', 'U', 'E'] },
+    { word: 'DADA', missing: 0, choices: ['D', 'B', 'P', 'G'] },
+    { word: 'KIRI', missing: 1, choices: ['I', 'A', 'U', 'E'] },
+    { word: 'LUPA', missing: 2, choices: ['P', 'K', 'G', 'T'] },
+    { word: 'SAYA', missing: 3, choices: ['A', 'U', 'I', 'E'] },
+    { word: 'GURU', missing: 0, choices: ['G', 'K', 'P', 'T'] },
+    { word: 'RAJA', missing: 1, choices: ['A', 'I', 'U', 'E'] },
+    { word: 'PASU', missing: 2, choices: ['S', 'T', 'K', 'P'] },
+    { word: 'MATA', missing: 3, choices: ['A', 'U', 'I', 'E'] },
+    { word: 'LAUT', missing: 0, choices: ['L', 'R', 'N', 'M'] },
+    { word: 'SISI', missing: 1, choices: ['I', 'A', 'U', 'E'] },
+    { word: 'TIPU', missing: 3, choices: ['U', 'A', 'I', 'E'] },
+    { word: 'JALA', missing: 0, choices: ['J', 'K', 'G', 'T'] },
+    { word: 'KUKU', missing: 1, choices: ['U', 'A', 'I', 'E'] },
+    { word: 'RAGA', missing: 2, choices: ['G', 'K', 'P', 'T'] },
+    { word: 'DAGU', missing: 3, choices: ['U', 'A', 'I', 'E'] },
+    { word: 'BAYU', missing: 1, choices: ['A', 'I', 'U', 'E'] },
+    { word: 'LAKI', missing: 2, choices: ['K', 'G', 'P', 'T'] },
+    { word: 'SAPU', missing: 3, choices: ['U', 'A', 'I', 'E'] },
+    { word: 'TALI', missing: 0, choices: ['T', 'D', 'K', 'S'] },
+    { word: 'SURI', missing: 1, choices: ['U', 'A', 'I', 'E'] },
+    { word: 'BACA', missing: 2, choices: ['C', 'K', 'G', 'S'] },
+    { word: 'DURI', missing: 3, choices: ['I', 'A', 'U', 'E'] },
+    { word: 'MADU', missing: 0, choices: ['M', 'N', 'K', 'R'] },
+    { word: 'DAHI', missing: 1, choices: ['A', 'I', 'U', 'E'] },
+    { word: 'HATI', missing: 2, choices: ['T', 'D', 'K', 'P'] },
+    { word: 'LABA', missing: 0, choices: ['L', 'R', 'N', 'M'] },
+    { word: 'MUKA', missing: 1, choices: ['U', 'A', 'I', 'E'] },
+    { word: 'PARI', missing: 2, choices: ['R', 'L', 'N', 'M'] },
+    { word: 'SUDU', missing: 3, choices: ['U', 'A', 'I', 'E'] },
+    { word: 'KACA', missing: 0, choices: ['K', 'G', 'P', 'T'] },
+    { word: 'BAHU', missing: 2, choices: ['H', 'K', 'G', 'P'] },
+    { word: 'TIRU', missing: 3, choices: ['U', 'A', 'I', 'E'] },
+    { word: 'JAMU', missing: 0, choices: ['J', 'K', 'G', 'T'] },
+    { word: 'NADI', missing: 1, choices: ['A', 'I', 'U', 'E'] },
+    { word: 'PAHA', missing: 2, choices: ['H', 'K', 'G', 'P'] },
+    { word: 'WAJA', missing: 3, choices: ['A', 'U', 'I', 'E'] },
+    { word: 'LADA', missing: 0, choices: ['L', 'R', 'N', 'M'] },
+    { word: 'SAGA', missing: 2, choices: ['G', 'K', 'P', 'T'] },
+    { word: 'RATU', missing: 3, choices: ['U', 'A', 'I', 'E'] },
+    { word: 'PALA', missing: 0, choices: ['P', 'B', 'D', 'G'] },
+    { word: 'BAGI', missing: 2, choices: ['G', 'K', 'P', 'T'] },
+    { word: 'SAGU', missing: 3, choices: ['U', 'A', 'I', 'E'] },
+    { word: 'GULI', missing: 0, choices: ['G', 'K', 'P', 'T'] },
+    { word: 'MALU', missing: 1, choices: ['A', 'I', 'U', 'E'] },
+    { word: 'RAPI', missing: 0, choices: ['R', 'L', 'N', 'M'] },
+    { word: 'BUMI', missing: 0, choices: ['B', 'D', 'P', 'G'] },
+    { word: 'SUKA', missing: 1, choices: ['U', 'A', 'I', 'E'] },
+    { word: 'DARA', missing: 2, choices: ['R', 'L', 'N', 'M'] },
+    { word: 'KUTU', missing: 3, choices: ['U', 'A', 'I', 'E'] },
+    { word: 'JADI', missing: 0, choices: ['J', 'K', 'G', 'T'] },
+    { word: 'TARI', missing: 1, choices: ['A', 'I', 'U', 'E'] },
+    { word: 'LIKU', missing: 2, choices: ['K', 'G', 'P', 'T'] },
+    { word: 'PALU', missing: 3, choices: ['U', 'A', 'I', 'E'] },
   ], []);
 
   const [roundPuzzles, setRoundPuzzles] = useState([]);
@@ -5526,8 +5553,8 @@ export function LetterPuzzleGame() {
           const finalScore = score + 10;
           completeGame('abc', 'letter-puzzle', finalScore >= 120 ? 3 : finalScore >= 80 ? 2 : 1, finalScore);
           setGameComplete(true);
-          const colors = ['#FF6B9D','#FFD93D','#4A90D9','#6BCB77','#9B72CF'];
-          setConfettiPieces(Array.from({length:50},(_,i)=>({id:i,left:Math.random()*100,color:colors[i%colors.length],delay:Math.random()*0.5,size:6+Math.random()*8})));
+          const colors = ['#FF6B9D', '#FFD93D', '#4A90D9', '#6BCB77', '#9B72CF'];
+          setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({ id: i, left: Math.random() * 100, color: colors[i % colors.length], delay: Math.random() * 0.5, size: 6 + Math.random() * 8 })));
         }
       }, 1000);
     } else {
@@ -5539,62 +5566,62 @@ export function LetterPuzzleGame() {
 
   const getStars = () => score >= 120 ? 3 : score >= 80 ? 2 : 1;
   const puzzle = roundPuzzles[round];
-  const CHOICE_COLORS = ['linear-gradient(135deg,#FFB6C1,#FF69B4)','linear-gradient(135deg,#B39DDB,#9575CD)','linear-gradient(135deg,#A5D6A7,#66BB6A)','linear-gradient(135deg,#90CAF9,#42A5F5)'];
+  const CHOICE_COLORS = ['linear-gradient(135deg,#FFB6C1,#FF69B4)', 'linear-gradient(135deg,#B39DDB,#9575CD)', 'linear-gradient(135deg,#A5D6A7,#66BB6A)', 'linear-gradient(135deg,#90CAF9,#42A5F5)'];
 
   return (
     <div className="game-screen">
       <div className="game-header">
         <button className="back-btn" onClick={() => goToWorld('abc')}>←</button>
         <span className="game-title">{lang === 'bm' ? 'Huruf Hilang' : 'Missing Letter'}</span>
-        <div className="game-stars">{[1,2,3].map(s=><span key={s} className={s<=getStars()?'star-earned':'star-empty'}><StarIcon size={20}/></span>)}</div>
+        <div className="game-stars">{[1, 2, 3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}</div>
       </div>
       <div className="game-body" style={{ padding: 0 }}>
-        <div style={{ width:'100%',height:'100%',position:'relative',overflow:'hidden' }}>
-          <img src={assetPath('/images/game/letter_puzzle_bg.jpg')} alt="" style={{ position:'absolute',top:0,left:0,width:'100%',height:'100%',objectFit:'cover',zIndex:0 }} />
+        <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
+          <img src={assetPath('/images/game/letter_puzzle_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} />
           {/* HUD */}
-          <div style={{ position:'absolute',top:0,left:0,right:0,zIndex:15,display:'flex',justifyContent:'space-between',padding:'6px 12px' }}>
-            <div style={{ background:'rgba(255,255,255,0.9)',borderRadius:50,padding:'3px 12px',fontSize:'0.75rem',fontWeight:700,fontFamily:'var(--font-heading)',color:'#666',boxShadow:'0 2px 8px rgba(0,0,0,0.06)' }}>
-              Pusingan {round+1}/{TOTAL_ROUNDS}
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 15, display: 'flex', justifyContent: 'space-between', padding: '6px 12px' }}>
+            <div style={{ background: 'rgba(255,255,255,0.9)', borderRadius: 50, padding: '3px 12px', fontSize: '0.75rem', fontWeight: 700, fontFamily: 'var(--font-heading)', color: '#666', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+              Pusingan {round + 1}/{TOTAL_ROUNDS}
             </div>
-            <div style={{ background:'rgba(255,255,255,0.9)',borderRadius:50,padding:'3px 12px',fontSize:'0.8rem',fontWeight:700,display:'flex',alignItems:'center',gap:5,boxShadow:'0 2px 8px rgba(0,0,0,0.06)' }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-              <span style={{ color:'#333',fontFamily:'var(--font-heading)' }}>{score}</span>
+            <div style={{ background: 'rgba(255,255,255,0.9)', borderRadius: 50, padding: '3px 12px', fontSize: '0.8rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+              <span style={{ color: '#333', fontFamily: 'var(--font-heading)' }}>{score}</span>
             </div>
           </div>
           {/* Game content */}
           {puzzle && (
-            <div style={{ position:'absolute',top:'50%',left:'50%',transform:'translate(-50%,-50%)',zIndex:5,width:'90%',maxWidth:420,display:'flex',flexDirection:'column',alignItems:'center',gap:'clamp(12px,3vh,24px)' }}>
-              <div style={{ background:'rgba(255,255,255,0.95)',backdropFilter:'blur(12px)',padding:'8px 20px',borderRadius:50,boxShadow:'0 4px 16px rgba(0,0,0,0.08)',fontFamily:'var(--font-heading)',fontWeight:700,fontSize:'clamp(0.85rem,2.5vw,1.1rem)',color:'#1565C0' }}>
+            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', zIndex: 5, width: '90%', maxWidth: 420, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'clamp(12px,3vh,24px)' }}>
+              <div style={{ background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)', padding: '8px 20px', borderRadius: 50, boxShadow: '0 4px 16px rgba(0,0,0,0.08)', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(0.85rem,2.5vw,1.1rem)', color: '#1565C0' }}>
                 {lang === 'bm' ? 'Huruf mana yang hilang?' : 'Which letter is missing?'}
               </div>
-              <div style={{ display:'flex',gap:'clamp(8px,2vw,14px)',justifyContent:'center' }}>
-                {puzzle.word.split('').map((char,i) => (
+              <div style={{ display: 'flex', gap: 'clamp(8px,2vw,14px)', justifyContent: 'center' }}>
+                {puzzle.word.split('').map((char, i) => (
                   <div key={i} style={{
-                    width:'clamp(55px,15vw,80px)',height:'clamp(60px,16vw,85px)',borderRadius:18,
-                    display:'flex',alignItems:'center',justifyContent:'center',
-                    fontSize:'clamp(1.5rem,5vw,2.2rem)',fontWeight:900,fontFamily:'var(--font-heading)',
-                    background:i===puzzle.missing?(revealed?'linear-gradient(135deg,#6BCB77,#48C9B0)':'linear-gradient(135deg,#FFD93D,#FFA726)'):'rgba(255,255,255,0.95)',
-                    color:i===puzzle.missing?(revealed?'white':'#FF9800'):'#333',
-                    border:i===puzzle.missing?'3px solid #FF9800':'2px solid rgba(0,0,0,0.08)',
-                    boxShadow:i===puzzle.missing?'0 6px 20px rgba(255,152,0,0.3)':'0 4px 12px rgba(0,0,0,0.06)',
-                    transition:'all 0.3s cubic-bezier(0.34,1.56,0.64,1)',
-                    transform:(i===puzzle.missing&&revealed)?'scale(1.1)':'scale(1)',backdropFilter:'blur(8px)',
-                  }}>{i===puzzle.missing?(revealed?char:'?'):char}</div>
+                    width: 'clamp(55px,15vw,80px)', height: 'clamp(60px,16vw,85px)', borderRadius: 18,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 'clamp(1.5rem,5vw,2.2rem)', fontWeight: 900, fontFamily: 'var(--font-heading)',
+                    background: i === puzzle.missing ? (revealed ? 'linear-gradient(135deg,#6BCB77,#48C9B0)' : 'linear-gradient(135deg,#FFD93D,#FFA726)') : 'rgba(255,255,255,0.95)',
+                    color: i === puzzle.missing ? (revealed ? 'white' : '#FF9800') : '#333',
+                    border: i === puzzle.missing ? '3px solid #FF9800' : '2px solid rgba(0,0,0,0.08)',
+                    boxShadow: i === puzzle.missing ? '0 6px 20px rgba(255,152,0,0.3)' : '0 4px 12px rgba(0,0,0,0.06)',
+                    transition: 'all 0.3s cubic-bezier(0.34,1.56,0.64,1)',
+                    transform: (i === puzzle.missing && revealed) ? 'scale(1.1)' : 'scale(1)', backdropFilter: 'blur(8px)',
+                  }}>{i === puzzle.missing ? (revealed ? char : '?') : char}</div>
                 ))}
               </div>
-              <div style={{ background:'rgba(255,255,255,0.88)',backdropFilter:'blur(12px)',borderRadius:24,padding:'clamp(12px,3vw,20px)',boxShadow:'0 8px 32px rgba(0,0,0,0.08)',border:'1px solid rgba(255,255,255,0.6)' }}>
-                <div style={{ fontSize:'clamp(0.7rem,2vw,0.8rem)',color:'#888',marginBottom:10,fontWeight:600,textAlign:'center' }}>
+              <div style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(12px)', borderRadius: 24, padding: 'clamp(12px,3vw,20px)', boxShadow: '0 8px 32px rgba(0,0,0,0.08)', border: '1px solid rgba(255,255,255,0.6)' }}>
+                <div style={{ fontSize: 'clamp(0.7rem,2vw,0.8rem)', color: '#888', marginBottom: 10, fontWeight: 600, textAlign: 'center' }}>
                   {lang === 'bm' ? 'Pilih huruf yang betul:' : 'Pick the correct letter:'}
                 </div>
-                <div style={{ display:'flex',gap:'clamp(8px,2vw,14px)',justifyContent:'center' }}>
-                  {shuffleWithSeed(puzzle.choices,round).map((letter,i) => (
-                    <button key={i} onClick={()=>handleChoice(letter)} style={{
-                      width:'clamp(50px,14vw,70px)',height:'clamp(50px,14vw,70px)',borderRadius:16,
-                      fontSize:'clamp(1.3rem,4vw,1.8rem)',fontWeight:900,fontFamily:'var(--font-heading)',
-                      background:CHOICE_COLORS[i],border:'2px solid rgba(255,255,255,0.6)',
-                      cursor:'pointer',boxShadow:'0 4px 16px rgba(0,0,0,0.1)',
-                      transition:'transform 0.15s ease',color:'white',textShadow:'0 1px 3px rgba(0,0,0,0.2)',
-                      WebkitTapHighlightColor:'transparent',
+                <div style={{ display: 'flex', gap: 'clamp(8px,2vw,14px)', justifyContent: 'center' }}>
+                  {shuffleWithSeed(puzzle.choices, round).map((letter, i) => (
+                    <button key={i} onClick={() => handleChoice(letter)} style={{
+                      width: 'clamp(50px,14vw,70px)', height: 'clamp(50px,14vw,70px)', borderRadius: 16,
+                      fontSize: 'clamp(1.3rem,4vw,1.8rem)', fontWeight: 900, fontFamily: 'var(--font-heading)',
+                      background: CHOICE_COLORS[i], border: '2px solid rgba(255,255,255,0.6)',
+                      cursor: 'pointer', boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+                      transition: 'transform 0.15s ease', color: 'white', textShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                      WebkitTapHighlightColor: 'transparent',
                     }}>{letter}</button>
                   ))}
                 </div>
@@ -5602,7 +5629,7 @@ export function LetterPuzzleGame() {
             </div>
           )}
           {feedback && (
-            <div style={{ position:'absolute',bottom:'clamp(10px,3vh,30px)',left:'50%',transform:'translateX(-50%)',zIndex:20,background:feedback.type==='correct'?'linear-gradient(135deg,#6BCB77,#48C9B0)':'linear-gradient(135deg,#FF6B6B,#ee5a24)',color:'white',padding:'8px 20px',borderRadius:50,fontFamily:'var(--font-heading)',fontWeight:700,fontSize:'clamp(0.8rem,2.5vw,1rem)',boxShadow:'0 4px 16px rgba(0,0,0,0.2)',animation:'fadeInUp 0.3s ease-out' }}>
+            <div style={{ position: 'absolute', bottom: 'clamp(10px,3vh,30px)', left: '50%', transform: 'translateX(-50%)', zIndex: 20, background: feedback.type === 'correct' ? 'linear-gradient(135deg,#6BCB77,#48C9B0)' : 'linear-gradient(135deg,#FF6B6B,#ee5a24)', color: 'white', padding: '8px 20px', borderRadius: 50, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(0.8rem,2.5vw,1rem)', boxShadow: '0 4px 16px rgba(0,0,0,0.2)', animation: 'fadeInUp 0.3s ease-out' }}>
               {feedback.message}
             </div>
           )}
@@ -5610,7 +5637,7 @@ export function LetterPuzzleGame() {
       </div>
       {gameComplete && (
         <GameCompleteModal lang={lang} stars={getStars()} score={score} accentColor="#1565C0"
-          onPlayAgain={initGame} onBack={()=>goToWorld('abc')} confettiPieces={confettiPieces} />
+          onPlayAgain={initGame} onBack={() => goToWorld('abc')} confettiPieces={confettiPieces} />
       )}
     </div>
   );
@@ -5624,15 +5651,15 @@ export function LetterPuzzleGame() {
 export function NumberTraceGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
-  const NUMBERS = ['0','1','2','3','4','5','6','7','8','9'];
+
+  const NUMBERS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   const [numIdx, setNumIdx] = useState(0);
   const [dotsTapped, setDotsTapped] = useState(0);
   const [score, setScore] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const DOTS_PER_NUM = 4;
-  
+
   const handleDotTap = (dotIdx) => {
     if (dotIdx === dotsTapped) {
       if (soundEnabled) playTapSound();
@@ -5657,7 +5684,7 @@ export function NumberTraceGame() {
       }
     }
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -5672,13 +5699,13 @@ export function NumberTraceGame() {
       </div>
     );
   }
-  
+
   const num = NUMBERS[numIdx];
   const dotPositions = Array.from({ length: DOTS_PER_NUM }, (_, i) => ({
     left: 25 + (i % 2) * 50,
     top: 20 + Math.floor(i / 2) * 35 + (Math.sin(i) * 8),
   }));
-  
+
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
       <img src={assetPath('/images/game/number_trace_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
@@ -5724,8 +5751,8 @@ export function NumberTraceGame() {
 export function BiggerSmallerGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
-  const EMOJIS = ['🍎','🌟','🐱','🎈','🐟','🌺','🦋','🍬'];
+
+  const EMOJIS = ['🍎', '🌟', '🐱', '🎈', '🐟', '🌺', '🦋', '🍬'];
   const [round, setRound] = useState(0);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState(null);
@@ -5735,7 +5762,7 @@ export function BiggerSmallerGame() {
   const [leftEmoji, setLeftEmoji] = useState('🍎');
   const [rightEmoji, setRightEmoji] = useState('🌟');
   const TOTAL_ROUNDS = 15;
-  
+
   const generateRound = useCallback(() => {
     const l = Math.floor(Math.random() * 5) + 1;
     let r = Math.floor(Math.random() * 5) + 1;
@@ -5745,9 +5772,9 @@ export function BiggerSmallerGame() {
     setLeftEmoji(EMOJIS[Math.floor(Math.random() * EMOJIS.length)]);
     setRightEmoji(EMOJIS[Math.floor(Math.random() * EMOJIS.length)]);
   }, []);
-  
+
   useEffect(() => { generateRound(); }, []);
-  
+
   const handleChoice = (side) => {
     const correct = (side === 'left' && leftCount > rightCount) || (side === 'right' && rightCount > leftCount);
     if (correct) {
@@ -5771,7 +5798,7 @@ export function BiggerSmallerGame() {
       }
     }, 800);
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -5784,7 +5811,7 @@ export function BiggerSmallerGame() {
       </div>
     );
   }
-  
+
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
       <img src={assetPath('/images/game/bigger_smaller_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
@@ -5800,7 +5827,7 @@ export function BiggerSmallerGame() {
             border: '3px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-md)',
           }}>
             <div style={{ lineHeight: 1.4, display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'center' }}>
-              {Array.from({ length: leftCount }).map((_, i) => <GI key={i} e={leftEmoji} size={32}/>)}
+              {Array.from({ length: leftCount }).map((_, i) => <GI key={i} e={leftEmoji} size={32} />)}
             </div>
           </button>
           <button onClick={() => handleChoice('right')} style={{
@@ -5808,7 +5835,7 @@ export function BiggerSmallerGame() {
             border: '3px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-md)',
           }}>
             <div style={{ lineHeight: 1.4, display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'center' }}>
-              {Array.from({ length: rightCount }).map((_, i) => <GI key={i} e={rightEmoji} size={32}/>)}
+              {Array.from({ length: rightCount }).map((_, i) => <GI key={i} e={rightEmoji} size={32} />)}
             </div>
           </button>
         </div>
@@ -5829,21 +5856,21 @@ export function BiggerSmallerGame() {
 export function PatternsGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const PATTERN_SETS = [
-    { pattern: ['🔴','🔵','🔴','🔵'], answer: '🔴', choices: ['🔴','🟡','🟢'] },
-    { pattern: ['⭐','⭐','🌙','⭐','⭐'], answer: '🌙', choices: ['🌙','⭐','☀️'] },
-    { pattern: ['🍎','🍊','🍎','🍊','🍎'], answer: '🍊', choices: ['🍊','🍎','🍇'] },
-    { pattern: ['🐱','🐶','🐱','🐶'], answer: '🐱', choices: ['🐱','🐟','🐰'] },
-    { pattern: ['1️⃣','2️⃣','3️⃣','4️⃣'], answer: '5️⃣', choices: ['5️⃣','7️⃣','0️⃣'] },
-    { pattern: ['🟩','🟨','🟩','🟨','🟩'], answer: '🟨', choices: ['🟨','🟩','🟦'] },
+    { pattern: ['🔴', '🔵', '🔴', '🔵'], answer: '🔴', choices: ['🔴', '🟡', '🟢'] },
+    { pattern: ['⭐', '⭐', '🌙', '⭐', '⭐'], answer: '🌙', choices: ['🌙', '⭐', '☀️'] },
+    { pattern: ['🍎', '🍊', '🍎', '🍊', '🍎'], answer: '🍊', choices: ['🍊', '🍎', '🍇'] },
+    { pattern: ['🐱', '🐶', '🐱', '🐶'], answer: '🐱', choices: ['🐱', '🐟', '🐰'] },
+    { pattern: ['1️⃣', '2️⃣', '3️⃣', '4️⃣'], answer: '5️⃣', choices: ['5️⃣', '7️⃣', '0️⃣'] },
+    { pattern: ['🟩', '🟨', '🟩', '🟨', '🟩'], answer: '🟨', choices: ['🟨', '🟩', '🟦'] },
   ];
-  
+
   const [idx, setIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
-  
+
   const handleChoice = (emoji) => {
     const correct = emoji === PATTERN_SETS[idx].answer;
     if (correct) {
@@ -5865,7 +5892,7 @@ export function PatternsGame() {
       }
     }, 800);
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -5876,7 +5903,7 @@ export function PatternsGame() {
       </div>
     );
   }
-  
+
   const p = PATTERN_SETS[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
@@ -5887,7 +5914,7 @@ export function PatternsGame() {
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{PATTERN_SETS.length}</div>
         <div style={{ display: 'flex', gap: 8, justifyContent: 'center', margin: '24px 0', alignItems: 'center', flexWrap: 'wrap' }}>
           {p.pattern.map((e, i) => (
-            <span key={i} style={{ display: 'inline-flex', alignItems: 'center' }}><GI e={e} size={36}/></span>
+            <span key={i} style={{ display: 'inline-flex', alignItems: 'center' }}><GI e={e} size={36} /></span>
           ))}
           <span style={{ fontSize: '2.2rem', width: 50, height: 50, borderRadius: 12, border: '3px dashed #9C27B0', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#9C27B0' }}>?</span>
         </div>
@@ -5896,7 +5923,7 @@ export function PatternsGame() {
             <button key={i} onClick={() => handleChoice(c)} style={{
               padding: 14, borderRadius: 18, background: 'white',
               border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)',
-            }}><GI e={c} size={40}/></button>
+            }}><GI e={c} size={40} /></button>
           ))}
         </div>
         {feedback && (
@@ -5916,8 +5943,8 @@ export function PatternsGame() {
 export function MagicDiceGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
-  const DICE_FACES = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+
+  const DICE_FACES = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
   const [dice1, setDice1] = useState(0);
   const [dice2, setDice2] = useState(0);
   const [round, setRound] = useState(0);
@@ -5927,7 +5954,7 @@ export function MagicDiceGame() {
   const [rolling, setRolling] = useState(false);
   const [choices, setChoices] = useState([]);
   const TOTAL_ROUNDS = 15;
-  
+
   const rollDice = useCallback(() => {
     setRolling(true);
     if (soundEnabled) playTapSound();
@@ -5946,9 +5973,9 @@ export function MagicDiceGame() {
       setRolling(false);
     }, 600);
   }, [soundEnabled]);
-  
+
   useEffect(() => { rollDice(); }, []);
-  
+
   const handleAnswer = (num) => {
     const total = (dice1 + 1) + (dice2 + 1);
     if (num === total) {
@@ -5970,7 +5997,7 @@ export function MagicDiceGame() {
       }
     }, 1000);
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -5981,7 +6008,7 @@ export function MagicDiceGame() {
       </div>
     );
   }
-  
+
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
       <img src={assetPath('/images/game/colour_hunt_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
@@ -6021,25 +6048,25 @@ export function MagicDiceGame() {
 export function MagicColouringGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const SCENES = [
     { name: lang === 'bm' ? 'Kucing' : 'Cat', parts: ['Badan', 'Telinga', 'Ekor'], emoji: '🐱' },
     { name: lang === 'bm' ? 'Bunga' : 'Flower', parts: ['Kelopak', 'Daun', 'Batang'], emoji: '🌸' },
     { name: lang === 'bm' ? 'Rumah' : 'House', parts: ['Dinding', 'Bumbung', 'Pintu'], emoji: '🏠' },
   ];
   const COLORS = ['#FF6B6B', '#4ECDC4', '#FFD93D', '#6BCB77', '#9B72CF', '#FF9800', '#2196F3', '#E91E63'];
-  
+
   const [sceneIdx, setSceneIdx] = useState(0);
   const [selectedColor, setSelectedColor] = useState(COLORS[0]);
   const [partColors, setPartColors] = useState({});
   const [score, setScore] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
-  
+
   const handleColorPart = (partIdx) => {
     if (soundEnabled) playTapSound();
     const key = `${sceneIdx}-${partIdx}`;
     setPartColors({ ...partColors, [key]: selectedColor });
-    
+
     const allColored = SCENES[sceneIdx].parts.every((_, i) => partColors[`${sceneIdx}-${i}`] || `${sceneIdx}-${i}` === key);
     if (allColored) {
       if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
@@ -6055,7 +6082,7 @@ export function MagicColouringGame() {
       }, 1000);
     }
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -6066,7 +6093,7 @@ export function MagicColouringGame() {
       </div>
     );
   }
-  
+
   const scene = SCENES[sceneIdx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
@@ -6075,7 +6102,7 @@ export function MagicColouringGame() {
         <button className="icon-btn" onClick={() => goToWorld('colours')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2' }}>{lang === 'bm' ? `Warnakan ${scene.name}!` : `Colour the ${scene.name}!`}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{sceneIdx + 1}/{SCENES.length}</div>
-        <div style={{ textAlign: 'center', margin: '12px 0' }}><GI e={scene.emoji} size={64}/></div>
+        <div style={{ textAlign: 'center', margin: '12px 0' }}><GI e={scene.emoji} size={64} /></div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, margin: '16px auto', maxWidth: 280 }}>
           {scene.parts.map((part, i) => {
             const key = `${sceneIdx}-${i}`;
@@ -6111,26 +6138,26 @@ export function MagicColouringGame() {
 export function SockPairsGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const SOCK_COLORS = ['🧦🔴', '🧦🔵', '🧦🟢', '🧦🟡', '🧦🟣', '🧦🟠'];
   const [cards, setCards] = useState([]);
   const [flipped, setFlipped] = useState([]);
   const [matched, setMatched] = useState([]);
   const [moves, setMoves] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
-  
+
   useEffect(() => {
     const pairs = SOCK_COLORS.slice(0, 4);
     const allCards = [...pairs, ...pairs].sort(() => Math.random() - 0.5);
     setCards(allCards);
   }, []);
-  
+
   const handleFlip = (idx) => {
     if (flipped.length === 2 || flipped.includes(idx) || matched.includes(idx)) return;
     if (soundEnabled) playTapSound();
     const newFlipped = [...flipped, idx];
     setFlipped(newFlipped);
-    
+
     if (newFlipped.length === 2) {
       setMoves(moves + 1);
       if (cards[newFlipped[0]] === cards[newFlipped[1]]) {
@@ -6150,7 +6177,7 @@ export function SockPairsGame() {
       }
     }
   };
-  
+
   if (gameComplete) {
     const stars = moves <= 6 ? 3 : moves <= 10 ? 2 : 1;
     return (
@@ -6163,7 +6190,7 @@ export function SockPairsGame() {
       </div>
     );
   }
-  
+
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
       <img src={assetPath('/images/game/sock_room_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
@@ -6199,30 +6226,30 @@ export function SockPairsGame() {
 export function ColourHunterGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const ROUNDS = [
-    { color: lang === 'bm' ? 'Merah' : 'Red', bg: '#FF6B6B', targets: ['🍎','🌹','❤️','🍒'], distractors: ['🍌','🥒','🔵','🟢'] },
-    { color: lang === 'bm' ? 'Biru' : 'Blue', bg: '#42A5F5', targets: ['🫐','💙','🧊','🌊'], distractors: ['🍊','🍋','🔴','🟡'] },
-    { color: lang === 'bm' ? 'Hijau' : 'Green', bg: '#66BB6A', targets: ['🥒','🌿','🐸','🍀'], distractors: ['🍓','🍑','🔵','🟡'] },
-    { color: lang === 'bm' ? 'Kuning' : 'Yellow', bg: '#FFD93D', targets: ['🍌','⭐','🌻','🐤'], distractors: ['🍇','🫐','🔴','🟢'] },
+    { color: lang === 'bm' ? 'Merah' : 'Red', bg: '#FF6B6B', targets: ['🍎', '🌹', '❤️', '🍒'], distractors: ['🍌', '🥒', '🔵', '🟢'] },
+    { color: lang === 'bm' ? 'Biru' : 'Blue', bg: '#42A5F5', targets: ['🫐', '💙', '🧊', '🌊'], distractors: ['🍊', '🍋', '🔴', '🟡'] },
+    { color: lang === 'bm' ? 'Hijau' : 'Green', bg: '#66BB6A', targets: ['🥒', '🌿', '🐸', '🍀'], distractors: ['🍓', '🍑', '🔵', '🟡'] },
+    { color: lang === 'bm' ? 'Kuning' : 'Yellow', bg: '#FFD93D', targets: ['🍌', '⭐', '🌻', '🐤'], distractors: ['🍇', '🫐', '🔴', '🟢'] },
   ];
-  
+
   const [roundIdx, setRoundIdx] = useState(0);
   const [found, setFound] = useState([]);
   const [items, setItems] = useState([]);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
-  
+
   const setupRound = useCallback((idx) => {
     const r = ROUNDS[idx];
     const all = [...r.targets.slice(0, 3), ...r.distractors.slice(0, 3)].sort(() => Math.random() - 0.5);
     setItems(all);
     setFound([]);
   }, []);
-  
+
   useEffect(() => { setupRound(0); }, []);
-  
+
   const handleTap = (item) => {
     const r = ROUNDS[roundIdx];
     if (found.includes(item)) return;
@@ -6249,7 +6276,7 @@ export function ColourHunterGame() {
     }
     setTimeout(() => setFeedback(null), 1200);
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -6260,7 +6287,7 @@ export function ColourHunterGame() {
       </div>
     );
   }
-  
+
   const r = ROUNDS[roundIdx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
@@ -6277,7 +6304,7 @@ export function ColourHunterGame() {
               padding: 14, borderRadius: 18, background: found.includes(item) ? `${r.bg}33` : 'white',
               border: found.includes(item) ? `3px solid ${r.bg}` : '2px solid rgba(0,0,0,0.08)',
               cursor: 'pointer', boxShadow: 'var(--shadow-sm)', opacity: found.includes(item) ? 0.6 : 1,
-            }}><GI e={item} size={40}/></button>
+            }}><GI e={item} size={40} /></button>
           ))}
         </div>
         {feedback && (
@@ -6297,20 +6324,20 @@ export function ColourHunterGame() {
 export function BuildVehicleGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const VEHICLES = [
-    { name: lang === 'bm' ? 'Kereta' : 'Car', emoji: '🚗', parts: ['🔧','🛞','🪟','🚗'], wrong: ['⛵','✈️','🚂'] },
-    { name: lang === 'bm' ? 'Kapal Terbang' : 'Airplane', emoji: '✈️', parts: ['🛫','✈️','💺','🔧'], wrong: ['🚗','⛵','🚲'] },
-    { name: lang === 'bm' ? 'Kapal' : 'Ship', emoji: '🚢', parts: ['⚓','🚢','⛵','🔧'], wrong: ['🚗','✈️','🚂'] },
+    { name: lang === 'bm' ? 'Kereta' : 'Car', emoji: '🚗', parts: ['🔧', '🛞', '🪟', '🚗'], wrong: ['⛵', '✈️', '🚂'] },
+    { name: lang === 'bm' ? 'Kapal Terbang' : 'Airplane', emoji: '✈️', parts: ['🛫', '✈️', '💺', '🔧'], wrong: ['🚗', '⛵', '🚲'] },
+    { name: lang === 'bm' ? 'Kapal' : 'Ship', emoji: '🚢', parts: ['⚓', '🚢', '⛵', '🔧'], wrong: ['🚗', '✈️', '🚂'] },
   ];
-  
+
   const [vIdx, setVIdx] = useState(0);
   const [partIdx, setPartIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
   const [builtParts, setBuiltParts] = useState([]);
-  
+
   const handlePick = (emoji) => {
     const v = VEHICLES[vIdx];
     if (emoji === v.parts[partIdx]) {
@@ -6338,7 +6365,7 @@ export function BuildVehicleGame() {
       setTimeout(() => setFeedback(null), 1000);
     }
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -6349,7 +6376,7 @@ export function BuildVehicleGame() {
       </div>
     );
   }
-  
+
   const v = VEHICLES[vIdx];
   const choices = [v.parts[partIdx], ...v.wrong.slice(0, 2)].sort(() => Math.random() - 0.5);
   return (
@@ -6359,7 +6386,7 @@ export function BuildVehicleGame() {
         <button className="icon-btn" onClick={() => goToWorld('transport')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? `Bina ${v.name}!` : `Build a ${v.name}!`}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{vIdx + 1}/{VEHICLES.length}</div>
-        <div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={v.emoji} size={64}/></div>
+        <div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={v.emoji} size={64} /></div>
         <div style={{ display: 'flex', gap: 4, justifyContent: 'center', marginBottom: 16 }}>
           {v.parts.map((_, i) => (
             <div key={i} style={{
@@ -6396,7 +6423,7 @@ export function BuildVehicleGame() {
 export function WorldVehiclesGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const VEHICLES = [
     { name: lang === 'bm' ? 'Tuk-Tuk' : 'Tuk-Tuk', country: 'Thailand', emoji: '🛺', fact: lang === 'bm' ? 'Teksi tiga roda popular di Asia!' : 'Popular three-wheeled taxi in Asia!' },
     { name: lang === 'bm' ? 'Gondola' : 'Gondola', country: 'Italy', emoji: '🚣', fact: lang === 'bm' ? 'Bot di kanal Venice!' : 'Boat in Venice canals!' },
@@ -6404,13 +6431,13 @@ export function WorldVehiclesGame() {
     { name: lang === 'bm' ? 'Rickshaw' : 'Rickshaw', country: 'India', emoji: '🛺', fact: lang === 'bm' ? 'Ditarik oleh manusia atau basikal!' : 'Pulled by people or bicycles!' },
     { name: lang === 'bm' ? 'Bas Sekolah' : 'School Bus', country: 'USA', emoji: '🚌', fact: lang === 'bm' ? 'Bas kuning yang terkenal!' : 'The famous yellow bus!' },
   ];
-  
+
   const [idx, setIdx] = useState(0);
   const [quizAnswer, setQuizAnswer] = useState(null);
   const [score, setScore] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
   const [showFact, setShowFact] = useState(true);
-  
+
   const handleQuiz = (answer) => {
     const correct = answer === VEHICLES[idx].country;
     if (correct) {
@@ -6432,7 +6459,7 @@ export function WorldVehiclesGame() {
       }
     }, 1000);
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -6443,10 +6470,10 @@ export function WorldVehiclesGame() {
       </div>
     );
   }
-  
+
   const v = VEHICLES[idx];
   const countryChoices = [v.country, ...VEHICLES.filter((_, i) => i !== idx).slice(0, 2).map(x => x.country)].sort(() => Math.random() - 0.5);
-  
+
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
       <img src={assetPath('/images/game/world_vehicles_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
@@ -6454,7 +6481,7 @@ export function WorldVehiclesGame() {
         <button className="icon-btn" onClick={() => goToWorld('transport')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{v.name}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{VEHICLES.length}</div>
-        <div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={v.emoji} size={80}/></div>
+        <div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={v.emoji} size={80} /></div>
         {showFact && (
           <div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '12px auto', maxWidth: 300 }}>
             <p style={{ fontSize: '0.9rem', color: '#555', margin: 0 }}>{v.fact}</p>
@@ -6496,21 +6523,21 @@ export function WorldVehiclesGame() {
 export function AnimalPuzzleGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const PUZZLES = [
-    { animal: '🐘', name: lang === 'bm' ? 'Gajah' : 'Elephant', missing: lang === 'bm' ? 'Belalai' : 'Trunk', answer: '👃', choices: ['👃','👂','👀'] },
-    { animal: '🦁', name: lang === 'bm' ? 'Singa' : 'Lion', missing: lang === 'bm' ? 'Surai' : 'Mane', answer: '💇', choices: ['💇','🦷','👅'] },
-    { animal: '🐢', name: lang === 'bm' ? 'Penyu' : 'Turtle', missing: lang === 'bm' ? 'Cengkerang' : 'Shell', answer: '🛡️', choices: ['🛡️','🎩','👑'] },
-    { animal: '🐰', name: lang === 'bm' ? 'Arnab' : 'Rabbit', missing: lang === 'bm' ? 'Telinga panjang' : 'Long ears', answer: '👂', choices: ['👂','👃','👀'] },
-    { animal: '🦚', name: lang === 'bm' ? 'Merak' : 'Peacock', missing: lang === 'bm' ? 'Ekor cantik' : 'Beautiful tail', answer: '🪶', choices: ['🪶','🦷','🫁'] },
-    { animal: '🐙', name: lang === 'bm' ? 'Sotong' : 'Octopus', missing: lang === 'bm' ? 'Tentakel' : 'Tentacles', answer: '🦑', choices: ['🦑','🐚','🦀'] },
+    { animal: '🐘', name: lang === 'bm' ? 'Gajah' : 'Elephant', missing: lang === 'bm' ? 'Belalai' : 'Trunk', answer: '👃', choices: ['👃', '👂', '👀'] },
+    { animal: '🦁', name: lang === 'bm' ? 'Singa' : 'Lion', missing: lang === 'bm' ? 'Surai' : 'Mane', answer: '💇', choices: ['💇', '🦷', '👅'] },
+    { animal: '🐢', name: lang === 'bm' ? 'Penyu' : 'Turtle', missing: lang === 'bm' ? 'Cengkerang' : 'Shell', answer: '🛡️', choices: ['🛡️', '🎩', '👑'] },
+    { animal: '🐰', name: lang === 'bm' ? 'Arnab' : 'Rabbit', missing: lang === 'bm' ? 'Telinga panjang' : 'Long ears', answer: '👂', choices: ['👂', '👃', '👀'] },
+    { animal: '🦚', name: lang === 'bm' ? 'Merak' : 'Peacock', missing: lang === 'bm' ? 'Ekor cantik' : 'Beautiful tail', answer: '🪶', choices: ['🪶', '🦷', '🫁'] },
+    { animal: '🐙', name: lang === 'bm' ? 'Sotong' : 'Octopus', missing: lang === 'bm' ? 'Tentakel' : 'Tentacles', answer: '🦑', choices: ['🦑', '🐚', '🦀'] },
   ];
-  
+
   const [idx, setIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
-  
+
   const handleChoice = (answer) => {
     const correct = answer === PUZZLES[idx].answer;
     if (correct) {
@@ -6532,7 +6559,7 @@ export function AnimalPuzzleGame() {
       }
     }, 800);
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -6543,7 +6570,7 @@ export function AnimalPuzzleGame() {
       </div>
     );
   }
-  
+
   const p = PUZZLES[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
@@ -6582,21 +6609,21 @@ export function AnimalPuzzleGame() {
 export function AnimalEncyclopediaGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const ANIMALS = [
-    { emoji: '🦁', name: lang === 'bm' ? 'Singa' : 'Lion', q: lang === 'bm' ? 'Singa makan...' : 'Lions eat...', a: '🥩', choices: ['🥩','🥬','🍎'] },
-    { emoji: '🐘', name: lang === 'bm' ? 'Gajah' : 'Elephant', q: lang === 'bm' ? 'Gajah tinggal di...' : 'Elephants live in...', a: '🌿', choices: ['🌿','❄️','🌊'] },
-    { emoji: '🐬', name: lang === 'bm' ? 'Lumba-lumba' : 'Dolphin', q: lang === 'bm' ? 'Lumba-lumba hidup di...' : 'Dolphins live in...', a: '🌊', choices: ['🌊','🏔️','🌵'] },
-    { emoji: '🦅', name: lang === 'bm' ? 'Helang' : 'Eagle', q: lang === 'bm' ? 'Helang boleh...' : 'Eagles can...', a: '🦅', choices: ['🦅','🏊','🏃'] },
-    { emoji: '🐧', name: lang === 'bm' ? 'Penguin' : 'Penguin', q: lang === 'bm' ? 'Penguin tinggal di...' : 'Penguins live in...', a: '❄️', choices: ['❄️','🌴','🏜️'] },
+    { emoji: '🦁', name: lang === 'bm' ? 'Singa' : 'Lion', q: lang === 'bm' ? 'Singa makan...' : 'Lions eat...', a: '🥩', choices: ['🥩', '🥬', '🍎'] },
+    { emoji: '🐘', name: lang === 'bm' ? 'Gajah' : 'Elephant', q: lang === 'bm' ? 'Gajah tinggal di...' : 'Elephants live in...', a: '🌿', choices: ['🌿', '❄️', '🌊'] },
+    { emoji: '🐬', name: lang === 'bm' ? 'Lumba-lumba' : 'Dolphin', q: lang === 'bm' ? 'Lumba-lumba hidup di...' : 'Dolphins live in...', a: '🌊', choices: ['🌊', '🏔️', '🌵'] },
+    { emoji: '🦅', name: lang === 'bm' ? 'Helang' : 'Eagle', q: lang === 'bm' ? 'Helang boleh...' : 'Eagles can...', a: '🦅', choices: ['🦅', '🏊', '🏃'] },
+    { emoji: '🐧', name: lang === 'bm' ? 'Penguin' : 'Penguin', q: lang === 'bm' ? 'Penguin tinggal di...' : 'Penguins live in...', a: '❄️', choices: ['❄️', '🌴', '🏜️'] },
   ];
-  
+
   const [idx, setIdx] = useState(0);
   const [badges, setBadges] = useState([]);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
-  
+
   const handleAnswer = (answer) => {
     const correct = answer === ANIMALS[idx].a;
     if (correct) {
@@ -6619,19 +6646,19 @@ export function AnimalEncyclopediaGame() {
       }
     }, 800);
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
         <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
         <h1 style={{ fontFamily: 'var(--font-heading)', color: '#1B5E20' }}>{lang === 'bm' ? 'Ensaiklopedia Lengkap!' : 'Encyclopedia Complete!'}</h1>
         <div style={{ fontSize: '2rem', margin: '8px 0' }}>{badges.join(' ')}</div>
-        <div style={{ fontSize: '2rem', margin: '8px 0' }}>{Array.from({length: 3}, (_, i) => <StarIcon key={i} size={28} />)}</div>
+        <div style={{ fontSize: '2rem', margin: '8px 0' }}>{Array.from({ length: 3 }, (_, i) => <StarIcon key={i} size={28} />)}</div>
         <button className="btn-premium" onClick={() => goToWorld('animals')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button>
       </div>
     );
   }
-  
+
   const a = ANIMALS[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
@@ -6641,7 +6668,7 @@ export function AnimalEncyclopediaGame() {
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#1B5E20' }}>{a.name}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{ANIMALS.length}</div>
         {badges.length > 0 && <div style={{ fontSize: '1.5rem', margin: '8px 0' }}>{badges.join(' ')}</div>}
-        <div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={a.emoji} size={80}/></div>
+        <div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={a.emoji} size={80} /></div>
         <div style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 16 }}>{a.q}</div>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
           {a.choices.map((c, i) => (
@@ -6668,7 +6695,7 @@ export function AnimalEncyclopediaGame() {
 export function MimicAnimalGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const ACTIONS = [
     { animal: '🐱', name: lang === 'bm' ? 'Kucing' : 'Cat', action: lang === 'bm' ? 'Mengeong! Meow!' : 'Say Meow!', sound: '😺' },
     { animal: '🐶', name: lang === 'bm' ? 'Anjing' : 'Dog', action: lang === 'bm' ? 'Menyalak! Woof!' : 'Say Woof!', sound: '🐕' },
@@ -6677,13 +6704,13 @@ export function MimicAnimalGame() {
     { animal: '🦁', name: lang === 'bm' ? 'Singa' : 'Lion', action: lang === 'bm' ? 'Mengaum! Roar!' : 'Roar loudly!', sound: '🗣️' },
     { animal: '🐧', name: lang === 'bm' ? 'Penguin' : 'Penguin', action: lang === 'bm' ? 'Berjalan goyang-goyang!' : 'Waddle walk!', sound: '🚶' },
   ];
-  
+
   const [idx, setIdx] = useState(0);
   const [done, setDone] = useState(false);
   const [gameComplete, setGameComplete] = useState(false);
   const [countdown, setCountdown] = useState(3);
   const [acting, setActing] = useState(false);
-  
+
   const startAction = () => {
     if (soundEnabled) playTapSound();
     // Play real animal SFX when starting mimic
@@ -6710,7 +6737,7 @@ export function MimicAnimalGame() {
       });
     }, 1000);
   };
-  
+
   const nextAnimal = () => {
     setDone(false);
     if (idx + 1 < ACTIONS.length) setIdx(idx + 1);
@@ -6720,7 +6747,7 @@ export function MimicAnimalGame() {
       setGameComplete(true);
     }
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -6731,7 +6758,7 @@ export function MimicAnimalGame() {
       </div>
     );
   }
-  
+
   const a = ACTIONS[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
@@ -6740,7 +6767,7 @@ export function MimicAnimalGame() {
         <button className="icon-btn" onClick={() => goToWorld('animals')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}>{lang === 'bm' ? 'Tiru Haiwan!' : 'Act Like an Animal!'}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{ACTIONS.length}</div>
-        <div style={{ textAlign: 'center', margin: '20px 0', animation: acting ? 'bounce 0.5s infinite alternate' : 'none' }}><GI e={a.animal} size={96}/></div>
+        <div style={{ textAlign: 'center', margin: '20px 0', animation: acting ? 'bounce 0.5s infinite alternate' : 'none' }}><GI e={a.animal} size={96} /></div>
         <div style={{ fontSize: '1.3rem', fontWeight: 800, fontFamily: 'var(--font-heading)' }}>{a.name}</div>
         <div style={{ fontSize: '1rem', color: '#555', margin: '8px 0 20px' }}>{a.action}</div>
         {acting && <div style={{ fontSize: '3rem', fontWeight: 900, color: '#F57F17' }}>{countdown}</div>}
@@ -6772,20 +6799,20 @@ export function MimicAnimalGame() {
 export function AbcSongGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const ABC_ROWS = [
-    ['A','B','C','D','E','F','G'],
-    ['H','I','J','K','L','M','N'],
-    ['O','P','Q','R','S','T','U'],
-    ['V','W','X','Y','Z'],
+    ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+    ['H', 'I', 'J', 'K', 'L', 'M', 'N'],
+    ['O', 'P', 'Q', 'R', 'S', 'T', 'U'],
+    ['V', 'W', 'X', 'Y', 'Z'],
   ];
   const FLAT = ABC_ROWS.flat();
-  
+
   const [currentIdx, setCurrentIdx] = useState(-1);
   const [playing, setPlaying] = useState(false);
   const [gameComplete, setGameComplete] = useState(false);
   const [completedCount, setCompletedCount] = useState(0);
-  
+
   const startSong = () => {
     if (playing) return;
     setPlaying(true);
@@ -6810,7 +6837,7 @@ export function AbcSongGame() {
       }
     }, 350);
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -6821,7 +6848,7 @@ export function AbcSongGame() {
       </div>
     );
   }
-  
+
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
       <img src={assetPath('/images/game/abc_song_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
@@ -6872,45 +6899,79 @@ export function AbcSongGame() {
 export function LetterStoriesGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   // SEMUA huruf ikut huruf pertama nama MELAYU!
   const STORIES = [
-    { letter:'A', img: assetPath('/images/stories/rabbit.jpg'), name:'Arnab', color:'#A1887F',
-      pages: ['A untuk Arnab! Arnab comel dengan telinga panjang dan bulu putih gebu.','Arnab suka melompat-lompat di padang rumput hijau yang luas.','Arnab makan lobak merah dengan girangnya! Huruf A untuk Arnab!'] },
-    { letter:'A', img: assetPath('/images/stories/dog.jpg'), name:'Anjing', color:'#DAA520',
-      pages: ['A untuk Anjing! Anjing setia kawan terbaik manusia.','Anjing suka berlari di taman dan bermain tangkap bola.','Anjing menggonggong gembira! Huruf A untuk Anjing!'] },
-    { letter:'A', img: assetPath('/images/stories/grape.jpg'), name:'Anggur', color:'#9C27B0',
-      pages: ['A untuk Anggur! Anggur ungu yang lazat dan berair.','Anggur tumbuh di atas pokok yang menjalar tinggi.','Kita makan anggur satu-satu. Huruf A untuk Anggur!'] },
-    { letter:'A', img: assetPath('/images/stories/icecream.jpg'), name:'Aiskrim', color:'#F48FB1',
-      pages: ['A untuk Aiskrim! Aiskrim sejuk dan manis.','Aiskrim ada banyak perisa — coklat, vanila, strawberi!','Kita makan aiskrim sama-sama! Huruf A untuk Aiskrim!'] },
-    { letter:'B', img: assetPath('/images/stories/bear.jpg'), name:'Beruang', color:'#8B6914',
-      pages: ['B untuk Beruang! Beruang kecil tinggal di dalam hutan yang hijau.','Beruang suka makan madu yang manis dari sarang lebah.','Beruang menari gembira! Huruf B untuk Beruang!'] },
-    { letter:'E', img: assetPath('/images/stories/apple.jpg'), name:'Epal', color:'#FF6B6B',
-      pages: ['E untuk Epal! Epal merah yang manis tumbuh di atas pokok yang tinggi.','Si Epal jatuh dari pokok dan bergolek ke padang hijau.','Epal sangat lazat dan berkhasiat! Huruf E untuk Epal!'] },
-    { letter:'G', img: assetPath('/images/stories/elephant.jpg'), name:'Gajah', color:'#7EB5D6',
-      pages: ['G untuk Gajah! Gajah besar dan kuat, tapi hatinya lembut.','Gajah menyemburkan air dengan belalainya yang panjang. Splash!','Gajah berjalan dengan anak-anaknya. Huruf G untuk Gajah!'] },
-    { letter:'I', img: assetPath('/images/stories/fish.jpg'), name:'Ikan', color:'#4FC3F7',
-      pages: ['I untuk Ikan! Ikan berenang di laut yang biru dan dalam.','Ikan mempunyai sisik yang berkilauan seperti pelangi.','Ikan melompat keluar dari air! Huruf I untuk Ikan!'] },
-    { letter:'K', img: assetPath('/images/stories/cat.jpg'), name:'Kucing', color:'#FFA726',
-      pages: ['K untuk Kucing! Kucing comel berbulu lembut dan gebu.','Kucing suka bermain dengan bola benang yang berwarna-warni.','Kucing tidur di atas bantal yang empuk. Huruf K untuk Kucing!'] },
-    { letter:'K', img: assetPath('/images/stories/horse.jpg'), name:'Kuda', color:'#795548',
-      pages: ['K untuk Kuda! Kuda yang gagah berlari di padang rumput.','Kuda mempunyai surai yang panjang dan cantik.','Kuda melompat pagar dengan hebat! Huruf K untuk Kuda!'] },
-    { letter:'K', img: assetPath('/images/stories/kiwi.jpg'), name:'Kiwi', color:'#8BC34A',
-      pages: ['K untuk Kiwi! Buah hijau yang masam dan segar.','Kiwi berbulu halus di luar, hijau terang di dalam.','Kita potong kiwi dan makan! Huruf K untuk Kiwi!'] },
-    { letter:'K', img: assetPath('/images/stories/turtle.jpg'), name:'Kura-kura', color:'#558B2F',
-      pages: ['K untuk Kura-kura! Kura-kura bawa rumah di belakangnya.','Kura-kura berjalan perlahan tapi pasti sampai.','Kura-kura masuk ke dalam cangkerangnya! Huruf K untuk Kura-kura!'] },
-    { letter:'M', img: assetPath('/images/stories/monkey.jpg'), name:'Monyet', color:'#6D4C41',
-      pages: ['M untuk Monyet! Monyet suka bergelantung di pokok.','Monyet makan pisang yang kuning dan manis.','Monyet melompat dari pokok ke pokok! Huruf M untuk Monyet!'] },
-    { letter:'O', img: assetPath('/images/stories/orange.jpg'), name:'Oren', color:'#FF9800',
-      pages: ['O untuk Oren! Oren bulat dan penuh dengan jus yang segar.','Kita kupas kulit oren dan makan isi yang manis.','Oren memberi kita tenaga! Huruf O untuk Oren!'] },
-    { letter:'P', img: assetPath('/images/stories/penguin.jpg'), name:'Penguin', color:'#455A64',
-      pages: ['P untuk Penguin! Penguin tinggal di tempat yang sangat sejuk.','Penguin berjalan terhuyung-hayang dengan lucu.','Penguin meluncur di atas ais! Huruf P untuk Penguin!'] },
-    { letter:'S', img: assetPath('/images/stories/lion.jpg'), name:'Singa', color:'#FF9800',
-      pages: ['S untuk Singa! Singa adalah raja hutan yang gagah.','Singa mempunyai surai yang besar dan mengaum dengan kuat!','Singa menjaga keluarganya. Huruf S untuk Singa!'] },
-    { letter:'U', img: assetPath('/images/stories/snake.jpg'), name:'Ular', color:'#4CAF50',
-      pages: ['U untuk Ular! Ular menjalar perlahan di atas tanah.','Ular mempunyai sisik yang licin dan berkilat.','Ular membentuk huruf S dengan badannya! Huruf U untuk Ular!'] },
+    {
+      letter: 'A', img: assetPath('/images/stories/rabbit.jpg'), name: 'Arnab', color: '#A1887F',
+      pages: ['A untuk Arnab! Arnab comel dengan telinga panjang dan bulu putih gebu.', 'Arnab suka melompat-lompat di padang rumput hijau yang luas.', 'Arnab makan lobak merah dengan girangnya! Huruf A untuk Arnab!']
+    },
+    {
+      letter: 'A', img: assetPath('/images/stories/dog.jpg'), name: 'Anjing', color: '#DAA520',
+      pages: ['A untuk Anjing! Anjing setia kawan terbaik manusia.', 'Anjing suka berlari di taman dan bermain tangkap bola.', 'Anjing menggonggong gembira! Huruf A untuk Anjing!']
+    },
+    {
+      letter: 'A', img: assetPath('/images/stories/grape.jpg'), name: 'Anggur', color: '#9C27B0',
+      pages: ['A untuk Anggur! Anggur ungu yang lazat dan berair.', 'Anggur tumbuh di atas pokok yang menjalar tinggi.', 'Kita makan anggur satu-satu. Huruf A untuk Anggur!']
+    },
+    {
+      letter: 'A', img: assetPath('/images/stories/icecream.jpg'), name: 'Aiskrim', color: '#F48FB1',
+      pages: ['A untuk Aiskrim! Aiskrim sejuk dan manis.', 'Aiskrim ada banyak perisa — coklat, vanila, strawberi!', 'Kita makan aiskrim sama-sama! Huruf A untuk Aiskrim!']
+    },
+    {
+      letter: 'B', img: assetPath('/images/stories/bear.jpg'), name: 'Beruang', color: '#8B6914',
+      pages: ['B untuk Beruang! Beruang kecil tinggal di dalam hutan yang hijau.', 'Beruang suka makan madu yang manis dari sarang lebah.', 'Beruang menari gembira! Huruf B untuk Beruang!']
+    },
+    {
+      letter: 'E', img: assetPath('/images/stories/apple.jpg'), name: 'Epal', color: '#FF6B6B',
+      pages: ['E untuk Epal! Epal merah yang manis tumbuh di atas pokok yang tinggi.', 'Si Epal jatuh dari pokok dan bergolek ke padang hijau.', 'Epal sangat lazat dan berkhasiat! Huruf E untuk Epal!']
+    },
+    {
+      letter: 'G', img: assetPath('/images/stories/elephant.jpg'), name: 'Gajah', color: '#7EB5D6',
+      pages: ['G untuk Gajah! Gajah besar dan kuat, tapi hatinya lembut.', 'Gajah menyemburkan air dengan belalainya yang panjang. Splash!', 'Gajah berjalan dengan anak-anaknya. Huruf G untuk Gajah!']
+    },
+    {
+      letter: 'I', img: assetPath('/images/stories/fish.jpg'), name: 'Ikan', color: '#4FC3F7',
+      pages: ['I untuk Ikan! Ikan berenang di laut yang biru dan dalam.', 'Ikan mempunyai sisik yang berkilauan seperti pelangi.', 'Ikan melompat keluar dari air! Huruf I untuk Ikan!']
+    },
+    {
+      letter: 'K', img: assetPath('/images/stories/cat.jpg'), name: 'Kucing', color: '#FFA726',
+      pages: ['K untuk Kucing! Kucing comel berbulu lembut dan gebu.', 'Kucing suka bermain dengan bola benang yang berwarna-warni.', 'Kucing tidur di atas bantal yang empuk. Huruf K untuk Kucing!']
+    },
+    {
+      letter: 'K', img: assetPath('/images/stories/horse.jpg'), name: 'Kuda', color: '#795548',
+      pages: ['K untuk Kuda! Kuda yang gagah berlari di padang rumput.', 'Kuda mempunyai surai yang panjang dan cantik.', 'Kuda melompat pagar dengan hebat! Huruf K untuk Kuda!']
+    },
+    {
+      letter: 'K', img: assetPath('/images/stories/kiwi.jpg'), name: 'Kiwi', color: '#8BC34A',
+      pages: ['K untuk Kiwi! Buah hijau yang masam dan segar.', 'Kiwi berbulu halus di luar, hijau terang di dalam.', 'Kita potong kiwi dan makan! Huruf K untuk Kiwi!']
+    },
+    {
+      letter: 'K', img: assetPath('/images/stories/turtle.jpg'), name: 'Kura-kura', color: '#558B2F',
+      pages: ['K untuk Kura-kura! Kura-kura bawa rumah di belakangnya.', 'Kura-kura berjalan perlahan tapi pasti sampai.', 'Kura-kura masuk ke dalam cangkerangnya! Huruf K untuk Kura-kura!']
+    },
+    {
+      letter: 'M', img: assetPath('/images/stories/monkey.jpg'), name: 'Monyet', color: '#6D4C41',
+      pages: ['M untuk Monyet! Monyet suka bergelantung di pokok.', 'Monyet makan pisang yang kuning dan manis.', 'Monyet melompat dari pokok ke pokok! Huruf M untuk Monyet!']
+    },
+    {
+      letter: 'O', img: assetPath('/images/stories/orange.jpg'), name: 'Oren', color: '#FF9800',
+      pages: ['O untuk Oren! Oren bulat dan penuh dengan jus yang segar.', 'Kita kupas kulit oren dan makan isi yang manis.', 'Oren memberi kita tenaga! Huruf O untuk Oren!']
+    },
+    {
+      letter: 'P', img: assetPath('/images/stories/penguin.jpg'), name: 'Penguin', color: '#455A64',
+      pages: ['P untuk Penguin! Penguin tinggal di tempat yang sangat sejuk.', 'Penguin berjalan terhuyung-hayang dengan lucu.', 'Penguin meluncur di atas ais! Huruf P untuk Penguin!']
+    },
+    {
+      letter: 'S', img: assetPath('/images/stories/lion.jpg'), name: 'Singa', color: '#FF9800',
+      pages: ['S untuk Singa! Singa adalah raja hutan yang gagah.', 'Singa mempunyai surai yang besar dan mengaum dengan kuat!', 'Singa menjaga keluarganya. Huruf S untuk Singa!']
+    },
+    {
+      letter: 'U', img: assetPath('/images/stories/snake.jpg'), name: 'Ular', color: '#4CAF50',
+      pages: ['U untuk Ular! Ular menjalar perlahan di atas tanah.', 'Ular mempunyai sisik yang licin dan berkilat.', 'Ular membentuk huruf S dengan badannya! Huruf U untuk Ular!']
+    },
   ];
-  
+
   const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
   const [storyIdx, setStoryIdx] = useState(0);
   const [pageIdx, setPageIdx] = useState(0);
@@ -6920,20 +6981,20 @@ export function LetterStoriesGame() {
   const [gameComplete, setGameComplete] = useState(false);
   const [shuffledOrder] = useState(() => {
     const arr = [...Array(STORIES.length).keys()];
-    for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
+    for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[arr[i], arr[j]] = [arr[j], arr[i]]; }
     return arr;
   });
-  
+
   const totalRounds = Math.min(STORIES.length, 15);
   const currentStory = STORIES[shuffledOrder[storyIdx % shuffledOrder.length]];
   const s = currentStory;
-  
+
   const nextPage = () => {
     if (soundEnabled) playTapSound();
     if (pageIdx + 1 < s.pages.length) setPageIdx(pageIdx + 1);
     else setShowQuiz(true);
   };
-  
+
   const handleQuiz = (answer) => {
     const correct = answer === s.letter;
     if (correct) {
@@ -6957,12 +7018,12 @@ export function LetterStoriesGame() {
       }
     }, 900);
   };
-  
+
   const quizChoices = (() => {
     const distractors = LETTERS.filter(l => l !== s.letter).sort(() => Math.random() - 0.5).slice(0, 3);
     return [s.letter, ...distractors].sort(() => Math.random() - 0.5);
   })();
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
@@ -6977,14 +7038,14 @@ export function LetterStoriesGame() {
       </div>
     );
   }
-  
+
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden' }}>
       <img src={assetPath('/images/stories/storybook_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.35 }} />
       <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(180deg, rgba(232,213,183,0.7) 0%, rgba(245,230,204,0.6) 50%, rgba(255,253,231,0.8) 100%)', zIndex: 0 }} />
       <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100%', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
         <button className="icon-btn" onClick={() => goToWorld('abc')} style={{ position: 'absolute', left: 16, top: 16, zIndex: 10, background: 'rgba(255,255,255,0.8)', borderRadius: '50%', width: 40, height: 40, border: 'none', cursor: 'pointer', fontSize: '1.2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>{'\u2190'}</button>
-        
+
         <div style={{
           background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
           borderRadius: 28, padding: '24px 20px', width: '100%', maxWidth: 440,
@@ -6992,7 +7053,7 @@ export function LetterStoriesGame() {
           position: 'relative', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.6)'
         }}>
           <div style={{ position: 'absolute', top: 0, right: 0, width: 48, height: 48, background: 'linear-gradient(225deg,#E8D5B7 50%,transparent 50%)', borderBottomLeftRadius: 12, opacity: 0.6 }} />
-          
+
           {!showQuiz ? (
             <>
               <div style={{ textAlign: 'center', marginBottom: 14 }}>
@@ -7007,7 +7068,7 @@ export function LetterStoriesGame() {
                   {s.letter} untuk {s.name}
                 </h3>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
-                  {[0,1,2].map(i => (
+                  {[0, 1, 2].map(i => (
                     <div key={i} style={{
                       width: 10, height: 10, borderRadius: '50%',
                       background: i <= pageIdx ? s.color : 'rgba(0,0,0,0.12)',
@@ -7017,7 +7078,7 @@ export function LetterStoriesGame() {
                   ))}
                 </div>
               </div>
-              
+
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 14 }}>
                 <img src={s.img} alt={s.name} style={{
                   width: 'min(200px, 50vw)', height: 'min(200px, 50vw)',
@@ -7026,7 +7087,7 @@ export function LetterStoriesGame() {
                   display: 'block', margin: '0 auto'
                 }} />
               </div>
-              
+
               <div style={{
                 background: 'linear-gradient(135deg,#FFFDE7,#FFF9C4)',
                 borderRadius: 20, padding: '16px 20px', marginBottom: 14,
@@ -7036,7 +7097,7 @@ export function LetterStoriesGame() {
                   {s.pages[pageIdx]}
                 </p>
               </div>
-              
+
               <div style={{ textAlign: 'center' }}>
                 <button onClick={nextPage} style={{
                   padding: '14px 40px', border: 'none', borderRadius: 20,
@@ -7084,7 +7145,7 @@ export function LetterStoriesGame() {
             </div>
           )}
         </div>
-        
+
         <div style={{ marginTop: 10, fontSize: '0.75rem', color: 'rgba(139,105,20,0.5)', fontFamily: 'var(--font-body)' }}>
           Pusingan {storyIdx + 1}/{totalRounds} {'\u2022'} {showQuiz ? 'Soalan' : `Muka ${pageIdx + 1}/${s.pages.length}`}
         </div>
@@ -7107,7 +7168,7 @@ export function LetterStoriesGame() {
 export function LabelBodyGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const PARTS = [
     { id: 'head', label: lang === 'bm' ? 'Kepala' : 'Head', emoji: '🧠', pos: { top: '8%' } },
     { id: 'eyes', label: lang === 'bm' ? 'Mata' : 'Eyes', emoji: '👀', pos: { top: '18%' } },
@@ -7116,13 +7177,13 @@ export function LabelBodyGame() {
     { id: 'hands', label: lang === 'bm' ? 'Tangan' : 'Hands', emoji: '🤲', pos: { top: '52%' } },
     { id: 'legs', label: lang === 'bm' ? 'Kaki' : 'Legs', emoji: '🦵', pos: { top: '72%' } },
   ];
-  
+
   const [currentIdx, setCurrentIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [labeled, setLabeled] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
-  
+
   const handleTapPart = (partId) => {
     if (labeled.includes(partId)) return;
     const correct = partId === PARTS[currentIdx].id;
@@ -7151,7 +7212,7 @@ export function LabelBodyGame() {
       setTimeout(() => setFeedback(null), 800);
     }
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -7162,7 +7223,7 @@ export function LabelBodyGame() {
       </div>
     );
   }
-  
+
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
       <img src={assetPath('/images/game/body_parts_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
@@ -7186,7 +7247,7 @@ export function LabelBodyGame() {
               border: i === currentIdx ? '2px solid #FF9800' : '1px solid rgba(0,0,0,0.1)',
               cursor: labeled.includes(part.id) ? 'default' : 'pointer',
               boxShadow: i === currentIdx ? '0 0 8px rgba(255,152,0,0.4)' : 'none',
-            }}><GI e={labeled.includes(part.id) ? '✓' : part.emoji} size={32}/></button>
+            }}><GI e={labeled.includes(part.id) ? '✓' : part.emoji} size={32} /></button>
           ))}
         </div>
         {feedback && (
@@ -7206,7 +7267,7 @@ export function LabelBodyGame() {
 export function MoveTogetherGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const MOVES = [
     { move: lang === 'bm' ? 'Angkat tangan!' : 'Raise your hands!', emoji: '🙌', duration: 3 },
     { move: lang === 'bm' ? 'Lompat!' : 'Jump!', emoji: '🤸', duration: 3 },
@@ -7215,13 +7276,13 @@ export function MoveTogetherGame() {
     { move: lang === 'bm' ? 'Sentuh jari kaki!' : 'Touch your toes!', emoji: '🦶', duration: 3 },
     { move: lang === 'bm' ? 'Geleng kepala!' : 'Shake your head!', emoji: '🙅', duration: 3 },
   ];
-  
+
   const [idx, setIdx] = useState(0);
   const [acting, setActing] = useState(false);
   const [countdown, setCountdown] = useState(3);
   const [done, setDone] = useState(false);
   const [gameComplete, setGameComplete] = useState(false);
-  
+
   const startMove = () => {
     if (soundEnabled) playTapSound();
     setActing(true);
@@ -7233,13 +7294,13 @@ export function MoveTogetherGame() {
       });
     }, 1000);
   };
-  
+
   const next = () => {
     setDone(false);
     if (idx + 1 < MOVES.length) setIdx(idx + 1);
     else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } completeGame('body', 'move-together', 3, MOVES.length * 15); setGameComplete(true); }
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -7250,7 +7311,7 @@ export function MoveTogetherGame() {
       </div>
     );
   }
-  
+
   const m = MOVES[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
@@ -7259,7 +7320,7 @@ export function MoveTogetherGame() {
         <button className="icon-btn" onClick={() => goToWorld('body')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{lang === 'bm' ? 'Ikut Gerakan!' : 'Follow Along!'}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{MOVES.length}</div>
-        <div style={{ textAlign: 'center', margin: '20px 0', animation: acting ? 'bounce 0.4s infinite alternate' : 'none' }}><GI e={m.emoji} size={96}/></div>
+        <div style={{ textAlign: 'center', margin: '20px 0', animation: acting ? 'bounce 0.4s infinite alternate' : 'none' }}><GI e={m.emoji} size={96} /></div>
         <div style={{ fontSize: '1.3rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: '#333' }}>{m.move}</div>
         {acting && <div style={{ fontSize: '3rem', fontWeight: 900, color: '#4CAF50', marginTop: 12 }}>{countdown}</div>}
         {!acting && !done && (
@@ -7287,33 +7348,37 @@ export function MoveTogetherGame() {
 export function HealthyHabitsGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const ROUTINES = [
-    { steps: [
-      { emoji: '⏰', text: lang === 'bm' ? 'Bangun tidur' : 'Wake up' },
-      { emoji: '🪥', text: lang === 'bm' ? 'Gosok gigi' : 'Brush teeth' },
-      { emoji: '🚿', text: lang === 'bm' ? 'Mandi' : 'Shower' },
-      { emoji: '🥣', text: lang === 'bm' ? 'Sarapan' : 'Breakfast' },
-    ]},
-    { steps: [
-      { emoji: '🏠', text: lang === 'bm' ? 'Balik sekolah' : 'Come home' },
-      { emoji: '🤲', text: lang === 'bm' ? 'Basuh tangan' : 'Wash hands' },
-      { emoji: '🍽️', text: lang === 'bm' ? 'Makan' : 'Eat dinner' },
-      { emoji: '😴', text: lang === 'bm' ? 'Tidur' : 'Sleep' },
-    ]},
+    {
+      steps: [
+        { emoji: '⏰', text: lang === 'bm' ? 'Bangun tidur' : 'Wake up' },
+        { emoji: '🪥', text: lang === 'bm' ? 'Gosok gigi' : 'Brush teeth' },
+        { emoji: '🚿', text: lang === 'bm' ? 'Mandi' : 'Shower' },
+        { emoji: '🥣', text: lang === 'bm' ? 'Sarapan' : 'Breakfast' },
+      ]
+    },
+    {
+      steps: [
+        { emoji: '🏠', text: lang === 'bm' ? 'Balik sekolah' : 'Come home' },
+        { emoji: '🤲', text: lang === 'bm' ? 'Basuh tangan' : 'Wash hands' },
+        { emoji: '🍽️', text: lang === 'bm' ? 'Makan' : 'Eat dinner' },
+        { emoji: '😴', text: lang === 'bm' ? 'Tidur' : 'Sleep' },
+      ]
+    },
   ];
-  
+
   const [routineIdx, setRoutineIdx] = useState(0);
   const [placed, setPlaced] = useState([]);
   const [shuffled, setShuffled] = useState([]);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
-  
+
   useEffect(() => {
     setShuffled([...ROUTINES[0].steps].sort(() => Math.random() - 0.5));
   }, []);
-  
+
   const handlePick = (step) => {
     const routine = ROUTINES[routineIdx];
     const nextIdx = placed.length;
@@ -7343,7 +7408,7 @@ export function HealthyHabitsGame() {
     }
     setTimeout(() => setFeedback(null), 1000);
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -7354,7 +7419,7 @@ export function HealthyHabitsGame() {
       </div>
     );
   }
-  
+
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
       <img src={assetPath('/images/game/healthy_habits_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
@@ -7399,21 +7464,21 @@ export function HealthyHabitsGame() {
 export function LittleDoctorGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const PATIENTS = [
-    { animal: '🐱', name: lang === 'bm' ? 'Kucing' : 'Cat', symptom: lang === 'bm' ? 'Batuk' : 'Coughing', treatment: '💊', choices: ['💊','🩹','💉'] },
-    { animal: '🐶', name: lang === 'bm' ? 'Anjing' : 'Dog', symptom: lang === 'bm' ? 'Kaki luka' : 'Hurt paw', treatment: '🩹', choices: ['🩹','💊','🌡️'] },
-    { animal: '🐰', name: lang === 'bm' ? 'Arnab' : 'Rabbit', symptom: lang === 'bm' ? 'Demam' : 'Fever', treatment: '🌡️', choices: ['🌡️','🩹','💊'] },
-    { animal: '🐻', name: lang === 'bm' ? 'Beruang' : 'Bear', symptom: lang === 'bm' ? 'Sakit perut' : 'Tummy ache', treatment: '💊', choices: ['💊','🩹','💉'] },
-    { animal: '🐸', name: lang === 'bm' ? 'Katak' : 'Frog', symptom: lang === 'bm' ? 'Sakit tekak' : 'Sore throat', treatment: '🍯', choices: ['🍯','🩹','💉'] },
+    { animal: '🐱', name: lang === 'bm' ? 'Kucing' : 'Cat', symptom: lang === 'bm' ? 'Batuk' : 'Coughing', treatment: '💊', choices: ['💊', '🩹', '💉'] },
+    { animal: '🐶', name: lang === 'bm' ? 'Anjing' : 'Dog', symptom: lang === 'bm' ? 'Kaki luka' : 'Hurt paw', treatment: '🩹', choices: ['🩹', '💊', '🌡️'] },
+    { animal: '🐰', name: lang === 'bm' ? 'Arnab' : 'Rabbit', symptom: lang === 'bm' ? 'Demam' : 'Fever', treatment: '🌡️', choices: ['🌡️', '🩹', '💊'] },
+    { animal: '🐻', name: lang === 'bm' ? 'Beruang' : 'Bear', symptom: lang === 'bm' ? 'Sakit perut' : 'Tummy ache', treatment: '💊', choices: ['💊', '🩹', '💉'] },
+    { animal: '🐸', name: lang === 'bm' ? 'Katak' : 'Frog', symptom: lang === 'bm' ? 'Sakit tekak' : 'Sore throat', treatment: '🍯', choices: ['🍯', '🩹', '💉'] },
   ];
-  
+
   const [idx, setIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [healed, setHealed] = useState(false);
   const [gameComplete, setGameComplete] = useState(false);
-  
+
   const handleTreat = (treatment) => {
     const correct = treatment === PATIENTS[idx].treatment;
     if (correct) {
@@ -7432,7 +7497,7 @@ export function LittleDoctorGame() {
       setTimeout(() => setFeedback(null), 800);
     }
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -7443,7 +7508,7 @@ export function LittleDoctorGame() {
       </div>
     );
   }
-  
+
   const p = PATIENTS[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
@@ -7452,12 +7517,12 @@ export function LittleDoctorGame() {
         <button className="icon-btn" onClick={() => goToWorld('body')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>{lang === 'bm' ? 'Doktor Kecil' : 'Little Doctor'}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{PATIENTS.length}</div>
-        <div style={{ textAlign: 'center', margin: '16px 0', transition: 'all 0.3s' }}><GI e={healed ? '😊' : p.animal} size={healed ? 96 : 80}/></div>
+        <div style={{ textAlign: 'center', margin: '16px 0', transition: 'all 0.3s' }}><GI e={healed ? '😊' : p.animal} size={healed ? 96 : 80} /></div>
         <div style={{ fontSize: '1rem', fontWeight: 700 }}>{p.name}</div>
         <div style={{ fontSize: '0.9rem', color: '#666', margin: '4px 0 16px' }}>{lang === 'bm' ? 'Simptom:' : 'Symptom:'} {p.symptom}</div>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
           {p.choices.map((c, i) => (
-            <button key={i} onClick={() => handleTreat(c)} style={{ padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}><GI e={c} size={40}/></button>
+            <button key={i} onClick={() => handleTreat(c)} style={{ padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}><GI e={c} size={40} /></button>
           ))}
         </div>
         {feedback && <div style={{ marginTop: 12, padding: '6px 14px', borderRadius: 10, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}
@@ -7473,7 +7538,7 @@ export function LittleDoctorGame() {
 export function BodySongGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const PARTS_SEQ = [
     { part: lang === 'bm' ? 'Kepala' : 'Head', emoji: '🧠' },
     { part: lang === 'bm' ? 'Bahu' : 'Shoulders', emoji: '💪' },
@@ -7484,12 +7549,12 @@ export function BodySongGame() {
     { part: lang === 'bm' ? 'Mulut' : 'Mouth', emoji: '👄' },
     { part: lang === 'bm' ? 'Hidung' : 'Nose', emoji: '👃' },
   ];
-  
+
   const [idx, setIdx] = useState(-1);
   const [playing, setPlaying] = useState(false);
   const [gameComplete, setGameComplete] = useState(false);
   const [rounds, setRounds] = useState(0);
-  
+
   const startSong = () => {
     if (playing) return;
     setPlaying(true); setIdx(0);
@@ -7504,7 +7569,7 @@ export function BodySongGame() {
       } else { setIdx(i); if (soundEnabled) playTapSound(); }
     }, 500);
   };
-  
+
   if (gameComplete) {
     return (
       <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
@@ -7515,7 +7580,7 @@ export function BodySongGame() {
       </div>
     );
   }
-  
+
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
       <img src={assetPath('/images/game/body_song_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
@@ -7533,7 +7598,7 @@ export function BodySongGame() {
               transform: i === idx ? 'scale(1.2)' : 'scale(1)', transition: 'all 0.2s ease',
               boxShadow: i === idx ? '0 4px 16px rgba(255,152,0,0.4)' : 'var(--shadow-sm)',
             }}>
-              <GI e={p.emoji} size={22}/>
+              <GI e={p.emoji} size={22} />
               <span>{p.part}</span>
             </div>
           ))}
@@ -7554,29 +7619,29 @@ export function BodySongGame() {
 export function MagicTangramGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const PUZZLES = [
-    { name: lang === 'bm' ? 'Rumah' : 'House', emoji: '🏠', answer: '🔺', choices: ['🔺','⬜','⬟'] },
-    { name: lang === 'bm' ? 'Pokok' : 'Tree', emoji: '🌲', answer: '🔻', choices: ['🔻','⬜','⬟'] },
-    { name: lang === 'bm' ? 'Bot' : 'Boat', emoji: '⛵', answer: '◆', choices: ['◆','🔺','⬜'] },
-    { name: lang === 'bm' ? 'Kucing' : 'Cat', emoji: '🐱', answer: '🔺', choices: ['🔺','◆','⬟'] },
-    { name: lang === 'bm' ? 'Ikan' : 'Fish', emoji: '🐟', answer: '◆', choices: ['◆','🔺','⬜'] },
+    { name: lang === 'bm' ? 'Rumah' : 'House', emoji: '🏠', answer: '🔺', choices: ['🔺', '⬜', '⬟'] },
+    { name: lang === 'bm' ? 'Pokok' : 'Tree', emoji: '🌲', answer: '🔻', choices: ['🔻', '⬜', '⬟'] },
+    { name: lang === 'bm' ? 'Bot' : 'Boat', emoji: '⛵', answer: '◆', choices: ['◆', '🔺', '⬜'] },
+    { name: lang === 'bm' ? 'Kucing' : 'Cat', emoji: '🐱', answer: '🔺', choices: ['🔺', '◆', '⬟'] },
+    { name: lang === 'bm' ? 'Ikan' : 'Fish', emoji: '🐟', answer: '◆', choices: ['◆', '🔺', '⬜'] },
   ];
-  
+
   const [idx, setIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
-  
+
   const handleChoice = (c) => {
     const correct = c === PUZZLES[idx].answer;
     if (correct) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); setScore(score + 1); }
     else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); }
     setTimeout(() => { setFeedback(null); if (idx + 1 < PUZZLES.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = correct ? score + 1 : score; completeGame('shapes', 'magic-tangram', f >= 4 ? 3 : f >= 2 ? 2 : 1, f * 20); setGameComplete(true); } }, 800);
   };
-  
+
   if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Pakar Tangram!' : 'Tangram Master!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('shapes')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
-  
+
   const p = PUZZLES[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
@@ -7585,7 +7650,7 @@ export function MagicTangramGame() {
         <button className="icon-btn" onClick={() => goToWorld('shapes')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Tangram Ajaib' : 'Magic Tangram'}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{PUZZLES.length}</div>
-        <div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={p.emoji} size={80}/></div>
+        <div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={p.emoji} size={80} /></div>
         <div style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 12 }}>{lang === 'bm' ? `Bentuk apa hilang dari ${p.name}?` : `What shape completes the ${p.name}?`}</div>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
           {p.choices.map((c, i) => (<button key={i} onClick={() => handleChoice(c)} style={{ fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>{c}</button>))}
@@ -7603,19 +7668,19 @@ export function MagicTangramGame() {
 export function DrawShapesGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const SHAPES = [
     { name: lang === 'bm' ? 'Segi Tiga' : 'Triangle', emoji: '🔺', dots: 3 },
     { name: lang === 'bm' ? 'Segi Empat' : 'Square', emoji: '⬜', dots: 4 },
     { name: lang === 'bm' ? 'Pentagon' : 'Pentagon', emoji: '⬟', dots: 5 },
     { name: lang === 'bm' ? 'Bulatan' : 'Circle', emoji: '⭕', dots: 6 },
   ];
-  
+
   const [shapeIdx, setShapeIdx] = useState(0);
   const [dotsTapped, setDotsTapped] = useState(0);
   const [score, setScore] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
-  
+
   const handleDot = (i) => {
     if (i !== dotsTapped) return;
     if (soundEnabled) playTapSound();
@@ -7630,12 +7695,12 @@ export function DrawShapesGame() {
       }, 600);
     }
   };
-  
+
   if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#283593' }}>{lang === 'bm' ? 'Pelukis Hebat!' : 'Shape Artist!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('shapes')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
-  
+
   const s = SHAPES[shapeIdx];
   const dots = Array.from({ length: s.dots }, (_, i) => ({ x: 50 + 35 * Math.cos(2 * Math.PI * i / s.dots - Math.PI / 2), y: 50 + 35 * Math.sin(2 * Math.PI * i / s.dots - Math.PI / 2) }));
-  
+
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
       <img src={assetPath('/images/game/draw_shapes_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
@@ -7643,7 +7708,7 @@ export function DrawShapesGame() {
         <button className="icon-btn" onClick={() => goToWorld('shapes')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#283593' }}>{lang === 'bm' ? `Lukis ${s.name}!` : `Draw a ${s.name}!`}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{shapeIdx + 1}/{SHAPES.length}</div>
-        <div style={{ textAlign: 'center', margin: '8px 0' }}><GI e={s.emoji} size={48}/></div>
+        <div style={{ textAlign: 'center', margin: '8px 0' }}><GI e={s.emoji} size={48} /></div>
         <div style={{ width: 220, height: 220, margin: '12px auto', position: 'relative', background: 'white', borderRadius: 20, boxShadow: 'var(--shadow-lg)' }}>
           {dots.map((d, i) => (
             <button key={i} onClick={() => handleDot(i)} style={{
@@ -7669,20 +7734,20 @@ export function DrawShapesGame() {
 export function BuildPicturesGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const PICTURES = [
-    { name: lang === 'bm' ? 'Rumah' : 'House', emoji: '🏠', parts: ['⬜','🔺','⬜'], wrong: ['⭕','◆'] },
-    { name: lang === 'bm' ? 'Kereta' : 'Car', emoji: '🚗', parts: ['⬜','⭕','⭕'], wrong: ['🔺','◆'] },
-    { name: lang === 'bm' ? 'Robot' : 'Robot', emoji: '🤖', parts: ['⬜','⬜','⭕'], wrong: ['🔺','◆'] },
+    { name: lang === 'bm' ? 'Rumah' : 'House', emoji: '🏠', parts: ['⬜', '🔺', '⬜'], wrong: ['⭕', '◆'] },
+    { name: lang === 'bm' ? 'Kereta' : 'Car', emoji: '🚗', parts: ['⬜', '⭕', '⭕'], wrong: ['🔺', '◆'] },
+    { name: lang === 'bm' ? 'Robot' : 'Robot', emoji: '🤖', parts: ['⬜', '⬜', '⭕'], wrong: ['🔺', '◆'] },
   ];
-  
+
   const [picIdx, setPicIdx] = useState(0);
   const [partIdx, setPartIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [built, setBuilt] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
-  
+
   const handlePick = (shape) => {
     const correct = shape === PICTURES[picIdx].parts[partIdx];
     if (correct) {
@@ -7704,9 +7769,9 @@ export function BuildPicturesGame() {
       setTimeout(() => setFeedback(null), 800);
     }
   };
-  
+
   if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? 'Arkitek Hebat!' : 'Great Architect!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('shapes')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
-  
+
   const pic = PICTURES[picIdx];
   const choices = [pic.parts[partIdx], ...pic.wrong].sort(() => Math.random() - 0.5);
   return (
@@ -7715,7 +7780,7 @@ export function BuildPicturesGame() {
       <div style={{ padding: 16, textAlign: 'center' }}>
         <button className="icon-btn" onClick={() => goToWorld('shapes')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? `Bina ${pic.name}!` : `Build a ${pic.name}!`}</h2>
-        <div style={{ textAlign: 'center', margin: '12px 0' }}><GI e={pic.emoji} size={64}/></div>
+        <div style={{ textAlign: 'center', margin: '12px 0' }}><GI e={pic.emoji} size={64} /></div>
         <div style={{ display: 'flex', gap: 4, justifyContent: 'center', marginBottom: 12 }}>{built.map((b, i) => <span key={i} style={{ fontSize: '1.5rem' }}>{b}</span>)}<span style={{ fontSize: '1.5rem', color: '#999' }}></span></div>
         <div style={{ fontSize: '0.85rem', fontWeight: 700, marginBottom: 12 }}>{lang === 'bm' ? `Bahagian ${partIdx + 1}:` : `Part ${partIdx + 1}:`}</div>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
@@ -7734,29 +7799,29 @@ export function BuildPicturesGame() {
 export function ThreeDShapesGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  
+
   const SHAPES_3D = [
-    { shape: lang === 'bm' ? 'Sfera' : 'Sphere', emoji: '🔮', object: '⚽', objectName: lang === 'bm' ? 'Bola' : 'Ball', choices: ['⚽','📦','🧊'] },
-    { shape: lang === 'bm' ? 'Kubus' : 'Cube', emoji: '🧊', object: '📦', objectName: lang === 'bm' ? 'Kotak' : 'Box', choices: ['📦','⚽','🍦'] },
-    { shape: lang === 'bm' ? 'Kon' : 'Cone', emoji: '🍦', object: '🍦', objectName: lang === 'bm' ? 'Aiskrim' : 'Ice cream', choices: ['🍦','⚽','📦'] },
-    { shape: lang === 'bm' ? 'Silinder' : 'Cylinder', emoji: '🥫', object: '🥫', objectName: lang === 'bm' ? 'Tin' : 'Can', choices: ['🥫','⚽','🧊'] },
-    { shape: lang === 'bm' ? 'Piramid' : 'Pyramid', emoji: '🔺', object: '🏔️', objectName: lang === 'bm' ? 'Gunung' : 'Mountain', choices: ['🏔️','📦','⚽'] },
+    { shape: lang === 'bm' ? 'Sfera' : 'Sphere', emoji: '🔮', object: '⚽', objectName: lang === 'bm' ? 'Bola' : 'Ball', choices: ['⚽', '📦', '🧊'] },
+    { shape: lang === 'bm' ? 'Kubus' : 'Cube', emoji: '🧊', object: '📦', objectName: lang === 'bm' ? 'Kotak' : 'Box', choices: ['📦', '⚽', '🍦'] },
+    { shape: lang === 'bm' ? 'Kon' : 'Cone', emoji: '🍦', object: '🍦', objectName: lang === 'bm' ? 'Aiskrim' : 'Ice cream', choices: ['🍦', '⚽', '📦'] },
+    { shape: lang === 'bm' ? 'Silinder' : 'Cylinder', emoji: '🥫', object: '🥫', objectName: lang === 'bm' ? 'Tin' : 'Can', choices: ['🥫', '⚽', '🧊'] },
+    { shape: lang === 'bm' ? 'Piramid' : 'Pyramid', emoji: '🔺', object: '🏔️', objectName: lang === 'bm' ? 'Gunung' : 'Mountain', choices: ['🏔️', '📦', '⚽'] },
   ];
-  
+
   const [idx, setIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
-  
+
   const handleChoice = (c) => {
     const correct = c === SHAPES_3D[idx].object;
     if (correct) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); setScore(score + 1); }
     else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); }
     setTimeout(() => { setFeedback(null); if (idx + 1 < SHAPES_3D.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = correct ? score + 1 : score; completeGame('shapes', '3d-shapes', f >= 4 ? 3 : f >= 2 ? 2 : 1, f * 20); setGameComplete(true); } }, 800);
   };
-  
+
   if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#283593' }}>{lang === 'bm' ? 'Pakar 3D!' : '3D Expert!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('shapes')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div>); }
-  
+
   const s = SHAPES_3D[idx];
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
@@ -7765,7 +7830,7 @@ export function ThreeDShapesGame() {
         <button className="icon-btn" onClick={() => goToWorld('shapes')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
         <h2 style={{ fontFamily: 'var(--font-heading)', color: '#283593' }}>{lang === 'bm' ? 'Bentuk 3D' : '3D Shapes'}</h2>
         <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{SHAPES_3D.length}</div>
-        <div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={s.emoji} size={80}/></div>
+        <div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={s.emoji} size={80} /></div>
         <div style={{ fontSize: '1.1rem', fontWeight: 800 }}>{s.shape}</div>
         <div style={{ fontSize: '0.9rem', color: '#555', margin: '8px 0 16px' }}>{lang === 'bm' ? 'Benda apa yang sama bentuk?' : 'What real object has this shape?'}</div>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
@@ -7785,17 +7850,17 @@ export function RolePlayGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
   const JOBS = [
-    { name: lang === 'bm' ? 'Doktor' : 'Doctor', emoji: '👨‍⚕️', task: lang === 'bm' ? 'Periksa pesakit!' : 'Check the patient!', answer: '🩺', choices: ['🩺','🔧','📚'] },
-    { name: lang === 'bm' ? 'Bomba' : 'Firefighter', emoji: '🧑‍🚒', task: lang === 'bm' ? 'Padamkan api!' : 'Put out the fire!', answer: '🧯', choices: ['🧯','🔨','📱'] },
-    { name: lang === 'bm' ? 'Guru' : 'Teacher', emoji: '👩‍🏫', task: lang === 'bm' ? 'Ajar murid!' : 'Teach students!', answer: '📚', choices: ['📚','🧯','🩺'] },
-    { name: lang === 'bm' ? 'Polis' : 'Police', emoji: '👮', task: lang === 'bm' ? 'Jaga keselamatan!' : 'Keep people safe!', answer: '🚔', choices: ['🚔','🧯','📚'] },
-    { name: lang === 'bm' ? 'Tukang Masak' : 'Chef', emoji: '👨‍🍳', task: lang === 'bm' ? 'Masak makanan!' : 'Cook food!', answer: '🍳', choices: ['🍳','🩺','🔧'] },
+    { name: lang === 'bm' ? 'Doktor' : 'Doctor', emoji: '👨‍⚕️', task: lang === 'bm' ? 'Periksa pesakit!' : 'Check the patient!', answer: '🩺', choices: ['🩺', '🔧', '📚'] },
+    { name: lang === 'bm' ? 'Bomba' : 'Firefighter', emoji: '🧑‍🚒', task: lang === 'bm' ? 'Padamkan api!' : 'Put out the fire!', answer: '🧯', choices: ['🧯', '🔨', '📱'] },
+    { name: lang === 'bm' ? 'Guru' : 'Teacher', emoji: '👩‍🏫', task: lang === 'bm' ? 'Ajar murid!' : 'Teach students!', answer: '📚', choices: ['📚', '🧯', '🩺'] },
+    { name: lang === 'bm' ? 'Polis' : 'Police', emoji: '👮', task: lang === 'bm' ? 'Jaga keselamatan!' : 'Keep people safe!', answer: '🚔', choices: ['🚔', '🧯', '📚'] },
+    { name: lang === 'bm' ? 'Tukang Masak' : 'Chef', emoji: '👨‍🍳', task: lang === 'bm' ? 'Masak makanan!' : 'Cook food!', answer: '🍳', choices: ['🍳', '🩺', '🔧'] },
   ];
   const [idx, setIdx] = useState(0); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
   const handle = (c) => { const ok = c === JOBS[idx].answer; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); setScore(score + 1); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < JOBS.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('jobs', 'role-play', f >= 4 ? 3 : f >= 2 ? 2 : 1, f * 20); setGameComplete(true); } }, 800); };
   if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src={assetPath('/images/game/role_play_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Pelakon Hebat!' : 'Great Actor!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('jobs')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const j = JOBS[idx];
-  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/role_play_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('jobs')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{j.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{JOBS.length}</div><div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={j.emoji} size={80}/></div><div style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 16 }}>{j.task}</div><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{shuffleWithSeed(j.choices, idx).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>{c}</button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/role_play_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('jobs')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{j.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{JOBS.length}</div><div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={j.emoji} size={80} /></div><div style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 16 }}>{j.task}</div><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{shuffleWithSeed(j.choices, idx).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>{c}</button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 
 // ============================================
@@ -7805,12 +7870,12 @@ export function JobToolsGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
   const MATCHES = [
-    { job: '👨‍⚕️', name: lang === 'bm' ? 'Doktor' : 'Doctor', tool: '🩺', choices: ['🩺','🔨','🎨'] },
-    { job: '👩‍🍳', name: lang === 'bm' ? 'Chef' : 'Chef', tool: '🍳', choices: ['🍳','📚','🔧'] },
-    { job: '👩‍🎨', name: lang === 'bm' ? 'Pelukis' : 'Artist', tool: '🎨', choices: ['🎨','🩺','🔨'] },
-    { job: '👷', name: lang === 'bm' ? 'Pembina' : 'Builder', tool: '🔨', choices: ['🔨','🍳','📚'] },
-    { job: '👩‍🏫', name: lang === 'bm' ? 'Guru' : 'Teacher', tool: '📚', choices: ['📚','🎨','🍳'] },
-    { job: '👨‍🌾', name: lang === 'bm' ? 'Petani' : 'Farmer', tool: '🌾', choices: ['🌾','🩺','🔨'] },
+    { job: '👨‍⚕️', name: lang === 'bm' ? 'Doktor' : 'Doctor', tool: '🩺', choices: ['🩺', '🔨', '🎨'] },
+    { job: '👩‍🍳', name: lang === 'bm' ? 'Chef' : 'Chef', tool: '🍳', choices: ['🍳', '📚', '🔧'] },
+    { job: '👩‍🎨', name: lang === 'bm' ? 'Pelukis' : 'Artist', tool: '🎨', choices: ['🎨', '🩺', '🔨'] },
+    { job: '👷', name: lang === 'bm' ? 'Pembina' : 'Builder', tool: '🔨', choices: ['🔨', '🍳', '📚'] },
+    { job: '👩‍🏫', name: lang === 'bm' ? 'Guru' : 'Teacher', tool: '📚', choices: ['📚', '🎨', '🍳'] },
+    { job: '👨‍🌾', name: lang === 'bm' ? 'Petani' : 'Farmer', tool: '🌾', choices: ['🌾', '🩺', '🔨'] },
   ];
   const [idx, setIdx] = useState(0); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
   const handle = (c) => { const ok = c === MATCHES[idx].tool; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); setScore(score + 1); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < MATCHES.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('jobs', 'job-tools', f >= 5 ? 3 : f >= 3 ? 2 : 1, f * 15); setGameComplete(true); } }, 800); };
@@ -7826,16 +7891,16 @@ export function VisitWorkplaceGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
   const PLACES = [
-    { place: '🏥', name: lang === 'bm' ? 'Hospital' : 'Hospital', worker: '👨‍⚕️', fact: lang === 'bm' ? 'Doktor merawat pesakit!' : 'Doctors treat patients!', q: lang === 'bm' ? 'Siapa bekerja di sini?' : 'Who works here?', choices: ['👨‍⚕️','👮','👩‍🍳'] },
-    { place: '🏫', name: lang === 'bm' ? 'Sekolah' : 'School', worker: '👩‍🏫', fact: lang === 'bm' ? 'Guru mengajar murid!' : 'Teachers teach students!', q: lang === 'bm' ? 'Siapa bekerja di sini?' : 'Who works here?', choices: ['👩‍🏫','🧑‍🚒','👨‍🌾'] },
-    { place: '🚒', name: lang === 'bm' ? 'Balai Bomba' : 'Fire Station', worker: '🧑‍🚒', fact: lang === 'bm' ? 'Bomba padam api!' : 'Firefighters put out fires!', q: lang === 'bm' ? 'Siapa bekerja di sini?' : 'Who works here?', choices: ['🧑‍🚒','👩‍🏫','👨‍⚕️'] },
-    { place: '🏬', name: lang === 'bm' ? 'Kedai' : 'Shop', worker: '🧑‍💼', fact: lang === 'bm' ? 'Jurujual menjual barang!' : 'Shopkeepers sell things!', q: lang === 'bm' ? 'Siapa bekerja di sini?' : 'Who works here?', choices: ['🧑‍💼','🧑‍🚒','👨‍⚕️'] },
+    { place: '🏥', name: lang === 'bm' ? 'Hospital' : 'Hospital', worker: '👨‍⚕️', fact: lang === 'bm' ? 'Doktor merawat pesakit!' : 'Doctors treat patients!', q: lang === 'bm' ? 'Siapa bekerja di sini?' : 'Who works here?', choices: ['👨‍⚕️', '👮', '👩‍🍳'] },
+    { place: '🏫', name: lang === 'bm' ? 'Sekolah' : 'School', worker: '👩‍🏫', fact: lang === 'bm' ? 'Guru mengajar murid!' : 'Teachers teach students!', q: lang === 'bm' ? 'Siapa bekerja di sini?' : 'Who works here?', choices: ['👩‍🏫', '🧑‍🚒', '👨‍🌾'] },
+    { place: '🚒', name: lang === 'bm' ? 'Balai Bomba' : 'Fire Station', worker: '🧑‍🚒', fact: lang === 'bm' ? 'Bomba padam api!' : 'Firefighters put out fires!', q: lang === 'bm' ? 'Siapa bekerja di sini?' : 'Who works here?', choices: ['🧑‍🚒', '👩‍🏫', '👨‍⚕️'] },
+    { place: '🏬', name: lang === 'bm' ? 'Kedai' : 'Shop', worker: '🧑‍💼', fact: lang === 'bm' ? 'Jurujual menjual barang!' : 'Shopkeepers sell things!', q: lang === 'bm' ? 'Siapa bekerja di sini?' : 'Who works here?', choices: ['🧑‍💼', '🧑‍🚒', '👨‍⚕️'] },
   ];
   const [idx, setIdx] = useState(0); const [showFact, setShowFact] = useState(true); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
   const handle = (c) => { const ok = c === PLACES[idx].worker; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setScore(score + 1); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } } setFeedback(ok ? 'correct' : 'wrong'); setTimeout(() => { setFeedback(null); setShowFact(true); if (idx + 1 < PLACES.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('jobs', 'visit-workplace', f >= 3 ? 3 : f >= 2 ? 2 : 1, f * 25); setGameComplete(true); } }, 800); };
   if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src={assetPath('/images/game/visit_workplace_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Penjelajah Hebat!' : 'Great Explorer!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('jobs')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const p = PLACES[idx];
-  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/visit_workplace_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('jobs')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{p.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{PLACES.length}</div><div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={p.place} size={80}/></div>{showFact ? (<div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '12px auto', maxWidth: 300 }}><p style={{ fontSize: '0.9rem', margin: 0 }}>{p.fact}</p><button onClick={() => setShowFact(false)} style={{ marginTop: 10, padding: '8px 20px', borderRadius: 12, background: '#43A047', color: 'white', border: 'none', fontWeight: 700, cursor: 'pointer' }}>{lang === 'bm' ? 'Kuiz!' : 'Quiz!'}</button></div>) : (<div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '12px auto', maxWidth: 300 }}><p style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: 12 }}>{p.q}</p><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{p.choices.map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer' }}><GI e={c} size={40}/></button>))}</div>{feedback && <div style={{ marginTop: 10, fontWeight: 700, color: feedback === 'correct' ? '#4CAF50' : '#F44336' }}>{feedback === 'correct' ? '' : ''}</div>}</div>)}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/visit_workplace_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('jobs')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{p.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{PLACES.length}</div><div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={p.place} size={80} /></div>{showFact ? (<div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '12px auto', maxWidth: 300 }}><p style={{ fontSize: '0.9rem', margin: 0 }}>{p.fact}</p><button onClick={() => setShowFact(false)} style={{ marginTop: 10, padding: '8px 20px', borderRadius: 12, background: '#43A047', color: 'white', border: 'none', fontWeight: 700, cursor: 'pointer' }}>{lang === 'bm' ? 'Kuiz!' : 'Quiz!'}</button></div>) : (<div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '12px auto', maxWidth: 300 }}><p style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: 12 }}>{p.q}</p><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{p.choices.map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer' }}><GI e={c} size={40} /></button>))}</div>{feedback && <div style={{ marginTop: 10, fontWeight: 700, color: feedback === 'correct' ? '#4CAF50' : '#F44336' }}>{feedback === 'correct' ? '' : ''}</div>}</div>)}</div></div>);
 }
 
 // ============================================
@@ -7845,18 +7910,18 @@ export function WhoAmIGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
   const RIDDLES = [
-    { clue: lang === 'bm' ? 'Saya pakai uniform putih, saya tolong orang sakit.' : 'I wear white, I help sick people.', answer: '👨‍⚕️', choices: ['👨‍⚕️','👮','👩‍🍳'] },
-    { clue: lang === 'bm' ? 'Saya masak makanan yang sedap!' : 'I cook delicious food!', answer: '👩‍🍳', choices: ['👩‍🍳','👩‍🏫','🧑‍🚒'] },
-    { clue: lang === 'bm' ? 'Saya terbang kapal terbang!' : 'I fly airplanes!', answer: '👨‍✈️', choices: ['👨‍✈️','👮','👷'] },
-    { clue: lang === 'bm' ? 'Saya jaga keselamatan!' : 'I keep people safe!', answer: '👮', choices: ['👮','👩‍🍳','👨‍⚕️'] },
-    { clue: lang === 'bm' ? 'Saya mengajar di sekolah!' : 'I teach at school!', answer: '👩‍🏫', choices: ['👩‍🏫','👨‍✈️','🧑‍🚒'] },
-    { clue: lang === 'bm' ? 'Saya padam api!' : 'I put out fires!', answer: '🧑‍🚒', choices: ['🧑‍🚒','👮','👩‍🍳'] },
+    { clue: lang === 'bm' ? 'Saya pakai uniform putih, saya tolong orang sakit.' : 'I wear white, I help sick people.', answer: '👨‍⚕️', choices: ['👨‍⚕️', '👮', '👩‍🍳'] },
+    { clue: lang === 'bm' ? 'Saya masak makanan yang sedap!' : 'I cook delicious food!', answer: '👩‍🍳', choices: ['👩‍🍳', '👩‍🏫', '🧑‍🚒'] },
+    { clue: lang === 'bm' ? 'Saya terbang kapal terbang!' : 'I fly airplanes!', answer: '👨‍✈️', choices: ['👨‍✈️', '👮', '👷'] },
+    { clue: lang === 'bm' ? 'Saya jaga keselamatan!' : 'I keep people safe!', answer: '👮', choices: ['👮', '👩‍🍳', '👨‍⚕️'] },
+    { clue: lang === 'bm' ? 'Saya mengajar di sekolah!' : 'I teach at school!', answer: '👩‍🏫', choices: ['👩‍🏫', '👨‍✈️', '🧑‍🚒'] },
+    { clue: lang === 'bm' ? 'Saya padam api!' : 'I put out fires!', answer: '🧑‍🚒', choices: ['🧑‍🚒', '👮', '👩‍🍳'] },
   ];
   const [idx, setIdx] = useState(0); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
   const handle = (c) => { const ok = c === RIDDLES[idx].answer; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); setScore(score + 1); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < RIDDLES.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('jobs', 'who-am-i', f >= 5 ? 3 : f >= 3 ? 2 : 1, f * 15); setGameComplete(true); } }, 800); };
   if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src={assetPath('/images/game/who_am_i_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Bijak Meneka!' : 'Great Guesser!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('jobs')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const r = RIDDLES[idx];
-  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/who_am_i_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('jobs')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>{lang === 'bm' ? 'Siapa Saya?' : 'Who Am I?'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{RIDDLES.length}</div><div style={{ margin: '20px 0' }}></div><div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '0 auto 16px', maxWidth: 300, fontSize: '1rem', fontWeight: 700 }}>{r.clue}</div><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{shuffleWithSeed(r.choices, idx).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}><GI e={c} size={40}/></button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/who_am_i_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('jobs')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>{lang === 'bm' ? 'Siapa Saya?' : 'Who Am I?'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{RIDDLES.length}</div><div style={{ margin: '20px 0' }}></div><div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '0 auto 16px', maxWidth: 300, fontSize: '1rem', fontWeight: 700 }}>{r.clue}</div><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{shuffleWithSeed(r.choices, idx).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}><GI e={c} size={40} /></button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 
 // ============================================
@@ -7878,7 +7943,7 @@ export function InstrumentsGame() {
   const next = () => { setPlayed(false); if (idx + 1 < INSTRUMENTS.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } completeGame('music', 'instruments', 3, INSTRUMENTS.length * 15); setGameComplete(true); } };
   if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src={assetPath('/images/game/instruments_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Pemuzik Hebat!' : 'Great Musician!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('music')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const inst = INSTRUMENTS[idx];
-  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/instruments_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('music')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2' }}>{inst.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{INSTRUMENTS.length}</div><div style={{ textAlign: 'center', margin: '20px 0', cursor: 'pointer' }} onClick={playInst}><GI e={inst.emoji} size={96}/></div>{played && <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#9C27B0', animation: 'bounce 0.5s ease' }}>{inst.sound}</div>}<button onClick={played ? next : playInst} style={{ marginTop: 16, padding: '12px 28px', borderRadius: 16, background: 'linear-gradient(135deg, #9C27B0, #7B1FA2)', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontFamily: 'var(--font-heading)' }}>{played ? (lang === 'bm' ? 'Seterusnya →' : 'Next →') : (lang === 'bm' ? 'Main!' : 'Play!')}</button></div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/instruments_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('music')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2' }}>{inst.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{INSTRUMENTS.length}</div><div style={{ textAlign: 'center', margin: '20px 0', cursor: 'pointer' }} onClick={playInst}><GI e={inst.emoji} size={96} /></div>{played && <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#9C27B0', animation: 'bounce 0.5s ease' }}>{inst.sound}</div>}<button onClick={played ? next : playInst} style={{ marginTop: 16, padding: '12px 28px', borderRadius: 16, background: 'linear-gradient(135deg, #9C27B0, #7B1FA2)', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontFamily: 'var(--font-heading)' }}>{played ? (lang === 'bm' ? 'Seterusnya →' : 'Next →') : (lang === 'bm' ? 'Main!' : 'Play!')}</button></div></div>);
 }
 
 // ============================================
@@ -7888,20 +7953,20 @@ export function FollowBeatGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
   const PATTERNS = [
-    { pattern: ['👏','👏','🤚'], name: 'clap-clap-stop' },
-    { pattern: ['👏','🤚','👏','🤚'], name: 'clap-stop-clap-stop' },
-    { pattern: ['👏','👏','👏','🤚','🤚'], name: 'clap-clap-clap-stop-stop' },
-    { pattern: ['🤚','👏','🤚','👏','👏'], name: 'stop-clap-stop-clap-clap' },
+    { pattern: ['👏', '👏', '🤚'], name: 'clap-clap-stop' },
+    { pattern: ['👏', '🤚', '👏', '🤚'], name: 'clap-stop-clap-stop' },
+    { pattern: ['👏', '👏', '👏', '🤚', '🤚'], name: 'clap-clap-clap-stop-stop' },
+    { pattern: ['🤚', '👏', '🤚', '👏', '👏'], name: 'stop-clap-stop-clap-clap' },
   ];
   const [patIdx, setPatIdx] = useState(0); const [inputIdx, setInputIdx] = useState(0); const [score, setScore] = useState(0); const [showPattern, setShowPattern] = useState(true); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false); const [currentHighlight, setCurrentHighlight] = useState(-1);
-  
+
   const showDemo = () => {
     setShowPattern(true); let i = 0;
     const interval = setInterval(() => { setCurrentHighlight(i); if (soundEnabled) playTapSound(); i++; if (i >= PATTERNS[patIdx].pattern.length) { clearInterval(interval); setTimeout(() => { setCurrentHighlight(-1); setShowPattern(false); }, 500); } }, 500);
   };
-  
+
   useEffect(() => { showDemo(); }, [patIdx]);
-  
+
   const handleInput = (type) => {
     const p = PATTERNS[patIdx];
     if (type === p.pattern[inputIdx]) {
@@ -7917,11 +7982,11 @@ export function FollowBeatGame() {
       setTimeout(() => setFeedback(null), 800);
     }
   };
-  
+
   if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src={assetPath('/images/game/music_room_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Rentak Hebat!' : 'Beat Master!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('music')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
-  
+
   const p = PATTERNS[patIdx];
-  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/music_room_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('music')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>{lang === 'bm' ? 'Ikut Rentak!' : 'Follow the Beat!'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{patIdx + 1}/{PATTERNS.length}</div><div style={{ display: 'flex', gap: 8, justifyContent: 'center', margin: '20px 0' }}>{p.pattern.map((beat, i) => (<div key={i} style={{ padding: 8, borderRadius: 12, background: i === currentHighlight ? '#FFD93D' : i < inputIdx ? '#E91E63' : 'white', border: '2px solid rgba(0,0,0,0.08)', transform: i === currentHighlight ? 'scale(1.2)' : 'scale(1)', transition: 'all 0.2s' }}><GI e={beat} size={32}/></div>))}</div>{!showPattern && (<div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 16 }}><button onClick={() => handleInput('👏')} style={{ padding: 16, borderRadius: 20, background: 'white', border: '2px solid rgba(0,0,0,0.1)', cursor: 'pointer', boxShadow: 'var(--shadow-md)' }}><GI e="👏" size={48}/></button><button onClick={() => handleInput('🤚')} style={{ padding: 16, borderRadius: 20, background: 'white', border: '2px solid rgba(0,0,0,0.1)', cursor: 'pointer', boxShadow: 'var(--shadow-md)' }}><GI e="🤚" size={48}/></button></div>)}{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/music_room_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('music')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>{lang === 'bm' ? 'Ikut Rentak!' : 'Follow the Beat!'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{patIdx + 1}/{PATTERNS.length}</div><div style={{ display: 'flex', gap: 8, justifyContent: 'center', margin: '20px 0' }}>{p.pattern.map((beat, i) => (<div key={i} style={{ padding: 8, borderRadius: 12, background: i === currentHighlight ? '#FFD93D' : i < inputIdx ? '#E91E63' : 'white', border: '2px solid rgba(0,0,0,0.08)', transform: i === currentHighlight ? 'scale(1.2)' : 'scale(1)', transition: 'all 0.2s' }}><GI e={beat} size={32} /></div>))}</div>{!showPattern && (<div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 16 }}><button onClick={() => handleInput('👏')} style={{ padding: 16, borderRadius: 20, background: 'white', border: '2px solid rgba(0,0,0,0.1)', cursor: 'pointer', boxShadow: 'var(--shadow-md)' }}><GI e="👏" size={48} /></button><button onClick={() => handleInput('🤚')} style={{ padding: 16, borderRadius: 20, background: 'white', border: '2px solid rgba(0,0,0,0.1)', cursor: 'pointer', boxShadow: 'var(--shadow-md)' }}><GI e="🤚" size={48} /></button></div>)}{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 
 // ============================================
@@ -7940,7 +8005,7 @@ export function ChildrensSongsGame() {
   const singAlong = () => { if (soundEnabled) playTapSound(); setSinging(true); setTimeout(() => { setSinging(false); if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } if (idx + 1 < SONGS.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } completeGame('music', 'childrens-songs', 3, SONGS.length * 25); setGameComplete(true); } }, 3000); };
   if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src={assetPath('/images/game/childrens_songs_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Pandai Menyanyi!' : 'Song Star!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('music')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const s = SONGS[idx];
-  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/childrens_songs_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('music')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}>{s.title}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{SONGS.length}</div><div style={{ textAlign: 'center', margin: '20px 0', animation: singing ? 'bounce 0.4s infinite alternate' : 'none' }}><GI e={s.emoji} size={80}/></div><div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '12px auto', maxWidth: 300 }}><p style={{ fontSize: '1rem', fontStyle: 'italic', color: '#555' }}>{s.lyrics}</p></div><button onClick={singAlong} disabled={singing} style={{ marginTop: 12, padding: '14px 32px', borderRadius: 20, background: singing ? '#999' : 'linear-gradient(135deg, #FFD93D, #FFA726)', color: 'white', border: 'none', fontWeight: 800, cursor: singing ? 'default' : 'pointer', fontFamily: 'var(--font-heading)' }}>{singing ? '...' : '🎤'} {lang === 'bm' ? (singing ? 'Menyanyi...' : 'Nyanyi!') : (singing ? 'Singing...' : 'Sing!')}</button></div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/childrens_songs_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('music')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}>{s.title}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{SONGS.length}</div><div style={{ textAlign: 'center', margin: '20px 0', animation: singing ? 'bounce 0.4s infinite alternate' : 'none' }}><GI e={s.emoji} size={80} /></div><div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '12px auto', maxWidth: 300 }}><p style={{ fontSize: '1rem', fontStyle: 'italic', color: '#555' }}>{s.lyrics}</p></div><button onClick={singAlong} disabled={singing} style={{ marginTop: 12, padding: '14px 32px', borderRadius: 20, background: singing ? '#999' : 'linear-gradient(135deg, #FFD93D, #FFA726)', color: 'white', border: 'none', fontWeight: 800, cursor: singing ? 'default' : 'pointer', fontFamily: 'var(--font-heading)' }}>{singing ? '...' : '🎤'} {lang === 'bm' ? (singing ? 'Menyanyi...' : 'Nyanyi!') : (singing ? 'Singing...' : 'Sing!')}</button></div></div>);
 }
 
 // ============================================
@@ -7949,14 +8014,14 @@ export function ChildrensSongsGame() {
 export function LearnNotesGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  const NOTES = ['Do','Re','Mi','Fa','Sol','La','Si','Do'];
-  const COLORS = ['#FF6B6B','#FF9800','#FFD93D','#6BCB77','#4ECDC4','#42A5F5','#9B72CF','#FF6B6B'];
+  const NOTES = ['Do', 'Re', 'Mi', 'Fa', 'Sol', 'La', 'Si', 'Do'];
+  const COLORS = ['#FF6B6B', '#FF9800', '#FFD93D', '#6BCB77', '#4ECDC4', '#42A5F5', '#9B72CF', '#FF6B6B'];
   const [playedNotes, setPlayedNotes] = useState([]); const [targetSeq, setTargetSeq] = useState([]); const [score, setScore] = useState(0); const [round, setRound] = useState(0); const [gameComplete, setGameComplete] = useState(false); const [feedback, setFeedback] = useState(null);
   const TOTAL_ROUNDS = 15;
-  
+
   useEffect(() => { generateSequence(); }, []);
   const generateSequence = () => { const seq = Array.from({ length: 3 }, () => Math.floor(Math.random() * 8)); setTargetSeq(seq); setPlayedNotes([]); };
-  
+
   const handleNote = (noteIdx) => {
     if (soundEnabled) playTapSound();
     const newPlayed = [...playedNotes, noteIdx];
@@ -7968,9 +8033,9 @@ export function LearnNotesGame() {
       setTimeout(() => { setFeedback(null); if (round + 1 < TOTAL_ROUNDS) { setRound(round + 1); generateSequence(); } else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = correct ? score + 1 : score; completeGame('music', 'learn-notes', f >= 3 ? 3 : f >= 2 ? 2 : 1, f * 25); setGameComplete(true); } }, 800);
     }
   };
-  
+
   if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src={assetPath('/images/game/learn_notes_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Pemuzik Hebat!' : 'Music Master!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('music')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
-  
+
   return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/learn_notes_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('music')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Main nota!' : 'Play the notes!'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{round + 1}/{TOTAL_ROUNDS}</div><div style={{ margin: '16px 0', fontSize: '0.9rem', fontWeight: 700 }}>{lang === 'bm' ? 'Main:' : 'Play:'} {targetSeq.map(n => NOTES[n]).join(' → ')}</div><div style={{ display: 'flex', gap: 4, justifyContent: 'center', margin: '12px 0' }}>{playedNotes.map((n, i) => <span key={i} style={{ background: COLORS[n], color: 'white', padding: '4px 8px', borderRadius: 8, fontWeight: 700, fontSize: '0.8rem' }}>{NOTES[n]}</span>)}</div><div style={{ display: 'flex', gap: 4, justifyContent: 'center', flexWrap: 'wrap', margin: '12px 0' }}>{NOTES.map((note, i) => (<button key={i} onClick={() => handleNote(i)} style={{ width: 38, height: 50, borderRadius: 8, background: COLORS[i], color: 'white', border: 'none', fontWeight: 800, fontSize: '0.7rem', cursor: 'pointer', fontFamily: 'var(--font-heading)' }}>{note}</button>))}</div>{feedback && <div style={{ marginTop: 12, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 
@@ -7981,10 +8046,10 @@ export function WorldMapGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
   const COUNTRIES = [
-    { flag: '🇲🇾', name: 'Malaysia', fact: lang === 'bm' ? 'Negara kita!' : 'Our country!', q: lang === 'bm' ? 'Bendera mana milik Malaysia?' : 'Which flag is Malaysia?', choices: ['🇲🇾','🇮🇩','🇸🇬'] },
-    { flag: '🇯🇵', name: 'Japan', fact: lang === 'bm' ? 'Negara matahari terbit!' : 'Land of the rising sun!', q: lang === 'bm' ? 'Bendera mana milik Jepun?' : 'Which flag is Japan?', choices: ['🇯🇵','🇰🇷','🇨🇳'] },
-    { flag: '🇫🇷', name: lang === 'bm' ? 'Perancis' : 'France', fact: lang === 'bm' ? 'Menara Eiffel!' : 'Eiffel Tower!', q: lang === 'bm' ? 'Bendera mana milik Perancis?' : 'Which flag is France?', choices: ['🇫🇷','🇩🇪','🇮🇹'] },
-    { flag: '🇧🇷', name: lang === 'bm' ? 'Brazil' : 'Brazil', fact: lang === 'bm' ? 'Negara bola sepak!' : 'Soccer country!', q: lang === 'bm' ? 'Bendera mana milik Brazil?' : 'Which flag is Brazil?', choices: ['🇧🇷','🇦🇷','🇲🇽'] },
+    { flag: '🇲🇾', name: 'Malaysia', fact: lang === 'bm' ? 'Negara kita!' : 'Our country!', q: lang === 'bm' ? 'Bendera mana milik Malaysia?' : 'Which flag is Malaysia?', choices: ['🇲🇾', '🇮🇩', '🇸🇬'] },
+    { flag: '🇯🇵', name: 'Japan', fact: lang === 'bm' ? 'Negara matahari terbit!' : 'Land of the rising sun!', q: lang === 'bm' ? 'Bendera mana milik Jepun?' : 'Which flag is Japan?', choices: ['🇯🇵', '🇰🇷', '🇨🇳'] },
+    { flag: '🇫🇷', name: lang === 'bm' ? 'Perancis' : 'France', fact: lang === 'bm' ? 'Menara Eiffel!' : 'Eiffel Tower!', q: lang === 'bm' ? 'Bendera mana milik Perancis?' : 'Which flag is France?', choices: ['🇫🇷', '🇩🇪', '🇮🇹'] },
+    { flag: '🇧🇷', name: lang === 'bm' ? 'Brazil' : 'Brazil', fact: lang === 'bm' ? 'Negara bola sepak!' : 'Soccer country!', q: lang === 'bm' ? 'Bendera mana milik Brazil?' : 'Which flag is Brazil?', choices: ['🇧🇷', '🇦🇷', '🇲🇽'] },
   ];
   const [idx, setIdx] = useState(0); const [showFact, setShowFact] = useState(true); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
   const handle = (c) => { const ok = c === COUNTRIES[idx].flag; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setScore(score + 1); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } } setFeedback(ok ? 'correct' : 'wrong'); setTimeout(() => { setFeedback(null); setShowFact(true); if (idx + 1 < COUNTRIES.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('world-explorer', 'world-map', f >= 3 ? 3 : f >= 2 ? 2 : 1, f * 25); setGameComplete(true); } }, 800); };
@@ -8000,15 +8065,15 @@ export function WorldHousesGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
   const HOUSES = [
-    { name: lang === 'bm' ? 'Igloo' : 'Igloo', emoji: '🏔️', country: '❄️ Arctic', desc: lang === 'bm' ? 'Rumah ais!' : 'Ice house!', answer: '❄️', choices: ['❄️','🌴','🏜️'] },
-    { name: lang === 'bm' ? 'Rumah Kampung' : 'Village House', emoji: '🏡', country: 'Malaysia', desc: lang === 'bm' ? 'Rumah di atas tiang!' : 'House on stilts!', answer: '🇲🇾', choices: ['🇲🇾','🇯🇵','🇫🇷'] },
-    { name: lang === 'bm' ? 'Apartmen' : 'Apartment', emoji: '🏢', country: 'Japan', desc: lang === 'bm' ? 'Bangunan tinggi di bandar!' : 'Tall city building!', answer: '🇯🇵', choices: ['🇯🇵','🇲🇾','❄️'] },
+    { name: lang === 'bm' ? 'Igloo' : 'Igloo', emoji: '🏔️', country: '❄️ Arctic', desc: lang === 'bm' ? 'Rumah ais!' : 'Ice house!', answer: '❄️', choices: ['❄️', '🌴', '🏜️'] },
+    { name: lang === 'bm' ? 'Rumah Kampung' : 'Village House', emoji: '🏡', country: 'Malaysia', desc: lang === 'bm' ? 'Rumah di atas tiang!' : 'House on stilts!', answer: '🇲🇾', choices: ['🇲🇾', '🇯🇵', '🇫🇷'] },
+    { name: lang === 'bm' ? 'Apartmen' : 'Apartment', emoji: '🏢', country: 'Japan', desc: lang === 'bm' ? 'Bangunan tinggi di bandar!' : 'Tall city building!', answer: '🇯🇵', choices: ['🇯🇵', '🇲🇾', '❄️'] },
   ];
   const [idx, setIdx] = useState(0); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
   const handle = (c) => { const ok = c === HOUSES[idx].answer; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < HOUSES.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('world-explorer', 'world-houses', f >= 3 ? 3 : 2, f * 30); setGameComplete(true); } }, 800); };
   if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src={assetPath('/images/game/world_houses_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#00695C', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Pakar Rumah!' : 'House Expert!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('world-explorer')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const h = HOUSES[idx];
-  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/world_houses_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('world-explorer')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{h.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{HOUSES.length}</div><div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={h.emoji} size={80}/></div><p style={{ fontWeight: 700 }}>{h.desc}</p><p>{lang === 'bm' ? 'Dari mana?' : 'Where is it from?'}</p><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{shuffleWithSeed(h.choices, idx).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ padding: 12, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer' }}><GI e={c} size={32}/></button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/world_houses_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('world-explorer')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{h.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{HOUSES.length}</div><div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={h.emoji} size={80} /></div><p style={{ fontWeight: 700 }}>{h.desc}</p><p>{lang === 'bm' ? 'Dari mana?' : 'Where is it from?'}</p><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{shuffleWithSeed(h.choices, idx).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ padding: 12, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer' }}><GI e={c} size={32} /></button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 
 // ============================================
@@ -8018,16 +8083,16 @@ export function WorldFestivalsGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
   const FESTIVALS = [
-    { name: lang === 'bm' ? 'Hari Raya' : 'Hari Raya', emoji: '🕌', country: '🇲🇾', desc: lang === 'bm' ? 'Perayaan umat Islam!' : 'Muslim celebration!', choices: ['🇲🇾','🇯🇵','🇫🇷'] },
-    { name: lang === 'bm' ? 'Tahun Baru Cina' : 'Chinese New Year', emoji: '🧧', country: '🇨🇳', desc: lang === 'bm' ? 'Singa menari!' : 'Lion dance!', choices: ['🇨🇳','🇲🇾','🇧🇷'] },
-    { name: 'Diwali', emoji: '🪔', country: '🇮🇳', desc: lang === 'bm' ? 'Perayaan lampu!' : 'Festival of lights!', choices: ['🇮🇳','🇯🇵','🇫🇷'] },
-    { name: 'Carnival', emoji: '🎭', country: '🇧🇷', desc: lang === 'bm' ? 'Pesta tarian hebat!' : 'Great dance party!', choices: ['🇧🇷','🇮🇳','🇨🇳'] },
+    { name: lang === 'bm' ? 'Hari Raya' : 'Hari Raya', emoji: '🕌', country: '🇲🇾', desc: lang === 'bm' ? 'Perayaan umat Islam!' : 'Muslim celebration!', choices: ['🇲🇾', '🇯🇵', '🇫🇷'] },
+    { name: lang === 'bm' ? 'Tahun Baru Cina' : 'Chinese New Year', emoji: '🧧', country: '🇨🇳', desc: lang === 'bm' ? 'Singa menari!' : 'Lion dance!', choices: ['🇨🇳', '🇲🇾', '🇧🇷'] },
+    { name: 'Diwali', emoji: '🪔', country: '🇮🇳', desc: lang === 'bm' ? 'Perayaan lampu!' : 'Festival of lights!', choices: ['🇮🇳', '🇯🇵', '🇫🇷'] },
+    { name: 'Carnival', emoji: '🎭', country: '🇧🇷', desc: lang === 'bm' ? 'Pesta tarian hebat!' : 'Great dance party!', choices: ['🇧🇷', '🇮🇳', '🇨🇳'] },
   ];
   const [idx, setIdx] = useState(0); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
   const handle = (c) => { const ok = c === FESTIVALS[idx].country; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < FESTIVALS.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('world-explorer', 'world-festivals', f >= 3 ? 3 : f >= 2 ? 2 : 1, f * 25); setGameComplete(true); } }, 800); };
   if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src={assetPath('/images/game/world_festivals_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Pakar Perayaan!' : 'Festival Expert!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('world-explorer')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const f = FESTIVALS[idx];
-  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/world_festivals_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('world-explorer')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}> {f.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{FESTIVALS.length}</div><div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={f.emoji} size={80}/></div><p style={{ fontWeight: 700 }}>{f.desc}</p><p>{lang === 'bm' ? 'Perayaan dari negara mana?' : 'Which country celebrates this?'}</p><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{shuffleWithSeed(f.choices, idx).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ padding: 12, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer' }}><GI e={c} size={40}/></button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/world_festivals_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('world-explorer')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}> {f.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{FESTIVALS.length}</div><div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={f.emoji} size={80} /></div><p style={{ fontWeight: 700 }}>{f.desc}</p><p>{lang === 'bm' ? 'Perayaan dari negara mana?' : 'Which country celebrates this?'}</p><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{shuffleWithSeed(f.choices, idx).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ padding: 12, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer' }}><GI e={c} size={40} /></button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 
 // ============================================
@@ -8037,17 +8102,17 @@ export function WeatherGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
   const WEATHER_Q = [
-    { weather: '☀️', name: lang === 'bm' ? 'Cerah' : 'Sunny', q: lang === 'bm' ? 'Pakai apa?' : 'What to wear?', answer: '🕶️', choices: ['🕶️','☂️','🧥'] },
-    { weather: '🌧️', name: lang === 'bm' ? 'Hujan' : 'Rainy', q: lang === 'bm' ? 'Bawa apa?' : 'What to bring?', answer: '☂️', choices: ['☂️','🕶️','🩱'] },
-    { weather: '❄️', name: lang === 'bm' ? 'Sejuk' : 'Cold', q: lang === 'bm' ? 'Pakai apa?' : 'What to wear?', answer: '🧥', choices: ['🧥','🩱','🕶️'] },
-    { weather: '🌪️', name: lang === 'bm' ? 'Ribut' : 'Stormy', q: lang === 'bm' ? 'Apa yang patut buat?' : 'What should you do?', answer: '🏠', choices: ['🏠','🏖️','🛝'] },
-    { weather: '🌈', name: lang === 'bm' ? 'Pelangi' : 'Rainbow', q: lang === 'bm' ? 'Pelangi muncul selepas...' : 'Rainbow appears after...', answer: '🌧️', choices: ['🌧️','❄️','🌪️'] },
+    { weather: '☀️', name: lang === 'bm' ? 'Cerah' : 'Sunny', q: lang === 'bm' ? 'Pakai apa?' : 'What to wear?', answer: '🕶️', choices: ['🕶️', '☂️', '🧥'] },
+    { weather: '🌧️', name: lang === 'bm' ? 'Hujan' : 'Rainy', q: lang === 'bm' ? 'Bawa apa?' : 'What to bring?', answer: '☂️', choices: ['☂️', '🕶️', '🩱'] },
+    { weather: '❄️', name: lang === 'bm' ? 'Sejuk' : 'Cold', q: lang === 'bm' ? 'Pakai apa?' : 'What to wear?', answer: '🧥', choices: ['🧥', '🩱', '🕶️'] },
+    { weather: '🌪️', name: lang === 'bm' ? 'Ribut' : 'Stormy', q: lang === 'bm' ? 'Apa yang patut buat?' : 'What should you do?', answer: '🏠', choices: ['🏠', '🏖️', '🛝'] },
+    { weather: '🌈', name: lang === 'bm' ? 'Pelangi' : 'Rainbow', q: lang === 'bm' ? 'Pelangi muncul selepas...' : 'Rainbow appears after...', answer: '🌧️', choices: ['🌧️', '❄️', '🌪️'] },
   ];
   const [idx, setIdx] = useState(0); const [score, setScore] = useState(0); const [feedback, setFeedback] = useState(null); const [gameComplete, setGameComplete] = useState(false);
   const handle = (c) => { const ok = c === WEATHER_Q[idx].answer; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < WEATHER_Q.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('science', 'weather', f >= 4 ? 3 : f >= 2 ? 2 : 1, f * 20); setGameComplete(true); } }, 800); };
   if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src={assetPath('/images/game/science_nature_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Pakar Cuaca!' : 'Weather Expert!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('science')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const w = WEATHER_Q[idx];
-  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/science_nature_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('science')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{w.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{WEATHER_Q.length}</div><div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={w.weather} size={80}/></div><div style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 16 }}>{w.q}</div><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{shuffleWithSeed(w.choices, idx).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}><GI e={c} size={40}/></button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/science_nature_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('science')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{w.name}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{WEATHER_Q.length}</div><div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={w.weather} size={80} /></div><div style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 16 }}>{w.q}</div><div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>{shuffleWithSeed(w.choices, idx).map((c, i) => (<button key={i} onClick={() => handle(c)} style={{ padding: 14, borderRadius: 18, background: 'white', border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}><GI e={c} size={40} /></button>))}</div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 
 // ============================================
@@ -8068,7 +8133,7 @@ export function PlantsGame() {
   const handleAction = () => { if (soundEnabled) playTapSound(); if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setTimeout(() => { if (stageIdx + 1 < STAGES.length) setStageIdx(stageIdx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } completeGame('science', 'plants', 3, STAGES.length * 20); setGameComplete(true); } }, 600); };
   if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src={assetPath('/images/game/plants_garden_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Tukang Kebun Hebat!' : 'Great Gardener!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('science')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const s = STAGES[stageIdx];
-  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/plants_garden_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('science')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{lang === 'bm' ? 'Tanam Pokok!' : 'Grow a Plant!'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{stageIdx + 1}/{STAGES.length}</div><div style={{ display: 'flex', gap: 4, justifyContent: 'center', margin: '12px 0' }}>{STAGES.map((st, i) => <span key={i} style={{ fontSize: i <= stageIdx ? '1.5rem' : '1rem', opacity: i <= stageIdx ? 1 : 0.3 }}><GI e={st.emoji} size={32}/></span>)}</div><div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={s.emoji} size={96}/></div><div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16 }}>{s.stage}</div><button onClick={handleAction} style={{ padding: '14px 32px', borderRadius: 20, background: 'linear-gradient(135deg, #66BB6A, #43A047)', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: '1.1rem' }}>{s.action} {lang === 'bm' ? 'Lakukan!' : 'Do it!'}</button></div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/plants_garden_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('science')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{lang === 'bm' ? 'Tanam Pokok!' : 'Grow a Plant!'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{stageIdx + 1}/{STAGES.length}</div><div style={{ display: 'flex', gap: 4, justifyContent: 'center', margin: '12px 0' }}>{STAGES.map((st, i) => <span key={i} style={{ fontSize: i <= stageIdx ? '1.5rem' : '1rem', opacity: i <= stageIdx ? 1 : 0.3 }}><GI e={st.emoji} size={32} /></span>)}</div><div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={s.emoji} size={96} /></div><div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16 }}>{s.stage}</div><button onClick={handleAction} style={{ padding: '14px 32px', borderRadius: 20, background: 'linear-gradient(135deg, #66BB6A, #43A047)', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: '1.1rem' }}>{s.action} {lang === 'bm' ? 'Lakukan!' : 'Do it!'}</button></div></div>);
 }
 
 // ============================================
@@ -8089,7 +8154,7 @@ export function ExperimentsGame() {
   const handle = (answer) => { const ok = answer === ITEMS[idx].answer; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: `${ITEMS[idx].name}: ${ITEMS[idx].answer === 'sink' ? (lang === 'bm' ? 'Tenggelam!' : 'Sinks!') : (lang === 'bm' ? 'Terapung!' : 'Floats!')}` }); } setTimeout(() => { setFeedback(null); if (idx + 1 < ITEMS.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('science', 'experiments', f >= 5 ? 3 : f >= 3 ? 2 : 1, f * 15); setGameComplete(true); } }, 800); };
   if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src={assetPath('/images/game/experiments_lab_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0', textShadow: '0 2px 8px rgba(255,255,255,0.8)' }}>{lang === 'bm' ? 'Saintis Hebat!' : 'Great Scientist!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('science')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const item = ITEMS[idx];
-  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/experiments_lab_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('science')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Tenggelam atau Terapung?' : 'Sink or Float?'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{ITEMS.length}</div><div style={{ textAlign: 'center', margin: '20px 0' }}><GI e={item.item} size={80}/></div><div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16 }}>{item.name}</div><div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}><button onClick={() => handle('sink')} style={{ padding: '14px 24px', borderRadius: 16, background: '#42A5F5', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>⬇️ {lang === 'bm' ? 'Tenggelam' : 'Sink'}</button><button onClick={() => handle('float')} style={{ padding: '14px 24px', borderRadius: 16, background: '#FFD93D', color: '#333', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>⬆️ {lang === 'bm' ? 'Terapung' : 'Float'}</button></div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
+  return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}><img src={assetPath('/images/game/experiments_lab_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ padding: 16, textAlign: 'center', position: 'relative', zIndex: 1 }}><button className="icon-btn" onClick={() => goToWorld('science')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: '#1565C0' }}>{lang === 'bm' ? 'Tenggelam atau Terapung?' : 'Sink or Float?'}</h2><div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{ITEMS.length}</div><div style={{ textAlign: 'center', margin: '20px 0' }}><GI e={item.item} size={80} /></div><div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16 }}>{item.name}</div><div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}><button onClick={() => handle('sink')} style={{ padding: '14px 24px', borderRadius: 16, background: '#42A5F5', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>⬇️ {lang === 'bm' ? 'Tenggelam' : 'Sink'}</button><button onClick={() => handle('float')} style={{ padding: '14px 24px', borderRadius: 16, background: '#FFD93D', color: '#333', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>⬆️ {lang === 'bm' ? 'Terapung' : 'Float'}</button></div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 
 // ============================================
@@ -8112,6 +8177,6 @@ export function DayNightGame() {
   const handle = (answer) => { const ok = answer === ITEMS_DN[idx].answer; if (ok) { if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); } setScore(score + 1); setFeedback({ type: 'correct', message: correctFeedback(lang, false) }); } else { if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); } setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) }); } setTimeout(() => { setFeedback(null); if (idx + 1 < ITEMS_DN.length) setIdx(idx + 1); else { if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); } const f = ok ? score + 1 : score; completeGame('science', 'day-night', f >= 7 ? 3 : f >= 4 ? 2 : 1, f * 10); setGameComplete(true); } }, 800); };
   if (gameComplete) { return (<div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', textAlign: 'center', padding: 40 }}><img src={assetPath('/images/game/day_night_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} /><div style={{ position: 'relative', zIndex: 1 }}><div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div><h1 style={{ fontFamily: 'var(--font-heading)', color: '#FFD93D', textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>{lang === 'bm' ? 'Pakar Siang Malam!' : 'Day & Night Expert!'}</h1><div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div><button className="btn-premium" onClick={() => goToWorld('science')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button></div></div>); }
   const item = ITEMS_DN[idx];
-  return (<div className="game-container" style={{ background: `linear-gradient(180deg, ${item.answer === 'day' ? '#87CEEB, #E3F2FD' : '#1A237E, #283593'})` }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('science')} style={{ position: 'absolute', left: 16, top: 16, color: item.answer === 'night' ? 'white' : undefined }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: item.answer === 'day' ? '#1565C0' : '#FFD93D' }}>{lang === 'bm' ? 'Siang atau Malam?' : 'Day or Night?'}</h2><div style={{ fontSize: '0.8rem', color: item.answer === 'day' ? '#999' : '#B0BEC5' }}>{idx + 1}/{ITEMS_DN.length}</div><div style={{ textAlign: 'center', margin: '20px 0' }}><GI e={item.item} size={80}/></div><div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16, color: item.answer === 'night' ? 'white' : '#333' }}>{item.name}</div><div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}><button onClick={() => handle('day')} style={{ padding: '14px 24px', borderRadius: 16, position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', color: '#333', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>{lang === 'bm' ? 'Siang' : 'Day'}</button><button onClick={() => handle('night')} style={{ padding: '14px 24px', borderRadius: 16, background: 'linear-gradient(135deg, #3F51B5, #1A237E)', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>{lang === 'bm' ? 'Malam' : 'Night'}</button></div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
+  return (<div className="game-container" style={{ background: `linear-gradient(180deg, ${item.answer === 'day' ? '#87CEEB, #E3F2FD' : '#1A237E, #283593'})` }}><div style={{ padding: 16, textAlign: 'center' }}><button className="icon-btn" onClick={() => goToWorld('science')} style={{ position: 'absolute', left: 16, top: 16, color: item.answer === 'night' ? 'white' : undefined }}>←</button><h2 style={{ fontFamily: 'var(--font-heading)', color: item.answer === 'day' ? '#1565C0' : '#FFD93D' }}>{lang === 'bm' ? 'Siang atau Malam?' : 'Day or Night?'}</h2><div style={{ fontSize: '0.8rem', color: item.answer === 'day' ? '#999' : '#B0BEC5' }}>{idx + 1}/{ITEMS_DN.length}</div><div style={{ textAlign: 'center', margin: '20px 0' }}><GI e={item.item} size={80} /></div><div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 16, color: item.answer === 'night' ? 'white' : '#333' }}>{item.name}</div><div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}><button onClick={() => handle('day')} style={{ padding: '14px 24px', borderRadius: 16, position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', color: '#333', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>{lang === 'bm' ? 'Siang' : 'Day'}</button><button onClick={() => handle('night')} style={{ padding: '14px 24px', borderRadius: 16, background: 'linear-gradient(135deg, #3F51B5, #1A237E)', color: 'white', border: 'none', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>{lang === 'bm' ? 'Malam' : 'Night'}</button></div>{feedback && <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>{feedback.type === 'correct' ? '' : ''} {feedback.message}</div>}</div></div>);
 }
 
