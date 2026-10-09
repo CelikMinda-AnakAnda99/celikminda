@@ -3023,7 +3023,7 @@ export function MathMachineGame() {
         }}>
           {options.map((opt, i) => {
             const btnColors = ['#6C5CE7', '#E17055', '#00B894', '#FDCB6E'];
-            const isCorrectFeedback = feedback && opt.correct;
+            const isCorrectFeedback = feedback && feedback.type === 'correct' && opt.correct;
             const showHint = wrongCount >= 2 && opt.correct;
             const isWrongFeedback = feedback && !opt.correct && feedback.type === 'wrong';
             return (
@@ -3585,7 +3585,7 @@ export function SubtractionShopGame() {
         }}>
           {options.map((opt, i) => {
             const btnColors = ['#FF6B6B', '#FDCB6E', '#00B894', '#E17055'];
-            const isCorrectFeedback = feedback && opt.correct;
+            const isCorrectFeedback = feedback && feedback.type === 'correct' && opt.correct;
             const showHint = wrongCount >= 2 && opt.correct;
             const isWrongFeedback = feedback && !opt.correct && feedback.type === 'wrong';
             return (
