@@ -5958,7 +5958,7 @@ export function BiggerSmallerGame() {
 
     return (
       <button onClick={() => handleChoice(side)} style={{
-        flex: 1, maxWidth: 280, padding: 18, borderRadius: 20,
+        flex: 1, maxWidth: 200, padding: 14, borderRadius: 20,
         background: isCorrectPick ? 'rgba(107,203,119,0.15)' : isWrongPick ? 'rgba(255,107,107,0.1)' : showHint ? 'rgba(107,203,119,0.08)' : 'rgba(255,255,255,0.92)',
         border: `3px solid ${isCorrectPick ? '#4CAF50' : isWrongPick ? '#FF6B6B' : showHint ? '#6BCB77' : 'rgba(255,255,255,0.5)'}`,
         cursor: feedback ? 'default' : 'pointer',
@@ -5967,16 +5967,16 @@ export function BiggerSmallerGame() {
         transition: 'all 0.3s ease',
         transform: isCorrectPick ? 'scale(1.05)' : 'scale(1)'
       }}>
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
           {Array.from({ length: count }, (_, i) => (
             <div key={i} style={{
-              width: 56, height: 56, borderRadius: 12,
+              width: 44, height: 44, borderRadius: 10,
               background: 'white', border: '2px solid #FFB8B8',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               overflow: 'hidden'
             }}>
               <img src={assetPath(img)} alt=""
-                style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }} />
+                style={{ width: 30, height: 30, borderRadius: '50%', objectFit: 'cover' }} />
             </div>
           ))}
         </div>
