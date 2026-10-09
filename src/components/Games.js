@@ -1767,12 +1767,14 @@ export function BlockTowerGame() {
   const [placedBlocks, setPlacedBlocks] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
+  const [confettiPieces, setConfettiPieces] = useState([]);
   const [roundColors, setRoundColors] = useState([]);
   const [shakeWrong, setShakeWrong] = useState(false);
   const [celebrating, setCelebrating] = useState(false);
   const [lastAddedIdx, setLastAddedIdx] = useState(-1);
   const [owlMsg, setOwlMsg] = useState(OWL_MSGS[0]);
   const feedbackTimerRef = useRef(null);
+  const prevTargetsRef = useRef([]);
 
   const generateRound = useCallback(() => {
     // Progressive difficulty
@@ -1781,7 +1783,21 @@ export function BlockTowerGame() {
     else if (round < 10) { min = 3; max = 6; }
     else { min = 4; max = 8; }
 
-    const count = min + Math.floor(Math.random() * (max - min + 1));
+    // Anti-repeat: prevent 3-in-a-row same number
+    let count;
+    const prev = prevTargetsRef.current;
+    let attempts = 0;
+    do {
+      count = min + Math.floor(Math.random() * (max - min + 1));
+      attempts++;
+    } while (
+      prev.length >= 2 &&
+      prev[prev.length - 1] === count &&
+      prev[prev.length - 2] === count &&
+      attempts < 20
+    );
+    prevTargetsRef.current = [...prev, count].slice(-5);
+
     setTargetCount(count);
     setPlacedBlocks([]);
     setFeedback(null);
@@ -1848,6 +1864,13 @@ export function BlockTowerGame() {
         const finalScore = correct ? score + 10 : score;
         const stars = finalScore >= 120 ? 3 : finalScore >= 80 ? 2 : 1;
         completeGame('numbers', 'block-tower', stars, finalScore);
+        const colors = ['#FF6B6B','#FFA94D','#FFD93D','#6BCB77','#4ECDC4','#45B7D1','#9B72CF','#FF8EB4'];
+        setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
+          id: i, left: Math.random() * 100,
+          color: colors[i % colors.length],
+          delay: Math.random() * 0.5,
+          size: 6 + Math.random() * 8,
+        })));
         setGameComplete(true);
         if (soundEnabled) { lang === 'bm' ? playBMCelebration() : playCelebrationSound(); }
       } else {
@@ -1859,42 +1882,6 @@ export function BlockTowerGame() {
   const getStars = () => score >= 120 ? 3 : score >= 80 ? 2 : 1;
 
   // ── GAME COMPLETE ──
-  if (gameComplete) {
-    const fs = getStars();
-    return (
-      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <img src={assetPath('/images/counting/block_tower_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.3 }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(180deg, rgba(124,58,237,0.1) 0%, rgba(243,232,255,0.6) 100%)', zIndex: 0 }} />
-        <div style={{ background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(24px)', borderRadius: 'clamp(20px,4vw,32px)', padding: 'clamp(20px,4vw,36px)', maxWidth: 420, width: '90%', boxShadow: '0 16px 64px rgba(124,58,237,0.15)', zIndex: 1 }}>
-          <img src={assetPath('/images/counting/block_owl.jpg')} alt="Owl" style={{ width: 'clamp(60px,15vw,90px)', height: 'clamp(60px,15vw,90px)', objectFit: 'cover', borderRadius: '50%', margin: '0 auto 12px', display: 'block', boxShadow: '0 4px 16px rgba(124,58,237,0.15)', border: '3px solid #F3E8FF' }} />
-          <h1 style={{ fontFamily: 'var(--font-heading)', color: '#7C3AED', fontSize: 'clamp(1.2rem,3.5vw,1.6rem)', margin: '0 0 4px' }}>
-            {lang === 'bm' ? '🏆 Arkitek Hebat!' : '🏆 Master Builder!'}
-          </h1>
-          <p style={{ color: '#888', margin: '4px 0 12px', fontFamily: 'var(--font-body)', fontSize: 'clamp(0.8rem,2vw,0.95rem)' }}>
-            {lang === 'bm' ? 'Skor' : 'Score'}: {score}/{TOTAL_ROUNDS * 10}
-          </p>
-          <div style={{ margin: '8px 0 16px', display: 'flex', justifyContent: 'center', gap: 'clamp(4px,1vw,8px)' }}>
-            {[1,2,3].map(s => (
-              <span key={s} style={{ fontSize: 'clamp(1.5rem,4vw,2.2rem)', opacity: s <= fs ? 1 : 0.2, transition: 'all 0.5s', transitionDelay: `${s * 0.2}s` }}>⭐</span>
-            ))}
-          </div>
-          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button onClick={() => { setRound(0); setScore(0); setGameComplete(false); }} style={{
-              padding: 'clamp(10px,2vw,14px) clamp(18px,3vw,28px)', borderRadius: 16, border: 'none', cursor: 'pointer',
-              background: 'linear-gradient(135deg,#9B72CF,#7C3AED)', color: 'white',
-              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(0.8rem,2vw,0.95rem)',
-              boxShadow: '0 4px 16px #9B72CF44',
-            }}>🔄 {lang === 'bm' ? 'Main Lagi' : 'Play Again'}</button>
-            <button onClick={() => goToWorld('numbers')} style={{
-              padding: 'clamp(10px,2vw,14px) clamp(18px,3vw,28px)', borderRadius: 16, border: '2px solid #E5E7EB', cursor: 'pointer',
-              background: 'white', color: '#666',
-              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(0.8rem,2vw,0.95rem)',
-            }}>← {lang === 'bm' ? 'Kembali' : 'Back'}</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden' }}>
@@ -2157,6 +2144,16 @@ export function BlockTowerGame() {
           100% { transform: scale(1); opacity: 1; }
         }
       `}</style>
+
+      {gameComplete && (
+        <GameCompleteModal
+          lang={lang} stars={getStars()} score={score}
+          accentColor="#7C3AED"
+          onPlayAgain={() => { setRound(0); setScore(0); setGameComplete(false); setConfettiPieces([]); prevTargetsRef.current = []; }}
+          onBack={() => goToWorld('numbers')}
+          confettiPieces={confettiPieces}
+        />
+      )}
     </div>
   );
 }
