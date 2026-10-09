@@ -3549,7 +3549,8 @@ export function SubtractionShopGame() {
                       style={{
                         width: 34, height: 34, borderRadius: '50%', objectFit: 'cover',
                         opacity: isSold ? 0.35 : 1,
-                        filter: isSold ? 'grayscale(1)' : 'none'
+                        filter: isSold ? 'grayscale(1)' : 'none',
+                        transition: 'opacity 0.8s ease, filter 0.8s ease'
                       }} />
                   </div>
                 );
