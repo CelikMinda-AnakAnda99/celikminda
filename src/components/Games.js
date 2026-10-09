@@ -3531,28 +3531,28 @@ export function SubtractionShopGame() {
           {/* Visual Items on shelf */}
           <div style={{
             background: 'linear-gradient(180deg, #FFF5F5 0%, #FFE8E8 100%)',
-            borderRadius: 16, padding: '14px 10px',
-            border: '2px dashed #FFB8B8', minHeight: 70
+            borderRadius: 16, padding: '14px 12px',
+            border: '2px dashed #FFB8B8', minHeight: 60
           }}>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
               {Array.from({ length: num1 }, (_, i) => {
                 const isSold = soldItems.includes(i);
                 return (
                   <div key={i} style={{
-                    width: 56, height: 56, borderRadius: 14,
+                    width: 50, height: 50, borderRadius: 12,
                     background: isSold ? '#f5f5f5' : 'white',
                     border: isSold ? '2px solid #e0e0e0' : '2px solid #FFB8B8',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: isSold ? 'none' : '0 3px 8px rgba(255,107,107,0.15)',
+                    boxShadow: isSold ? 'none' : '0 2px 6px rgba(255,107,107,0.15)',
                     transition: 'all 0.5s ease',
                     animation: !isSold ? `popIn 0.3s ease ${i * 0.06}s both` : 'none',
-                    overflow: 'hidden'
+                    overflow: 'hidden', position: 'relative'
                   }}>
                     {!isSold ? (
                       <img src={assetPath(currentItemImg)} alt=""
-                        style={{ width: 42, height: 42, borderRadius: 10, objectFit: 'cover' }} />
+                        style={{ width: 30, height: 30, objectFit: 'contain' }} />
                     ) : (
-                      <div style={{ width: 20, height: 2, background: '#ddd', borderRadius: 2 }} />
+                      <div style={{ width: 16, height: 2, background: '#ccc', borderRadius: 2 }} />
                     )}
                   </div>
                 );
