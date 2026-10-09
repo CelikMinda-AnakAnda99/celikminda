@@ -827,43 +827,58 @@ export function CountObjectsGame() {
   const lang = language;
 
   const TOTAL_ROUNDS = 15;
-  const OBJECT_SETS = [
-    { emoji: '🐱', image: assetPath('/animals/cat.jpg'), nameBm: 'kucing', nameEn: 'cats' },
-    { emoji: '🐶', image: assetPath('/animals/dog.jpg'), nameBm: 'anjing', nameEn: 'dogs' },
-    { emoji: '🦋', image: assetPath('/animals/butterfly.jpg'), nameBm: 'rama-rama', nameEn: 'butterflies' },
-    { emoji: '🐠', image: assetPath('/animals/fish.jpg'), nameBm: 'ikan', nameEn: 'fish' },
-    { emoji: '🌺', nameBm: 'bunga', nameEn: 'flowers' },
-    { emoji: '⭐', nameBm: 'bintang', nameEn: 'stars' },
-    { emoji: '🍎', nameBm: 'epal', nameEn: 'apples' },
-    { emoji: '🐸', image: assetPath('/animals/frog.jpg'), nameBm: 'katak', nameEn: 'frogs' },
-    { emoji: '🐣', image: assetPath('/animals/rooster.jpg'), nameBm: 'anak ayam', nameEn: 'chicks' },
-    { emoji: '🐝', image: assetPath('/animals/bee.jpg'), nameBm: 'lebah', nameEn: 'bees' },
+  const ANIMAL_SETS = [
+    { image: assetPath('/animals/cat.jpg'), nameBm: 'kucing', nameEn: 'cats', bg: '#FFF0F5', border: '#FFB6C1', shadow: '#FFB6C133' },
+    { image: assetPath('/animals/dog.jpg'), nameBm: 'anjing', nameEn: 'dogs', bg: '#FFF8E7', border: '#FFD700', shadow: '#FFD70033' },
+    { image: assetPath('/animals/butterfly.jpg'), nameBm: 'rama-rama', nameEn: 'butterflies', bg: '#F0F0FF', border: '#B19CD9', shadow: '#B19CD933' },
+    { image: assetPath('/animals/fish.jpg'), nameBm: 'ikan', nameEn: 'fish', bg: '#E8F8FF', border: '#87CEEB', shadow: '#87CEEB33' },
+    { image: assetPath('/animals/frog.jpg'), nameBm: 'katak', nameEn: 'frogs', bg: '#F0FFF0', border: '#90EE90', shadow: '#90EE9033' },
+    { image: assetPath('/animals/rooster.jpg'), nameBm: 'ayam', nameEn: 'roosters', bg: '#FFF5E6', border: '#FFA500', shadow: '#FFA50033' },
+    { image: assetPath('/animals/bee.jpg'), nameBm: 'lebah', nameEn: 'bees', bg: '#FFFFF0', border: '#FFD700', shadow: '#FFD70033' },
+    { image: assetPath('/animals/rabbit.jpg'), nameBm: 'arnab', nameEn: 'rabbits', bg: '#FFF5F5', border: '#FFB6C1', shadow: '#FFB6C133' },
+    { image: assetPath('/animals/bird.jpg'), nameBm: 'burung', nameEn: 'birds', bg: '#F0FFFF', border: '#87CEEB', shadow: '#87CEEB33' },
+    { image: assetPath('/animals/elephant.jpg'), nameBm: 'gajah', nameEn: 'elephants', bg: '#F5F5FF', border: '#B0C4DE', shadow: '#B0C4DE33' },
+    { image: assetPath('/animals/duck.jpg'), nameBm: 'itik', nameEn: 'ducks', bg: '#FFFDE7', border: '#FFEB3B', shadow: '#FFEB3B33' },
+    { image: assetPath('/animals/turtle.jpg'), nameBm: 'kura-kura', nameEn: 'turtles', bg: '#E8F5E9', border: '#81C784', shadow: '#81C78433' },
   ];
 
   const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
-  const [objects, setObjects] = useState([]);
-  const [objectInfo, setObjectInfo] = useState(OBJECT_SETS[0]);
+  const [objectInfo, setObjectInfo] = useState(ANIMAL_SETS[0]);
   const [choices, setChoices] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
   const [confettiPieces, setConfettiPieces] = useState([]);
+  const [animKey, setAnimKey] = useState(0);
+  const prevAnimalsRef = useRef([]);
 
   const generateRound = useCallback((roundNum) => {
-    const count = 1 + Math.floor(Math.random() * 9); // 1-9
-    const objSet = OBJECT_SETS[Math.floor(Math.random() * OBJECT_SETS.length)];
-    setCorrectCount(count);
-    setObjectInfo(objSet);
+    // Progressive difficulty: more objects as rounds increase
+    let min, max;
+    if (roundNum <= 5) { min = 1; max = 5; }
+    else if (roundNum <= 10) { min = 3; max = 7; }
+    else { min = 4; max = 9; }
+    const count = min + Math.floor(Math.random() * (max - min + 1));
 
-    const objs = Array.from({ length: count }, (_, i) => ({
-      id: i,
-      x: 10 + Math.random() * 75,
-      y: 10 + Math.random() * 70,
-      delay: i * 0.15,
-      size: 35 + Math.random() * 15,
-    }));
-    setObjects(objs);
+    // Anti-repeat: don't pick same animal 3 times in a row
+    let animal;
+    const prev = prevAnimalsRef.current;
+    let attempts = 0;
+    do {
+      animal = ANIMAL_SETS[Math.floor(Math.random() * ANIMAL_SETS.length)];
+      attempts++;
+    } while (
+      prev.length >= 2 &&
+      prev[prev.length - 1] === animal.nameBm &&
+      prev[prev.length - 2] === animal.nameBm &&
+      attempts < 15
+    );
+    prevAnimalsRef.current = [...prev, animal.nameBm].slice(-5);
+
+    setCorrectCount(count);
+    setObjectInfo(animal);
+    setAnimKey(k => k + 1);
 
     const wrongAnswers = new Set();
     while (wrongAnswers.size < 3) {
@@ -909,103 +924,172 @@ export function CountObjectsGame() {
 
   const getStars = () => score >= 70 ? 3 : score >= 40 ? 2 : 1;
 
+  // Grid layout for objects — no overlap!
+  const gridCols = correctCount <= 3 ? 3 : correctCount <= 6 ? 3 : 4;
+
   return (
-    <div className="game-screen">
-      <div className="game-header">
-        <button className="back-btn" onClick={() => goToWorld('numbers')}>←</button>
-        <span className="game-title">
-          {lang === 'bm' ? 'Kira Benda' : 'Count Objects'}
-        </span>
-        <div className="game-stars">
-          {[1,2,3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden' }}>
+      {/* Background */}
+      <img src={assetPath('/images/game/counting_classroom.jpg')} alt="" style={{
+        position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+        objectFit: 'cover', zIndex: 0, opacity: 0.25,
+      }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(248,245,255,0.7) 50%, rgba(255,248,240,0.6) 100%)', zIndex: 0 }} />
+
+      <div style={{ padding: 'clamp(8px,2vw,14px) clamp(10px,2.5vw,18px)', display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', zIndex: 1 }}>
+
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'clamp(4px,1vw,8px)' }}>
+          <button onClick={() => goToWorld('numbers')} style={{
+            background: 'rgba(255,255,255,0.9)', borderRadius: '50%',
+            width: 'clamp(36px,8vw,44px)', height: 'clamp(36px,8vw,44px)',
+            border: 'none', cursor: 'pointer', fontSize: 'clamp(1rem,2.8vw,1.3rem)',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>&#8592;</button>
+          <div style={{
+            background: 'rgba(255,255,255,0.93)', backdropFilter: 'blur(12px)', borderRadius: 22,
+            padding: 'clamp(6px,1.2vw,10px) clamp(14px,3vw,22px)',
+            boxShadow: '0 4px 18px rgba(0,0,0,0.07)',
+            display: 'flex', alignItems: 'center', gap: 'clamp(5px,1.2vw,10px)',
+          }}>
+            <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 'clamp(0.85rem,2.2vw,1.1rem)', color: '#E91E63' }}>
+              {lang === 'bm' ? 'Kira Benda' : 'Count Objects'}
+            </span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(6px,1.5vw,10px)' }}>
+            <div style={{
+              background: 'rgba(255,255,255,0.9)', borderRadius: 14, padding: 'clamp(4px,0.8vw,7px) clamp(10px,2vw,16px)',
+              fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.75rem,1.8vw,0.9rem)', color: '#F59E0B',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+            }}>
+              <StarIcon size={14} /> {score}
+            </div>
+            <div style={{
+              background: 'rgba(255,255,255,0.9)', borderRadius: 14, padding: 'clamp(4px,0.8vw,7px) clamp(10px,2vw,16px)',
+              fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.7rem,1.6vw,0.8rem)', color: '#888',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+            }}>
+              {round}/{TOTAL_ROUNDS}
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className="game-body" style={{ padding: 0 }}>
+        {/* Question */}
         <div style={{
-          width: '100%', height: '100%', position: 'relative',
-          borderRadius: 0, overflow: 'hidden',
-          display: 'flex', flexDirection: 'column',
+          textAlign: 'center', padding: 'clamp(6px,1.5vw,12px)',
+          fontFamily: 'var(--font-heading)', fontWeight: 800,
+          fontSize: 'clamp(1.1rem,3vw,1.5rem)', color: '#333',
         }}>
-          <img src={assetPath('/images/game/counting_classroom.jpg')} alt="" style={{
-            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-            objectFit: 'cover', zIndex: 0, opacity: 0.3,
-          }} />
-          {/* Instruction */}
-          <div style={{
-            textAlign: 'center', padding: 'var(--space-lg) var(--space-md) var(--space-sm)',
-            fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.3rem',
-            color: 'var(--text-primary)', zIndex: 10,
-          }}>
-            {lang === 'bm' ? `Berapa banyak ${objectInfo.nameBm}?` : `How many ${objectInfo.nameEn}?`}
-          </div>
+          {lang === 'bm' ? `Berapa banyak ${objectInfo.nameBm}?` : `How many ${objectInfo.nameEn}?`}
+        </div>
 
-          {/* Round & Score */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 var(--space-lg)' }}>
-            <div className="round-counter" style={{ position: 'static' }}>
-              {t('round', lang)} {round}/{TOTAL_ROUNDS}
-            </div>
-            <div className="game-score" style={{ position: 'static' }}>
-              <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#60A5FA" style={{display:"inline-block",verticalAlign:"middle"}}><path d="M6 3l-6 8 12 11L24 11l-6-8H6z"/></svg></span>
-              <span className="score-value">{score}</span>
-            </div>
-          </div>
-
-          {/* Objects area */}
-          <div style={{
-            flex: 1, position: 'relative', minHeight: '40vh',
-            margin: 'var(--space-sm) var(--space-md)',
+        {/* Animals Grid Area */}
+        <div style={{
+          flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 'clamp(4px,1vw,12px)',
+        }}>
+          <div key={animKey} style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(${gridCols}, 1fr)`,
+            gap: 'clamp(8px,2vw,16px)',
+            padding: 'clamp(8px,2vw,16px)',
             background: 'rgba(255,255,255,0.5)',
-            borderRadius: 'var(--radius-lg)',
+            backdropFilter: 'blur(8px)',
+            borderRadius: 'clamp(16px,3vw,24px)',
+            maxWidth: 'clamp(260px,70vw,400px)',
+            width: '100%',
           }}>
-            {objects.map(obj => (
-              <div key={obj.id} style={{
-                position: 'absolute', left: `${obj.x}%`, top: `${obj.y}%`,
-                fontSize: `${obj.size}px`,
-                animation: `bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${obj.delay}s both`,
-              }}><GI e={objectInfo.emoji} size={32}/></div>
+            {Array.from({ length: correctCount }, (_, i) => (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: objectInfo.bg,
+                border: `3px solid ${objectInfo.border}`,
+                borderRadius: '50%',
+                aspectRatio: '1',
+                boxShadow: `0 4px 16px ${objectInfo.shadow}, 0 2px 8px rgba(0,0,0,0.05)`,
+                animation: `cobjPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.1}s both`,
+                padding: 'clamp(6px,1.5vw,10px)',
+                minWidth: 0,
+              }}>
+                <img src={objectInfo.image} alt={objectInfo.nameBm}
+                  style={{
+                    width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%',
+                    display: 'block',
+                  }}
+                  draggable={false}
+                />
+              </div>
             ))}
           </div>
+        </div>
 
-          {/* Answer choices */}
-          <div style={{
-            display: 'flex', justifyContent: 'center', gap: 'var(--space-md)',
-            padding: 'var(--space-md) var(--space-md) var(--space-lg)', flexWrap: 'wrap',
-          }}>
-            {choices.map((num, i) => (
+        {/* Answer Choices */}
+        <div style={{
+          display: 'flex', justifyContent: 'center', gap: 'clamp(8px,2vw,14px)',
+          padding: 'clamp(8px,1.5vw,14px)', flexWrap: 'wrap',
+        }}>
+          {choices.map((num, i) => {
+            const isCorrectChoice = feedback?.type === 'correct' && num === correctCount;
+            const isWrongChoice = feedback?.type === 'wrong' && num !== correctCount;
+            return (
               <button key={i} onClick={() => handleAnswer(num)} style={{
-                width: 70, height: 70, borderRadius: 'var(--radius-lg)',
-                background: feedback?.type === 'correct' && num === correctCount
-                  ? 'linear-gradient(135deg, #6BCB77, #48C9B0)' : 'white',
-                color: feedback?.type === 'correct' && num === correctCount ? 'white' : 'var(--cm-pink)',
-                fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '2rem',
-                border: '3px solid #FFE4E1', boxShadow: 'var(--shadow-md)',
-                cursor: 'pointer', transition: 'all 0.2s ease',
-                animation: `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.1}s both`,
+                width: 'clamp(56px,14vw,72px)', height: 'clamp(56px,14vw,72px)',
+                borderRadius: 'clamp(14px,3vw,20px)',
+                background: isCorrectChoice
+                  ? 'linear-gradient(135deg, #6BCB77, #48C9B0)'
+                  : 'rgba(255,255,255,0.95)',
+                color: isCorrectChoice ? 'white' : '#E91E63',
+                fontFamily: 'var(--font-heading)', fontWeight: 900,
+                fontSize: 'clamp(1.4rem,3.5vw,2rem)',
+                border: isCorrectChoice ? '3px solid #48C9B0' : `3px solid ${objectInfo.border}`,
+                boxShadow: `0 4px 16px ${objectInfo.shadow}`,
+                cursor: feedback ? 'default' : 'pointer',
+                transition: 'all 0.25s ease',
+                animation: `cobjPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${0.3 + i * 0.08}s both`,
+                transform: isCorrectChoice ? 'scale(1.1)' : 'scale(1)',
               }}>
                 {num}
               </button>
-            ))}
-          </div>
-
-          {/* Feedback */}
-          {feedback && (
-            <div style={{
-              textAlign: 'center', paddingBottom: 'var(--space-md)',
-              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.2rem',
-              color: feedback.type === 'correct' ? 'var(--cm-green)' : 'var(--cm-red)',
-            }}>
-              {feedback.message}
-            </div>
-          )}
+            );
+          })}
         </div>
+
+        {/* Feedback */}
+        {feedback && (
+          <div style={{
+            textAlign: 'center', padding: 'clamp(4px,1vw,8px)',
+          }}>
+            <div style={{
+              display: 'inline-block',
+              padding: 'clamp(6px,1.2vw,10px) clamp(16px,3vw,28px)',
+              borderRadius: 22,
+              background: feedback.type === 'correct'
+                ? 'linear-gradient(135deg,#10B981,#059669)'
+                : 'linear-gradient(135deg,#F87171,#EF4444)',
+              color: 'white', fontFamily: 'var(--font-heading)', fontWeight: 700,
+              fontSize: 'clamp(0.85rem,2vw,1.05rem)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+              animation: 'cobjPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            }}>{feedback.message}</div>
+          </div>
+        )}
       </div>
+
+      {/* CSS Animations */}
+      <style>{`
+        @keyframes cobjPop {
+          0% { transform: scale(0); opacity: 0; }
+          60% { transform: scale(1.15); opacity: 1; }
+          100% { transform: scale(1); }
+        }
+      `}</style>
 
       {gameComplete && (
         <GameCompleteModal
           lang={lang} stars={getStars()} score={score}
-          accentColor="var(--cm-pink)"
-          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); generateRound(1); }}
+          accentColor="#E91E63"
+          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); prevAnimalsRef.current = []; generateRound(1); }}
           onBack={() => goToWorld('numbers')}
           confettiPieces={confettiPieces}
         />
