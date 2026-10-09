@@ -6273,99 +6273,201 @@ export function MagicDiceGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const DICE_FACES = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
-  const [dice1, setDice1] = useState(0);
-  const [dice2, setDice2] = useState(0);
-  const [round, setRound] = useState(0);
+  const TOTAL_ROUNDS = 15;
+  const [dice1, setDice1] = useState(1);
+  const [dice2, setDice2] = useState(1);
+  const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
+  const [confettiPieces, setConfettiPieces] = useState([]);
+  const [wrongCount, setWrongCount] = useState(0);
   const [rolling, setRolling] = useState(false);
   const [choices, setChoices] = useState([]);
-  const TOTAL_ROUNDS = 15;
+
+  // Render dice face with dots
+  const DiceFace = ({ value, isRolling }) => {
+    const dotPositions = {
+      1: [[50,50]],
+      2: [[25,25],[75,75]],
+      3: [[25,25],[50,50],[75,75]],
+      4: [[25,25],[75,25],[25,75],[75,75]],
+      5: [[25,25],[75,25],[50,50],[25,75],[75,75]],
+      6: [[25,25],[75,25],[25,50],[75,50],[25,75],[75,75]]
+    };
+    return (
+      <div style={{
+        width: 80, height: 80, borderRadius: 16,
+        background: 'white', border: '3px solid #FFB74D',
+        boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
+        position: 'relative',
+        transition: 'transform 0.5s ease',
+        transform: isRolling ? 'rotate(720deg) scale(0.8)' : 'rotate(0) scale(1)'
+      }}>
+        {(dotPositions[value] || []).map(([x, y], i) => (
+          <div key={i} style={{
+            position: 'absolute', left: `${x}%`, top: `${y}%`,
+            transform: 'translate(-50%, -50%)',
+            width: 12, height: 12, borderRadius: '50%',
+            background: '#E65100'
+          }} />
+        ))}
+      </div>
+    );
+  };
 
   const rollDice = useCallback(() => {
     setRolling(true);
-    if (soundEnabled) playTapSound();
+    setWrongCount(0);
+    setFeedback(null);
     setTimeout(() => {
-      const d1 = Math.floor(Math.random() * 6);
-      const d2 = Math.floor(Math.random() * 6);
+      const d1 = Math.floor(Math.random() * 6) + 1;
+      const d2 = Math.floor(Math.random() * 6) + 1;
       setDice1(d1);
       setDice2(d2);
-      const total = (d1 + 1) + (d2 + 1);
-      const wrongs = [];
-      while (wrongs.length < 2) {
-        const w = Math.floor(Math.random() * 12) + 2;
-        if (w !== total && !wrongs.includes(w)) wrongs.push(w);
+      const total = d1 + d2;
+      const wrongs = new Set();
+      while (wrongs.size < 2) {
+        const w = Math.floor(Math.random() * 11) + 2;
+        if (w !== total) wrongs.add(w);
       }
       setChoices([total, ...wrongs].sort(() => Math.random() - 0.5));
       setRolling(false);
-    }, 600);
-  }, [soundEnabled]);
+    }, 700);
+  }, []);
 
-  useEffect(() => { rollDice(); }, []);
+  useEffect(() => { rollDice(); }, [rollDice]);
 
   const handleAnswer = (num) => {
-    const total = (dice1 + 1) + (dice2 + 1);
+    if (feedback || rolling) return;
+    const total = dice1 + dice2;
     if (num === total) {
-      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
-      setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
-      setScore(score + 1);
+      setScore(s => s + 10);
+      setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
+      setTimeout(() => {
+        if (round >= TOTAL_ROUNDS) {
+          const finalScore = score + 10;
+          const stars = finalScore >= 100 ? 3 : finalScore >= 60 ? 2 : 1;
+          completeGame('numbers', 'magic-dice', stars, finalScore);
+          celebrationFeedback(lang, soundEnabled);
+          const colors = ['#FF9800', '#FFD93D', '#6BCB77', '#4A90D9', '#FF6B9D'];
+          setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
+            id: i, left: Math.random() * 100, color: colors[i % colors.length],
+            delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
+          })));
+          setGameComplete(true);
+        } else {
+          setRound(r => r + 1);
+          rollDice();
+        }
+      }, 1200);
     } else {
-      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
-      setFeedback({ type: 'wrong', message: `${lang === 'bm' ? 'Jawapan betul:' : 'Correct answer:'} ${total}` });
+      setWrongCount(c => c + 1);
+      setFeedback({ type: 'wrong', message: wrongFeedback(lang, soundEnabled) });
+      setTimeout(() => setFeedback(null), 900);
     }
-    setTimeout(() => {
-      setFeedback(null);
-      if (round + 1 < TOTAL_ROUNDS) { setRound(round + 1); rollDice(); }
-      else {
-        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
-        const f = num === total ? score + 1 : score;
-        completeGame('numbers', 'magic-dice', f >= 7 ? 3 : f >= 4 ? 2 : 1, f * 10);
-        setGameComplete(true);
-      }
-    }, 1000);
   };
 
-  if (gameComplete) {
-    return (
-      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
-        <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
-        <h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? 'Bijak Mengira!' : 'Great Counting!'}</h1>
-        <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
-        <button className="btn-premium" onClick={() => goToWorld('numbers')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button>
-      </div>
-    );
-  }
+  const getStars = () => score >= 100 ? 3 : score >= 60 ? 2 : 1;
 
   return (
-    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/colour_hunt_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
-      <div style={{ padding: 16, textAlign: 'center' }}>
-        <button className="icon-btn" onClick={() => goToWorld('numbers')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        <h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? 'Berapa jumlah?' : 'What is the total?'}</h2>
-        <div style={{ fontSize: '0.8rem', color: '#999' }}>{round + 1}/{TOTAL_ROUNDS}</div>
-        <div style={{ display: 'flex', gap: 20, justifyContent: 'center', margin: '24px 0' }}>
-          <div style={{ fontSize: '5rem', transition: 'transform 0.3s', transform: rolling ? 'rotate(360deg)' : 'rotate(0)' }}>{DICE_FACES[dice1]}</div>
-          <div style={{ fontSize: '2rem', alignSelf: 'center', fontWeight: 900 }}>+</div>
-          <div style={{ fontSize: '5rem', transition: 'transform 0.3s', transform: rolling ? 'rotate(-360deg)' : 'rotate(0)' }}>{DICE_FACES[dice2]}</div>
+    <div className="game-screen" style={{ position: 'relative' }}>
+      <img src={assetPath('/images/game/dice_boardgame_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
+      <div className="game-header" style={{ background: 'linear-gradient(135deg, #FF9800, #FFB74D)', color: 'white', borderBottom: '3px solid rgba(255,255,255,0.3)' }}>
+        <button className="back-btn" onClick={() => goToWorld('numbers')} style={{ color: 'white', background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>←</button>
+        <span className="game-title" style={{ color: 'white', textShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
+          {lang === 'bm' ? 'Dadu Ajaib' : 'Magic Dice'}
+        </span>
+        <div className="game-stars" style={{ background: 'rgba(255,255,255,0.25)', borderRadius: 20, padding: '4px 14px' }}>
+          <span style={{ fontWeight: 700, color: 'white', fontSize: '1rem' }}>{round}/{TOTAL_ROUNDS}</span>
         </div>
-        <div style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 16 }}>{dice1 + 1} + {dice2 + 1} = ?</div>
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-          {choices.map((c, i) => (
-            <button key={i} onClick={() => handleAnswer(c)} disabled={rolling} style={{
-              width: 60, height: 60, borderRadius: 16, fontSize: '1.5rem', fontWeight: 900,
-              background: 'white', border: '2px solid rgba(0,0,0,0.1)', cursor: 'pointer',
-              fontFamily: 'var(--font-heading)', boxShadow: 'var(--shadow-sm)',
-            }}>{c}</button>
-          ))}
+      </div>
+
+      <div className="game-body" style={{ textAlign: 'center', gap: 'var(--space-md)' }}>
+        {/* Dice display panel */}
+        <div style={{
+          background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)',
+          borderRadius: 24, padding: '16px 24px', color: '#333',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.15)', maxWidth: 400, margin: '0 auto',
+          border: '3px solid #FFB74D'
+        }}>
+          <div style={{ fontSize: '0.85rem', color: '#E65100', marginBottom: 12, fontWeight: 800, letterSpacing: 2, textTransform: 'uppercase' }}>
+            {lang === 'bm' ? 'Goncang & Kira!' : 'Roll & Count!'}
+          </div>
+
+          {/* Dice area */}
+          <div style={{
+            background: 'linear-gradient(180deg, #FFF3E0 0%, #FFE0B2 100%)',
+            borderRadius: 16, padding: '16px 12px',
+            border: '2px dashed #FFB74D',
+            display: 'flex', gap: 16, justifyContent: 'center', alignItems: 'center'
+          }}>
+            <DiceFace value={dice1} isRolling={rolling} />
+            <div style={{ fontSize: '2rem', fontWeight: 900, color: '#E65100' }}>+</div>
+            <DiceFace value={dice2} isRolling={rolling} />
+          </div>
+
+          {/* Equation banner */}
+          <div style={{
+            background: 'linear-gradient(135deg, #FF9800, #FFB74D)',
+            borderRadius: 16, padding: '10px 20px', marginTop: 12,
+            fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
+            color: 'white', boxShadow: '0 4px 12px rgba(255,152,0,0.3)'
+          }}>
+            {dice1} + {dice2} = ?
+          </div>
         </div>
+
+        {/* Answer Buttons */}
+        <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
+          {choices.map((c, i) => {
+            const total = dice1 + dice2;
+            const isCorrect = c === total;
+            const isCorrectFeedback = feedback && feedback.type === 'correct' && isCorrect;
+            const showHint = wrongCount >= 2 && isCorrect;
+            const isWrongFeedback = feedback && !isCorrect && feedback.type === 'wrong';
+            const btnColors = ['#FF9800', '#FDCB6E', '#E65100'];
+            return (
+              <button key={i} onClick={() => handleAnswer(c)} disabled={rolling} style={{
+                width: 80, height: 80, borderRadius: 20,
+                background: isCorrectFeedback ? '#6BCB77' : isWrongFeedback ? '#FF6B6B55' : showHint ? '#E8F5E9' : 'white',
+                border: `4px solid ${isCorrectFeedback ? '#4CAF50' : isWrongFeedback ? '#FF6B6B' : showHint ? '#6BCB77' : btnColors[i % 3]}`,
+                fontSize: '2.2rem', fontWeight: 900, fontFamily: 'var(--font-heading)',
+                color: isCorrectFeedback ? 'white' : '#333',
+                cursor: rolling ? 'default' : 'pointer',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transform: isCorrectFeedback ? 'scale(1.12)' : 'scale(1)',
+                transition: 'all 0.2s ease'
+              }}>
+                {c}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Feedback */}
         {feedback && (
-          <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>
-            {feedback.type === 'correct' ? '' : ''}{feedback.message}
+          <div style={{
+            padding: '10px 20px', borderRadius: 16,
+            background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B',
+            color: 'white', fontWeight: 700, fontSize: '1.1rem',
+            animation: 'popIn 0.3s ease'
+          }}>
+            {feedback.message}
           </div>
         )}
       </div>
+
+      {gameComplete && (
+        <GameCompleteModal
+          lang={lang} stars={getStars()} score={score}
+          accentColor="#FF9800"
+          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); rollDice(); }}
+          onBack={() => goToWorld('numbers')}
+          confettiPieces={confettiPieces}
+        />
+      )}
     </div>
   );
 }
