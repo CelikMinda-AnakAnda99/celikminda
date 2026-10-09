@@ -5688,94 +5688,186 @@ export function NumberTraceGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const NUMBERS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-  const [numIdx, setNumIdx] = useState(0);
-  const [dotsTapped, setDotsTapped] = useState(0);
+  const TOTAL_ROUNDS = 15;
+  const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
-  const [gameComplete, setGameComplete] = useState(false);
+  const [targetNum, setTargetNum] = useState(0);
+  const [options, setOptions] = useState([]);
   const [feedback, setFeedback] = useState(null);
-  const DOTS_PER_NUM = 4;
+  const [gameComplete, setGameComplete] = useState(false);
+  const [confettiPieces, setConfettiPieces] = useState([]);
+  const [wrongCount, setWrongCount] = useState(0);
+  const [displayItems, setDisplayItems] = useState([]);
 
-  const handleDotTap = (dotIdx) => {
-    if (dotIdx === dotsTapped) {
-      if (soundEnabled) playTapSound();
-      const newDots = dotsTapped + 1;
-      setDotsTapped(newDots);
-      if (newDots === DOTS_PER_NUM) {
-        if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
-        setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
-        const newScore = score + 1;
-        setScore(newScore);
-        setTimeout(() => {
-          setFeedback(null);
-          if (numIdx + 1 < NUMBERS.length) {
-            setNumIdx(numIdx + 1);
-            setDotsTapped(0);
-          } else {
-            if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
-            completeGame('numbers', 'number-trace', newScore >= 8 ? 3 : newScore >= 5 ? 2 : 1, newScore * 10);
-            setGameComplete(true);
-          }
-        }, 800);
-      }
+  const itemImages = [
+    '/images/game/apple.jpg', '/images/game/orange.jpg', '/images/game/lemon.jpg',
+    '/images/game/cherry.jpg', '/images/game/grape.jpg', '/images/game/watermelon.jpg',
+    '/images/game/cupcake.jpg', '/images/game/cookie.jpg', '/images/game/donut.jpg'
+  ];
+
+  const generateRound = useCallback(() => {
+    const num = Math.floor(Math.random() * 9) + 1; // 1-9
+    setTargetNum(num);
+    setWrongCount(0);
+
+    // Pick random item image for this round
+    const itemImg = itemImages[Math.floor(Math.random() * itemImages.length)];
+    setDisplayItems(Array.from({ length: num }, () => itemImg));
+
+    // Generate options: correct + 3 wrong
+    const wrongSet = new Set();
+    while (wrongSet.size < 3) {
+      const w = Math.floor(Math.random() * 9) + 1;
+      if (w !== num) wrongSet.add(w);
+    }
+    const allOptions = [num, ...wrongSet].sort(() => Math.random() - 0.5);
+    setOptions(allOptions.map(val => ({ val, correct: val === num })));
+    setFeedback(null);
+  }, []);
+
+  useEffect(() => { generateRound(); }, [generateRound]);
+
+  const handleAnswer = (opt) => {
+    if (feedback) return;
+    if (opt.correct) {
+      setScore(s => s + 10);
+      setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
+      setTimeout(() => {
+        if (round >= TOTAL_ROUNDS) {
+          const finalScore = score + 10;
+          const stars = finalScore >= 100 ? 3 : finalScore >= 60 ? 2 : 1;
+          completeGame('numbers', 'number-trace', stars, finalScore);
+          celebrationFeedback(lang, soundEnabled);
+          const colors = ['#26A69A', '#FFD93D', '#6BCB77', '#4A90D9', '#FF6B9D'];
+          setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
+            id: i, left: Math.random() * 100, color: colors[i % colors.length],
+            delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
+          })));
+          setGameComplete(true);
+        } else {
+          setRound(r => r + 1);
+          generateRound();
+        }
+      }, 1200);
+    } else {
+      setWrongCount(c => c + 1);
+      setFeedback({ type: 'wrong', message: wrongFeedback(lang, soundEnabled) });
+      setTimeout(() => setFeedback(null), 900);
     }
   };
 
-  if (gameComplete) {
-    return (
-      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
-        <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
-        <h1 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>
-          {lang === 'bm' ? 'Nombor kamu cantik!' : 'Beautiful numbers!'}
-        </h1>
-        <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
-        <button className="btn-premium" onClick={() => goToWorld('numbers')}>
-          {lang === 'bm' ? '← Kembali' : '← Back'}
-        </button>
-      </div>
-    );
-  }
-
-  const num = NUMBERS[numIdx];
-  const dotPositions = Array.from({ length: DOTS_PER_NUM }, (_, i) => ({
-    left: 25 + (i % 2) * 50,
-    top: 20 + Math.floor(i / 2) * 35 + (Math.sin(i) * 8),
-  }));
+  const getStars = () => score >= 100 ? 3 : score >= 60 ? 2 : 1;
 
   return (
-    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/number_trace_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
-      <div style={{ padding: 16, textAlign: 'center' }}>
-        <button className="icon-btn" onClick={() => goToWorld('numbers')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        <h2 style={{ fontFamily: 'var(--font-heading)', color: '#AD1457' }}>
-          {lang === 'bm' ? `Jejak nombor ${num}!` : `Trace number ${num}!`}
-        </h2>
-        <div style={{ fontSize: '0.8rem', color: '#999' }}>{numIdx + 1}/{NUMBERS.length}</div>
-        <div style={{
-          margin: '20px auto', width: 220, height: 220, background: 'white', borderRadius: 24,
-          position: 'relative', boxShadow: 'var(--shadow-lg)',
-        }}>
-          <div style={{
-            position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '8rem', color: 'rgba(173,20,87,0.1)', fontFamily: 'var(--font-heading)', fontWeight: 900,
-          }}>{num}</div>
-          {dotPositions.map((pos, i) => (
-            <button key={i} onClick={() => handleDotTap(i)} style={{
-              position: 'absolute', left: `${pos.left}%`, top: `${pos.top}%`,
-              width: i < dotsTapped ? 18 : 26, height: i < dotsTapped ? 18 : 26, borderRadius: '50%',
-              background: i < dotsTapped ? '#AD1457' : i === dotsTapped ? '#FFD93D' : '#E0E0E0',
-              border: i === dotsTapped ? '3px solid #FF9800' : '2px solid rgba(0,0,0,0.1)',
-              cursor: i === dotsTapped ? 'pointer' : 'default', transform: 'translate(-50%, -50%)',
-              transition: 'all 0.2s ease', fontSize: '0.7rem', color: 'white', fontWeight: 800,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: i === dotsTapped ? '0 0 12px rgba(255,152,0,0.5)' : 'none',
-            }}>{i < dotsTapped ? '✓' : i + 1}</button>
-          ))}
+    <div className="game-screen" style={{ position: 'relative' }}>
+      <img src={assetPath('/images/game/number_classroom_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
+      <div className="game-header" style={{ background: 'linear-gradient(135deg, #26A69A, #4DB6AC)', color: 'white', borderBottom: '3px solid rgba(255,255,255,0.3)' }}>
+        <button className="back-btn" onClick={() => goToWorld('numbers')} style={{ color: 'white', background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>←</button>
+        <span className="game-title" style={{ color: 'white', textShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
+          {lang === 'bm' ? 'Kira & Kenal Nombor' : 'Count & Know Numbers'}
+        </span>
+        <div className="game-stars" style={{ background: 'rgba(255,255,255,0.25)', borderRadius: 20, padding: '4px 14px' }}>
+          <span style={{ fontWeight: 700, color: 'white', fontSize: '1rem' }}>
+            {round}/{TOTAL_ROUNDS}
+          </span>
         </div>
+      </div>
+
+      <div className="game-body" style={{ textAlign: 'center', gap: 'var(--space-md)' }}>
+        {/* Counting Display */}
+        <div style={{
+          background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)',
+          borderRadius: 24, padding: '16px 20px', color: '#333',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.15)', maxWidth: 400, margin: '0 auto',
+          border: '3px solid #80CBC4'
+        }}>
+          <div style={{ fontSize: '0.85rem', color: '#26A69A', marginBottom: 10, fontWeight: 800, letterSpacing: 2, textTransform: 'uppercase' }}>
+            {lang === 'bm' ? 'Berapa banyak?' : 'How many?'}
+          </div>
+
+          {/* Item display area */}
+          <div style={{
+            background: 'linear-gradient(180deg, #E0F2F1 0%, #B2DFDB 100%)',
+            borderRadius: 16, padding: '14px 12px',
+            border: '2px dashed #80CBC4', minHeight: 60
+          }}>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+              {displayItems.map((img, i) => (
+                <div key={i} style={{
+                  width: 50, height: 50, borderRadius: 12,
+                  background: 'white', border: '2px solid #80CBC4',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  overflow: 'hidden'
+                }}>
+                  <img src={assetPath(img)} alt=""
+                    style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover' }} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Question banner */}
+          <div style={{
+            background: 'linear-gradient(135deg, #26A69A, #4DB6AC)',
+            borderRadius: 16, padding: '10px 20px', marginTop: 12,
+            fontSize: '1.3rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
+            color: 'white', boxShadow: '0 4px 12px rgba(38,166,154,0.3)'
+          }}>
+            {lang === 'bm' ? 'Berapa buah?' : 'How many items?'}
+          </div>
+        </div>
+
+        {/* Answer Buttons */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16,
+          maxWidth: 280, margin: '0 auto'
+        }}>
+          {options.map((opt, i) => {
+            const btnColors = ['#26A69A', '#FDCB6E', '#FF7043', '#7E57C2'];
+            const isCorrectFeedback = feedback && feedback.type === 'correct' && opt.correct;
+            const showHint = wrongCount >= 2 && opt.correct;
+            const isWrongFeedback = feedback && !opt.correct && feedback.type === 'wrong';
+            return (
+              <button key={i} onClick={() => handleAnswer(opt)} style={{
+                background: isCorrectFeedback ? '#6BCB77' : isWrongFeedback ? '#FF6B6B55' : showHint ? '#E8F5E9' : 'white',
+                border: `4px solid ${isCorrectFeedback ? '#4CAF50' : isWrongFeedback ? '#FF6B6B' : showHint ? '#6BCB77' : btnColors[i % 4]}`,
+                borderRadius: 24, padding: 0,
+                fontSize: '2.8rem', fontWeight: 900, fontFamily: 'var(--font-heading)',
+                color: isCorrectFeedback ? 'white' : '#333',
+                cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                transform: isCorrectFeedback ? 'scale(1.12)' : 'scale(1)',
+                transition: 'all 0.2s ease',
+                aspectRatio: '1 / 1',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                {opt.val}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Feedback */}
         {feedback && (
-          <div style={{ marginTop: 12, padding: '8px 16px', borderRadius: 12, background: '#6BCB77', color: 'white', fontWeight: 700, display: 'inline-block' }}><CheckIcon size={14} /> {feedback.message}</div>
+          <div style={{
+            padding: '10px 20px', borderRadius: 16,
+            background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B',
+            color: 'white', fontWeight: 700, fontSize: '1.1rem',
+            animation: 'popIn 0.3s ease'
+          }}>
+            {feedback.message}
+          </div>
         )}
       </div>
+
+      {gameComplete && (
+        <GameCompleteModal
+          lang={lang} stars={getStars()} score={score}
+          accentColor="#26A69A"
+          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); generateRound(); }}
+          onBack={() => goToWorld('numbers')}
+          confettiPieces={confettiPieces}
+        />
+      )}
     </div>
   );
 }
