@@ -2907,6 +2907,8 @@ export function MathMachineGame() {
 
   useEffect(() => { generateRound(); }, [generateRound]);
 
+  const [confettiPieces, setConfettiPieces] = useState([]);
+
   const handleAnswer = (opt) => {
     if (feedback) return;
     if (opt.correct) {
@@ -2918,6 +2920,11 @@ export function MathMachineGame() {
           const stars = finalScore >= 70 ? 3 : finalScore >= 40 ? 2 : 1;
           completeGame('numbers', 'math-machine', stars, finalScore);
           celebrationFeedback(lang, soundEnabled);
+          const colors = ['#9B72CF', '#FFD93D', '#4A90D9', '#6BCB77', '#FF6B9D'];
+          setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
+            id: i, left: Math.random() * 100, color: colors[i % colors.length],
+            delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
+          })));
           setGameComplete(true);
         } else {
           setRound(r => r + 1);
@@ -2930,33 +2937,7 @@ export function MathMachineGame() {
     }
   };
 
-  const emojis = ['🍎', '🍊', '🍋', '🍇', '🍓', '🫐', '🍑', '🥝', '🍒', '🍌'];
-
-  if (gameComplete) {
-    const stars = score >= 70 ? 3 : score >= 40 ? 2 : 1;
-    return (
-      <div className="game-screen">
-        <div className="game-body" style={{ textAlign: 'center', justifyContent: 'center' }}>
-          <div style={{ fontSize: '4rem', marginBottom: 'var(--space-md)' }}></div>
-          <h2 style={{ fontFamily: 'var(--font-heading)', color: 'var(--cm-purple)' }}>
-            {lang === 'bm' ? 'Tahniah! Matematik Hebat!' : 'Amazing Math Skills!'}
-          </h2>
-          <div style={{ fontSize: '2rem', margin: 'var(--space-md) 0' }}>
-            {[1,2,3].map(s => <span key={s}>{s <= stars ? <StarIcon size={20} /> : <svg width={20} height={20} viewBox='0 0 24 24' fill='#DDD'><path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/></svg>}</span>)}
-          </div>
-          <p style={{ fontSize: '1.3rem', fontWeight: 700 }}>{t('score', lang)}: {score}</p>
-          <div className="action-buttons" style={{ marginTop: 'var(--space-lg)' }}>
-            <button className="btn-secondary" onClick={() => { setRound(1); setScore(0); setGameComplete(false); generateRound(); }}>
-              <RefreshIcon size={16} /> {t('playAgain', lang)}
-            </button>
-            <button className="btn-success" onClick={() => goToWorld('numbers')}>
-              <CheckIcon size={16} /> {t('backToWorld', lang)}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const getStars = () => score >= 70 ? 3 : score >= 40 ? 2 : 1;
 
   return (
     <div className="game-screen" style={{ position: 'relative' }}>
@@ -3048,6 +3029,16 @@ export function MathMachineGame() {
           </div>
         )}
       </div>
+
+      {gameComplete && (
+        <GameCompleteModal
+          lang={lang} stars={getStars()} score={score}
+          accentColor="#9B72CF"
+          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); generateRound(); }}
+          onBack={() => goToWorld('numbers')}
+          confettiPieces={confettiPieces}
+        />
+      )}
     </div>
   );
 }
