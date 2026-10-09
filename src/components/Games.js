@@ -3432,8 +3432,13 @@ export function SubtractionShopGame() {
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
   const [soldItems, setSoldItems] = useState([]);
+  const [confettiPieces, setConfettiPieces] = useState([]);
 
-  const ITEMS = ['🧁', '🍪', '🍩', '🍰', '🧃', '🍫', '🍬', '🍭', '🥤', '🎂'];
+  const shopImages = [
+    '/images/game/cupcake.jpg', '/images/game/cookie.jpg', '/images/game/donut.jpg',
+    '/images/game/cake.jpg', '/images/game/chocolate.jpg', '/images/game/candy.jpg',
+    '/images/game/lollipop.jpg'
+  ];
 
   const generateRound = useCallback(() => {
     const total = Math.floor(Math.random() * 7) + 3; // 3-9
@@ -3476,6 +3481,11 @@ export function SubtractionShopGame() {
           const stars = finalScore >= 70 ? 3 : finalScore >= 40 ? 2 : 1;
           completeGame('numbers', 'subtraction-shop', stars, finalScore);
           celebrationFeedback(lang, soundEnabled);
+          const colors = ['#FF6B6B', '#FFD93D', '#6BCB77', '#4A90D9', '#FF6B9D'];
+          setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
+            id: i, left: Math.random() * 100, color: colors[i % colors.length],
+            delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
+          })));
           setGameComplete(true);
         } else {
           setRound(r => r + 1);
@@ -3488,44 +3498,19 @@ export function SubtractionShopGame() {
     }
   };
 
-  if (gameComplete) {
-    const stars = score >= 70 ? 3 : score >= 40 ? 2 : 1;
-    return (
-      <div className="game-screen">
-        <div className="game-body" style={{ textAlign: 'center', justifyContent: 'center' }}>
-          <div style={{ marginBottom: 8 }}><TrophyIcon size={48} /></div>
-          <h2 style={{ fontFamily: 'var(--font-heading)', color: 'var(--cm-pink)' }}>
-            {lang === 'bm' ? 'Kedai Tutup! Matematik Hebat!' : 'Shop Closed! Great Math!'}
-          </h2>
-          <div style={{ fontSize: '2rem', margin: 'var(--space-md) 0' }}>
-            {[1, 2, 3].map(s => <span key={s}>{s <= stars ? <StarIcon size={20} /> : <svg width={20} height={20} viewBox='0 0 24 24' fill='#DDD'><path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' /></svg>}</span>)}
-          </div>
-          <p style={{ fontSize: '1.3rem', fontWeight: 700 }}>{t('score', lang)}: {score}</p>
-          <div className="action-buttons" style={{ marginTop: 'var(--space-lg)' }}>
-            <button className="btn-secondary" onClick={() => { setRound(1); setScore(0); setGameComplete(false); generateRound(); }}>
-              <RefreshIcon size={16} /> {t('playAgain', lang)}
-            </button>
-            <button className="btn-success" onClick={() => goToWorld('numbers')}>
-              <CheckIcon size={16} /> {t('backToWorld', lang)}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const itemEmoji = ITEMS[round % ITEMS.length];
+  const getStars = () => score >= 70 ? 3 : score >= 40 ? 2 : 1;
+  const currentItemImg = shopImages[round % shopImages.length];
 
   return (
     <div className="game-screen" style={{ position: 'relative' }}>
       <img src={assetPath('/images/game/grocery_store_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
-      <div className="game-header">
-        <button className="back-btn" onClick={() => goToWorld('numbers')}>←</button>
-        <span className="game-title">
+      <div className="game-header" style={{ background: 'linear-gradient(135deg, #FF6B6B, #FF8E8E)', color: 'white', borderBottom: '3px solid rgba(255,255,255,0.3)' }}>
+        <button className="back-btn" onClick={() => goToWorld('numbers')} style={{ color: 'white' }}>←</button>
+        <span className="game-title" style={{ color: 'white', textShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
           {lang === 'bm' ? 'Kedai Tolak' : 'Subtraction Shop'}
         </span>
-        <div className="game-stars">
-          <span style={{ fontWeight: 700, color: 'var(--cm-orange)' }}>
+        <div className="game-stars" style={{ background: 'rgba(255,255,255,0.25)', borderRadius: 20, padding: '4px 14px' }}>
+          <span style={{ fontWeight: 700, color: 'white', fontSize: '1rem' }}>
             {round}/{TOTAL_ROUNDS}
           </span>
         </div>
@@ -3538,22 +3523,23 @@ export function SubtractionShopGame() {
           borderRadius: 24, padding: 'var(--space-lg)', color: 'white',
           boxShadow: 'var(--shadow-lg)', maxWidth: 380, margin: '0 auto'
         }}>
-          <div style={{ fontSize: '0.9rem', opacity: 0.8, marginBottom: 8 }}>
+          <div style={{ fontSize: '0.9rem', opacity: 0.8, marginBottom: 8, fontWeight: 700, letterSpacing: 2 }}>
             {lang === 'bm' ? 'KEDAI KUIH' : 'BAKERY SHOP'}
           </div>
 
-          {/* Visual Items */}
+          {/* Visual Items — cute bakery images */}
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', margin: '12px 0', minHeight: 60 }}>
             {Array.from({ length: num1 }, (_, i) => (
-              <span key={i} style={{
-                fontSize: '2rem',
-                opacity: soldItems.includes(i) ? 0.2 : 1,
-                textDecoration: soldItems.includes(i) ? 'line-through' : 'none',
-                transition: 'all 0.5s ease',
-                transform: soldItems.includes(i) ? 'scale(0.7) translateY(10px)' : 'scale(1)'
-              }}>
-                {itemEmoji}
-              </span>
+              <img key={i} src={assetPath(currentItemImg)} alt=""
+                style={{
+                  width: 42, height: 42, borderRadius: '50%', objectFit: 'cover',
+                  border: soldItems.includes(i) ? '2px solid rgba(255,0,0,0.5)' : '2px solid rgba(255,255,255,0.6)',
+                  opacity: soldItems.includes(i) ? 0.25 : 1,
+                  transform: soldItems.includes(i) ? 'scale(0.7)' : 'scale(1)',
+                  transition: 'all 0.5s ease',
+                  filter: soldItems.includes(i) ? 'grayscale(1)' : 'none',
+                  animation: !soldItems.includes(i) ? `popIn 0.3s ease ${i * 0.06}s both` : 'none'
+                }} />
             ))}
           </div>
 
@@ -3565,28 +3551,37 @@ export function SubtractionShopGame() {
           }}>
             {num1} - {num2} = ?
           </div>
-          <div style={{ fontSize: '0.8rem', marginTop: 6, opacity: 0.8 }}>
+          <div style={{ fontSize: '0.85rem', marginTop: 8, opacity: 0.9, fontWeight: 600 }}>
             {lang === 'bm' ? `${num2} kuih telah dijual!` : `${num2} were sold!`}
           </div>
         </div>
 
-        {/* Answer Buttons */}
+        {/* Answer Buttons — square with colorful borders */}
         <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12,
-          maxWidth: 300, margin: '0 auto'
+          display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16,
+          maxWidth: 280, margin: '0 auto'
         }}>
-          {options.map((opt, i) => (
-            <button key={i} onClick={() => handleAnswer(opt)} style={{
-              background: feedback && opt.correct ? '#6BCB77' : 'white',
-              border: '3px solid #E0E0E0', borderRadius: 16, padding: '16px 8px',
-              fontSize: '2rem', fontWeight: 900, fontFamily: 'var(--font-heading)',
-              cursor: 'pointer', boxShadow: 'var(--shadow-sm)',
-              transform: feedback && opt.correct ? 'scale(1.1)' : 'scale(1)',
-              transition: 'all 0.2s ease'
-            }}>
-              {opt.val}
-            </button>
-          ))}
+          {options.map((opt, i) => {
+            const btnColors = ['#FF6B6B', '#FDCB6E', '#00B894', '#E17055'];
+            const isCorrectFeedback = feedback && opt.correct;
+            const isWrongFeedback = feedback && !opt.correct && feedback.type === 'wrong';
+            return (
+              <button key={i} onClick={() => handleAnswer(opt)} style={{
+                background: isCorrectFeedback ? '#6BCB77' : isWrongFeedback ? '#FF6B6B55' : 'white',
+                border: `4px solid ${isCorrectFeedback ? '#4CAF50' : isWrongFeedback ? '#FF6B6B' : btnColors[i % 4]}`,
+                borderRadius: 24, padding: 0,
+                fontSize: '2.8rem', fontWeight: 900, fontFamily: 'var(--font-heading)',
+                color: isCorrectFeedback ? 'white' : '#333',
+                cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                transform: isCorrectFeedback ? 'scale(1.12)' : 'scale(1)',
+                transition: 'all 0.2s ease',
+                aspectRatio: '1 / 1',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                {opt.val}
+              </button>
+            );
+          })}
         </div>
 
         {/* Feedback */}
@@ -3597,13 +3592,24 @@ export function SubtractionShopGame() {
             color: 'white', fontWeight: 700, fontSize: '1.1rem',
             animation: 'popIn 0.3s ease'
           }}>
-            {feedback.type === 'correct' ? '' : ''}{feedback.message}
+            {feedback.message}
           </div>
         )}
       </div>
+
+      {gameComplete && (
+        <GameCompleteModal
+          lang={lang} stars={getStars()} score={score}
+          accentColor="#FF6B6B"
+          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); generateRound(); }}
+          onBack={() => goToWorld('numbers')}
+          confettiPieces={confettiPieces}
+        />
+      )}
     </div>
   );
 }
+
 
 
 // ============================================
