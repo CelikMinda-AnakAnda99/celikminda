@@ -3550,7 +3550,7 @@ export function SubtractionShopGame() {
                   }}>
                     {!isSold ? (
                       <img src={assetPath(currentItemImg)} alt=""
-                        style={{ width: 30, height: 30, objectFit: 'contain' }} />
+                        style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover' }} />
                     ) : (
                       <div style={{ width: 16, height: 2, background: '#ccc', borderRadius: 2 }} />
                     )}
