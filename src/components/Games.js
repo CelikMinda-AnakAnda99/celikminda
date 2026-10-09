@@ -2961,13 +2961,13 @@ export function MathMachineGame() {
   return (
     <div className="game-screen" style={{ position: 'relative' }}>
       <img src={assetPath('/images/game/dice_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
-      <div className="game-header">
-        <button className="back-btn" onClick={() => goToWorld('numbers')}>←</button>
-        <span className="game-title">
+      <div className="game-header" style={{ background: 'linear-gradient(135deg, #6C5CE7, #A29BFE)', color: 'white', borderBottom: '3px solid rgba(255,255,255,0.3)' }}>
+        <button className="back-btn" onClick={() => goToWorld('numbers')} style={{ color: 'white' }}>←</button>
+        <span className="game-title" style={{ color: 'white', textShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
           {lang === 'bm' ? 'Mesin Matematik' : 'Math Machine'}
         </span>
-        <div className="game-stars">
-          <span style={{ fontWeight: 700, color: 'var(--cm-pink)' }}>
+        <div className="game-stars" style={{ background: 'rgba(255,255,255,0.25)', borderRadius: 20, padding: '4px 14px' }}>
+          <span style={{ fontWeight: 700, color: 'white', fontSize: '1rem' }}>
             {round}/{TOTAL_ROUNDS}
           </span>
         </div>
@@ -3015,23 +3015,29 @@ export function MathMachineGame() {
 
         {/* Answer Buttons */}
         <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12,
-          maxWidth: 300, margin: '0 auto'
+          display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16,
+          maxWidth: 340, margin: '0 auto'
         }}>
-          {options.map((opt, i) => (
-            <button key={i} onClick={() => handleAnswer(opt)} style={{
-              background: feedback && opt.correct ? '#6BCB77' :
-                feedback && !opt.correct && feedback.type === 'wrong' ? '#FF6B6B55' :
-                  'white',
-              border: '3px solid #E0E0E0', borderRadius: 16, padding: '16px 8px',
-              fontSize: '2rem', fontWeight: 900, fontFamily: 'var(--font-heading)',
-              cursor: 'pointer', boxShadow: 'var(--shadow-sm)',
-              transform: feedback && opt.correct ? 'scale(1.1)' : 'scale(1)',
-              transition: 'all 0.2s ease'
-            }}>
-              {opt.val}
-            </button>
-          ))}
+          {options.map((opt, i) => {
+            const btnColors = ['#6C5CE7', '#E17055', '#00B894', '#FDCB6E'];
+            const isCorrectFeedback = feedback && opt.correct;
+            const isWrongFeedback = feedback && !opt.correct && feedback.type === 'wrong';
+            return (
+              <button key={i} onClick={() => handleAnswer(opt)} style={{
+                background: isCorrectFeedback ? '#6BCB77' : isWrongFeedback ? '#FF6B6B55' : 'white',
+                border: `4px solid ${isCorrectFeedback ? '#4CAF50' : isWrongFeedback ? '#FF6B6B' : btnColors[i % 4]}`,
+                borderRadius: 20, padding: '20px 12px',
+                fontSize: '2.6rem', fontWeight: 900, fontFamily: 'var(--font-heading)',
+                color: isCorrectFeedback ? 'white' : '#333',
+                cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                transform: isCorrectFeedback ? 'scale(1.12)' : 'scale(1)',
+                transition: 'all 0.2s ease',
+                minHeight: 72
+              }}>
+                {opt.val}
+              </button>
+            );
+          })}
         </div>
 
         {/* Feedback */}
