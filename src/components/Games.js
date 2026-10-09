@@ -3016,7 +3016,7 @@ export function MathMachineGame() {
         {/* Answer Buttons */}
         <div style={{
           display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16,
-          maxWidth: 340, margin: '0 auto'
+          maxWidth: 280, margin: '0 auto'
         }}>
           {options.map((opt, i) => {
             const btnColors = ['#6C5CE7', '#E17055', '#00B894', '#FDCB6E'];
@@ -3026,13 +3026,14 @@ export function MathMachineGame() {
               <button key={i} onClick={() => handleAnswer(opt)} style={{
                 background: isCorrectFeedback ? '#6BCB77' : isWrongFeedback ? '#FF6B6B55' : 'white',
                 border: `4px solid ${isCorrectFeedback ? '#4CAF50' : isWrongFeedback ? '#FF6B6B' : btnColors[i % 4]}`,
-                borderRadius: 20, padding: '20px 12px',
-                fontSize: '2.6rem', fontWeight: 900, fontFamily: 'var(--font-heading)',
+                borderRadius: 24, padding: 0,
+                fontSize: '2.8rem', fontWeight: 900, fontFamily: 'var(--font-heading)',
                 color: isCorrectFeedback ? 'white' : '#333',
                 cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
                 transform: isCorrectFeedback ? 'scale(1.12)' : 'scale(1)',
                 transition: 'all 0.2s ease',
-                minHeight: 72
+                aspectRatio: '1 / 1',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
               }}>
                 {opt.val}
               </button>
