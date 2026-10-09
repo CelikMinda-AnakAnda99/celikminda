@@ -3517,37 +3517,63 @@ export function SubtractionShopGame() {
       </div>
 
       <div className="game-body" style={{ textAlign: 'center', gap: 'var(--space-md)' }}>
-        {/* Shop Display */}
+        {/* Shop Display — creative tray design */}
         <div style={{
-          background: 'linear-gradient(180deg, #FF6B6B 0%, #FF8E8E 100%)',
-          borderRadius: 24, padding: 'var(--space-lg)', color: 'white',
-          boxShadow: 'var(--shadow-lg)', maxWidth: 380, margin: '0 auto'
+          background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)',
+          borderRadius: 24, padding: '16px 20px', color: '#333',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.15)', maxWidth: 400, margin: '0 auto',
+          border: '3px solid #FFB8B8'
         }}>
-          <div style={{ fontSize: '0.9rem', opacity: 0.8, marginBottom: 8, fontWeight: 700, letterSpacing: 2 }}>
-            {lang === 'bm' ? 'KEDAI KUIH' : 'BAKERY SHOP'}
+          <div style={{ fontSize: '0.85rem', color: '#FF6B6B', marginBottom: 10, fontWeight: 800, letterSpacing: 2, textTransform: 'uppercase' }}>
+            {lang === 'bm' ? 'Rak Kuih' : 'Bakery Shelf'}
           </div>
 
-          {/* Visual Items — cute bakery images */}
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', margin: '12px 0', minHeight: 60 }}>
-            {Array.from({ length: num1 }, (_, i) => (
-              <img key={i} src={assetPath(currentItemImg)} alt=""
-                style={{
-                  width: 42, height: 42, borderRadius: '50%', objectFit: 'cover',
-                  border: soldItems.includes(i) ? '2px solid rgba(255,0,0,0.5)' : '2px solid rgba(255,255,255,0.6)',
-                  opacity: soldItems.includes(i) ? 0.25 : 1,
-                  transform: soldItems.includes(i) ? 'scale(0.7)' : 'scale(1)',
-                  transition: 'all 0.5s ease',
-                  filter: soldItems.includes(i) ? 'grayscale(1)' : 'none',
-                  animation: !soldItems.includes(i) ? `popIn 0.3s ease ${i * 0.06}s both` : 'none'
-                }} />
-            ))}
-          </div>
-
-          {/* Equation */}
+          {/* Visual Items on shelf — individual white cards */}
           <div style={{
-            background: 'rgba(0,0,0,0.2)', borderRadius: 16, padding: '12px 20px',
+            background: 'linear-gradient(180deg, #FFF5F5 0%, #FFE8E8 100%)',
+            borderRadius: 16, padding: '14px 10px',
+            border: '2px dashed #FFB8B8', minHeight: 70
+          }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+              {Array.from({ length: num1 }, (_, i) => (
+                <div key={i} style={{
+                  position: 'relative',
+                  width: 52, height: 52, borderRadius: 14,
+                  background: soldItems.includes(i) ? '#f0f0f0' : 'white',
+                  border: soldItems.includes(i) ? '2px solid #ddd' : '2px solid #FFB8B8',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: soldItems.includes(i) ? 'none' : '0 3px 8px rgba(255,107,107,0.15)',
+                  transition: 'all 0.5s ease',
+                  animation: !soldItems.includes(i) ? `popIn 0.3s ease ${i * 0.06}s both` : 'none'
+                }}>
+                  <img src={assetPath(currentItemImg)} alt=""
+                    style={{
+                      width: 38, height: 38, borderRadius: 10, objectFit: 'cover',
+                      opacity: soldItems.includes(i) ? 0.15 : 1,
+                      filter: soldItems.includes(i) ? 'grayscale(1)' : 'none',
+                      transition: 'all 0.5s ease'
+                    }} />
+                  {soldItems.includes(i) && (
+                    <div style={{
+                      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: '#FF6B6B', fontSize: '1.6rem', fontWeight: 900
+                    }}>
+                      X
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Equation on coral banner */}
+          <div style={{
+            background: 'linear-gradient(135deg, #FF6B6B, #FF8E8E)',
+            borderRadius: 16, padding: '12px 20px', marginTop: 12,
             fontSize: '2.5rem', fontWeight: 900, fontFamily: 'var(--font-heading)',
-            letterSpacing: 4
+            letterSpacing: 4, color: 'white',
+            boxShadow: '0 4px 12px rgba(255,107,107,0.3)'
           }}>
             {num1} - {num2} = ?
           </div>
