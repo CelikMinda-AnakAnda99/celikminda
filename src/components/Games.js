@@ -3541,19 +3541,15 @@ export function SubtractionShopGame() {
                   <div key={i} style={{
                     width: 50, height: 50, borderRadius: 12,
                     background: 'white',
-                    border: isSold ? '2px solid #ccc' : '2px solid #FFB8B8',
+                    border: isSold ? '2px solid #ddd' : '2px solid #FFB8B8',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: isSold ? 'none' : '0 2px 6px rgba(255,107,107,0.15)',
-                    transition: 'all 0.5s ease',
-                    animation: !isSold ? `popIn 0.3s ease ${i * 0.06}s both` : 'none',
                     overflow: 'hidden'
                   }}>
                     <img src={assetPath(currentItemImg)} alt=""
                       style={{
                         width: 34, height: 34, borderRadius: '50%', objectFit: 'cover',
-                        opacity: isSold ? 0.2 : 1,
-                        filter: isSold ? 'brightness(0.3) grayscale(1)' : 'none',
-                        transition: 'all 0.5s ease'
+                        opacity: isSold ? 0.35 : 1,
+                        filter: isSold ? 'grayscale(1)' : 'none'
                       }} />
                   </div>
                 );
