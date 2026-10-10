@@ -2267,30 +2267,29 @@ export function AnimalHomesGame() {
     { id: 'jungle', emoji: '🌴', nameBm: 'Hutan', nameEn: 'Jungle', color: '#C8E6C9', border: '#4CAF50' },
     { id: 'ocean', emoji: '🌊', nameBm: 'Laut', nameEn: 'Ocean', color: '#BBDEFB', border: '#2196F3' },
     { id: 'sky', emoji: '☁️', nameBm: 'Langit', nameEn: 'Sky', color: '#E1F5FE', border: '#03A9F4' },
-    { id: 'desert', emoji: '🏜️', nameBm: 'Padang Pasir', nameEn: 'Desert', color: '#FFF3E0', border: '#FF7043' },
-    { id: 'arctic', emoji: '❄️', nameBm: 'Artik', nameEn: 'Arctic', color: '#E8EAF6', border: '#5C6BC0' },
+    { id: 'home', emoji: '🏠', nameBm: 'Rumah', nameEn: 'Home', color: '#F3E5F5', border: '#AB47BC' },
   ];
 
   const ANIMALS_DATA = [
     { image: '/animals/cow.jpg', nameBm: 'Lembu', nameEn: 'Cow', habitat: 'farm' },
     { image: '/animals/rooster.jpg', nameBm: 'Ayam', nameEn: 'Chicken', habitat: 'farm' },
     { image: '/animals/sheep.jpg', nameBm: 'Kambing', nameEn: 'Sheep', habitat: 'farm' },
+    { image: '/animals/duck.jpg', nameBm: 'Itik', nameEn: 'Duck', habitat: 'farm' },
     { image: '/animals/lion.jpg', nameBm: 'Singa', nameEn: 'Lion', habitat: 'jungle' },
     { image: '/animals/monkey.jpg', nameBm: 'Monyet', nameEn: 'Monkey', habitat: 'jungle' },
     { image: '/animals/snake.jpg', nameBm: 'Ular', nameEn: 'Snake', habitat: 'jungle' },
     { image: '/animals/elephant.jpg', nameBm: 'Gajah', nameEn: 'Elephant', habitat: 'jungle' },
     { image: '/animals/frog.jpg', nameBm: 'Katak', nameEn: 'Frog', habitat: 'jungle' },
-    { image: '/animals/bird.jpg', nameBm: 'Burung', nameEn: 'Bird', habitat: 'sky' },
     { image: '/animals/fish.jpg', nameBm: 'Ikan', nameEn: 'Fish', habitat: 'ocean' },
     { image: '/animals/octopus.jpg', nameBm: 'Sotong', nameEn: 'Octopus', habitat: 'ocean' },
     { image: '/animals/turtle.jpg', nameBm: 'Penyu', nameEn: 'Turtle', habitat: 'ocean' },
     { image: '/animals/dolphin.jpg', nameBm: 'Lumba-lumba', nameEn: 'Dolphin', habitat: 'ocean' },
+    { image: '/animals/bird.jpg', nameBm: 'Burung', nameEn: 'Bird', habitat: 'sky' },
     { image: '/animals/eagle.jpg', nameBm: 'Helang', nameEn: 'Eagle', habitat: 'sky' },
     { image: '/animals/butterfly.jpg', nameBm: 'Rama-rama', nameEn: 'Butterfly', habitat: 'sky' },
     { image: '/animals/bee.jpg', nameBm: 'Lebah', nameEn: 'Bee', habitat: 'sky' },
-    { image: '/animals/cat.jpg', nameBm: 'Kucing', nameEn: 'Cat', habitat: 'farm' },
-    { image: '/animals/dog.jpg', nameBm: 'Anjing', nameEn: 'Dog', habitat: 'farm' },
-    { image: '/animals/duck.jpg', nameBm: 'Itik', nameEn: 'Duck', habitat: 'farm' },
+    { image: '/animals/cat.jpg', nameBm: 'Kucing', nameEn: 'Cat', habitat: 'home' },
+    { image: '/animals/dog.jpg', nameBm: 'Anjing', nameEn: 'Dog', habitat: 'home' },
   ];
 
   const TOTAL_ROUNDS = 15;
