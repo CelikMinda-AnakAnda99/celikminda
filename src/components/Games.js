@@ -6299,10 +6299,9 @@ export function MagicDiceGame() {
       <div style={{
         width: 80, height: 80, borderRadius: 16,
         background: 'white', border: '3px solid #FFB74D',
-        boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
+        boxShadow: isRolling ? '0 2px 8px rgba(255,152,0,0.5)' : '0 6px 20px rgba(0,0,0,0.15)',
         position: 'relative',
-        transition: 'transform 0.5s ease',
-        transform: isRolling ? 'rotate(720deg) scale(0.8)' : 'rotate(0) scale(1)'
+        animation: isRolling ? 'diceShake 0.15s ease-in-out infinite' : 'diceLand 0.3s ease-out'
       }}>
         {(dotPositions[value] || []).map(([x, y], i) => (
           <div key={i} style={{
@@ -6320,20 +6319,31 @@ export function MagicDiceGame() {
     setRolling(true);
     setWrongCount(0);
     setFeedback(null);
-    setTimeout(() => {
-      const d1 = Math.floor(Math.random() * 6) + 1;
-      const d2 = Math.floor(Math.random() * 6) + 1;
-      setDice1(d1);
-      setDice2(d2);
-      const total = d1 + d2;
-      const wrongs = new Set();
-      while (wrongs.size < 2) {
-        const w = Math.floor(Math.random() * 11) + 2;
-        if (w !== total) wrongs.add(w);
+
+    // Rapidly cycle dice faces for animation effect
+    let frame = 0;
+    const totalFrames = 10;
+    const interval = setInterval(() => {
+      setDice1(Math.floor(Math.random() * 6) + 1);
+      setDice2(Math.floor(Math.random() * 6) + 1);
+      frame++;
+      if (frame >= totalFrames) {
+        clearInterval(interval);
+        // Final values
+        const d1 = Math.floor(Math.random() * 6) + 1;
+        const d2 = Math.floor(Math.random() * 6) + 1;
+        setDice1(d1);
+        setDice2(d2);
+        const total = d1 + d2;
+        const wrongs = new Set();
+        while (wrongs.size < 2) {
+          const w = Math.floor(Math.random() * 11) + 2;
+          if (w !== total) wrongs.add(w);
+        }
+        setChoices([total, ...wrongs].sort(() => Math.random() - 0.5));
+        setRolling(false);
       }
-      setChoices([total, ...wrongs].sort(() => Math.random() - 0.5));
-      setRolling(false);
-    }, 700);
+    }, 80);
   }, []);
 
   useEffect(() => { rollDice(); }, [rollDice]);
