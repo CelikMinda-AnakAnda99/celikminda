@@ -1391,17 +1391,39 @@ export function AnimalSoundsGame() {
   const [gameComplete, setGameComplete] = useState(false);
   const [confettiPieces, setConfettiPieces] = useState([]);
   const [soundPulse, setSoundPulse] = useState(false);
+  const [usedAnimals, setUsedAnimals] = useState([]);
 
-  const generateRound = useCallback((roundNum) => {
-    const target = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
+  // Play the actual animal sound effect
+  const playAnimalSound = useCallback((animal) => {
+    if (!soundEnabled) return;
+    const sfxMap = { cat: 'kucing', dog: 'anjing', cow: 'lembu', duck: 'itik', rooster: 'ayam', sheep: 'kambing', frog: 'katak', lion: 'singa', elephant: 'gajah', bird: 'burung' };
+    if (sfxMap[animal.id]) {
+      playBMAnimalSfx(sfxMap[animal.id]);
+    } else {
+      playAnimalHint();
+    }
+  }, [soundEnabled]);
+
+  const generateRound = useCallback((roundNum, prevUsed = []) => {
+    let target;
+    // First 10 rounds: no repeats
+    if (roundNum <= 10) {
+      const available = ANIMALS.filter(a => !prevUsed.includes(a.id));
+      target = available.length > 0
+        ? available[Math.floor(Math.random() * available.length)]
+        : ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
+    } else {
+      target = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
+    }
     setTargetAnimal(target);
+    const newUsed = [...prevUsed, target.id];
+    setUsedAnimals(newUsed);
     setShowSound(true);
     setSoundPulse(true);
     setTimeout(() => setSoundPulse(false), 2000);
-    // Auto-play the real animal sound for the new round
+    // Auto-play the real animal sound
     if (soundEnabled) {
       setTimeout(() => {
-        // Play real animal SFX if available, otherwise fallback to hint chime
         const sfxMap = { cat: 'kucing', dog: 'anjing', cow: 'lembu', duck: 'itik', rooster: 'ayam', sheep: 'kambing', frog: 'katak', lion: 'singa', elephant: 'gajah', bird: 'burung' };
         if (sfxMap[target.id]) {
           playBMAnimalSfx(sfxMap[target.id]);
@@ -1417,9 +1439,10 @@ export function AnimalSoundsGame() {
     const allChoices = [target, ...wrongAnimals].sort(() => Math.random() - 0.5);
     setChoices(allChoices);
     setFeedback(null);
-  }, []);
+    return newUsed;
+  }, [soundEnabled]);
 
-  useEffect(() => { generateRound(1); }, [generateRound]);
+  useEffect(() => { generateRound(1, []); }, [generateRound]);
 
   const handleAnimalTap = (animal) => {
     if (feedback) return;
@@ -1428,10 +1451,10 @@ export function AnimalSoundsGame() {
       setScore(prev => prev + 10);
       setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
 
-      setTimeout(() => {
+       setTimeout(() => {
         if (round >= TOTAL_ROUNDS) {
           const finalScore = score + 10;
-          const stars = finalScore >= 70 ? 3 : finalScore >= 40 ? 2 : 1;
+          const stars = finalScore >= 100 ? 3 : finalScore >= 60 ? 2 : 1;
           completeGame('animals', 'animal-sounds', stars, finalScore);
           setGameComplete(true);
           celebrationFeedback(lang, soundEnabled);
@@ -1441,8 +1464,9 @@ export function AnimalSoundsGame() {
             delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
           })));
         } else {
-          setRound(prev => prev + 1);
-          generateRound(round + 1);
+          const nextRound = round + 1;
+          setRound(nextRound);
+          generateRound(nextRound, usedAnimals);
         }
       }, 1500);
     } else {
@@ -1484,8 +1508,8 @@ export function AnimalSoundsGame() {
             </div>
           </div>
 
-          {/* Sound Display — the "speaker" */}
-          <div onClick={() => { setSoundPulse(true); setTimeout(() => setSoundPulse(false), 2000); if (soundEnabled) playAnimalHint(); }}
+          {/* Sound Display — the "speaker" — tap to replay sound! */}
+          <div onClick={() => { setSoundPulse(true); setTimeout(() => setSoundPulse(false), 2000); playAnimalSound(targetAnimal); }}
             style={{
               width: 160, height: 160, borderRadius: 'var(--radius-full)',
               background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(12px)',
