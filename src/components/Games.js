@@ -6975,80 +6975,189 @@ export function AnimalPuzzleGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const PUZZLES = [
-    { animal: '🐘', name: lang === 'bm' ? 'Gajah' : 'Elephant', missing: lang === 'bm' ? 'Belalai' : 'Trunk', answer: '👃', choices: ['👃', '👂', '👀'] },
-    { animal: '🦁', name: lang === 'bm' ? 'Singa' : 'Lion', missing: lang === 'bm' ? 'Surai' : 'Mane', answer: '💇', choices: ['💇', '🦷', '👅'] },
-    { animal: '🐢', name: lang === 'bm' ? 'Penyu' : 'Turtle', missing: lang === 'bm' ? 'Cengkerang' : 'Shell', answer: '🛡️', choices: ['🛡️', '🎩', '👑'] },
-    { animal: '🐰', name: lang === 'bm' ? 'Arnab' : 'Rabbit', missing: lang === 'bm' ? 'Telinga panjang' : 'Long ears', answer: '👂', choices: ['👂', '👃', '👀'] },
-    { animal: '🦚', name: lang === 'bm' ? 'Merak' : 'Peacock', missing: lang === 'bm' ? 'Ekor cantik' : 'Beautiful tail', answer: '🪶', choices: ['🪶', '🦷', '🫁'] },
-    { animal: '🐙', name: lang === 'bm' ? 'Sotong' : 'Octopus', missing: lang === 'bm' ? 'Tentakel' : 'Tentacles', answer: '🦑', choices: ['🦑', '🐚', '🦀'] },
+  const ALL_PUZZLES = [
+    { image: '/animals/elephant.jpg', nameBm: 'Gajah', nameEn: 'Elephant', missingBm: 'Belalai', missingEn: 'Trunk', answerBm: 'Belalai', answerEn: 'Trunk', wrongBm: ['Tanduk', 'Sayap'], wrongEn: ['Horns', 'Wings'] },
+    { image: '/animals/lion.jpg', nameBm: 'Singa', nameEn: 'Lion', missingBm: 'Surai', missingEn: 'Mane', answerBm: 'Surai', answerEn: 'Mane', wrongBm: ['Sisik', 'Paruh'], wrongEn: ['Scales', 'Beak'] },
+    { image: '/animals/turtle.jpg', nameBm: 'Penyu', nameEn: 'Turtle', missingBm: 'Cengkerang', missingEn: 'Shell', answerBm: 'Cengkerang', answerEn: 'Shell', wrongBm: ['Bulu', 'Tanduk'], wrongEn: ['Fur', 'Horns'] },
+    { image: '/animals/cat.jpg', nameBm: 'Kucing', nameEn: 'Cat', missingBm: 'Misai', missingEn: 'Whiskers', answerBm: 'Misai', answerEn: 'Whiskers', wrongBm: ['Sirip', 'Tanduk'], wrongEn: ['Fins', 'Horns'] },
+    { image: '/animals/dog.jpg', nameBm: 'Anjing', nameEn: 'Dog', missingBm: 'Ekor', missingEn: 'Tail', answerBm: 'Ekor', answerEn: 'Tail', wrongBm: ['Sayap', 'Sisik'], wrongEn: ['Wings', 'Scales'] },
+    { image: '/animals/fish.jpg', nameBm: 'Ikan', nameEn: 'Fish', missingBm: 'Sirip', missingEn: 'Fins', answerBm: 'Sirip', answerEn: 'Fins', wrongBm: ['Kaki', 'Surai'], wrongEn: ['Legs', 'Mane'] },
+    { image: '/animals/bird.jpg', nameBm: 'Burung', nameEn: 'Bird', missingBm: 'Sayap', missingEn: 'Wings', answerBm: 'Sayap', answerEn: 'Wings', wrongBm: ['Sirip', 'Belalai'], wrongEn: ['Fins', 'Trunk'] },
+    { image: '/animals/frog.jpg', nameBm: 'Katak', nameEn: 'Frog', missingBm: 'Kaki belakang', missingEn: 'Back legs', answerBm: 'Kaki belakang', answerEn: 'Back legs', wrongBm: ['Sayap', 'Ekor'], wrongEn: ['Wings', 'Tail'] },
+    { image: '/animals/monkey.jpg', nameBm: 'Monyet', nameEn: 'Monkey', missingBm: 'Ekor panjang', missingEn: 'Long tail', answerBm: 'Ekor panjang', answerEn: 'Long tail', wrongBm: ['Tanduk', 'Sirip'], wrongEn: ['Horns', 'Fins'] },
+    { image: '/animals/rooster.jpg', nameBm: 'Ayam', nameEn: 'Rooster', missingBm: 'Balung', missingEn: 'Comb', answerBm: 'Balung', answerEn: 'Comb', wrongBm: ['Belalai', 'Sisik'], wrongEn: ['Trunk', 'Scales'] },
+    { image: '/animals/duck.jpg', nameBm: 'Itik', nameEn: 'Duck', missingBm: 'Paruh', missingEn: 'Bill', answerBm: 'Paruh', answerEn: 'Bill', wrongBm: ['Surai', 'Tanduk'], wrongEn: ['Mane', 'Horns'] },
+    { image: '/animals/snake.jpg', nameBm: 'Ular', nameEn: 'Snake', missingBm: 'Sisik', missingEn: 'Scales', answerBm: 'Sisik', answerEn: 'Scales', wrongBm: ['Kaki', 'Sayap'], wrongEn: ['Legs', 'Wings'] },
+    { image: '/animals/dolphin.jpg', nameBm: 'Lumba-lumba', nameEn: 'Dolphin', missingBm: 'Sirip belakang', missingEn: 'Tail fin', answerBm: 'Sirip belakang', answerEn: 'Tail fin', wrongBm: ['Tanduk', 'Bulu'], wrongEn: ['Horns', 'Fur'] },
+    { image: '/animals/sheep.jpg', nameBm: 'Kambing', nameEn: 'Sheep', missingBm: 'Bulu tebal', missingEn: 'Thick wool', answerBm: 'Bulu tebal', answerEn: 'Thick wool', wrongBm: ['Sisik', 'Sayap'], wrongEn: ['Scales', 'Wings'] },
+    { image: '/animals/bee.jpg', nameBm: 'Lebah', nameEn: 'Bee', missingBm: 'Sengat', missingEn: 'Stinger', answerBm: 'Sengat', answerEn: 'Stinger', wrongBm: ['Ekor', 'Tanduk'], wrongEn: ['Tail', 'Horns'] },
+    { image: '/animals/eagle.jpg', nameBm: 'Helang', nameEn: 'Eagle', missingBm: 'Cakar tajam', missingEn: 'Sharp claws', answerBm: 'Cakar tajam', answerEn: 'Sharp claws', wrongBm: ['Sirip', 'Belalai'], wrongEn: ['Fins', 'Trunk'] },
+    { image: '/animals/octopus.jpg', nameBm: 'Sotong', nameEn: 'Octopus', missingBm: 'Tentakel', missingEn: 'Tentacles', answerBm: 'Tentakel', answerEn: 'Tentacles', wrongBm: ['Sayap', 'Kaki'], wrongEn: ['Wings', 'Legs'] },
+    { image: '/animals/butterfly.jpg', nameBm: 'Rama-rama', nameEn: 'Butterfly', missingBm: 'Sayap cantik', missingEn: 'Pretty wings', answerBm: 'Sayap cantik', answerEn: 'Pretty wings', wrongBm: ['Sirip', 'Tanduk'], wrongEn: ['Fins', 'Horns'] },
+    { image: '/animals/cow.jpg', nameBm: 'Lembu', nameEn: 'Cow', missingBm: 'Tanduk', missingEn: 'Horns', answerBm: 'Tanduk', answerEn: 'Horns', wrongBm: ['Sayap', 'Sengat'], wrongEn: ['Wings', 'Stinger'] },
   ];
 
-  const [idx, setIdx] = useState(0);
+  const TOTAL_ROUNDS = 15;
+  const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
+  const [currentPuzzle, setCurrentPuzzle] = useState(null);
+  const [choices, setChoices] = useState([]);
   const [feedback, setFeedback] = useState(null);
+  const [wrongCount, setWrongCount] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
+  const [confettiPieces, setConfettiPieces] = useState([]);
+  const [usedIdx, setUsedIdx] = useState([]);
 
-  const handleChoice = (answer) => {
-    const correct = answer === PUZZLES[idx].answer;
-    if (correct) {
-      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
-      setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
-      setScore(score + 1);
+  const generateRound = useCallback((prevUsed = []) => {
+    let available = ALL_PUZZLES.map((_, i) => i).filter(i => !prevUsed.includes(i));
+    if (available.length === 0) available = ALL_PUZZLES.map((_, i) => i);
+    const pickIdx = available[Math.floor(Math.random() * available.length)];
+    const puzzle = ALL_PUZZLES[pickIdx];
+    setCurrentPuzzle(puzzle);
+    const newUsed = [...prevUsed, pickIdx];
+    setUsedIdx(newUsed);
+    // Build text choices: correct + 2 wrong, shuffled
+    const correctText = lang === 'bm' ? puzzle.answerBm : puzzle.answerEn;
+    const wrongTexts = lang === 'bm' ? puzzle.wrongBm : puzzle.wrongEn;
+    const allChoices = [
+      { text: correctText, correct: true },
+      ...wrongTexts.map(t => ({ text: t, correct: false }))
+    ].sort(() => Math.random() - 0.5);
+    setChoices(allChoices);
+    setFeedback(null);
+    setWrongCount(0);
+    return newUsed;
+  }, [lang]);
+
+  useEffect(() => { generateRound([]); }, [generateRound]);
+
+  const handleChoice = (choice) => {
+    if (feedback) return;
+    if (choice.correct) {
+      setScore(s => s + 10);
+      setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
+      setTimeout(() => {
+        if (round >= TOTAL_ROUNDS) {
+          const finalScore = score + 10;
+          const stars = finalScore >= 100 ? 3 : finalScore >= 60 ? 2 : 1;
+          completeGame('animals', 'animal-puzzle', stars, finalScore);
+          celebrationFeedback(lang, soundEnabled);
+          const colors = ['#26A69A', '#FFD93D', '#6BCB77', '#4A90D9', '#FF6B9D'];
+          setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
+            id: i, left: Math.random() * 100, color: colors[i % colors.length],
+            delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
+          })));
+          setGameComplete(true);
+        } else {
+          setRound(r => r + 1);
+          generateRound(usedIdx);
+        }
+      }, 1200);
     } else {
-      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
-      setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
+      setWrongCount(c => c + 1);
+      setFeedback({ type: 'wrong', message: wrongFeedback(lang, soundEnabled) });
+      setTimeout(() => setFeedback(null), 900);
     }
-    setTimeout(() => {
-      setFeedback(null);
-      if (idx + 1 < PUZZLES.length) setIdx(idx + 1);
-      else {
-        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
-        const f = correct ? score + 1 : score;
-        completeGame('animals', 'animal-puzzle', f >= 5 ? 3 : f >= 3 ? 2 : 1, f * 15);
-        setGameComplete(true);
-      }
-    }, 800);
   };
 
-  if (gameComplete) {
-    return (
-      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
-        <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
-        <h1 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{lang === 'bm' ? 'Pakar Haiwan!' : 'Animal Expert!'}</h1>
-        <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
-        <button className="btn-premium" onClick={() => goToWorld('animals')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button>
-      </div>
-    );
-  }
+  const getStars = () => score >= 100 ? 3 : score >= 60 ? 2 : 1;
 
-  const p = PUZZLES[idx];
+  if (!currentPuzzle) return null;
+
   return (
-    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/animal_puzzle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
-      <div style={{ padding: 16, textAlign: 'center' }}>
-        <button className="icon-btn" onClick={() => goToWorld('animals')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        <h2 style={{ fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>{lang === 'bm' ? 'Apa yang hilang?' : 'What is missing?'}</h2>
-        <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{PUZZLES.length}</div>
-        <div style={{ fontSize: '5rem', margin: '16px 0' }}>{p.animal}</div>
-        <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 4 }}>{p.name}</div>
-        <div style={{ fontSize: '0.9rem', color: '#666', marginBottom: 16 }}>
-          {lang === 'bm' ? `Bahagian hilang: ${p.missing}` : `Missing part: ${p.missing}`}
+    <div className="game-screen" style={{ position: 'relative' }}>
+      <img src={assetPath('/images/game/animal_puzzle_vet_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
+      <div className="game-header" style={{ background: 'linear-gradient(135deg, #26A69A, #4DB6AC)', color: 'white', borderBottom: '3px solid rgba(255,255,255,0.3)' }}>
+        <button className="back-btn" onClick={() => goToWorld('animals')} style={{ color: 'white', background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>←</button>
+        <span className="game-title" style={{ color: 'white', textShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
+          {lang === 'bm' ? 'Lengkap Haiwan' : 'Animal Puzzle'}
+        </span>
+        <div className="game-stars" style={{ background: 'rgba(255,255,255,0.25)', borderRadius: 20, padding: '4px 14px' }}>
+          <span style={{ fontWeight: 700, color: 'white', fontSize: '1rem' }}>{round}/{TOTAL_ROUNDS}</span>
         </div>
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-          {p.choices.map((c, i) => (
-            <button key={i} onClick={() => handleChoice(c)} style={{
-              fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white',
-              border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)',
-            }}>{c}</button>
-          ))}
+      </div>
+
+      <div className="game-body" style={{ textAlign: 'center', gap: 'var(--space-md)' }}>
+        {/* Animal card */}
+        <div style={{
+          background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)',
+          borderRadius: 24, padding: '16px 24px', color: '#333',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.15)', maxWidth: 340, margin: '0 auto',
+          border: '3px solid #80CBC4'
+        }}>
+          <div style={{
+            width: 90, height: 90, borderRadius: '50%', margin: '0 auto 8px',
+            background: 'white', border: '3px solid #B2DFDB',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            overflow: 'hidden', boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+            animation: 'characterBob 2s ease-in-out infinite'
+          }}>
+            <img src={assetPath(currentPuzzle.image)} alt=""
+              style={{ width: 70, height: 70, objectFit: 'contain' }} />
+          </div>
+          <div style={{ fontSize: '1.1rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: '#00695C' }}>
+            {lang === 'bm' ? currentPuzzle.nameBm : currentPuzzle.nameEn}
+          </div>
+          <div style={{ fontSize: '0.85rem', color: '#666', margin: '4px 0 8px' }}>
+            {lang === 'bm' ? `Bahagian hilang: ${currentPuzzle.missingBm}` : `Missing: ${currentPuzzle.missingEn}`}
+          </div>
+          <div style={{
+            background: 'linear-gradient(135deg, #26A69A, #4DB6AC)',
+            borderRadius: 16, padding: '8px 20px',
+            fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
+            color: 'white', boxShadow: '0 4px 12px rgba(38,166,154,0.3)'
+          }}>
+            {lang === 'bm' ? 'Apa yang hilang?' : 'What is missing?'}
+          </div>
         </div>
+
+        {/* Text-based answer buttons - NO EMOJI */}
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+          {choices.map((c, i) => {
+            const isCorrectFeedback = feedback && feedback.type === 'correct' && c.correct;
+            const showHint = wrongCount >= 2 && c.correct;
+            const isWrongFeedback = feedback && !c.correct && feedback.type === 'wrong';
+            const btnColors = ['#26A69A', '#FF7043', '#7E57C2'];
+            return (
+              <button key={i} onClick={() => handleChoice(c)} style={{
+                padding: '12px 24px', borderRadius: 20, minWidth: 100,
+                background: isCorrectFeedback ? '#6BCB77' : isWrongFeedback ? '#FF6B6B22' : showHint ? '#E8F5E9' : 'white',
+                border: `4px solid ${isCorrectFeedback ? '#4CAF50' : isWrongFeedback ? '#FF6B6B' : showHint ? '#6BCB77' : btnColors[i % 3]}`,
+                fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
+                color: isCorrectFeedback ? 'white' : '#333',
+                cursor: feedback ? 'default' : 'pointer',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                transform: isCorrectFeedback ? 'scale(1.08)' : 'scale(1)',
+                transition: 'all 0.2s ease'
+              }}>
+                {c.text}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Feedback */}
         {feedback && (
-          <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>
-            {feedback.type === 'correct' ? '' : ''}{feedback.message}
+          <div style={{
+            padding: '10px 20px', borderRadius: 16,
+            background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B',
+            color: 'white', fontWeight: 700, fontSize: '1.1rem',
+            animation: 'popIn 0.3s ease'
+          }}>
+            {feedback.message}
           </div>
         )}
       </div>
+
+      {gameComplete && (
+        <GameCompleteModal
+          lang={lang} stars={getStars()} score={score}
+          accentColor="#26A69A"
+          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); setUsedIdx([]); generateRound([]); }}
+          onBack={() => goToWorld('animals')}
+          confettiPieces={confettiPieces}
+        />
+      )}
     </div>
   );
 }
