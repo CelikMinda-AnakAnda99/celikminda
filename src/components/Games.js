@@ -2263,195 +2263,182 @@ export function AnimalHomesGame() {
   const lang = language;
 
   const HABITATS = [
-    { id: 'farm', emoji: '🏡', nameBm: 'Ladang', nameEn: 'Farm', color: '#FFE0B2' },
-    { id: 'jungle', emoji: '🌴', nameBm: 'Hutan', nameEn: 'Jungle', color: '#C8E6C9' },
-    { id: 'ocean', emoji: '🌊', nameBm: 'Laut', nameEn: 'Ocean', color: '#BBDEFB' },
-    { id: 'sky', emoji: '☁️', nameBm: 'Langit', nameEn: 'Sky', color: '#E1F5FE' },
+    { id: 'farm', emoji: '🏡', nameBm: 'Ladang', nameEn: 'Farm', color: '#FFE0B2', border: '#FF9800' },
+    { id: 'jungle', emoji: '🌴', nameBm: 'Hutan', nameEn: 'Jungle', color: '#C8E6C9', border: '#4CAF50' },
+    { id: 'ocean', emoji: '🌊', nameBm: 'Laut', nameEn: 'Ocean', color: '#BBDEFB', border: '#2196F3' },
+    { id: 'sky', emoji: '☁️', nameBm: 'Langit', nameEn: 'Sky', color: '#E1F5FE', border: '#03A9F4' },
+    { id: 'desert', emoji: '🏜️', nameBm: 'Padang Pasir', nameEn: 'Desert', color: '#FFF3E0', border: '#FF7043' },
+    { id: 'arctic', emoji: '❄️', nameBm: 'Artik', nameEn: 'Arctic', color: '#E8EAF6', border: '#5C6BC0' },
   ];
 
   const ANIMALS_DATA = [
-    { emoji: '🐮', image: assetPath('/animals/cow.jpg'), nameBm: 'Lembu', nameEn: 'Cow', habitat: 'farm' },
-    { emoji: '🐔', image: assetPath('/animals/rooster.jpg'), nameBm: 'Ayam', nameEn: 'Chicken', habitat: 'farm' },
-    { emoji: '🐷', image: assetPath('/animals/pig.jpg'), nameBm: 'Khinzir', nameEn: 'Pig', habitat: 'farm' },
-    { emoji: '🐑', image: assetPath('/animals/sheep.jpg'), nameBm: 'Kambing', nameEn: 'Sheep', habitat: 'farm' },
-    { emoji: '🦁', image: assetPath('/animals/lion.jpg'), nameBm: 'Singa', nameEn: 'Lion', habitat: 'jungle' },
-    { emoji: '🐒', image: assetPath('/animals/monkey.jpg'), nameBm: 'Monyet', nameEn: 'Monkey', habitat: 'jungle' },
-    { emoji: '🐍', image: assetPath('/animals/snake.jpg'), nameBm: 'Ular', nameEn: 'Snake', habitat: 'jungle' },
-    { emoji: '🦜', image: assetPath('/animals/bird.jpg'), nameBm: 'Burung', nameEn: 'Bird', habitat: 'sky' },
-    { emoji: '🐠', image: assetPath('/animals/fish.jpg'), nameBm: 'Ikan', nameEn: 'Fish', habitat: 'ocean' },
-    { emoji: '🐙', image: assetPath('/animals/octopus.jpg'), nameBm: 'Sotong', nameEn: 'Octopus', habitat: 'ocean' },
-    { emoji: '🐢', image: assetPath('/animals/turtle.jpg'), nameBm: 'Penyu', nameEn: 'Turtle', habitat: 'ocean' },
-    { emoji: '🐬', image: assetPath('/animals/dolphin.jpg'), nameBm: 'Lumba-lumba', nameEn: 'Dolphin', habitat: 'ocean' },
-    { emoji: '🦅', image: assetPath('/animals/eagle.jpg'), nameBm: 'Helang', nameEn: 'Eagle', habitat: 'sky' },
-    { emoji: '🦋', image: assetPath('/animals/butterfly.jpg'), nameBm: 'Rama-rama', nameEn: 'Butterfly', habitat: 'sky' },
-    { emoji: '🐝', image: assetPath('/animals/bee.jpg'), nameBm: 'Lebah', nameEn: 'Bee', habitat: 'sky' },
-    { emoji: '🐱', image: assetPath('/animals/cat.jpg'), nameBm: 'Kucing', nameEn: 'Cat', habitat: 'farm' },
-    { emoji: '🐶', image: assetPath('/animals/dog.jpg'), nameBm: 'Anjing', nameEn: 'Dog', habitat: 'farm' },
-    { emoji: '🦆', image: assetPath('/animals/duck.jpg'), nameBm: 'Itik', nameEn: 'Duck', habitat: 'farm' },
-    { emoji: '🐸', image: assetPath('/animals/frog.jpg'), nameBm: 'Katak', nameEn: 'Frog', habitat: 'jungle' },
-    { emoji: '🐘', image: assetPath('/animals/elephant.jpg'), nameBm: 'Gajah', nameEn: 'Elephant', habitat: 'jungle' },
+    { image: '/animals/cow.jpg', nameBm: 'Lembu', nameEn: 'Cow', habitat: 'farm' },
+    { image: '/animals/rooster.jpg', nameBm: 'Ayam', nameEn: 'Chicken', habitat: 'farm' },
+    { image: '/animals/sheep.jpg', nameBm: 'Kambing', nameEn: 'Sheep', habitat: 'farm' },
+    { image: '/animals/lion.jpg', nameBm: 'Singa', nameEn: 'Lion', habitat: 'jungle' },
+    { image: '/animals/monkey.jpg', nameBm: 'Monyet', nameEn: 'Monkey', habitat: 'jungle' },
+    { image: '/animals/snake.jpg', nameBm: 'Ular', nameEn: 'Snake', habitat: 'jungle' },
+    { image: '/animals/elephant.jpg', nameBm: 'Gajah', nameEn: 'Elephant', habitat: 'jungle' },
+    { image: '/animals/frog.jpg', nameBm: 'Katak', nameEn: 'Frog', habitat: 'jungle' },
+    { image: '/animals/bird.jpg', nameBm: 'Burung', nameEn: 'Bird', habitat: 'sky' },
+    { image: '/animals/fish.jpg', nameBm: 'Ikan', nameEn: 'Fish', habitat: 'ocean' },
+    { image: '/animals/octopus.jpg', nameBm: 'Sotong', nameEn: 'Octopus', habitat: 'ocean' },
+    { image: '/animals/turtle.jpg', nameBm: 'Penyu', nameEn: 'Turtle', habitat: 'ocean' },
+    { image: '/animals/dolphin.jpg', nameBm: 'Lumba-lumba', nameEn: 'Dolphin', habitat: 'ocean' },
+    { image: '/animals/eagle.jpg', nameBm: 'Helang', nameEn: 'Eagle', habitat: 'sky' },
+    { image: '/animals/butterfly.jpg', nameBm: 'Rama-rama', nameEn: 'Butterfly', habitat: 'sky' },
+    { image: '/animals/bee.jpg', nameBm: 'Lebah', nameEn: 'Bee', habitat: 'sky' },
+    { image: '/animals/cat.jpg', nameBm: 'Kucing', nameEn: 'Cat', habitat: 'farm' },
+    { image: '/animals/dog.jpg', nameBm: 'Anjing', nameEn: 'Dog', habitat: 'farm' },
+    { image: '/animals/duck.jpg', nameBm: 'Itik', nameEn: 'Duck', habitat: 'farm' },
   ];
 
   const TOTAL_ROUNDS = 15;
-
   const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
   const [currentAnimal, setCurrentAnimal] = useState(ANIMALS_DATA[0]);
+  const [habitatChoices, setHabitatChoices] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
   const [confettiPieces, setConfettiPieces] = useState([]);
+  const [wrongCount, setWrongCount] = useState(0);
 
-  const generateRound = useCallback((roundNum) => {
+  const generateRound = useCallback(() => {
     const animal = ANIMALS_DATA[Math.floor(Math.random() * ANIMALS_DATA.length)];
     setCurrentAnimal(animal);
+    // Dynamic choices: correct habitat + 2 random wrong ones
+    const correctHab = HABITATS.find(h => h.id === animal.habitat);
+    const wrongHabs = HABITATS.filter(h => h.id !== animal.habitat).sort(() => Math.random() - 0.5).slice(0, 2);
+    setHabitatChoices([correctHab, ...wrongHabs].sort(() => Math.random() - 0.5));
     setFeedback(null);
+    setWrongCount(0);
   }, []);
 
-  useEffect(() => { generateRound(1); }, [generateRound]);
+  useEffect(() => { generateRound(); }, [generateRound]);
 
   const handleHabitatTap = (habitat) => {
     if (feedback) return;
-
     if (habitat.id === currentAnimal.habitat) {
-      setScore(prev => prev + 10);
+      setScore(s => s + 10);
       setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
-
       setTimeout(() => {
         if (round >= TOTAL_ROUNDS) {
           const finalScore = score + 10;
-          const stars = finalScore >= 70 ? 3 : finalScore >= 40 ? 2 : 1;
+          const stars = finalScore >= 100 ? 3 : finalScore >= 60 ? 2 : 1;
           completeGame('animals', 'animal-homes', stars, finalScore);
-          setGameComplete(true);
           celebrationFeedback(lang, soundEnabled);
-          const colors = ['#FF6B9D', '#FFD93D', '#4A90D9', '#6BCB77', '#9B72CF'];
+          const colors = ['#4CAF50', '#FFD93D', '#6BCB77', '#4A90D9', '#FF6B9D'];
           setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
             id: i, left: Math.random() * 100, color: colors[i % colors.length],
             delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
           })));
+          setGameComplete(true);
         } else {
-          setRound(prev => prev + 1);
-          generateRound(round + 1);
+          setRound(r => r + 1);
+          generateRound();
         }
       }, 1200);
     } else {
+      setWrongCount(c => c + 1);
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, soundEnabled) });
-      setTimeout(() => setFeedback(null), 1000);
+      setTimeout(() => setFeedback(null), 900);
     }
   };
 
-  const getStars = () => score >= 70 ? 3 : score >= 40 ? 2 : 1;
+  const getStars = () => score >= 100 ? 3 : score >= 60 ? 2 : 1;
 
   return (
-    <div className="game-screen">
-      <div className="game-header">
-        <button className="back-btn" onClick={() => goToWorld('animals')}>←</button>
-        <span className="game-title">
+    <div className="game-screen" style={{ position: 'relative' }}>
+      <img src={assetPath('/images/game/animal_safari_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
+      <div className="game-header" style={{ background: 'linear-gradient(135deg, #4CAF50, #66BB6A)', color: 'white', borderBottom: '3px solid rgba(255,255,255,0.3)' }}>
+        <button className="back-btn" onClick={() => goToWorld('animals')} style={{ color: 'white', background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>←</button>
+        <span className="game-title" style={{ color: 'white', textShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
           {lang === 'bm' ? 'Rumah Haiwan' : 'Animal Homes'}
         </span>
-        <div className="game-stars">
-          {[1, 2, 3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
+        <div className="game-stars" style={{ background: 'rgba(255,255,255,0.25)', borderRadius: 20, padding: '4px 14px' }}>
+          <span style={{ fontWeight: 700, color: 'white', fontSize: '1rem' }}>{round}/{TOTAL_ROUNDS}</span>
         </div>
       </div>
 
-      <div className="game-body">
+      <div className="game-body" style={{ textAlign: 'center', gap: 'var(--space-md)' }}>
+        {/* Animal card */}
         <div style={{
-          width: '100%', height: '100%', position: 'relative',
-          borderRadius: 0, overflow: 'hidden',
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          padding: 'var(--space-lg)',
+          background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)',
+          borderRadius: 24, padding: '16px 24px', color: '#333',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.15)', maxWidth: 320, margin: '0 auto',
+          border: '3px solid #81C784'
         }}>
-          <img src={assetPath('/images/game/animal_homes_bg.jpg')} alt="" style={{
-            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-            objectFit: 'cover', zIndex: 0, opacity: 0.3,
-          }} />
-          {/* Round & Score */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-lg)' }}>
-            <div className="round-counter" style={{ position: 'static' }}>{t('round', lang)} {round}/{TOTAL_ROUNDS}</div>
-            <div className="game-score" style={{ position: 'static' }}>
-              <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD93D" style={{ display: "inline-block", verticalAlign: "middle" }}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg></span><span className="score-value">{score}</span>
-            </div>
-          </div>
-
-          {/* Animal to place */}
           <div style={{
-            width: 140, height: 140, borderRadius: 'var(--radius-full)',
-            background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(12px)',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            boxShadow: 'var(--shadow-lg)', marginBottom: 'var(--space-md)',
-            border: '3px solid rgba(255,255,255,0.6)',
-            animation: 'characterBob 2s ease-in-out infinite',
+            width: 100, height: 100, borderRadius: '50%', margin: '0 auto 8px',
+            background: 'white', border: '3px solid #A5D6A7',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            overflow: 'hidden', boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+            animation: 'characterBob 2s ease-in-out infinite'
           }}>
-            {currentAnimal.image ? (
-              <img src={currentAnimal.image} alt={lang === 'bm' ? currentAnimal.nameBm : currentAnimal.nameEn}
-                style={{ width: 90, height: 90, objectFit: 'contain', borderRadius: 'var(--radius-md)' }} />
-            ) : (
-              <GI e={currentAnimal.emoji} size={56} />
-            )}
-            <span style={{
-              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.9rem',
-              color: 'var(--text-primary)', marginTop: 4,
-            }}>
-              {lang === 'bm' ? currentAnimal.nameBm : currentAnimal.nameEn}
-            </span>
+            <img src={assetPath(currentAnimal.image)} alt=""
+              style={{ width: 80, height: 80, objectFit: 'contain' }} />
           </div>
-
-          <p style={{
-            fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.2rem',
-            color: 'var(--text-primary)', marginBottom: 'var(--space-lg)',
-          }}>
-            {lang === 'bm' ? 'Di mana dia tinggal?' : 'Where does it live?'}
-          </p>
-
-          {/* Habitat choices */}
+          <div style={{ fontSize: '1.1rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: '#2E7D32' }}>
+            {lang === 'bm' ? currentAnimal.nameBm : currentAnimal.nameEn}
+          </div>
           <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: 'var(--space-md)', width: '100%', maxWidth: 400,
+            background: 'linear-gradient(135deg, #4CAF50, #66BB6A)',
+            borderRadius: 16, padding: '8px 20px', marginTop: 8,
+            fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
+            color: 'white', boxShadow: '0 4px 12px rgba(76,175,80,0.3)'
           }}>
-            {HABITATS.map((habitat, i) => (
+            {lang === 'bm' ? '🏠 Di mana dia tinggal?' : '🏠 Where does it live?'}
+          </div>
+        </div>
+
+        {/* Habitat choices - 3 dynamic buttons */}
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+          {habitatChoices.map((habitat, i) => {
+            const isCorrect = habitat.id === currentAnimal.habitat;
+            const isCorrectFeedback = feedback && feedback.type === 'correct' && isCorrect;
+            const showHint = wrongCount >= 2 && isCorrect;
+            return (
               <button key={habitat.id} onClick={() => handleHabitatTap(habitat)} style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
-                gap: 'var(--space-sm)', padding: 'var(--space-lg)',
-                background: feedback?.type === 'correct' && habitat.id === currentAnimal.habitat
-                  ? 'linear-gradient(135deg, #6BCB77, #48C9B0)' : habitat.color,
-                borderRadius: 'var(--radius-lg)',
-                border: feedback?.type === 'correct' && habitat.id === currentAnimal.habitat
-                  ? '3px solid var(--cm-green)' : '3px solid rgba(255,255,255,0.6)',
-                boxShadow: 'var(--shadow-card)', cursor: 'pointer',
+                gap: 6, padding: '14px 20px', minWidth: 100,
+                background: isCorrectFeedback ? '#6BCB77' : showHint ? '#E8F5E9' : habitat.color,
+                borderRadius: 20,
+                border: `4px solid ${isCorrectFeedback ? '#4CAF50' : showHint ? '#6BCB77' : habitat.border}`,
+                boxShadow: isCorrectFeedback ? '0 0 20px rgba(107,203,119,0.4)' : '0 4px 12px rgba(0,0,0,0.1)',
+                cursor: feedback ? 'default' : 'pointer',
+                transform: isCorrectFeedback ? 'scale(1.08)' : 'scale(1)',
                 transition: 'all 0.2s ease',
-                animation: `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.1}s both`,
               }}>
-                <GI e={habitat.emoji} size={40} />
+                <span style={{ fontSize: '2rem' }}>{habitat.emoji}</span>
                 <span style={{
-                  fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1rem',
-                  color: feedback?.type === 'correct' && habitat.id === currentAnimal.habitat ? 'white' : 'var(--text-primary)',
+                  fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.95rem',
+                  color: isCorrectFeedback ? 'white' : '#333',
                 }}>
                   {lang === 'bm' ? habitat.nameBm : habitat.nameEn}
                 </span>
               </button>
-            ))}
-          </div>
-
-          {/* Feedback */}
-          {feedback && (
-            <div style={{
-              marginTop: 'var(--space-lg)', padding: '10px 24px', borderRadius: 'var(--radius-full)',
-              background: feedback.type === 'correct'
-                ? 'linear-gradient(135deg, #6BCB77, #48C9B0)'
-                : 'linear-gradient(135deg, #FF6B6B, #ee5a24)',
-              color: 'white', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.1rem',
-              boxShadow: 'var(--shadow-md)',
-            }}>
-              {feedback.message}
-            </div>
-          )}
+            );
+          })}
         </div>
+
+        {/* Feedback */}
+        {feedback && (
+          <div style={{
+            padding: '10px 20px', borderRadius: 16,
+            background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B',
+            color: 'white', fontWeight: 700, fontSize: '1.1rem',
+            animation: 'popIn 0.3s ease'
+          }}>
+            {feedback.message}
+          </div>
+        )}
       </div>
 
       {gameComplete && (
         <GameCompleteModal
           lang={lang} stars={getStars()} score={score}
-          accentColor="var(--cm-green)"
-          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); generateRound(1); }}
+          accentColor="#4CAF50"
+          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); generateRound(); }}
           onBack={() => goToWorld('animals')}
           confettiPieces={confettiPieces}
         />
