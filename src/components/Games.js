@@ -3215,8 +3215,8 @@ export function AnimalFoodGame() {
             {lang === 'bm' ? currentAnimal.nameBm : currentAnimal.nameEn}
           </div>
           {showEating && (
-            <div style={{ marginTop: 6, animation: 'popIn 0.3s ease', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <img src={currentAnimal.foodImg} alt="" style={{ width: 50, height: 50, borderRadius: 12, objectFit: 'cover' }} />
+            <div style={{ marginTop: 6, width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <img src={currentAnimal.foodImg} alt="" style={{ width: 50, height: 50, borderRadius: 12, objectFit: 'cover', display: 'block' }} />
             </div>
           )}
         </div>
