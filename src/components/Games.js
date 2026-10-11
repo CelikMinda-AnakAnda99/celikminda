@@ -7130,8 +7130,8 @@ export function AnimalPuzzleGame() {
 
   return (
     <div className="game-screen" style={{ position: 'relative' }}>
-      <img src={assetPath('/images/game/animal_puzzle_vet_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
-      <div className="game-header" style={{ background: 'linear-gradient(135deg, #26A69A, #4DB6AC)', color: 'white', borderBottom: '3px solid rgba(255,255,255,0.3)' }}>
+      <img src={assetPath('/images/game/puzzle_rainbow_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} />
+      <div className="game-header" style={{ background: 'linear-gradient(135deg, #9C27B0, #CE93D8)', color: 'white', borderBottom: '3px solid rgba(255,255,255,0.3)' }}>
         <button className="back-btn" onClick={() => goToWorld('animals')} style={{ color: 'white', background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>←</button>
         <span className="game-title" style={{ color: 'white', textShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
           {lang === 'bm' ? 'Lengkap Haiwan' : 'Complete the Animal'}
@@ -7141,44 +7141,52 @@ export function AnimalPuzzleGame() {
         </div>
       </div>
 
-      <div className="game-body" style={{ textAlign: 'center', gap: 'var(--space-sm)' }}>
+      <div className="game-body" style={{ textAlign: 'center', gap: 8, padding: '8px 12px', justifyContent: 'center' }}>
         {/* BIG animal image - shows MISSING version, swaps to COMPLETE on correct */}
         <div style={{
-          background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)',
-          borderRadius: 28, padding: '12px', color: '#333',
-          boxShadow: showComplete ? '0 0 40px rgba(255, 215, 0, 0.6), 0 8px 32px rgba(0,0,0,0.15)' : '0 8px 32px rgba(0,0,0,0.15)',
-          maxWidth: 280, margin: '0 auto',
-          border: showComplete ? '4px solid #FFD700' : '4px solid #80CBC4',
-          transition: 'all 0.5s ease'
+          borderRadius: 24, overflow: 'hidden',
+          boxShadow: showComplete ? '0 0 50px rgba(255, 215, 0, 0.7), 0 8px 32px rgba(0,0,0,0.2)' : '0 8px 32px rgba(0,0,0,0.2)',
+          width: '90%', maxWidth: 380, margin: '0 auto',
+          border: showComplete ? '5px solid #FFD700' : '5px solid rgba(255,255,255,0.8)',
+          transition: 'all 0.5s ease', position: 'relative',
+          background: 'white'
         }}>
-          <div style={{ position: 'relative', width: '100%', paddingTop: '100%', borderRadius: 20, overflow: 'hidden' }}>
+          <div style={{ position: 'relative', width: '100%', paddingTop: '100%' }}>
             {/* Missing image */}
             <img src={assetPath(currentPuzzle.missingImg)} alt=""
               style={{
                 position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-                objectFit: 'contain', borderRadius: 20, background: 'white',
-                opacity: showComplete ? 0 : 1, transition: 'opacity 0.5s ease'
+                objectFit: 'cover',
+                opacity: showComplete ? 0 : 1, transition: 'opacity 0.6s ease'
               }} />
             {/* Complete image (appears on correct) */}
             <img src={assetPath(currentPuzzle.completeImg)} alt=""
               style={{
                 position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-                objectFit: 'contain', borderRadius: 20, background: 'white',
-                opacity: showComplete ? 1 : 0, transition: 'opacity 0.5s ease',
-                transform: showComplete ? 'scale(1)' : 'scale(0.8)'
+                objectFit: 'cover',
+                opacity: showComplete ? 1 : 0, transition: 'all 0.6s ease',
+                transform: showComplete ? 'scale(1)' : 'scale(0.85)'
               }} />
           </div>
-          <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: showComplete ? '#FFB300' : '#00695C', marginTop: 8 }}>
-            {lang === 'bm' ? currentPuzzle.nameBm : currentPuzzle.nameEn}
+          {/* Name label overlaid on image */}
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0,
+            background: showComplete ? 'linear-gradient(transparent, rgba(255,180,0,0.9))' : 'linear-gradient(transparent, rgba(0,0,0,0.6))',
+            padding: '20px 12px 10px', textAlign: 'center',
+            transition: 'all 0.5s ease'
+          }}>
+            <div style={{ fontSize: '1.4rem', fontWeight: 900, fontFamily: 'var(--font-heading)', color: 'white', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+              {lang === 'bm' ? currentPuzzle.nameBm : currentPuzzle.nameEn}
+            </div>
           </div>
         </div>
 
         {/* Question banner */}
         <div style={{
-          background: showComplete ? 'linear-gradient(135deg, #FFB300, #FFD54F)' : 'linear-gradient(135deg, #26A69A, #4DB6AC)',
-          borderRadius: 20, padding: '10px 20px', maxWidth: 320, margin: '0 auto',
-          fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
-          color: 'white', boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          background: showComplete ? 'linear-gradient(135deg, #FFB300, #FFD54F)' : 'linear-gradient(135deg, #9C27B0, #CE93D8)',
+          borderRadius: 22, padding: '12px 24px', width: '90%', maxWidth: 380, margin: '0 auto',
+          fontSize: '1.05rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
+          color: 'white', boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
           transition: 'all 0.5s ease'
         }}>
           {showComplete
@@ -7191,18 +7199,19 @@ export function AnimalPuzzleGame() {
 
         {/* Text answer buttons - NO EMOJI */}
         {!showComplete && (
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', width: '90%', maxWidth: 400, margin: '0 auto' }}>
             {choices.map((c, i) => {
               const showHint = wrongCount >= 2 && c.correct;
-              const btnColors = ['#26A69A', '#FF7043', '#7E57C2'];
+              const btnColors = ['#9C27B0', '#FF7043', '#26A69A'];
               return (
                 <button key={i} onClick={() => handleChoice(c)} style={{
-                  padding: '14px 28px', borderRadius: 22, minWidth: 110,
-                  background: showHint ? '#E8F5E9' : 'white',
+                  padding: '12px 0', borderRadius: 22, flex: '1 1 28%', minWidth: 90,
+                  background: showHint ? '#F3E5F5' : 'rgba(255,255,255,0.95)',
                   border: `4px solid ${showHint ? '#6BCB77' : btnColors[i % 3]}`,
-                  fontSize: '1.1rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
+                  fontSize: '1.05rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
                   color: '#333', cursor: feedback ? 'default' : 'pointer',
-                  boxShadow: '0 4px 14px rgba(0,0,0,0.1)',
+                  boxShadow: '0 4px 14px rgba(0,0,0,0.15)',
+                  backdropFilter: 'blur(8px)',
                   transition: 'all 0.2s ease'
                 }}>
                   {c.text}
@@ -7215,10 +7224,11 @@ export function AnimalPuzzleGame() {
         {/* Feedback */}
         {feedback && (
           <div style={{
-            padding: '10px 20px', borderRadius: 16,
+            padding: '10px 24px', borderRadius: 18,
             background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B',
             color: 'white', fontWeight: 700, fontSize: '1.1rem',
-            animation: 'popIn 0.3s ease'
+            animation: 'popIn 0.3s ease',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
           }}>
             {feedback.message}
           </div>
@@ -7228,7 +7238,7 @@ export function AnimalPuzzleGame() {
       {gameComplete && (
         <GameCompleteModal
           lang={lang} stars={getStars()} score={score}
-          accentColor="#26A69A"
+          accentColor="#9C27B0"
           onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setShowComplete(false); setConfettiPieces([]); setUsedIdx([]); generateRound([]); }}
           onBack={() => goToWorld('animals')}
           confettiPieces={confettiPieces}
