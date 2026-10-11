@@ -3091,26 +3091,26 @@ export function AnimalFoodGame() {
   const lang = language;
 
   const ANIMALS = [
-    { nameBm: 'Kucing', nameEn: 'Cat', emoji: '🐱', food: 'fish', foodEmoji: '🐟', foodBm: 'Ikan', foodEn: 'Fish' },
-    { nameBm: 'Arnab', nameEn: 'Rabbit', emoji: '🐰', food: 'carrot', foodEmoji: '🥕', foodBm: 'Lobak', foodEn: 'Carrot' },
-    { nameBm: 'Monyet', nameEn: 'Monkey', emoji: '🐵', food: 'banana', foodEmoji: '🍌', foodBm: 'Pisang', foodEn: 'Banana' },
-    { nameBm: 'Gajah', nameEn: 'Elephant', emoji: '🐘', food: 'leaves', foodEmoji: '🌿', foodBm: 'Daun', foodEn: 'Leaves' },
-    { nameBm: 'Anjing', nameEn: 'Dog', emoji: '🐶', food: 'bone', foodEmoji: '🦴', foodBm: 'Tulang', foodEn: 'Bone' },
-    { nameBm: 'Burung', nameEn: 'Bird', emoji: '🐦', food: 'seeds', foodEmoji: '🌾', foodBm: 'Biji', foodEn: 'Seeds' },
-    { nameBm: 'Panda', nameEn: 'Panda', emoji: '🐼', food: 'bamboo', foodEmoji: '🎋', foodBm: 'Buluh', foodEn: 'Bamboo' },
-    { nameBm: 'Singa', nameEn: 'Lion', emoji: '🦁', food: 'meat', foodEmoji: '🥩', foodBm: 'Daging', foodEn: 'Meat' },
-    { nameBm: 'Lembu', nameEn: 'Cow', emoji: '🐮', food: 'grass', foodEmoji: '🌱', foodBm: 'Rumput', foodEn: 'Grass' },
-    { nameBm: 'Ayam', nameEn: 'Chicken', emoji: '🐔', food: 'corn', foodEmoji: '🌽', foodBm: 'Jagung', foodEn: 'Corn' },
-    { nameBm: 'Kambing', nameEn: 'Goat', emoji: '🐐', food: 'hay', foodEmoji: '🌾', foodBm: 'Jerami', foodEn: 'Hay' },
-    { nameBm: 'Kuda', nameEn: 'Horse', emoji: '🐴', food: 'apple', foodEmoji: '🍎', foodBm: 'Epal', foodEn: 'Apple' },
-    { nameBm: 'Itik', nameEn: 'Duck', emoji: '🦆', food: 'bread', foodEmoji: '🍞', foodBm: 'Roti', foodEn: 'Bread' },
-    { nameBm: 'Beruang', nameEn: 'Bear', emoji: '🐻', food: 'honey', foodEmoji: '🍯', foodBm: 'Madu', foodEn: 'Honey' },
-    { nameBm: 'Katak', nameEn: 'Frog', emoji: '🐸', food: 'bugs', foodEmoji: '🪲', foodBm: 'Serangga', foodEn: 'Bugs' },
-    { nameBm: 'Tupai', nameEn: 'Squirrel', emoji: '🐿️', food: 'nuts', foodEmoji: '🥜', foodBm: 'Kacang', foodEn: 'Nuts' },
-    { nameBm: 'Babi', nameEn: 'Pig', emoji: '🐷', food: 'slop', foodEmoji: '🥘', foodBm: 'Sisa makanan', foodEn: 'Slop' },
-    { nameBm: 'Koala', nameEn: 'Koala', emoji: '🐨', food: 'eucalyptus', foodEmoji: '🍃', foodBm: 'Daun kayu putih', foodEn: 'Eucalyptus' },
-    { nameBm: 'Ikan', nameEn: 'Fish', emoji: '🐠', food: 'worms', foodEmoji: '🪱', foodBm: 'Cacing', foodEn: 'Worms' },
-    { nameBm: 'Ular', nameEn: 'Snake', emoji: '🐍', food: 'egg', foodEmoji: '🥚', foodBm: 'Telur', foodEn: 'Egg' },
+    { nameBm: 'Kucing', nameEn: 'Cat', image: assetPath('/animals/cat.jpg'), food: 'ikan', foodImg: assetPath('/images/food/ikan.jpg'), foodBm: 'Ikan', foodEn: 'Fish' },
+    { nameBm: 'Arnab', nameEn: 'Rabbit', image: assetPath('/animals/rabbit.jpg'), food: 'lobak', foodImg: assetPath('/images/food/lobak.jpg'), foodBm: 'Lobak', foodEn: 'Carrot' },
+    { nameBm: 'Monyet', nameEn: 'Monkey', image: assetPath('/animals/monkey.jpg'), food: 'pisang', foodImg: assetPath('/images/food/pisang.jpg'), foodBm: 'Pisang', foodEn: 'Banana' },
+    { nameBm: 'Gajah', nameEn: 'Elephant', image: assetPath('/animals/elephant.jpg'), food: 'daun', foodImg: assetPath('/images/food/daun.jpg'), foodBm: 'Daun', foodEn: 'Leaves' },
+    { nameBm: 'Anjing', nameEn: 'Dog', image: assetPath('/animals/dog.jpg'), food: 'daging', foodImg: assetPath('/images/food/daging.jpg'), foodBm: 'Daging', foodEn: 'Meat' },
+    { nameBm: 'Burung', nameEn: 'Bird', image: assetPath('/animals/bird.jpg'), food: 'biji', foodImg: assetPath('/images/food/biji.jpg'), foodBm: 'Biji benih', foodEn: 'Seeds' },
+    { nameBm: 'Panda', nameEn: 'Panda', image: assetPath('/animals/panda.jpg'), food: 'buluh', foodImg: assetPath('/images/food/buluh.jpg'), foodBm: 'Buluh', foodEn: 'Bamboo' },
+    { nameBm: 'Singa', nameEn: 'Lion', image: assetPath('/animals/lion.jpg'), food: 'daging', foodImg: assetPath('/images/food/daging.jpg'), foodBm: 'Daging', foodEn: 'Meat' },
+    { nameBm: 'Lembu', nameEn: 'Cow', image: assetPath('/animals/cow.jpg'), food: 'rumput', foodImg: assetPath('/images/food/rumput.jpg'), foodBm: 'Rumput', foodEn: 'Grass' },
+    { nameBm: 'Ayam', nameEn: 'Chicken', image: assetPath('/animals/rooster.jpg'), food: 'jagung', foodImg: assetPath('/images/food/jagung.jpg'), foodBm: 'Jagung', foodEn: 'Corn' },
+    { nameBm: 'Kambing', nameEn: 'Goat', image: assetPath('/animals/goat.jpg'), food: 'rumput', foodImg: assetPath('/images/food/rumput.jpg'), foodBm: 'Rumput', foodEn: 'Grass' },
+    { nameBm: 'Kuda', nameEn: 'Horse', image: assetPath('/animals/horse.jpg'), food: 'rumput', foodImg: assetPath('/images/food/rumput.jpg'), foodBm: 'Rumput', foodEn: 'Grass' },
+    { nameBm: 'Itik', nameEn: 'Duck', image: assetPath('/animals/duck.jpg'), food: 'tumbuhan_air', foodImg: assetPath('/images/food/tumbuhan_air.jpg'), foodBm: 'Tumbuhan air', foodEn: 'Water plants' },
+    { nameBm: 'Beruang', nameEn: 'Bear', image: assetPath('/animals/bear.jpg'), food: 'ikan', foodImg: assetPath('/images/food/ikan.jpg'), foodBm: 'Ikan', foodEn: 'Fish' },
+    { nameBm: 'Katak', nameEn: 'Frog', image: assetPath('/animals/frog.jpg'), food: 'serangga', foodImg: assetPath('/images/food/serangga.jpg'), foodBm: 'Serangga', foodEn: 'Bugs' },
+    { nameBm: 'Tupai', nameEn: 'Squirrel', image: assetPath('/animals/squirrel.jpg'), food: 'kacang', foodImg: assetPath('/images/food/kacang.jpg'), foodBm: 'Kacang', foodEn: 'Nuts' },
+    { nameBm: 'Babi', nameEn: 'Pig', image: assetPath('/animals/pig.jpg'), food: 'buah', foodImg: assetPath('/images/food/buah.jpg'), foodBm: 'Buah', foodEn: 'Fruits' },
+    { nameBm: 'Koala', nameEn: 'Koala', image: assetPath('/animals/koala.jpg'), food: 'eucalyptus', foodImg: assetPath('/images/food/eucalyptus.jpg'), foodBm: 'Daun kayu putih', foodEn: 'Eucalyptus' },
+    { nameBm: 'Ikan', nameEn: 'Fish', image: assetPath('/animals/fish.jpg'), food: 'cacing', foodImg: assetPath('/images/food/cacing.jpg'), foodBm: 'Cacing', foodEn: 'Worms' },
+    { nameBm: 'Ular', nameEn: 'Snake', image: assetPath('/animals/snake.jpg'), food: 'tikus', foodImg: assetPath('/images/food/tikus.jpg'), foodBm: 'Tikus', foodEn: 'Mouse' },
   ];
 
   const TOTAL_ROUNDS = 15;
@@ -3135,8 +3135,10 @@ export function AnimalFoodGame() {
     const newUsed = [...prevUsed, pickIdx];
     setUsedIdx(newUsed);
 
-    // Create food options: 1 correct + 3 wrong
-    const allFoods = ANIMALS.map(a => ({ emoji: a.foodEmoji, name: lang === 'bm' ? a.foodBm : a.foodEn, key: a.food }));
+    // Create food options: 1 correct + 3 wrong (deduplicate by food key)
+    const seen = new Set();
+    const uniqueFoods = ANIMALS.filter(a => { if (seen.has(a.food)) return false; seen.add(a.food); return true; });
+    const allFoods = uniqueFoods.map(a => ({ img: a.foodImg, name: lang === 'bm' ? a.foodBm : a.foodEn, key: a.food }));
     const wrong = allFoods.filter(f => f.key !== animal.food).sort(() => Math.random() - 0.5).slice(0, 3);
     const correct = allFoods.find(f => f.key === animal.food);
     const shuffled = [correct, ...wrong].sort(() => Math.random() - 0.5);
@@ -3196,7 +3198,7 @@ export function AnimalFoodGame() {
       </div>
 
       <div className="game-body" style={{ textAlign: 'center', gap: 10, padding: '8px 12px', justifyContent: 'center' }}>
-        {/* Animal Display - BIG emoji + name */}
+        {/* Animal Display - HD image + name */}
         <div style={{
           background: 'rgba(255,255,255,0.95)', borderRadius: 24,
           padding: '16px 24px', maxWidth: 400, margin: '0 auto',
@@ -3204,15 +3206,16 @@ export function AnimalFoodGame() {
           border: showEating ? '4px solid #FFD700' : '4px solid rgba(255,255,255,0.9)',
           transition: 'all 0.5s ease', backdropFilter: 'blur(12px)'
         }}>
-          <div style={{ fontSize: '4.5rem', lineHeight: 1, marginBottom: 6, transition: 'transform 0.5s ease', transform: showEating ? 'scale(1.15)' : 'scale(1)' }}>
-            {currentAnimal.emoji}
-          </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 900, fontFamily: 'var(--font-heading)', color: '#FF9800' }}>
+          <img src={currentAnimal.image} alt={lang === 'bm' ? currentAnimal.nameBm : currentAnimal.nameEn}
+            style={{ width: 130, height: 130, borderRadius: '50%', objectFit: 'cover', border: '5px solid #FF9800', transition: 'transform 0.5s ease', transform: showEating ? 'scale(1.1)' : 'scale(1)' }}
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
+          <div style={{ fontSize: '1.5rem', fontWeight: 900, fontFamily: 'var(--font-heading)', color: '#FF9800', marginTop: 6 }}>
             {lang === 'bm' ? currentAnimal.nameBm : currentAnimal.nameEn}
           </div>
           {showEating && (
-            <div style={{ fontSize: '1.8rem', marginTop: 4, animation: 'popIn 0.3s ease' }}>
-              {currentAnimal.foodEmoji} 😋
+            <div style={{ marginTop: 6, animation: 'popIn 0.3s ease' }}>
+              <img src={currentAnimal.foodImg} alt="" style={{ width: 50, height: 50, borderRadius: 12, objectFit: 'cover' }} />
             </div>
           )}
         </div>
@@ -3252,7 +3255,7 @@ export function AnimalFoodGame() {
                   backdropFilter: 'blur(8px)',
                   minHeight: 90
                 }}>
-                  <span style={{ fontSize: '2.2rem', lineHeight: 1 }}>{food.emoji}</span>
+                  <img src={food.img} alt={food.name} style={{ width: 55, height: 55, borderRadius: 12, objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; }} />
                   <span style={{ fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: '#333' }}>{food.name}</span>
                 </button>
               );
