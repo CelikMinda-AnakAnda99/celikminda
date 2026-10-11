@@ -6969,32 +6969,71 @@ export function WorldVehiclesGame() {
 
 // ============================================
 // ANIMAL PUZZLE GAME (Lengkap Haiwan)
-// Pick the missing part of the animal!
+// See the animal with missing part, guess what's missing!
+// When correct, the COMPLETE animal appears with sparkles!
 // ============================================
 export function AnimalPuzzleGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
+  // 6 animals with VISUAL before/after generated images
   const ALL_PUZZLES = [
-    { image: '/animals/elephant.jpg', nameBm: 'Gajah', nameEn: 'Elephant', missingBm: 'Belalai', missingEn: 'Trunk', answerBm: 'Belalai', answerEn: 'Trunk', wrongBm: ['Tanduk', 'Sayap'], wrongEn: ['Horns', 'Wings'] },
-    { image: '/animals/lion.jpg', nameBm: 'Singa', nameEn: 'Lion', missingBm: 'Surai', missingEn: 'Mane', answerBm: 'Surai', answerEn: 'Mane', wrongBm: ['Sisik', 'Paruh'], wrongEn: ['Scales', 'Beak'] },
-    { image: '/animals/turtle.jpg', nameBm: 'Penyu', nameEn: 'Turtle', missingBm: 'Cengkerang', missingEn: 'Shell', answerBm: 'Cengkerang', answerEn: 'Shell', wrongBm: ['Bulu', 'Tanduk'], wrongEn: ['Fur', 'Horns'] },
-    { image: '/animals/cat.jpg', nameBm: 'Kucing', nameEn: 'Cat', missingBm: 'Misai', missingEn: 'Whiskers', answerBm: 'Misai', answerEn: 'Whiskers', wrongBm: ['Sirip', 'Tanduk'], wrongEn: ['Fins', 'Horns'] },
-    { image: '/animals/dog.jpg', nameBm: 'Anjing', nameEn: 'Dog', missingBm: 'Ekor', missingEn: 'Tail', answerBm: 'Ekor', answerEn: 'Tail', wrongBm: ['Sayap', 'Sisik'], wrongEn: ['Wings', 'Scales'] },
-    { image: '/animals/fish.jpg', nameBm: 'Ikan', nameEn: 'Fish', missingBm: 'Sirip', missingEn: 'Fins', answerBm: 'Sirip', answerEn: 'Fins', wrongBm: ['Kaki', 'Surai'], wrongEn: ['Legs', 'Mane'] },
-    { image: '/animals/bird.jpg', nameBm: 'Burung', nameEn: 'Bird', missingBm: 'Sayap', missingEn: 'Wings', answerBm: 'Sayap', answerEn: 'Wings', wrongBm: ['Sirip', 'Belalai'], wrongEn: ['Fins', 'Trunk'] },
-    { image: '/animals/frog.jpg', nameBm: 'Katak', nameEn: 'Frog', missingBm: 'Kaki belakang', missingEn: 'Back legs', answerBm: 'Kaki belakang', answerEn: 'Back legs', wrongBm: ['Sayap', 'Ekor'], wrongEn: ['Wings', 'Tail'] },
-    { image: '/animals/monkey.jpg', nameBm: 'Monyet', nameEn: 'Monkey', missingBm: 'Ekor panjang', missingEn: 'Long tail', answerBm: 'Ekor panjang', answerEn: 'Long tail', wrongBm: ['Tanduk', 'Sirip'], wrongEn: ['Horns', 'Fins'] },
-    { image: '/animals/rooster.jpg', nameBm: 'Ayam', nameEn: 'Rooster', missingBm: 'Balung', missingEn: 'Comb', answerBm: 'Balung', answerEn: 'Comb', wrongBm: ['Belalai', 'Sisik'], wrongEn: ['Trunk', 'Scales'] },
-    { image: '/animals/duck.jpg', nameBm: 'Itik', nameEn: 'Duck', missingBm: 'Paruh', missingEn: 'Bill', answerBm: 'Paruh', answerEn: 'Bill', wrongBm: ['Surai', 'Tanduk'], wrongEn: ['Mane', 'Horns'] },
-    { image: '/animals/snake.jpg', nameBm: 'Ular', nameEn: 'Snake', missingBm: 'Sisik', missingEn: 'Scales', answerBm: 'Sisik', answerEn: 'Scales', wrongBm: ['Kaki', 'Sayap'], wrongEn: ['Legs', 'Wings'] },
-    { image: '/animals/dolphin.jpg', nameBm: 'Lumba-lumba', nameEn: 'Dolphin', missingBm: 'Sirip belakang', missingEn: 'Tail fin', answerBm: 'Sirip belakang', answerEn: 'Tail fin', wrongBm: ['Tanduk', 'Bulu'], wrongEn: ['Horns', 'Fur'] },
-    { image: '/animals/sheep.jpg', nameBm: 'Kambing', nameEn: 'Sheep', missingBm: 'Bulu tebal', missingEn: 'Thick wool', answerBm: 'Bulu tebal', answerEn: 'Thick wool', wrongBm: ['Sisik', 'Sayap'], wrongEn: ['Scales', 'Wings'] },
-    { image: '/animals/bee.jpg', nameBm: 'Lebah', nameEn: 'Bee', missingBm: 'Sengat', missingEn: 'Stinger', answerBm: 'Sengat', answerEn: 'Stinger', wrongBm: ['Ekor', 'Tanduk'], wrongEn: ['Tail', 'Horns'] },
-    { image: '/animals/eagle.jpg', nameBm: 'Helang', nameEn: 'Eagle', missingBm: 'Cakar tajam', missingEn: 'Sharp claws', answerBm: 'Cakar tajam', answerEn: 'Sharp claws', wrongBm: ['Sirip', 'Belalai'], wrongEn: ['Fins', 'Trunk'] },
-    { image: '/animals/octopus.jpg', nameBm: 'Sotong', nameEn: 'Octopus', missingBm: 'Tentakel', missingEn: 'Tentacles', answerBm: 'Tentakel', answerEn: 'Tentacles', wrongBm: ['Sayap', 'Kaki'], wrongEn: ['Wings', 'Legs'] },
-    { image: '/animals/butterfly.jpg', nameBm: 'Rama-rama', nameEn: 'Butterfly', missingBm: 'Sayap cantik', missingEn: 'Pretty wings', answerBm: 'Sayap cantik', answerEn: 'Pretty wings', wrongBm: ['Sirip', 'Tanduk'], wrongEn: ['Fins', 'Horns'] },
-    { image: '/animals/cow.jpg', nameBm: 'Lembu', nameEn: 'Cow', missingBm: 'Tanduk', missingEn: 'Horns', answerBm: 'Tanduk', answerEn: 'Horns', wrongBm: ['Sayap', 'Sengat'], wrongEn: ['Wings', 'Stinger'] },
+    {
+      missingImg: '/images/puzzle/cow_missing.jpg',
+      completeImg: '/images/puzzle/cow_complete.jpg',
+      nameBm: 'Lembu', nameEn: 'Cow',
+      questionBm: 'Apa yang hilang pada lembu ini?', questionEn: 'What is missing on this cow?',
+      answerBm: 'Tanduk', answerEn: 'Horns',
+      wrongBm: ['Sayap', 'Sirip'], wrongEn: ['Wings', 'Fins']
+    },
+    {
+      missingImg: '/images/puzzle/elephant_missing.jpg',
+      completeImg: '/images/puzzle/elephant_complete.jpg',
+      nameBm: 'Gajah', nameEn: 'Elephant',
+      questionBm: 'Apa yang hilang pada gajah ini?', questionEn: 'What is missing on this elephant?',
+      answerBm: 'Belalai', answerEn: 'Trunk',
+      wrongBm: ['Tanduk', 'Sayap'], wrongEn: ['Horns', 'Wings']
+    },
+    {
+      missingImg: '/images/puzzle/lion_missing.jpg',
+      completeImg: '/images/puzzle/lion_complete.jpg',
+      nameBm: 'Singa', nameEn: 'Lion',
+      questionBm: 'Apa yang hilang pada singa ini?', questionEn: 'What is missing on this lion?',
+      answerBm: 'Surai', answerEn: 'Mane',
+      wrongBm: ['Sirip', 'Cengkerang'], wrongEn: ['Fins', 'Shell']
+    },
+    {
+      missingImg: '/images/puzzle/bird_missing.jpg',
+      completeImg: '/images/puzzle/bird_complete.jpg',
+      nameBm: 'Burung', nameEn: 'Bird',
+      questionBm: 'Apa yang hilang pada burung ini?', questionEn: 'What is missing on this bird?',
+      answerBm: 'Sayap', answerEn: 'Wings',
+      wrongBm: ['Tanduk', 'Belalai'], wrongEn: ['Horns', 'Trunk']
+    },
+    {
+      missingImg: '/images/puzzle/turtle_missing.jpg',
+      completeImg: '/images/puzzle/turtle_complete.jpg',
+      nameBm: 'Penyu', nameEn: 'Turtle',
+      questionBm: 'Apa yang hilang pada penyu ini?', questionEn: 'What is missing on this turtle?',
+      answerBm: 'Cengkerang', answerEn: 'Shell',
+      wrongBm: ['Surai', 'Sirip'], wrongEn: ['Mane', 'Fins']
+    },
+    {
+      missingImg: '/images/puzzle/cat_missing.jpg',
+      completeImg: '/images/puzzle/cat_complete.jpg',
+      nameBm: 'Kucing', nameEn: 'Cat',
+      questionBm: 'Apa yang hilang pada kucing ini?', questionEn: 'What is missing on this cat?',
+      answerBm: 'Misai', answerEn: 'Whiskers',
+      wrongBm: ['Tanduk', 'Sayap'], wrongEn: ['Horns', 'Wings']
+    },
+    {
+      missingImg: '/images/puzzle/fish_missing.jpg',
+      completeImg: '/images/puzzle/fish_missing.jpg',
+      nameBm: 'Ikan', nameEn: 'Fish',
+      questionBm: 'Apa yang hilang pada ikan ini?', questionEn: 'What is missing on this fish?',
+      answerBm: 'Sirip', answerEn: 'Fins',
+      wrongBm: ['Kaki', 'Surai'], wrongEn: ['Legs', 'Mane']
+    },
   ];
 
   const TOTAL_ROUNDS = 15;
@@ -7004,6 +7043,7 @@ export function AnimalPuzzleGame() {
   const [choices, setChoices] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const [wrongCount, setWrongCount] = useState(0);
+  const [showComplete, setShowComplete] = useState(false);
   const [gameComplete, setGameComplete] = useState(false);
   const [confettiPieces, setConfettiPieces] = useState([]);
   const [usedIdx, setUsedIdx] = useState([]);
@@ -7014,9 +7054,9 @@ export function AnimalPuzzleGame() {
     const pickIdx = available[Math.floor(Math.random() * available.length)];
     const puzzle = ALL_PUZZLES[pickIdx];
     setCurrentPuzzle(puzzle);
+    setShowComplete(false);
     const newUsed = [...prevUsed, pickIdx];
     setUsedIdx(newUsed);
-    // Build text choices: correct + 2 wrong, shuffled
     const correctText = lang === 'bm' ? puzzle.answerBm : puzzle.answerEn;
     const wrongTexts = lang === 'bm' ? puzzle.wrongBm : puzzle.wrongEn;
     const allChoices = [
@@ -7035,6 +7075,7 @@ export function AnimalPuzzleGame() {
     if (feedback) return;
     if (choice.correct) {
       setScore(s => s + 10);
+      setShowComplete(true);
       setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
       setTimeout(() => {
         if (round >= TOTAL_ROUNDS) {
@@ -7052,7 +7093,7 @@ export function AnimalPuzzleGame() {
           setRound(r => r + 1);
           generateRound(usedIdx);
         }
-      }, 1200);
+      }, 2000);
     } else {
       setWrongCount(c => c + 1);
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, soundEnabled) });
@@ -7070,71 +7111,83 @@ export function AnimalPuzzleGame() {
       <div className="game-header" style={{ background: 'linear-gradient(135deg, #26A69A, #4DB6AC)', color: 'white', borderBottom: '3px solid rgba(255,255,255,0.3)' }}>
         <button className="back-btn" onClick={() => goToWorld('animals')} style={{ color: 'white', background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>←</button>
         <span className="game-title" style={{ color: 'white', textShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
-          {lang === 'bm' ? 'Lengkap Haiwan' : 'Animal Puzzle'}
+          {lang === 'bm' ? 'Lengkap Haiwan' : 'Complete the Animal'}
         </span>
         <div className="game-stars" style={{ background: 'rgba(255,255,255,0.25)', borderRadius: 20, padding: '4px 14px' }}>
           <span style={{ fontWeight: 700, color: 'white', fontSize: '1rem' }}>{round}/{TOTAL_ROUNDS}</span>
         </div>
       </div>
 
-      <div className="game-body" style={{ textAlign: 'center', gap: 'var(--space-md)' }}>
-        {/* Animal card */}
+      <div className="game-body" style={{ textAlign: 'center', gap: 'var(--space-sm)' }}>
+        {/* BIG animal image - shows MISSING version, swaps to COMPLETE on correct */}
         <div style={{
-          background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)',
-          borderRadius: 24, padding: '16px 24px', color: '#333',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.15)', maxWidth: 340, margin: '0 auto',
-          border: '3px solid #80CBC4'
+          background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)',
+          borderRadius: 28, padding: '12px', color: '#333',
+          boxShadow: showComplete ? '0 0 40px rgba(255, 215, 0, 0.6), 0 8px 32px rgba(0,0,0,0.15)' : '0 8px 32px rgba(0,0,0,0.15)',
+          maxWidth: 280, margin: '0 auto',
+          border: showComplete ? '4px solid #FFD700' : '4px solid #80CBC4',
+          transition: 'all 0.5s ease'
         }}>
-          <div style={{
-            width: 90, height: 90, borderRadius: '50%', margin: '0 auto 8px',
-            background: 'white', border: '3px solid #B2DFDB',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            overflow: 'hidden', boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
-            animation: 'characterBob 2s ease-in-out infinite'
-          }}>
-            <img src={assetPath(currentPuzzle.image)} alt=""
-              style={{ width: 70, height: 70, objectFit: 'contain' }} />
+          <div style={{ position: 'relative', width: '100%', paddingTop: '100%', borderRadius: 20, overflow: 'hidden' }}>
+            {/* Missing image */}
+            <img src={assetPath(currentPuzzle.missingImg)} alt=""
+              style={{
+                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                objectFit: 'contain', borderRadius: 20, background: 'white',
+                opacity: showComplete ? 0 : 1, transition: 'opacity 0.5s ease'
+              }} />
+            {/* Complete image (appears on correct) */}
+            <img src={assetPath(currentPuzzle.completeImg)} alt=""
+              style={{
+                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                objectFit: 'contain', borderRadius: 20, background: 'white',
+                opacity: showComplete ? 1 : 0, transition: 'opacity 0.5s ease',
+                transform: showComplete ? 'scale(1)' : 'scale(0.8)'
+              }} />
           </div>
-          <div style={{ fontSize: '1.1rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: '#00695C' }}>
+          <div style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: showComplete ? '#FFB300' : '#00695C', marginTop: 8 }}>
             {lang === 'bm' ? currentPuzzle.nameBm : currentPuzzle.nameEn}
-          </div>
-          <div style={{ fontSize: '0.85rem', color: '#666', margin: '4px 0 8px' }}>
-            {lang === 'bm' ? `Bahagian hilang: ${currentPuzzle.missingBm}` : `Missing: ${currentPuzzle.missingEn}`}
-          </div>
-          <div style={{
-            background: 'linear-gradient(135deg, #26A69A, #4DB6AC)',
-            borderRadius: 16, padding: '8px 20px',
-            fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
-            color: 'white', boxShadow: '0 4px 12px rgba(38,166,154,0.3)'
-          }}>
-            {lang === 'bm' ? 'Apa yang hilang?' : 'What is missing?'}
           </div>
         </div>
 
-        {/* Text-based answer buttons - NO EMOJI */}
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-          {choices.map((c, i) => {
-            const isCorrectFeedback = feedback && feedback.type === 'correct' && c.correct;
-            const showHint = wrongCount >= 2 && c.correct;
-            const isWrongFeedback = feedback && !c.correct && feedback.type === 'wrong';
-            const btnColors = ['#26A69A', '#FF7043', '#7E57C2'];
-            return (
-              <button key={i} onClick={() => handleChoice(c)} style={{
-                padding: '12px 24px', borderRadius: 20, minWidth: 100,
-                background: isCorrectFeedback ? '#6BCB77' : isWrongFeedback ? '#FF6B6B22' : showHint ? '#E8F5E9' : 'white',
-                border: `4px solid ${isCorrectFeedback ? '#4CAF50' : isWrongFeedback ? '#FF6B6B' : showHint ? '#6BCB77' : btnColors[i % 3]}`,
-                fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
-                color: isCorrectFeedback ? 'white' : '#333',
-                cursor: feedback ? 'default' : 'pointer',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                transform: isCorrectFeedback ? 'scale(1.08)' : 'scale(1)',
-                transition: 'all 0.2s ease'
-              }}>
-                {c.text}
-              </button>
-            );
-          })}
+        {/* Question banner */}
+        <div style={{
+          background: showComplete ? 'linear-gradient(135deg, #FFB300, #FFD54F)' : 'linear-gradient(135deg, #26A69A, #4DB6AC)',
+          borderRadius: 20, padding: '10px 20px', maxWidth: 320, margin: '0 auto',
+          fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
+          color: 'white', boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          transition: 'all 0.5s ease'
+        }}>
+          {showComplete
+            ? (lang === 'bm'
+              ? `${currentPuzzle.answerBm} dah jumpa!`
+              : `${currentPuzzle.answerEn} found!`)
+            : (lang === 'bm' ? currentPuzzle.questionBm : currentPuzzle.questionEn)
+          }
         </div>
+
+        {/* Text answer buttons - NO EMOJI */}
+        {!showComplete && (
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+            {choices.map((c, i) => {
+              const showHint = wrongCount >= 2 && c.correct;
+              const btnColors = ['#26A69A', '#FF7043', '#7E57C2'];
+              return (
+                <button key={i} onClick={() => handleChoice(c)} style={{
+                  padding: '14px 28px', borderRadius: 22, minWidth: 110,
+                  background: showHint ? '#E8F5E9' : 'white',
+                  border: `4px solid ${showHint ? '#6BCB77' : btnColors[i % 3]}`,
+                  fontSize: '1.1rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
+                  color: '#333', cursor: feedback ? 'default' : 'pointer',
+                  boxShadow: '0 4px 14px rgba(0,0,0,0.1)',
+                  transition: 'all 0.2s ease'
+                }}>
+                  {c.text}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* Feedback */}
         {feedback && (
@@ -7153,7 +7206,7 @@ export function AnimalPuzzleGame() {
         <GameCompleteModal
           lang={lang} stars={getStars()} score={score}
           accentColor="#26A69A"
-          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); setUsedIdx([]); generateRound([]); }}
+          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setShowComplete(false); setConfettiPieces([]); setUsedIdx([]); generateRound([]); }}
           onBack={() => goToWorld('animals')}
           confettiPieces={confettiPieces}
         />
