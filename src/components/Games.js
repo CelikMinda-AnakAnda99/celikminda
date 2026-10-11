@@ -7566,21 +7566,21 @@ export function AnimalEncyclopediaGame() {
         {/* Question card */}
         <div style={{
           background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)',
-          borderRadius: 24, padding: '16px 24px', color: '#333',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.15)', maxWidth: 340, margin: '0 auto',
+          borderRadius: 24, padding: '20px 28px', color: '#333',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.15)', maxWidth: 420, margin: '0 auto',
           border: '3px solid #FCD34D'
         }}>
           <div style={{
-            width: 90, height: 90, borderRadius: '50%', margin: '0 auto 8px',
-            background: 'white', border: '3px solid #FDE68A',
+            width: 130, height: 130, borderRadius: '50%', margin: '0 auto 10px',
+            background: 'white', border: '4px solid #FDE68A',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             overflow: 'hidden', boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
             animation: 'characterBob 2s ease-in-out infinite'
           }}>
             <img src={assetPath(currentQ.image)} alt=""
-              style={{ width: 70, height: 70, objectFit: 'contain' }} />
+              style={{ width: 110, height: 110, objectFit: 'contain' }} />
           </div>
-          <div style={{ fontSize: '1.1rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: '#92400E' }}>
+          <div style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: '#92400E' }}>
             {lang === 'bm' ? currentQ.nameBm : currentQ.nameEn}
           </div>
           <div style={{
@@ -7601,13 +7601,13 @@ export function AnimalEncyclopediaGame() {
             const btnColors = ['#F59E0B', '#EF4444', '#8B5CF6'];
             return (
               <button key={i} onClick={() => handleAnswer(c)} style={{
-                padding: '12px 24px', borderRadius: 20, minWidth: 100,
+                padding: '16px 28px', borderRadius: 20, minWidth: 140,
                 background: isCorrectFeedback ? '#6BCB77' : showHint ? '#FEF3C7' : 'white',
                 border: `4px solid ${isCorrectFeedback ? '#4CAF50' : showHint ? '#F59E0B' : btnColors[i % 3]}`,
-                fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
+                fontSize: '1.15rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
                 color: isCorrectFeedback ? 'white' : '#333',
                 cursor: feedback ? 'default' : 'pointer',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
                 transform: isCorrectFeedback ? 'scale(1.08)' : 'scale(1)',
                 transition: 'all 0.2s ease'
               }}>
