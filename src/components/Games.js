@@ -6975,8 +6975,7 @@ export function WorldVehiclesGame() {
 export function AnimalPuzzleGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-
-  // 6 animals with VISUAL before/after generated images
+  // 10 animals with VISUAL before/after generated kawaii images
   const ALL_PUZZLES = [
     {
       missingImg: '/images/puzzle/cow_missing.jpg',
@@ -7028,11 +7027,35 @@ export function AnimalPuzzleGame() {
     },
     {
       missingImg: '/images/puzzle/fish_missing.jpg',
-      completeImg: '/images/puzzle/fish_missing.jpg',
+      completeImg: '/images/puzzle/fish_complete.jpg',
       nameBm: 'Ikan', nameEn: 'Fish',
       questionBm: 'Apa yang hilang pada ikan ini?', questionEn: 'What is missing on this fish?',
       answerBm: 'Sirip', answerEn: 'Fins',
       wrongBm: ['Kaki', 'Surai'], wrongEn: ['Legs', 'Mane']
+    },
+    {
+      missingImg: '/images/puzzle/rooster_missing.jpg',
+      completeImg: '/images/puzzle/rooster_complete.jpg',
+      nameBm: 'Ayam', nameEn: 'Rooster',
+      questionBm: 'Apa yang hilang pada ayam ini?', questionEn: 'What is missing on this rooster?',
+      answerBm: 'Balung', answerEn: 'Comb',
+      wrongBm: ['Belalai', 'Cengkerang'], wrongEn: ['Trunk', 'Shell']
+    },
+    {
+      missingImg: '/images/puzzle/dog_missing.jpg',
+      completeImg: '/images/puzzle/dog_complete.jpg',
+      nameBm: 'Anjing', nameEn: 'Dog',
+      questionBm: 'Apa yang hilang pada anjing ini?', questionEn: 'What is missing on this dog?',
+      answerBm: 'Ekor', answerEn: 'Tail',
+      wrongBm: ['Sayap', 'Tanduk'], wrongEn: ['Wings', 'Horns']
+    },
+    {
+      missingImg: '/images/puzzle/rabbit_missing.jpg',
+      completeImg: '/images/puzzle/rabbit_complete.jpg',
+      nameBm: 'Arnab', nameEn: 'Rabbit',
+      questionBm: 'Apa yang hilang pada arnab ini?', questionEn: 'What is missing on this rabbit?',
+      answerBm: 'Telinga', answerEn: 'Ears',
+      wrongBm: ['Sirip', 'Surai'], wrongEn: ['Fins', 'Mane']
     },
   ];
 
