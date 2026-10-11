@@ -6978,232 +6978,232 @@ export function AnimalPuzzleGame() {
   // 30 animals — HD Puzzle Collection!
   const ALL_PUZZLES = [
     {
-      missingImg: '/images/puzzle/cow_missing.jpg',
-      completeImg: '/images/puzzle/cow_complete.jpg',
+      missingImg: '/images/puzzle/cow_missing.png',
+      completeImg: '/images/puzzle/cow_complete.png',
       nameBm: 'Lembu', nameEn: 'Cow',
       questionBm: 'Lembu ini hilang apa?', questionEn: 'What is the cow missing?',
       answerBm: 'Tanduk', answerEn: 'Horns',
       wrongBm: ['Sayap', 'Sirip'], wrongEn: ['Wings', 'Fins']
     },
     {
-      missingImg: '/images/puzzle/elephant_missing.jpg',
-      completeImg: '/images/puzzle/elephant_complete.jpg',
+      missingImg: '/images/puzzle/elephant_missing.png',
+      completeImg: '/images/puzzle/elephant_complete.png',
       nameBm: 'Gajah', nameEn: 'Elephant',
       questionBm: 'Gajah ini hilang apa?', questionEn: 'What is the elephant missing?',
       answerBm: 'Belalai', answerEn: 'Trunk',
       wrongBm: ['Tanduk', 'Sayap'], wrongEn: ['Horns', 'Wings']
     },
     {
-      missingImg: '/images/puzzle/lion_missing.jpg',
-      completeImg: '/images/puzzle/lion_complete.jpg',
+      missingImg: '/images/puzzle/lion_missing.png',
+      completeImg: '/images/puzzle/lion_complete.png',
       nameBm: 'Singa', nameEn: 'Lion',
       questionBm: 'Singa ini hilang apa?', questionEn: 'What is the lion missing?',
       answerBm: 'Bulu tengkuk', answerEn: 'Mane',
       wrongBm: ['Belalai', 'Sirip'], wrongEn: ['Trunk', 'Fins']
     },
     {
-      missingImg: '/images/puzzle/bird_missing.jpg',
-      completeImg: '/images/puzzle/bird_complete.jpg',
+      missingImg: '/images/puzzle/bird_missing.png',
+      completeImg: '/images/puzzle/bird_complete.png',
       nameBm: 'Burung', nameEn: 'Bird',
       questionBm: 'Burung ini hilang apa?', questionEn: 'What is the bird missing?',
       answerBm: 'Sayap', answerEn: 'Wings',
       wrongBm: ['Tanduk', 'Belalai'], wrongEn: ['Horns', 'Trunk']
     },
     {
-      missingImg: '/images/puzzle/turtle_missing.jpg',
-      completeImg: '/images/puzzle/turtle_complete.jpg',
+      missingImg: '/images/puzzle/turtle_missing.png',
+      completeImg: '/images/puzzle/turtle_complete.png',
       nameBm: 'Kura-kura', nameEn: 'Turtle',
       questionBm: 'Kura-kura ini hilang apa?', questionEn: 'What is the turtle missing?',
       answerBm: 'Tempurung', answerEn: 'Shell',
       wrongBm: ['Sayap', 'Belalai'], wrongEn: ['Wings', 'Trunk']
     },
     {
-      missingImg: '/images/puzzle/cat_missing.jpg',
-      completeImg: '/images/puzzle/cat_complete.jpg',
+      missingImg: '/images/puzzle/cat_missing.png',
+      completeImg: '/images/puzzle/cat_complete.png',
       nameBm: 'Kucing', nameEn: 'Cat',
       questionBm: 'Kucing ini hilang apa?', questionEn: 'What is the cat missing?',
       answerBm: 'Misai', answerEn: 'Whiskers',
       wrongBm: ['Tanduk', 'Sirip'], wrongEn: ['Horns', 'Fins']
     },
     {
-      missingImg: '/images/puzzle/fish_missing.jpg',
-      completeImg: '/images/puzzle/fish_complete.jpg',
+      missingImg: '/images/puzzle/fish_missing.png',
+      completeImg: '/images/puzzle/fish_complete.png',
       nameBm: 'Ikan', nameEn: 'Fish',
       questionBm: 'Ikan ini hilang apa?', questionEn: 'What is the fish missing?',
       answerBm: 'Sirip', answerEn: 'Fins',
       wrongBm: ['Kaki', 'Tanduk'], wrongEn: ['Legs', 'Horns']
     },
     {
-      missingImg: '/images/puzzle/rooster_missing.jpg',
-      completeImg: '/images/puzzle/rooster_complete.jpg',
+      missingImg: '/images/puzzle/rooster_missing.png',
+      completeImg: '/images/puzzle/rooster_complete.png',
       nameBm: 'Ayam', nameEn: 'Rooster',
       questionBm: 'Ayam ini hilang apa?', questionEn: 'What is the rooster missing?',
       answerBm: 'Paruh', answerEn: 'Beak',
       wrongBm: ['Belalai', 'Sirip'], wrongEn: ['Trunk', 'Fins']
     },
     {
-      missingImg: '/images/puzzle/dog_missing.jpg',
-      completeImg: '/images/puzzle/dog_complete.jpg',
+      missingImg: '/images/puzzle/dog_missing.png',
+      completeImg: '/images/puzzle/dog_complete.png',
       nameBm: 'Anjing', nameEn: 'Dog',
       questionBm: 'Anjing ini hilang apa?', questionEn: 'What is the dog missing?',
       answerBm: 'Ekor', answerEn: 'Tail',
       wrongBm: ['Sayap', 'Tanduk'], wrongEn: ['Wings', 'Horns']
     },
     {
-      missingImg: '/images/puzzle/rabbit_missing.jpg',
-      completeImg: '/images/puzzle/rabbit_complete.jpg',
+      missingImg: '/images/puzzle/rabbit_missing.png',
+      completeImg: '/images/puzzle/rabbit_complete.png',
       nameBm: 'Arnab', nameEn: 'Rabbit',
       questionBm: 'Arnab ini hilang apa?', questionEn: 'What is the rabbit missing?',
       answerBm: 'Telinga', answerEn: 'Ears',
       wrongBm: ['Belalai', 'Sirip'], wrongEn: ['Trunk', 'Fins']
     },
     {
-      missingImg: '/images/puzzle/horse_missing.jpg',
-      completeImg: '/images/puzzle/horse_complete.jpg',
+      missingImg: '/images/puzzle/horse_missing.png',
+      completeImg: '/images/puzzle/horse_complete.png',
       nameBm: 'Kuda', nameEn: 'Horse',
       questionBm: 'Kuda ini hilang apa?', questionEn: 'What is the horse missing?',
       answerBm: 'Ekor', answerEn: 'Tail',
       wrongBm: ['Sirip', 'Belalai'], wrongEn: ['Fins', 'Trunk']
     },
     {
-      missingImg: '/images/puzzle/monkey_missing.jpg',
-      completeImg: '/images/puzzle/monkey_complete.jpg',
+      missingImg: '/images/puzzle/monkey_missing.png',
+      completeImg: '/images/puzzle/monkey_complete.png',
       nameBm: 'Monyet', nameEn: 'Monkey',
       questionBm: 'Monyet ini hilang apa?', questionEn: 'What is the monkey missing?',
       answerBm: 'Ekor', answerEn: 'Tail',
       wrongBm: ['Tanduk', 'Sirip'], wrongEn: ['Horns', 'Fins']
     },
     {
-      missingImg: '/images/puzzle/frog_missing.jpg',
-      completeImg: '/images/puzzle/frog_complete.jpg',
+      missingImg: '/images/puzzle/frog_missing.png',
+      completeImg: '/images/puzzle/frog_complete.png',
       nameBm: 'Katak', nameEn: 'Frog',
       questionBm: 'Katak ini hilang apa?', questionEn: 'What is the frog missing?',
       answerBm: 'Kaki belakang', answerEn: 'Back legs',
       wrongBm: ['Sayap', 'Tanduk'], wrongEn: ['Wings', 'Horns']
     },
     {
-      missingImg: '/images/puzzle/goat_missing.jpg',
-      completeImg: '/images/puzzle/goat_complete.jpg',
+      missingImg: '/images/puzzle/goat_missing.png',
+      completeImg: '/images/puzzle/goat_complete.png',
       nameBm: 'Kambing', nameEn: 'Goat',
       questionBm: 'Kambing ini hilang apa?', questionEn: 'What is the goat missing?',
       answerBm: 'Tanduk', answerEn: 'Horns',
       wrongBm: ['Sayap', 'Sirip'], wrongEn: ['Wings', 'Fins']
     },
     {
-      missingImg: '/images/puzzle/duck_missing.jpg',
-      completeImg: '/images/puzzle/duck_complete.jpg',
+      missingImg: '/images/puzzle/duck_missing.png',
+      completeImg: '/images/puzzle/duck_complete.png',
       nameBm: 'Itik', nameEn: 'Duck',
       questionBm: 'Itik ini hilang apa?', questionEn: 'What is the duck missing?',
       answerBm: 'Paruh', answerEn: 'Beak',
       wrongBm: ['Tanduk', 'Ekor'], wrongEn: ['Horns', 'Tail']
     },
     {
-      missingImg: '/images/puzzle/snake_missing.jpg',
-      completeImg: '/images/puzzle/snake_complete.jpg',
+      missingImg: '/images/puzzle/snake_missing.png',
+      completeImg: '/images/puzzle/snake_complete.png',
       nameBm: 'Ular', nameEn: 'Snake',
       questionBm: 'Ular ini hilang apa?', questionEn: 'What is the snake missing?',
       answerBm: 'Lidah', answerEn: 'Tongue',
       wrongBm: ['Kaki', 'Sayap'], wrongEn: ['Legs', 'Wings']
     },
     {
-      missingImg: '/images/puzzle/dolphin_missing.jpg',
-      completeImg: '/images/puzzle/dolphin_complete.jpg',
+      missingImg: '/images/puzzle/dolphin_missing.png',
+      completeImg: '/images/puzzle/dolphin_complete.png',
       nameBm: 'Lumba-lumba', nameEn: 'Dolphin',
       questionBm: 'Lumba-lumba ini hilang apa?', questionEn: 'What is the dolphin missing?',
       answerBm: 'Sirip belakang', answerEn: 'Dorsal fin',
       wrongBm: ['Kaki', 'Tanduk'], wrongEn: ['Legs', 'Horns']
     },
     {
-      missingImg: '/images/puzzle/giraffe_missing.jpg',
-      completeImg: '/images/puzzle/giraffe_complete.jpg',
+      missingImg: '/images/puzzle/giraffe_missing.png',
+      completeImg: '/images/puzzle/giraffe_complete.png',
       nameBm: 'Zirafah', nameEn: 'Giraffe',
       questionBm: 'Zirafah ini hilang apa?', questionEn: 'What is the giraffe missing?',
       answerBm: 'Leher panjang', answerEn: 'Long neck',
       wrongBm: ['Sayap', 'Sirip'], wrongEn: ['Wings', 'Fins']
     },
     {
-      missingImg: '/images/puzzle/crocodile_missing.jpg',
-      completeImg: '/images/puzzle/crocodile_complete.jpg',
+      missingImg: '/images/puzzle/crocodile_missing.png',
+      completeImg: '/images/puzzle/crocodile_complete.png',
       nameBm: 'Buaya', nameEn: 'Crocodile',
       questionBm: 'Buaya ini hilang apa?', questionEn: 'What is the crocodile missing?',
       answerBm: 'Gigi', answerEn: 'Teeth',
       wrongBm: ['Sayap', 'Belalai'], wrongEn: ['Wings', 'Trunk']
     },
     {
-      missingImg: '/images/puzzle/peacock_missing.jpg',
-      completeImg: '/images/puzzle/peacock_complete.jpg',
+      missingImg: '/images/puzzle/peacock_missing.png',
+      completeImg: '/images/puzzle/peacock_complete.png',
       nameBm: 'Merak', nameEn: 'Peacock',
       questionBm: 'Merak ini hilang apa?', questionEn: 'What is the peacock missing?',
       answerBm: 'Bulu ekor', answerEn: 'Tail feathers',
       wrongBm: ['Tanduk', 'Sirip'], wrongEn: ['Horns', 'Fins']
     },
     {
-      missingImg: '/images/puzzle/crab_missing.jpg',
-      completeImg: '/images/puzzle/crab_complete.jpg',
+      missingImg: '/images/puzzle/crab_missing.png',
+      completeImg: '/images/puzzle/crab_complete.png',
       nameBm: 'Ketam', nameEn: 'Crab',
       questionBm: 'Ketam ini hilang apa?', questionEn: 'What is the crab missing?',
       answerBm: 'Sepit', answerEn: 'Claws',
       wrongBm: ['Sayap', 'Ekor'], wrongEn: ['Wings', 'Tail']
     },
     {
-      missingImg: '/images/puzzle/deer_missing.jpg',
-      completeImg: '/images/puzzle/deer_complete.jpg',
+      missingImg: '/images/puzzle/deer_missing.png',
+      completeImg: '/images/puzzle/deer_complete.png',
       nameBm: 'Rusa', nameEn: 'Deer',
       questionBm: 'Rusa ini hilang apa?', questionEn: 'What is the deer missing?',
       answerBm: 'Tanduk', answerEn: 'Antlers',
       wrongBm: ['Sirip', 'Belalai'], wrongEn: ['Fins', 'Trunk']
     },
     {
-      missingImg: '/images/puzzle/bear_missing.jpg',
-      completeImg: '/images/puzzle/bear_complete.jpg',
+      missingImg: '/images/puzzle/bear_missing.png',
+      completeImg: '/images/puzzle/bear_complete.png',
       nameBm: 'Beruang', nameEn: 'Bear',
       questionBm: 'Beruang ini hilang apa?', questionEn: 'What is the bear missing?',
       answerBm: 'Telinga', answerEn: 'Ears',
       wrongBm: ['Sirip', 'Sayap'], wrongEn: ['Fins', 'Wings']
     },
     {
-      missingImg: '/images/puzzle/tiger_missing.jpg',
-      completeImg: '/images/puzzle/tiger_complete.jpg',
+      missingImg: '/images/puzzle/tiger_missing.png',
+      completeImg: '/images/puzzle/tiger_complete.png',
       nameBm: 'Harimau', nameEn: 'Tiger',
       questionBm: 'Harimau ini hilang apa?', questionEn: 'What is the tiger missing?',
       answerBm: 'Belang', answerEn: 'Stripes',
       wrongBm: ['Sayap', 'Sirip'], wrongEn: ['Wings', 'Fins']
     },
     {
-      missingImg: '/images/puzzle/penguin_missing.jpg',
-      completeImg: '/images/puzzle/penguin_complete.jpg',
+      missingImg: '/images/puzzle/penguin_missing.png',
+      completeImg: '/images/puzzle/penguin_complete.png',
       nameBm: 'Penguin', nameEn: 'Penguin',
       questionBm: 'Penguin ini hilang apa?', questionEn: 'What is the penguin missing?',
       answerBm: 'Kepak', answerEn: 'Flippers',
       wrongBm: ['Tanduk', 'Belalai'], wrongEn: ['Horns', 'Trunk']
     },
     {
-      missingImg: '/images/puzzle/octopus_missing.jpg',
-      completeImg: '/images/puzzle/octopus_complete.jpg',
+      missingImg: '/images/puzzle/octopus_missing.png',
+      completeImg: '/images/puzzle/octopus_complete.png',
       nameBm: 'Sotong', nameEn: 'Octopus',
       questionBm: 'Sotong ini hilang apa?', questionEn: 'What is the octopus missing?',
       answerBm: 'Tentakel', answerEn: 'Tentacles',
       wrongBm: ['Sayap', 'Tanduk'], wrongEn: ['Wings', 'Horns']
     },
     {
-      missingImg: '/images/puzzle/sheep_missing.jpg',
-      completeImg: '/images/puzzle/sheep_complete.jpg',
+      missingImg: '/images/puzzle/sheep_missing.png',
+      completeImg: '/images/puzzle/sheep_complete.png',
       nameBm: 'Biri-biri', nameEn: 'Sheep',
       questionBm: 'Biri-biri ini hilang apa?', questionEn: 'What is the sheep missing?',
       answerBm: 'Bulu badan', answerEn: 'Wool',
       wrongBm: ['Tanduk', 'Sirip'], wrongEn: ['Horns', 'Fins']
     },
     {
-      missingImg: '/images/puzzle/bee_missing.jpg',
-      completeImg: '/images/puzzle/bee_complete.jpg',
+      missingImg: '/images/puzzle/bee_missing.png',
+      completeImg: '/images/puzzle/bee_complete.png',
       nameBm: 'Lebah', nameEn: 'Bee',
       questionBm: 'Lebah ini hilang apa?', questionEn: 'What is the bee missing?',
       answerBm: 'Sayap', answerEn: 'Wings',
       wrongBm: ['Tanduk', 'Sirip'], wrongEn: ['Horns', 'Fins']
     },
     {
-      missingImg: '/images/puzzle/eagle_missing.jpg',
-      completeImg: '/images/puzzle/eagle_complete.jpg',
+      missingImg: '/images/puzzle/eagle_missing.png',
+      completeImg: '/images/puzzle/eagle_complete.png',
       nameBm: 'Helang', nameEn: 'Eagle',
       questionBm: 'Helang ini hilang apa?', questionEn: 'What is the eagle missing?',
       answerBm: 'Kuku tajam', answerEn: 'Talons',
@@ -7282,7 +7282,8 @@ export function AnimalPuzzleGame() {
   if (!currentPuzzle) return null;
 
   return (
-    <div className="game-screen" style={{ position: 'relative', background: 'linear-gradient(135deg, #E8D5F5 0%, #D4E7F7 50%, #D5F0E8 100%)' }}>
+    <div className="game-screen" style={{ position: 'relative' }}>
+      <img src={assetPath('/images/game/puzzle_rainbow_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, imageRendering: '-webkit-optimize-contrast' }} />
       <div className="game-header" style={{ background: 'linear-gradient(135deg, #9C27B0, #CE93D8)', color: 'white', borderBottom: '3px solid rgba(255,255,255,0.3)' }}>
         <button className="back-btn" onClick={() => goToWorld('animals')} style={{ color: 'white', background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>←</button>
         <span className="game-title" style={{ color: 'white', textShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
@@ -7293,37 +7294,33 @@ export function AnimalPuzzleGame() {
         </div>
       </div>
 
-      <div className="game-body" style={{ textAlign: 'center', gap: 10, padding: '8px 12px', justifyContent: 'center' }}>
+      <div className="game-body" style={{ textAlign: 'center', gap: 10, padding: '6px 12px', justifyContent: 'center' }}>
         {/* BIG animal image - shows MISSING version, swaps to COMPLETE on correct */}
         <div style={{
-          borderRadius: 24, overflow: 'hidden',
-          boxShadow: showComplete ? '0 0 50px rgba(255, 215, 0, 0.7), 0 8px 32px rgba(0,0,0,0.2)' : '0 8px 32px rgba(0,0,0,0.15)',
-          width: '95%', maxWidth: 480, margin: '0 auto',
+          borderRadius: 20, overflow: 'hidden',
+          boxShadow: showComplete ? '0 0 50px rgba(255, 215, 0, 0.7), 0 8px 32px rgba(0,0,0,0.25)' : '0 8px 32px rgba(0,0,0,0.2)',
+          width: '98%', maxWidth: 560, margin: '0 auto',
           border: showComplete ? '4px solid #FFD700' : '4px solid rgba(255,255,255,0.95)',
           transition: 'all 0.5s ease', position: 'relative',
           background: 'white'
         }}>
           <div style={{ position: 'relative', width: '100%', aspectRatio: '1 / 1' }}>
-            {/* Missing image — HD crisp */}
+            {/* Missing image — HD PNG lossless */}
             <img src={assetPath(currentPuzzle.missingImg)} alt=""
               style={{
                 position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
                 objectFit: 'contain',
                 opacity: showComplete ? 0 : 1, transition: 'opacity 0.6s ease',
-                imageRendering: '-webkit-optimize-contrast',
-                WebkitBackfaceVisibility: 'hidden',
-                backfaceVisibility: 'hidden'
+                imageRendering: 'auto'
               }} />
-            {/* Complete image (appears on correct) — HD crisp */}
+            {/* Complete image — HD PNG lossless */}
             <img src={assetPath(currentPuzzle.completeImg)} alt=""
               style={{
                 position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
                 objectFit: 'contain',
                 opacity: showComplete ? 1 : 0, transition: 'all 0.6s ease',
                 transform: showComplete ? 'scale(1)' : 'scale(0.85)',
-                imageRendering: '-webkit-optimize-contrast',
-                WebkitBackfaceVisibility: 'hidden',
-                backfaceVisibility: 'hidden'
+                imageRendering: 'auto'
               }} />
           </div>
           {/* Name label overlaid on image */}
