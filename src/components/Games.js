@@ -7645,47 +7645,79 @@ export function AnimalEncyclopediaGame() {
 
 // ============================================
 // MIMIC ANIMAL GAME (Tiru Haiwan)
-// Follow the animal's actions!
+// Follow the animal's actions! 15 rounds, score system, HD images
 // ============================================
 export function MimicAnimalGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
   const ACTIONS = [
-    { animal: '🐱', name: lang === 'bm' ? 'Kucing' : 'Cat', action: lang === 'bm' ? 'Mengeong! Meow!' : 'Say Meow!', sound: '😺' },
-    { animal: '🐶', name: lang === 'bm' ? 'Anjing' : 'Dog', action: lang === 'bm' ? 'Menyalak! Woof!' : 'Say Woof!', sound: '🐕' },
-    { animal: '🐸', name: lang === 'bm' ? 'Katak' : 'Frog', action: lang === 'bm' ? 'Lompat tinggi!' : 'Jump high!', sound: '🦿' },
-    { animal: '🐘', name: lang === 'bm' ? 'Gajah' : 'Elephant', action: lang === 'bm' ? 'Hayun belalai!' : 'Swing your trunk!', sound: '💪' },
-    { animal: '🦁', name: lang === 'bm' ? 'Singa' : 'Lion', action: lang === 'bm' ? 'Mengaum! Roar!' : 'Roar loudly!', sound: '🗣️' },
-    { animal: '🐧', name: lang === 'bm' ? 'Penguin' : 'Penguin', action: lang === 'bm' ? 'Berjalan goyang-goyang!' : 'Waddle walk!', sound: '🚶' },
+    { image: assetPath('/animals/cat.jpg'), nameBm: 'Kucing', nameEn: 'Cat', actionBm: 'Mengeong! Meow! 🐱', actionEn: 'Say Meow! 🐱', tipBm: 'Buat bunyi kucing!', tipEn: 'Make cat sounds!' },
+    { image: assetPath('/animals/dog.jpg'), nameBm: 'Anjing', nameEn: 'Dog', actionBm: 'Menyalak! Woof woof!', actionEn: 'Say Woof! Bark!', tipBm: 'Buat bunyi anjing!', tipEn: 'Make dog sounds!' },
+    { image: assetPath('/animals/frog.jpg'), nameBm: 'Katak', nameEn: 'Frog', actionBm: 'Lompat tinggi-tinggi!', actionEn: 'Jump high like a frog!', tipBm: 'Lompat macam katak!', tipEn: 'Jump like a frog!' },
+    { image: assetPath('/animals/elephant.jpg'), nameBm: 'Gajah', nameEn: 'Elephant', actionBm: 'Hayun tangan macam belalai!', actionEn: 'Swing your arm like a trunk!', tipBm: 'Tangan jadi belalai!', tipEn: 'Arms become trunks!' },
+    { image: assetPath('/animals/lion.jpg'), nameBm: 'Singa', nameEn: 'Lion', actionBm: 'Mengaum kuat! ROAR!', actionEn: 'Roar loudly! ROAR!', tipBm: 'Tunjuk gigi dan mengaum!', tipEn: 'Show teeth and roar!' },
+    { image: assetPath('/animals/monkey.jpg'), nameBm: 'Monyet', nameEn: 'Monkey', actionBm: 'Garu kepala dan lompat!', actionEn: 'Scratch head and jump!', tipBm: 'Berlagak macam monyet!', tipEn: 'Act like a monkey!' },
+    { image: assetPath('/animals/bird.jpg'), nameBm: 'Burung', nameEn: 'Bird', actionBm: 'Kepakkan tangan macam sayap!', actionEn: 'Flap your arms like wings!', tipBm: 'Terbang macam burung!', tipEn: 'Fly like a bird!' },
+    { image: assetPath('/animals/duck.jpg'), nameBm: 'Itik', nameEn: 'Duck', actionBm: 'Berjalan goyang-goyang! Kwek kwek!', actionEn: 'Waddle walk! Quack quack!', tipBm: 'Jalan macam itik!', tipEn: 'Walk like a duck!' },
+    { image: assetPath('/animals/rabbit.jpg'), nameBm: 'Arnab', nameEn: 'Rabbit', actionBm: 'Lompat kecil-kecil!', actionEn: 'Do little bunny hops!', tipBm: 'Hop hop macam arnab!', tipEn: 'Hop hop like a rabbit!' },
+    { image: assetPath('/animals/snake.jpg'), nameBm: 'Ular', nameEn: 'Snake', actionBm: 'Buat bunyi sssss dan meliuk!', actionEn: 'Hiss sssss and slither!', tipBm: 'Bergerak macam ular!', tipEn: 'Move like a snake!' },
+    { image: assetPath('/animals/cow.jpg'), nameBm: 'Lembu', nameEn: 'Cow', actionBm: 'Buat bunyi mooo!', actionEn: 'Say Mooo!', tipBm: 'Bunyi lembu panjang!', tipEn: 'Long cow sound!' },
+    { image: assetPath('/animals/rooster.jpg'), nameBm: 'Ayam', nameEn: 'Rooster', actionBm: 'Buat bunyi kukuruyuk!', actionEn: 'Say cock-a-doodle-doo!', tipBm: 'Ayam berkokok pagi!', tipEn: 'Morning rooster call!' },
+    { image: assetPath('/animals/goat.jpg'), nameBm: 'Kambing', nameEn: 'Goat', actionBm: 'Buat bunyi meee!', actionEn: 'Say Baaa!', tipBm: 'Kambing mengembek!', tipEn: 'Goat bleating!' },
+    { image: assetPath('/animals/horse.jpg'), nameBm: 'Kuda', nameEn: 'Horse', actionBm: 'Berlari di tempat dan ringkik!', actionEn: 'Gallop and neigh!', tipBm: 'Lari macam kuda!', tipEn: 'Run like a horse!' },
+    { image: assetPath('/animals/bear.jpg'), nameBm: 'Beruang', nameEn: 'Bear', actionBm: 'Berdiri tegap dan mengaum!', actionEn: 'Stand tall and growl!', tipBm: 'Jadi beruang garang!', tipEn: 'Be a fierce bear!' },
+    { image: assetPath('/animals/panda.jpg'), nameBm: 'Panda', nameEn: 'Panda', actionBm: 'Duduk dan makan buluh!', actionEn: 'Sit and eat bamboo!', tipBm: 'Kunyah macam panda!', tipEn: 'Chew like a panda!' },
+    { image: assetPath('/animals/fish.jpg'), nameBm: 'Ikan', nameEn: 'Fish', actionBm: 'Buka tutup mulut dan berenang!', actionEn: 'Open close mouth and swim!', tipBm: 'Berenang macam ikan!', tipEn: 'Swim like a fish!' },
+    { image: assetPath('/animals/squirrel.jpg'), nameBm: 'Tupai', nameEn: 'Squirrel', actionBm: 'Garu pipi dan simpan kacang!', actionEn: 'Stuff cheeks and hide nuts!', tipBm: 'Pipi penuh macam tupai!', tipEn: 'Full cheeks like squirrel!' },
+    { image: assetPath('/animals/koala.jpg'), nameBm: 'Koala', nameEn: 'Koala', actionBm: 'Peluk pokok dan tidur!', actionEn: 'Hug a tree and sleep!', tipBm: 'Koala mengantuk!', tipEn: 'Sleepy koala!' },
+    { image: assetPath('/animals/pig.jpg'), nameBm: 'Khinzir', nameEn: 'Pig', actionBm: 'Buat bunyi oink oink!', actionEn: 'Say oink oink!', tipBm: 'Bunyi khinzir lucu!', tipEn: 'Funny pig sounds!' },
   ];
 
-  const [idx, setIdx] = useState(0);
-  const [done, setDone] = useState(false);
+  const TOTAL_ROUNDS = 15;
+  const [round, setRound] = useState(1);
+  const [score, setScore] = useState(0);
+  const [currentAction, setCurrentAction] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
-  const [countdown, setCountdown] = useState(3);
-  const [acting, setActing] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  const [phase, setPhase] = useState('ready'); // ready, acting, done
+  const [confettiPieces, setConfettiPieces] = useState([]);
+  const [usedIdx, setUsedIdx] = useState([]);
+
+  const generateRound = useCallback((prevUsed = []) => {
+    let available = ACTIONS.map((_, i) => i).filter(i => !prevUsed.includes(i));
+    if (available.length === 0) available = ACTIONS.map((_, i) => i);
+    const pickIdx = available[Math.floor(Math.random() * available.length)];
+    const action = ACTIONS[pickIdx];
+    setCurrentAction(action);
+    setPhase('ready');
+    setCountdown(0);
+    const newUsed = [...prevUsed, pickIdx];
+    setUsedIdx(newUsed);
+    return newUsed;
+  }, []);
+
+  useEffect(() => { generateRound([]); }, [generateRound]);
+
+  // Preload images
+  useEffect(() => {
+    ACTIONS.forEach(a => { const img = new Image(); img.src = a.image; });
+  }, []);
 
   const startAction = () => {
     if (soundEnabled) playTapSound();
-    // Play real animal SFX when starting mimic
-    if (soundEnabled && lang === 'bm') {
-      const sfxMap = { '🐱': 'kucing', '🐶': 'anjing', '🐸': 'katak', '🐘': 'gajah', '🦁': 'singa' };
-      const animalKey = sfxMap[ACTIONS[idx].animal];
-      if (animalKey) setTimeout(() => playBMAnimalSfx(animalKey), 300);
-    }
-    setActing(true);
-    setCountdown(3);
+    setPhase('acting');
+    setCountdown(5);
     const timer = setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(timer);
+          setScore(s => s + 10);
+          setPhase('done');
           if (soundEnabled) {
             if (lang === 'bm') playBMCorrectFeedback();
             else playCorrectSound();
           }
-          setDone(true);
-          setActing(false);
           return 0;
         }
         return prev - 1;
@@ -7693,56 +7725,150 @@ export function MimicAnimalGame() {
     }, 1000);
   };
 
-  const nextAnimal = () => {
-    setDone(false);
-    if (idx + 1 < ACTIONS.length) setIdx(idx + 1);
-    else {
+  const nextRound = () => {
+    if (round >= TOTAL_ROUNDS) {
+      const finalScore = score;
+      const stars = finalScore >= 100 ? 3 : finalScore >= 60 ? 2 : 1;
+      completeGame('animals', 'mimic-animal', stars, finalScore);
       if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
-      completeGame('animals', 'mimic-animal', 3, ACTIONS.length * 15);
+      const colors = ['#FF9800', '#4CAF50', '#2196F3', '#E91E63', '#FFD93D'];
+      setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
+        id: i, left: Math.random() * 100, color: colors[i % colors.length],
+        delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
+      })));
       setGameComplete(true);
+    } else {
+      setRound(r => r + 1);
+      generateRound(usedIdx);
     }
   };
 
-  if (gameComplete) {
-    return (
-      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
-        <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
-        <h1 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}>{lang === 'bm' ? 'Pelakon Hebat!' : 'Great Actor!'}</h1>
-        <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
-        <button className="btn-premium" onClick={() => goToWorld('animals')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button>
-      </div>
-    );
-  }
+  const getStars = () => score >= 100 ? 3 : score >= 60 ? 2 : 1;
 
-  const a = ACTIONS[idx];
+  if (!currentAction) return null;
+
   return (
-    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/mimic_animal_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
-      <div style={{ padding: 16, textAlign: 'center' }}>
-        <button className="icon-btn" onClick={() => goToWorld('animals')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        <h2 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}>{lang === 'bm' ? 'Tiru Haiwan!' : 'Act Like an Animal!'}</h2>
-        <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{ACTIONS.length}</div>
-        <div style={{ textAlign: 'center', margin: '20px 0', animation: acting ? 'bounce 0.5s infinite alternate' : 'none' }}><GI e={a.animal} size={96} /></div>
-        <div style={{ fontSize: '1.3rem', fontWeight: 800, fontFamily: 'var(--font-heading)' }}>{a.name}</div>
-        <div style={{ fontSize: '1rem', color: '#555', margin: '8px 0 20px' }}>{a.action}</div>
-        {acting && <div style={{ fontSize: '3rem', fontWeight: 900, color: '#F57F17' }}>{countdown}</div>}
-        {!acting && !done && (
-          <button onClick={startAction} style={{
-            padding: '14px 32px', borderRadius: 20, background: 'linear-gradient(135deg, #FFD93D, #FFA726)',
-            color: 'white', border: 'none', fontWeight: 800, fontSize: '1.1rem', cursor: 'pointer',
-            fontFamily: 'var(--font-heading)', boxShadow: '0 4px 16px rgba(255,152,0,0.4)',
-          }}>{lang === 'bm' ? 'Mula!' : 'Start!'}</button>
+    <div className="game-screen" style={{ position: 'relative' }}>
+      <img src={assetPath('/images/game/mimic_animal_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} />
+      <div className="game-header" style={{ background: 'linear-gradient(135deg, #FF6F00, #FFB300)', color: 'white', borderBottom: '3px solid rgba(255,255,255,0.3)' }}>
+        <button className="back-btn" onClick={() => goToWorld('animals')} style={{ color: 'white', background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>←</button>
+        <span className="game-title" style={{ color: 'white', textShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
+          {lang === 'bm' ? 'Tiru Haiwan!' : 'Act Like Animals!'}
+        </span>
+        <div className="game-stars" style={{ background: 'rgba(255,255,255,0.25)', borderRadius: 20, padding: '4px 14px' }}>
+          <span style={{ fontWeight: 700, color: 'white', fontSize: '1rem' }}>{round}/{TOTAL_ROUNDS}</span>
+        </div>
+      </div>
+
+      <div className="game-body" style={{ textAlign: 'center', gap: 12, padding: '12px 16px', justifyContent: 'center' }}>
+        {/* Animal Card */}
+        <div style={{
+          background: 'rgba(255,255,255,0.95)', borderRadius: 24,
+          padding: '20px 28px', maxWidth: 420, margin: '0 auto',
+          boxShadow: phase === 'acting' ? '0 0 40px rgba(255,111,0,0.5), 0 8px 32px rgba(0,0,0,0.15)' : '0 8px 32px rgba(0,0,0,0.12)',
+          border: phase === 'acting' ? '4px solid #FFD700' : phase === 'done' ? '4px solid #66BB6A' : '4px solid rgba(255,255,255,0.9)',
+          transition: 'all 0.5s ease', backdropFilter: 'blur(12px)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center'
+        }}>
+          <img src={currentAction.image} alt={lang === 'bm' ? currentAction.nameBm : currentAction.nameEn}
+            style={{
+              width: 130, height: 130, borderRadius: '50%', objectFit: 'cover',
+              border: phase === 'acting' ? '5px solid #FF6F00' : '5px solid #FFB300',
+              transition: 'all 0.5s ease',
+              animation: phase === 'acting' ? 'characterBob 0.5s ease-in-out infinite' : 'none'
+            }}
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
+          <div style={{ fontSize: '1.5rem', fontWeight: 900, fontFamily: 'var(--font-heading)', color: '#FF6F00', marginTop: 8 }}>
+            {lang === 'bm' ? currentAction.nameBm : currentAction.nameEn}
+          </div>
+        </div>
+
+        {/* Action instruction banner */}
+        <div style={{
+          background: phase === 'done' ? 'linear-gradient(135deg, #66BB6A, #A5D6A7)' : 'linear-gradient(135deg, #FF6F00, #FFB300)',
+          borderRadius: 22, padding: '12px 24px', width: '90%', maxWidth: 400, margin: '0 auto',
+          fontSize: '1.1rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
+          color: 'white', boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+          transition: 'all 0.5s ease'
+        }}>
+          {phase === 'done'
+            ? (lang === 'bm' ? 'Hebat! Kamu pandai meniru!' : 'Awesome! Great acting!')
+            : (lang === 'bm' ? currentAction.actionBm : currentAction.actionEn)
+          }
+        </div>
+
+        {/* Tip text */}
+        {phase === 'ready' && (
+          <div style={{
+            fontSize: '0.95rem', color: '#666', fontStyle: 'italic',
+            background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: '8px 20px',
+            maxWidth: 380, margin: '0 auto'
+          }}>
+            {lang === 'bm' ? currentAction.tipBm : currentAction.tipEn}
+          </div>
         )}
-        {done && (
-          <div>
-            <div style={{ fontSize: '2rem', marginBottom: 12 }}>{lang === 'bm' ? 'Hebat!' : 'Awesome!'}</div>
-            <button onClick={nextAnimal} style={{
-              padding: '12px 28px', borderRadius: 16, background: '#6BCB77', color: 'white',
-              border: 'none', fontWeight: 800, cursor: 'pointer', fontFamily: 'var(--font-heading)',
-            }}>{lang === 'bm' ? 'Seterusnya →' : 'Next →'}</button>
+
+        {/* Countdown during acting */}
+        {phase === 'acting' && (
+          <div style={{
+            width: 80, height: 80, borderRadius: '50%', margin: '0 auto',
+            background: 'linear-gradient(135deg, #FF6F00, #FFB300)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '2.5rem', fontWeight: 900, color: 'white',
+            boxShadow: '0 4px 20px rgba(255,111,0,0.4)',
+            animation: 'popIn 0.3s ease'
+          }}>
+            {countdown}
+          </div>
+        )}
+
+        {/* Start button */}
+        {phase === 'ready' && (
+          <button onClick={startAction} style={{
+            padding: '16px 40px', borderRadius: 24,
+            background: 'linear-gradient(135deg, #FF6F00, #FFB300)',
+            color: 'white', border: 'none', fontWeight: 800, fontSize: '1.2rem',
+            cursor: 'pointer', fontFamily: 'var(--font-heading)',
+            boxShadow: '0 4px 20px rgba(255,111,0,0.4)',
+            transition: 'all 0.2s ease', margin: '0 auto'
+          }}>
+            {lang === 'bm' ? 'Mula Tiru!' : 'Start Acting!'}
+          </button>
+        )}
+
+        {/* Done - Next button */}
+        {phase === 'done' && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+            <div style={{
+              padding: '10px 24px', borderRadius: 18,
+              background: '#66BB6A', color: 'white', fontWeight: 700, fontSize: '1.1rem',
+              textAlign: 'center', margin: '0 auto', width: 'fit-content'
+            }}>
+              {correctFeedback(lang, soundEnabled)}
+            </div>
+            <button onClick={nextRound} style={{
+              padding: '14px 36px', borderRadius: 22,
+              background: 'linear-gradient(135deg, #66BB6A, #43A047)',
+              color: 'white', border: 'none', fontWeight: 800, fontSize: '1.15rem',
+              cursor: 'pointer', fontFamily: 'var(--font-heading)',
+              boxShadow: '0 4px 16px rgba(76,175,80,0.4)',
+            }}>
+              {round >= TOTAL_ROUNDS ? (lang === 'bm' ? 'Selesai!' : 'Finish!') : (lang === 'bm' ? 'Seterusnya →' : 'Next →')}
+            </button>
           </div>
         )}
       </div>
+
+      {gameComplete && (
+        <GameCompleteModal
+          lang={lang} stars={getStars()} score={score}
+          accentColor="#FF6F00"
+          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setPhase('ready'); setConfettiPieces([]); setUsedIdx([]); generateRound([]); }}
+          onBack={() => goToWorld('animals')}
+          confettiPieces={confettiPieces}
+        />
+      )}
     </div>
   );
 }
