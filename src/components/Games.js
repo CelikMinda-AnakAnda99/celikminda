@@ -3281,7 +3281,8 @@ export function AnimalFoodGame() {
             background: feedback.type === 'correct' ? '#66BB6A' : '#FF6B6B',
             color: 'white', fontWeight: 700, fontSize: '1.1rem',
             animation: 'popIn 0.3s ease',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
+            boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+            textAlign: 'center', margin: '0 auto', width: 'fit-content'
           }}>
             {feedback.message}
           </div>
