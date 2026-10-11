@@ -3204,7 +3204,8 @@ export function AnimalFoodGame() {
           padding: '16px 24px', maxWidth: 400, margin: '0 auto',
           boxShadow: showEating ? '0 0 40px rgba(255,152,0,0.5), 0 8px 32px rgba(0,0,0,0.15)' : '0 8px 32px rgba(0,0,0,0.12)',
           border: showEating ? '4px solid #FFD700' : '4px solid rgba(255,255,255,0.9)',
-          transition: 'all 0.5s ease', backdropFilter: 'blur(12px)'
+          transition: 'all 0.5s ease', backdropFilter: 'blur(12px)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center'
         }}>
           <img src={currentAnimal.image} alt={lang === 'bm' ? currentAnimal.nameBm : currentAnimal.nameEn}
             style={{ width: 130, height: 130, borderRadius: '50%', objectFit: 'cover', border: '5px solid #FF9800', transition: 'transform 0.5s ease', transform: showEating ? 'scale(1.1)' : 'scale(1)' }}
