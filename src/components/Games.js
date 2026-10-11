@@ -1107,38 +1107,19 @@ export function ColourMixingGame() {
   const lang = language;
 
   const COLOR_RECIPES = [
-    {
-      a: { hex: '#FF0000', nameBm: 'Merah', nameEn: 'Red' },
-      b: { hex: '#FFFF00', nameBm: 'Kuning', nameEn: 'Yellow' },
-      result: { hex: '#FF8C00', nameBm: 'Jingga', nameEn: 'Orange' }
-    },
-    {
-      a: { hex: '#FF0000', nameBm: 'Merah', nameEn: 'Red' },
-      b: { hex: '#0000FF', nameBm: 'Biru', nameEn: 'Blue' },
-      result: { hex: '#800080', nameBm: 'Ungu', nameEn: 'Purple' }
-    },
-    {
-      a: { hex: '#FFFF00', nameBm: 'Kuning', nameEn: 'Yellow' },
-      b: { hex: '#0000FF', nameBm: 'Biru', nameEn: 'Blue' },
-      result: { hex: '#008000', nameBm: 'Hijau', nameEn: 'Green' }
-    },
-    {
-      a: { hex: '#FF0000', nameBm: 'Merah', nameEn: 'Red' },
-      b: { hex: '#FFFFFF', nameBm: 'Putih', nameEn: 'White' },
-      result: { hex: '#FFB6C1', nameBm: 'Merah Jambu', nameEn: 'Pink' }
-    },
-    {
-      a: { hex: '#000000', nameBm: 'Hitam', nameEn: 'Black' },
-      b: { hex: '#FFFFFF', nameBm: 'Putih', nameEn: 'White' },
-      result: { hex: '#808080', nameBm: 'Kelabu', nameEn: 'Grey' }
-    },
-    {
-      a: { hex: '#FF8C00', nameBm: 'Jingga', nameEn: 'Orange' },
-      b: { hex: '#FFFFFF', nameBm: 'Putih', nameEn: 'White' },
-      result: { hex: '#FFDAB9', nameBm: 'Peach', nameEn: 'Peach' }
-    },
+    { a: { hex: '#FF0000', nameBm: 'Merah', nameEn: 'Red' }, b: { hex: '#FFFF00', nameBm: 'Kuning', nameEn: 'Yellow' }, result: { hex: '#FF8C00', nameBm: 'Jingga', nameEn: 'Orange' } },
+    { a: { hex: '#FF0000', nameBm: 'Merah', nameEn: 'Red' }, b: { hex: '#0000FF', nameBm: 'Biru', nameEn: 'Blue' }, result: { hex: '#800080', nameBm: 'Ungu', nameEn: 'Purple' } },
+    { a: { hex: '#FFFF00', nameBm: 'Kuning', nameEn: 'Yellow' }, b: { hex: '#0000FF', nameBm: 'Biru', nameEn: 'Blue' }, result: { hex: '#008000', nameBm: 'Hijau', nameEn: 'Green' } },
+    { a: { hex: '#FF0000', nameBm: 'Merah', nameEn: 'Red' }, b: { hex: '#FFFFFF', nameBm: 'Putih', nameEn: 'White' }, result: { hex: '#FFB6C1', nameBm: 'Merah Jambu', nameEn: 'Pink' } },
+    { a: { hex: '#000000', nameBm: 'Hitam', nameEn: 'Black' }, b: { hex: '#FFFFFF', nameBm: 'Putih', nameEn: 'White' }, result: { hex: '#808080', nameBm: 'Kelabu', nameEn: 'Grey' } },
+    { a: { hex: '#FF8C00', nameBm: 'Jingga', nameEn: 'Orange' }, b: { hex: '#FFFFFF', nameBm: 'Putih', nameEn: 'White' }, result: { hex: '#FFDAB9', nameBm: 'Peach', nameEn: 'Peach' } },
+    { a: { hex: '#0000FF', nameBm: 'Biru', nameEn: 'Blue' }, b: { hex: '#FFFFFF', nameBm: 'Putih', nameEn: 'White' }, result: { hex: '#87CEEB', nameBm: 'Biru Muda', nameEn: 'Light Blue' } },
+    { a: { hex: '#FF0000', nameBm: 'Merah', nameEn: 'Red' }, b: { hex: '#008000', nameBm: 'Hijau', nameEn: 'Green' }, result: { hex: '#8B4513', nameBm: 'Coklat', nameEn: 'Brown' } },
+    { a: { hex: '#FFFF00', nameBm: 'Kuning', nameEn: 'Yellow' }, b: { hex: '#FFFFFF', nameBm: 'Putih', nameEn: 'White' }, result: { hex: '#FFFACD', nameBm: 'Kuning Muda', nameEn: 'Light Yellow' } },
+    { a: { hex: '#800080', nameBm: 'Ungu', nameEn: 'Purple' }, b: { hex: '#FFFFFF', nameBm: 'Putih', nameEn: 'White' }, result: { hex: '#DDA0DD', nameBm: 'Lavender', nameEn: 'Lavender' } },
   ];
 
+  const TOTAL_ROUNDS = 15;
   const [currentRecipeIdx, setCurrentRecipeIdx] = useState(0);
   const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
@@ -1148,26 +1129,30 @@ export function ColourMixingGame() {
   const [gameComplete, setGameComplete] = useState(false);
   const [confettiPieces, setConfettiPieces] = useState([]);
   const [pourAnimation, setPourAnimation] = useState(false);
+  const [usedIdx, setUsedIdx] = useState([]);
 
-  const TOTAL_ROUNDS = 15;
-
-  const generateRound = useCallback((roundNum) => {
-    const idx = (roundNum - 1) % COLOR_RECIPES.length;
-    setCurrentRecipeIdx(idx);
+  const generateRound = useCallback((prevUsed = []) => {
+    let available = COLOR_RECIPES.map((_, i) => i).filter(i => !prevUsed.includes(i));
+    if (available.length === 0) available = COLOR_RECIPES.map((_, i) => i);
+    const pickIdx = available[Math.floor(Math.random() * available.length)];
+    setCurrentRecipeIdx(pickIdx);
     setMixed(false);
     setPourAnimation(false);
-
-    const recipe = COLOR_RECIPES[idx];
-    const wrongResults = COLOR_RECIPES.filter((_, i) => i !== idx)
+    const recipe = COLOR_RECIPES[pickIdx];
+    const wrongResults = COLOR_RECIPES.filter((_, i) => i !== pickIdx)
       .sort(() => Math.random() - 0.5).slice(0, 3).map(r => r.result);
     const allChoices = [recipe.result, ...wrongResults].sort(() => Math.random() - 0.5);
     setChoices(allChoices);
     setFeedback(null);
+    const newUsed = [...prevUsed, pickIdx];
+    setUsedIdx(newUsed);
+    return newUsed;
   }, []);
 
-  useEffect(() => { generateRound(1); }, [generateRound]);
+  useEffect(() => { generateRound([]); }, [generateRound]);
 
   const handleMix = () => {
+    if (soundEnabled) playTapSound();
     setPourAnimation(true);
     setTimeout(() => setMixed(true), 800);
   };
@@ -1175,26 +1160,24 @@ export function ColourMixingGame() {
   const handleAnswer = (colorResult) => {
     if (feedback) return;
     const recipe = COLOR_RECIPES[currentRecipeIdx];
-
     if (colorResult.hex === recipe.result.hex) {
       setScore(prev => prev + 10);
       setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
-
       setTimeout(() => {
         if (round >= TOTAL_ROUNDS) {
           const finalScore = score + 10;
-          const stars = finalScore >= 50 ? 3 : finalScore >= 30 ? 2 : 1;
+          const stars = finalScore >= 100 ? 3 : finalScore >= 60 ? 2 : 1;
           completeGame('colours', 'colour-mixing', stars, finalScore);
-          setGameComplete(true);
           celebrationFeedback(lang, soundEnabled);
           const colors = ['#FF6B9D', '#FFD93D', '#4A90D9', '#6BCB77', '#9B72CF'];
           setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
             id: i, left: Math.random() * 100, color: colors[i % colors.length],
             delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
           })));
+          setGameComplete(true);
         } else {
           setRound(prev => prev + 1);
-          generateRound(round + 1);
+          generateRound(usedIdx);
         }
       }, 1200);
     } else {
@@ -1203,153 +1186,140 @@ export function ColourMixingGame() {
     }
   };
 
-  const getStars = () => score >= 50 ? 3 : score >= 30 ? 2 : 1;
+  const getStars = () => score >= 100 ? 3 : score >= 60 ? 2 : 1;
   const recipe = COLOR_RECIPES[currentRecipeIdx];
 
   return (
-    <div className="game-screen">
-      <div className="game-header">
-        <button className="back-btn" onClick={() => goToWorld('colours')}>←</button>
-        <span className="game-title">
+    <div className="game-screen" style={{ position: 'relative' }}>
+      <img src={assetPath('/images/game/colour_mixing_lab.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} />
+      <div className="game-header" style={{ background: 'linear-gradient(135deg, #9B59B6, #8E44AD)', color: 'white', borderBottom: '3px solid rgba(255,255,255,0.3)' }}>
+        <button className="back-btn" onClick={() => goToWorld('colours')} style={{ color: 'white', background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>←</button>
+        <span className="game-title" style={{ color: 'white', textShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
           {lang === 'bm' ? 'Campur Warna' : 'Colour Mixing'}
         </span>
-        <div className="game-stars">
-          {[1, 2, 3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
+        <div className="game-stars" style={{ background: 'rgba(255,255,255,0.25)', borderRadius: 20, padding: '4px 14px' }}>
+          <span style={{ fontWeight: 700, color: 'white', fontSize: '1rem' }}>{round}/{TOTAL_ROUNDS}</span>
         </div>
       </div>
 
-      <div className="game-body">
+      <div className="game-body" style={{ textAlign: 'center', gap: 12, padding: '12px 16px', justifyContent: 'center' }}>
+        {/* Mixing Area Card */}
         <div style={{
-          width: '100%', height: '100%', position: 'relative',
-          borderRadius: 0, overflow: 'hidden',
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          padding: 'var(--space-lg)',
+          background: 'rgba(255,255,255,0.95)', borderRadius: 24,
+          padding: '20px 24px', maxWidth: 440, margin: '0 auto',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+          border: mixed ? '4px solid #9B59B6' : '4px solid rgba(255,255,255,0.9)',
+          transition: 'all 0.5s ease', backdropFilter: 'blur(12px)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center'
         }}>
-          <img src={assetPath('/images/game/colour_mixing_lab.jpg')} alt="" style={{
-            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-            objectFit: 'cover', zIndex: 0, opacity: 0.855,
-          }} />
-          {/* Round & Score */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-lg)' }}>
-            <div className="round-counter" style={{ position: 'static' }}>{t('round', lang)} {round}/{TOTAL_ROUNDS}</div>
-            <div className="game-score" style={{ position: 'static' }}>
-              <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#60A5FA" style={{ display: "inline-block", verticalAlign: "middle" }}><path d="M6 3l-6 8 12 11L24 11l-6-8H6z" /></svg></span><span className="score-value">{score}</span>
-            </div>
-          </div>
-
-          {/* Mixing area */}
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            gap: 'var(--space-lg)', marginBottom: 'var(--space-xl)', flexWrap: 'wrap',
-          }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
             <div style={{ textAlign: 'center' }}>
               <div style={{
-                width: 90, height: 90, borderRadius: 'var(--radius-lg)',
-                background: recipe.a.hex, border: '4px solid white', boxShadow: 'var(--shadow-md)',
+                width: 75, height: 75, borderRadius: 16,
+                background: recipe.a.hex, border: '4px solid white', boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
                 animation: pourAnimation ? 'bubbleShake 0.5s ease' : 'none',
               }} />
-              <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, marginTop: 'var(--space-xs)', fontSize: '0.9rem' }}>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, marginTop: 4, fontSize: '0.85rem', color: '#333' }}>
                 {lang === 'bm' ? recipe.a.nameBm : recipe.a.nameEn}
-              </p>
+              </div>
             </div>
-
-            <span style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--text-secondary)' }}>+</span>
-
+            <span style={{ fontSize: '1.6rem', fontWeight: 900, color: '#9B59B6' }}>+</span>
             <div style={{ textAlign: 'center' }}>
               <div style={{
-                width: 90, height: 90, borderRadius: 'var(--radius-lg)',
-                background: recipe.b.hex, border: '4px solid white', boxShadow: 'var(--shadow-md)',
+                width: 75, height: 75, borderRadius: 16,
+                background: recipe.b.hex, border: '4px solid white', boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
                 animation: pourAnimation ? 'bubbleShake 0.5s ease 0.2s' : 'none',
               }} />
-              <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, marginTop: 'var(--space-xs)', fontSize: '0.9rem' }}>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, marginTop: 4, fontSize: '0.85rem', color: '#333' }}>
                 {lang === 'bm' ? recipe.b.nameBm : recipe.b.nameEn}
-              </p>
+              </div>
             </div>
-
-            <span style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--text-secondary)' }}>=</span>
-
+            <span style={{ fontSize: '1.6rem', fontWeight: 900, color: '#9B59B6' }}>=</span>
             <div style={{ textAlign: 'center' }}>
               <div style={{
-                width: 90, height: 90, borderRadius: 'var(--radius-lg)',
+                width: 75, height: 75, borderRadius: 16,
                 background: mixed ? recipe.result.hex : 'repeating-conic-gradient(#CCC 0% 25%, white 0% 50%) 50% / 20px 20px',
-                border: '4px solid white', boxShadow: 'var(--shadow-md)',
+                border: '4px solid white', boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'background 0.8s ease',
               }}>
-                {!mixed && <span style={{ fontSize: "2rem" }}>?</span>}
+                {!mixed && <span style={{ fontSize: '1.6rem', fontWeight: 900, color: '#999' }}>?</span>}
               </div>
-              <p style={{
-                fontFamily: 'var(--font-heading)', fontWeight: 700, marginTop: 'var(--space-xs)', fontSize: '0.9rem',
-                color: mixed ? 'var(--text-primary)' : 'var(--text-secondary)',
-              }}>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, marginTop: 4, fontSize: '0.85rem', color: '#999' }}>
                 {mixed ? '???' : '???'}
-              </p>
+              </div>
             </div>
           </div>
-
-          {/* Mix button */}
-          {!mixed && (
-            <button className="btn-primary" onClick={handleMix} style={{
-              marginBottom: 'var(--space-lg)',
-              background: 'linear-gradient(135deg, var(--cm-purple), #764ba2)',
-              fontSize: '1.1rem', padding: '14px 36px',
-            }}>
-              {lang === 'bm' ? 'Campur!' : 'Mix!'}
-            </button>
-          )}
-
-          {/* Answer choices */}
-          {mixed && (
-            <>
-              <p style={{
-                fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.1rem',
-                color: 'var(--text-primary)', marginBottom: 'var(--space-md)',
-              }}>
-                {lang === 'bm' ? 'Apakah warna baharu?' : 'What new colour is this?'}
-              </p>
-              <div style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap', justifyContent: 'center' }}>
-                {choices.map((c, i) => (
-                  <button key={i} onClick={() => handleAnswer(c)} style={{
-                    display: 'flex', flexDirection: 'column', alignItems: 'center',
-                    gap: 'var(--space-xs)', padding: 'var(--space-md)',
-                    background: 'white', borderRadius: 'var(--radius-lg)',
-                    border: feedback?.type === 'correct' && c.hex === recipe.result.hex
-                      ? '3px solid var(--cm-green)' : '3px solid #EEE',
-                    boxShadow: 'var(--shadow-md)', cursor: 'pointer', minWidth: 80,
-                    transition: 'all 0.2s ease',
-                    animation: `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.1}s both`,
-                  }}>
-                    <div style={{
-                      width: 50, height: 50, borderRadius: 'var(--radius-md)',
-                      background: c.hex, border: '2px solid rgba(0,0,0,0.1)',
-                    }} />
-                    <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.8rem' }}>
-                      {lang === 'bm' ? c.nameBm : c.nameEn}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-
-          {/* Feedback */}
-          {feedback && (
-            <div style={{
-              marginTop: 'var(--space-lg)', textAlign: 'center',
-              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.2rem',
-              color: feedback.type === 'correct' ? 'var(--cm-green)' : 'var(--cm-red)',
-            }}>
-              {feedback.message}
-            </div>
-          )}
         </div>
+
+        {/* Mix button */}
+        {!mixed && (
+          <button onClick={handleMix} style={{
+            padding: '14px 40px', borderRadius: 24,
+            background: 'linear-gradient(135deg, #9B59B6, #8E44AD)',
+            color: 'white', border: 'none', fontWeight: 800, fontSize: '1.2rem',
+            cursor: 'pointer', fontFamily: 'var(--font-heading)',
+            boxShadow: '0 4px 20px rgba(155,89,182,0.4)', margin: '0 auto'
+          }}>
+            {lang === 'bm' ? 'Campur!' : 'Mix!'}
+          </button>
+        )}
+
+        {/* Question banner */}
+        {mixed && !feedback && (
+          <div style={{
+            background: 'linear-gradient(135deg, #9B59B6, #8E44AD)',
+            borderRadius: 22, padding: '10px 24px', width: '90%', maxWidth: 400, margin: '0 auto',
+            fontSize: '1.05rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
+            color: 'white', boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+          }}>
+            {lang === 'bm' ? 'Apakah warna baharu ini?' : 'What new colour is this?'}
+          </div>
+        )}
+
+        {/* Answer choices */}
+        {mixed && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, width: '95%', maxWidth: 420, margin: '0 auto' }}>
+            {choices.map((c, i) => {
+              const isCorrect = feedback?.type === 'correct' && c.hex === recipe.result.hex;
+              const btnColors = ['#9B59B6', '#E91E63', '#2196F3', '#FF9800'];
+              return (
+                <button key={i} onClick={() => handleAnswer(c)} style={{
+                  background: isCorrect ? '#E8F5E9' : 'rgba(255,255,255,0.95)',
+                  border: `4px solid ${isCorrect ? '#66BB6A' : btnColors[i % 4]}`,
+                  borderRadius: 20, padding: '14px 10px',
+                  cursor: feedback ? 'default' : 'pointer',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                  transition: 'all 0.2s ease', backdropFilter: 'blur(8px)', minHeight: 100
+                }}>
+                  <div style={{ width: 55, height: 55, borderRadius: 14, background: c.hex, border: '3px solid rgba(0,0,0,0.1)', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }} />
+                  <span style={{ fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: '#333' }}>{lang === 'bm' ? c.nameBm : c.nameEn}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Feedback */}
+        {feedback && (
+          <div style={{
+            padding: '10px 24px', borderRadius: 18,
+            background: feedback.type === 'correct' ? '#66BB6A' : '#FF6B6B',
+            color: 'white', fontWeight: 700, fontSize: '1.1rem',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+            textAlign: 'center', margin: '0 auto', width: 'fit-content'
+          }}>
+            {feedback.message}
+          </div>
+        )}
       </div>
 
       {gameComplete && (
         <GameCompleteModal
           lang={lang} stars={getStars()} score={score}
-          accentColor="var(--cm-purple)"
-          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); generateRound(1); }}
+          accentColor="#9B59B6"
+          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); setUsedIdx([]); generateRound([]); }}
           onBack={() => goToWorld('colours')}
           confettiPieces={confettiPieces}
         />
