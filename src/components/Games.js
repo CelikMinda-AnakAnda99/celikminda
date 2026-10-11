@@ -6975,13 +6975,13 @@ export function WorldVehiclesGame() {
 export function AnimalPuzzleGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  // 30 animals — HD Puzzle Collection!
+  // 29 animals — HD Puzzle Collection!
   const ALL_PUZZLES = [
     {
       missingImg: '/images/puzzle/cow_missing.png',
       completeImg: '/images/puzzle/cow_complete.png',
       nameBm: 'Lembu', nameEn: 'Cow',
-      questionBm: 'Lembu ini hilang apa?', questionEn: 'What is the cow missing?',
+      questionBm: 'Apa yang ada di kepala lembu ini?', questionEn: 'What does the cow have on its head?',
       answerBm: 'Tanduk', answerEn: 'Horns',
       wrongBm: ['Sayap', 'Sirip'], wrongEn: ['Wings', 'Fins']
     },
@@ -6989,39 +6989,39 @@ export function AnimalPuzzleGame() {
       missingImg: '/images/puzzle/elephant_missing.png',
       completeImg: '/images/puzzle/elephant_complete.png',
       nameBm: 'Gajah', nameEn: 'Elephant',
-      questionBm: 'Gajah ini hilang apa?', questionEn: 'What is the elephant missing?',
+      questionBm: 'Apa yang panjang pada gajah?', questionEn: 'What is long on the elephant?',
       answerBm: 'Belalai', answerEn: 'Trunk',
-      wrongBm: ['Tanduk', 'Sayap'], wrongEn: ['Horns', 'Wings']
+      wrongBm: ['Ekor', 'Sayap'], wrongEn: ['Tail', 'Wings']
     },
     {
       missingImg: '/images/puzzle/lion_missing.png',
       completeImg: '/images/puzzle/lion_complete.png',
       nameBm: 'Singa', nameEn: 'Lion',
-      questionBm: 'Singa ini hilang apa?', questionEn: 'What is the lion missing?',
-      answerBm: 'Bulu tengkuk', answerEn: 'Mane',
-      wrongBm: ['Belalai', 'Sirip'], wrongEn: ['Trunk', 'Fins']
+      questionBm: 'Apa nama bulu lebat di kepala singa?', questionEn: 'What is the thick fur on the lion\'s head?',
+      answerBm: 'Surai', answerEn: 'Mane',
+      wrongBm: ['Misai', 'Sirip'], wrongEn: ['Whiskers', 'Fins']
     },
     {
       missingImg: '/images/puzzle/bird_missing.png',
       completeImg: '/images/puzzle/bird_complete.png',
       nameBm: 'Burung', nameEn: 'Bird',
-      questionBm: 'Burung ini hilang apa?', questionEn: 'What is the bird missing?',
+      questionBm: 'Apa yang digunakan burung untuk terbang?', questionEn: 'What does the bird use to fly?',
       answerBm: 'Sayap', answerEn: 'Wings',
-      wrongBm: ['Tanduk', 'Belalai'], wrongEn: ['Horns', 'Trunk']
+      wrongBm: ['Sirip', 'Tanduk'], wrongEn: ['Fins', 'Horns']
     },
     {
       missingImg: '/images/puzzle/turtle_missing.png',
       completeImg: '/images/puzzle/turtle_complete.png',
       nameBm: 'Kura-kura', nameEn: 'Turtle',
-      questionBm: 'Kura-kura ini hilang apa?', questionEn: 'What is the turtle missing?',
-      answerBm: 'Tempurung', answerEn: 'Shell',
-      wrongBm: ['Sayap', 'Belalai'], wrongEn: ['Wings', 'Trunk']
+      questionBm: 'Apa yang melindungi badan kura-kura?', questionEn: 'What protects the turtle\'s body?',
+      answerBm: 'Cangkerang', answerEn: 'Shell',
+      wrongBm: ['Bulu', 'Sayap'], wrongEn: ['Fur', 'Wings']
     },
     {
       missingImg: '/images/puzzle/cat_missing.png',
       completeImg: '/images/puzzle/cat_complete.png',
       nameBm: 'Kucing', nameEn: 'Cat',
-      questionBm: 'Kucing ini hilang apa?', questionEn: 'What is the cat missing?',
+      questionBm: 'Apa yang ada di kiri dan kanan mulut kucing?', questionEn: 'What is on the sides of the cat\'s mouth?',
       answerBm: 'Misai', answerEn: 'Whiskers',
       wrongBm: ['Tanduk', 'Sirip'], wrongEn: ['Horns', 'Fins']
     },
@@ -7029,15 +7029,15 @@ export function AnimalPuzzleGame() {
       missingImg: '/images/puzzle/fish_missing.png',
       completeImg: '/images/puzzle/fish_complete.png',
       nameBm: 'Ikan', nameEn: 'Fish',
-      questionBm: 'Ikan ini hilang apa?', questionEn: 'What is the fish missing?',
+      questionBm: 'Apa yang membantu ikan berenang?', questionEn: 'What helps the fish swim?',
       answerBm: 'Sirip', answerEn: 'Fins',
-      wrongBm: ['Kaki', 'Tanduk'], wrongEn: ['Legs', 'Horns']
+      wrongBm: ['Sayap', 'Kaki'], wrongEn: ['Wings', 'Legs']
     },
     {
       missingImg: '/images/puzzle/rooster_missing.png',
       completeImg: '/images/puzzle/rooster_complete.png',
       nameBm: 'Ayam', nameEn: 'Rooster',
-      questionBm: 'Ayam ini hilang apa?', questionEn: 'What is the rooster missing?',
+      questionBm: 'Apa yang digunakan ayam untuk mematuk makanan?', questionEn: 'What does the rooster use to peck food?',
       answerBm: 'Paruh', answerEn: 'Beak',
       wrongBm: ['Belalai', 'Sirip'], wrongEn: ['Trunk', 'Fins']
     },
@@ -7045,7 +7045,7 @@ export function AnimalPuzzleGame() {
       missingImg: '/images/puzzle/dog_missing.png',
       completeImg: '/images/puzzle/dog_complete.png',
       nameBm: 'Anjing', nameEn: 'Dog',
-      questionBm: 'Anjing ini hilang apa?', questionEn: 'What is the dog missing?',
+      questionBm: 'Apa yang bergoyang di belakang badan anjing?', questionEn: 'What wags behind the dog?',
       answerBm: 'Ekor', answerEn: 'Tail',
       wrongBm: ['Sayap', 'Tanduk'], wrongEn: ['Wings', 'Horns']
     },
@@ -7053,7 +7053,7 @@ export function AnimalPuzzleGame() {
       missingImg: '/images/puzzle/rabbit_missing.png',
       completeImg: '/images/puzzle/rabbit_complete.png',
       nameBm: 'Arnab', nameEn: 'Rabbit',
-      questionBm: 'Arnab ini hilang apa?', questionEn: 'What is the rabbit missing?',
+      questionBm: 'Apa yang panjang di kepala arnab?', questionEn: 'What is long on the rabbit\'s head?',
       answerBm: 'Telinga', answerEn: 'Ears',
       wrongBm: ['Belalai', 'Sirip'], wrongEn: ['Trunk', 'Fins']
     },
@@ -7061,15 +7061,15 @@ export function AnimalPuzzleGame() {
       missingImg: '/images/puzzle/horse_missing.png',
       completeImg: '/images/puzzle/horse_complete.png',
       nameBm: 'Kuda', nameEn: 'Horse',
-      questionBm: 'Kuda ini hilang apa?', questionEn: 'What is the horse missing?',
+      questionBm: 'Apa yang terdapat di belakang badan kuda?', questionEn: 'What is behind the horse?',
       answerBm: 'Ekor', answerEn: 'Tail',
-      wrongBm: ['Sirip', 'Belalai'], wrongEn: ['Fins', 'Trunk']
+      wrongBm: ['Sirip', 'Sayap'], wrongEn: ['Fins', 'Wings']
     },
     {
       missingImg: '/images/puzzle/monkey_missing.png',
       completeImg: '/images/puzzle/monkey_complete.png',
       nameBm: 'Monyet', nameEn: 'Monkey',
-      questionBm: 'Monyet ini hilang apa?', questionEn: 'What is the monkey missing?',
+      questionBm: 'Apa yang membantu monyet bergayut dan mengimbangkan badan?', questionEn: 'What helps the monkey swing and balance?',
       answerBm: 'Ekor', answerEn: 'Tail',
       wrongBm: ['Tanduk', 'Sirip'], wrongEn: ['Horns', 'Fins']
     },
@@ -7077,7 +7077,7 @@ export function AnimalPuzzleGame() {
       missingImg: '/images/puzzle/frog_missing.png',
       completeImg: '/images/puzzle/frog_complete.png',
       nameBm: 'Katak', nameEn: 'Frog',
-      questionBm: 'Katak ini hilang apa?', questionEn: 'What is the frog missing?',
+      questionBm: 'Apa yang membantu katak melompat?', questionEn: 'What helps the frog jump?',
       answerBm: 'Kaki belakang', answerEn: 'Back legs',
       wrongBm: ['Sayap', 'Tanduk'], wrongEn: ['Wings', 'Horns']
     },
@@ -7085,23 +7085,23 @@ export function AnimalPuzzleGame() {
       missingImg: '/images/puzzle/goat_missing.png',
       completeImg: '/images/puzzle/goat_complete.png',
       nameBm: 'Kambing', nameEn: 'Goat',
-      questionBm: 'Kambing ini hilang apa?', questionEn: 'What is the goat missing?',
+      questionBm: 'Apa yang terdapat di kepala sesetengah kambing?', questionEn: 'What is on some goats\' heads?',
       answerBm: 'Tanduk', answerEn: 'Horns',
-      wrongBm: ['Sayap', 'Sirip'], wrongEn: ['Wings', 'Fins']
+      wrongBm: ['Sirip', 'Sayap'], wrongEn: ['Fins', 'Wings']
     },
     {
       missingImg: '/images/puzzle/duck_missing.png',
       completeImg: '/images/puzzle/duck_complete.png',
       nameBm: 'Itik', nameEn: 'Duck',
-      questionBm: 'Itik ini hilang apa?', questionEn: 'What is the duck missing?',
+      questionBm: 'Apa yang digunakan itik untuk mematuk makanan?', questionEn: 'What does the duck use to peck food?',
       answerBm: 'Paruh', answerEn: 'Beak',
-      wrongBm: ['Tanduk', 'Ekor'], wrongEn: ['Horns', 'Tail']
+      wrongBm: ['Belalai', 'Tanduk'], wrongEn: ['Trunk', 'Horns']
     },
     {
       missingImg: '/images/puzzle/snake_missing.png',
       completeImg: '/images/puzzle/snake_complete.png',
       nameBm: 'Ular', nameEn: 'Snake',
-      questionBm: 'Ular ini hilang apa?', questionEn: 'What is the snake missing?',
+      questionBm: 'Apa yang dijelirkan oleh ular?', questionEn: 'What does the snake flick out?',
       answerBm: 'Lidah', answerEn: 'Tongue',
       wrongBm: ['Kaki', 'Sayap'], wrongEn: ['Legs', 'Wings']
     },
@@ -7109,39 +7109,39 @@ export function AnimalPuzzleGame() {
       missingImg: '/images/puzzle/dolphin_missing.png',
       completeImg: '/images/puzzle/dolphin_complete.png',
       nameBm: 'Lumba-lumba', nameEn: 'Dolphin',
-      questionBm: 'Lumba-lumba ini hilang apa?', questionEn: 'What is the dolphin missing?',
-      answerBm: 'Sirip belakang', answerEn: 'Dorsal fin',
+      questionBm: 'Apa yang membantu lumba-lumba berenang?', questionEn: 'What helps the dolphin swim?',
+      answerBm: 'Sirip', answerEn: 'Fins',
       wrongBm: ['Kaki', 'Tanduk'], wrongEn: ['Legs', 'Horns']
     },
     {
       missingImg: '/images/puzzle/giraffe_missing.png',
       completeImg: '/images/puzzle/giraffe_complete.png',
       nameBm: 'Zirafah', nameEn: 'Giraffe',
-      questionBm: 'Zirafah ini hilang apa?', questionEn: 'What is the giraffe missing?',
-      answerBm: 'Leher panjang', answerEn: 'Long neck',
-      wrongBm: ['Sayap', 'Sirip'], wrongEn: ['Wings', 'Fins']
+      questionBm: 'Bahagian mana yang panjang pada zirafah?', questionEn: 'What part is long on the giraffe?',
+      answerBm: 'Leher', answerEn: 'Neck',
+      wrongBm: ['Ekor', 'Sayap'], wrongEn: ['Tail', 'Wings']
     },
     {
       missingImg: '/images/puzzle/crocodile_missing.png',
       completeImg: '/images/puzzle/crocodile_complete.png',
       nameBm: 'Buaya', nameEn: 'Crocodile',
-      questionBm: 'Buaya ini hilang apa?', questionEn: 'What is the crocodile missing?',
+      questionBm: 'Apa yang terdapat di dalam mulut buaya?', questionEn: 'What is inside the crocodile\'s mouth?',
       answerBm: 'Gigi', answerEn: 'Teeth',
-      wrongBm: ['Sayap', 'Belalai'], wrongEn: ['Wings', 'Trunk']
+      wrongBm: ['Bulu', 'Belalai'], wrongEn: ['Fur', 'Trunk']
     },
     {
       missingImg: '/images/puzzle/peacock_missing.png',
       completeImg: '/images/puzzle/peacock_complete.png',
       nameBm: 'Merak', nameEn: 'Peacock',
-      questionBm: 'Merak ini hilang apa?', questionEn: 'What is the peacock missing?',
+      questionBm: 'Apa yang cantik dan mengembang di belakang merak?', questionEn: 'What is beautiful and fans out behind the peacock?',
       answerBm: 'Bulu ekor', answerEn: 'Tail feathers',
-      wrongBm: ['Tanduk', 'Sirip'], wrongEn: ['Horns', 'Fins']
+      wrongBm: ['Sirip', 'Tanduk'], wrongEn: ['Fins', 'Horns']
     },
     {
       missingImg: '/images/puzzle/crab_missing.png',
       completeImg: '/images/puzzle/crab_complete.png',
       nameBm: 'Ketam', nameEn: 'Crab',
-      questionBm: 'Ketam ini hilang apa?', questionEn: 'What is the crab missing?',
+      questionBm: 'Apa yang digunakan ketam untuk mencapit?', questionEn: 'What does the crab use to pinch?',
       answerBm: 'Sepit', answerEn: 'Claws',
       wrongBm: ['Sayap', 'Ekor'], wrongEn: ['Wings', 'Tail']
     },
@@ -7149,65 +7149,65 @@ export function AnimalPuzzleGame() {
       missingImg: '/images/puzzle/deer_missing.png',
       completeImg: '/images/puzzle/deer_complete.png',
       nameBm: 'Rusa', nameEn: 'Deer',
-      questionBm: 'Rusa ini hilang apa?', questionEn: 'What is the deer missing?',
+      questionBm: 'Apa yang terdapat di kepala rusa jantan?', questionEn: 'What is on the male deer\'s head?',
       answerBm: 'Tanduk', answerEn: 'Antlers',
-      wrongBm: ['Sirip', 'Belalai'], wrongEn: ['Fins', 'Trunk']
+      wrongBm: ['Belalai', 'Sirip'], wrongEn: ['Trunk', 'Fins']
     },
     {
       missingImg: '/images/puzzle/bear_missing.png',
       completeImg: '/images/puzzle/bear_complete.png',
       nameBm: 'Beruang', nameEn: 'Bear',
-      questionBm: 'Beruang ini hilang apa?', questionEn: 'What is the bear missing?',
-      answerBm: 'Telinga', answerEn: 'Ears',
-      wrongBm: ['Sirip', 'Sayap'], wrongEn: ['Fins', 'Wings']
+      questionBm: 'Apa yang menutupi badan beruang?', questionEn: 'What covers the bear\'s body?',
+      answerBm: 'Bulu', answerEn: 'Fur',
+      wrongBm: ['Sisik', 'Cangkerang'], wrongEn: ['Scales', 'Shell']
     },
     {
       missingImg: '/images/puzzle/tiger_missing.png',
       completeImg: '/images/puzzle/tiger_complete.png',
       nameBm: 'Harimau', nameEn: 'Tiger',
-      questionBm: 'Harimau ini hilang apa?', questionEn: 'What is the tiger missing?',
+      questionBm: 'Apakah corak pada badan harimau?', questionEn: 'What pattern is on the tiger\'s body?',
       answerBm: 'Belang', answerEn: 'Stripes',
-      wrongBm: ['Sayap', 'Sirip'], wrongEn: ['Wings', 'Fins']
+      wrongBm: ['Tompok putih', 'Sisik'], wrongEn: ['White spots', 'Scales']
     },
     {
       missingImg: '/images/puzzle/penguin_missing.png',
       completeImg: '/images/puzzle/penguin_complete.png',
       nameBm: 'Penguin', nameEn: 'Penguin',
-      questionBm: 'Penguin ini hilang apa?', questionEn: 'What is the penguin missing?',
-      answerBm: 'Kepak', answerEn: 'Flippers',
-      wrongBm: ['Tanduk', 'Belalai'], wrongEn: ['Horns', 'Trunk']
+      questionBm: 'Apa yang terdapat di kiri dan kanan badan penguin?', questionEn: 'What is on both sides of the penguin?',
+      answerBm: 'Sayap', answerEn: 'Wings',
+      wrongBm: ['Belalai', 'Tanduk'], wrongEn: ['Trunk', 'Horns']
     },
     {
       missingImg: '/images/puzzle/octopus_missing.png',
       completeImg: '/images/puzzle/octopus_complete.png',
       nameBm: 'Sotong', nameEn: 'Octopus',
-      questionBm: 'Sotong ini hilang apa?', questionEn: 'What is the octopus missing?',
-      answerBm: 'Tentakel', answerEn: 'Tentacles',
+      questionBm: 'Apa nama anggota panjang pada sotong?', questionEn: 'What are the long parts on the octopus?',
+      answerBm: 'Sesungut', answerEn: 'Tentacles',
       wrongBm: ['Sayap', 'Tanduk'], wrongEn: ['Wings', 'Horns']
     },
     {
       missingImg: '/images/puzzle/sheep_missing.png',
       completeImg: '/images/puzzle/sheep_complete.png',
       nameBm: 'Biri-biri', nameEn: 'Sheep',
-      questionBm: 'Biri-biri ini hilang apa?', questionEn: 'What is the sheep missing?',
-      answerBm: 'Bulu badan', answerEn: 'Wool',
-      wrongBm: ['Tanduk', 'Sirip'], wrongEn: ['Horns', 'Fins']
+      questionBm: 'Apa yang menutupi badan biri-biri?', questionEn: 'What covers the sheep\'s body?',
+      answerBm: 'Bulu tebal', answerEn: 'Thick wool',
+      wrongBm: ['Sisik', 'Cangkerang'], wrongEn: ['Scales', 'Shell']
     },
     {
       missingImg: '/images/puzzle/bee_missing.png',
       completeImg: '/images/puzzle/bee_complete.png',
       nameBm: 'Lebah', nameEn: 'Bee',
-      questionBm: 'Lebah ini hilang apa?', questionEn: 'What is the bee missing?',
+      questionBm: 'Apa yang digunakan lebah untuk terbang?', questionEn: 'What does the bee use to fly?',
       answerBm: 'Sayap', answerEn: 'Wings',
-      wrongBm: ['Tanduk', 'Sirip'], wrongEn: ['Horns', 'Fins']
+      wrongBm: ['Sirip', 'Tanduk'], wrongEn: ['Fins', 'Horns']
     },
     {
       missingImg: '/images/puzzle/eagle_missing.png',
       completeImg: '/images/puzzle/eagle_complete.png',
       nameBm: 'Helang', nameEn: 'Eagle',
-      questionBm: 'Helang ini hilang apa?', questionEn: 'What is the eagle missing?',
-      answerBm: 'Kuku tajam', answerEn: 'Talons',
-      wrongBm: ['Belalai', 'Sirip'], wrongEn: ['Trunk', 'Fins']
+      questionBm: 'Apa yang digunakan helang untuk mencengkam mangsa?', questionEn: 'What does the eagle use to grip prey?',
+      answerBm: 'Cakar', answerEn: 'Talons',
+      wrongBm: ['Sirip', 'Belalai'], wrongEn: ['Fins', 'Trunk']
     },
   ];
 
@@ -7299,7 +7299,7 @@ export function AnimalPuzzleGame() {
         <div style={{
           borderRadius: 20, overflow: 'hidden',
           boxShadow: showComplete ? '0 0 50px rgba(255, 215, 0, 0.7), 0 8px 32px rgba(0,0,0,0.25)' : '0 8px 32px rgba(0,0,0,0.2)',
-          width: '98%', maxWidth: 560, margin: '0 auto',
+          width: '95%', maxWidth: 500, margin: '0 auto',
           border: showComplete ? '4px solid #FFD700' : '4px solid rgba(255,255,255,0.95)',
           transition: 'all 0.5s ease', position: 'relative',
           background: 'white'
