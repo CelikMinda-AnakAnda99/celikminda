@@ -3150,6 +3150,16 @@ export function AnimalFoodGame() {
 
   useEffect(() => { generateRound([]); }, [generateRound]);
 
+  // Preload all food images on mount to prevent position flicker
+  useEffect(() => {
+    ANIMALS.forEach(a => {
+      const img = new Image();
+      img.src = a.foodImg;
+      const img2 = new Image();
+      img2.src = a.image;
+    });
+  }, []);
+
   const handleFoodSelect = (food) => {
     if (feedback) return;
     if (food.key === currentAnimal.food) {
@@ -3215,7 +3225,7 @@ export function AnimalFoodGame() {
             {lang === 'bm' ? currentAnimal.nameBm : currentAnimal.nameEn}
           </div>
           {showEating && (
-            <div style={{ marginTop: 6, width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ marginTop: 6, width: 50, height: 50, margin: '6px auto 0', overflow: 'hidden', borderRadius: 12 }}>
               <img src={currentAnimal.foodImg} alt="" style={{ width: 50, height: 50, borderRadius: 12, objectFit: 'cover', display: 'block' }} />
             </div>
           )}
