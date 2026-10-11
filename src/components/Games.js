@@ -7170,80 +7170,184 @@ export function AnimalEncyclopediaGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const ANIMALS = [
-    { emoji: '🦁', name: lang === 'bm' ? 'Singa' : 'Lion', q: lang === 'bm' ? 'Singa makan...' : 'Lions eat...', a: '🥩', choices: ['🥩', '🥬', '🍎'] },
-    { emoji: '🐘', name: lang === 'bm' ? 'Gajah' : 'Elephant', q: lang === 'bm' ? 'Gajah tinggal di...' : 'Elephants live in...', a: '🌿', choices: ['🌿', '❄️', '🌊'] },
-    { emoji: '🐬', name: lang === 'bm' ? 'Lumba-lumba' : 'Dolphin', q: lang === 'bm' ? 'Lumba-lumba hidup di...' : 'Dolphins live in...', a: '🌊', choices: ['🌊', '🏔️', '🌵'] },
-    { emoji: '🦅', name: lang === 'bm' ? 'Helang' : 'Eagle', q: lang === 'bm' ? 'Helang boleh...' : 'Eagles can...', a: '🦅', choices: ['🦅', '🏊', '🏃'] },
-    { emoji: '🐧', name: lang === 'bm' ? 'Penguin' : 'Penguin', q: lang === 'bm' ? 'Penguin tinggal di...' : 'Penguins live in...', a: '❄️', choices: ['❄️', '🌴', '🏜️'] },
+  const ALL_QUESTIONS = [
+    { image: '/animals/lion.jpg', nameBm: 'Singa', nameEn: 'Lion', qBm: 'Singa makan apa?', qEn: 'What do lions eat?', answerBm: 'Daging', answerEn: 'Meat', wrongBm: ['Rumput', 'Buah'], wrongEn: ['Grass', 'Fruit'] },
+    { image: '/animals/elephant.jpg', nameBm: 'Gajah', nameEn: 'Elephant', qBm: 'Gajah tinggal di mana?', qEn: 'Where do elephants live?', answerBm: 'Hutan', answerEn: 'Jungle', wrongBm: ['Laut', 'Langit'], wrongEn: ['Ocean', 'Sky'] },
+    { image: '/animals/dolphin.jpg', nameBm: 'Lumba-lumba', nameEn: 'Dolphin', qBm: 'Lumba-lumba hidup di mana?', qEn: 'Where do dolphins live?', answerBm: 'Laut', answerEn: 'Ocean', wrongBm: ['Hutan', 'Ladang'], wrongEn: ['Jungle', 'Farm'] },
+    { image: '/animals/eagle.jpg', nameBm: 'Helang', nameEn: 'Eagle', qBm: 'Helang boleh apa?', qEn: 'What can eagles do?', answerBm: 'Terbang', answerEn: 'Fly', wrongBm: ['Berenang', 'Menggali'], wrongEn: ['Swim', 'Dig'] },
+    { image: '/animals/cow.jpg', nameBm: 'Lembu', nameEn: 'Cow', qBm: 'Lembu beri kita apa?', qEn: 'What do cows give us?', answerBm: 'Susu', answerEn: 'Milk', wrongBm: ['Telur', 'Madu'], wrongEn: ['Eggs', 'Honey'] },
+    { image: '/animals/cat.jpg', nameBm: 'Kucing', nameEn: 'Cat', qBm: 'Kucing suka buat apa?', qEn: 'What do cats like to do?', answerBm: 'Tidur', answerEn: 'Sleep', wrongBm: ['Terbang', 'Berenang'], wrongEn: ['Fly', 'Swim'] },
+    { image: '/animals/dog.jpg', nameBm: 'Anjing', nameEn: 'Dog', qBm: 'Anjing ada berapa kaki?', qEn: 'How many legs does a dog have?', answerBm: 'Empat', answerEn: 'Four', wrongBm: ['Dua', 'Enam'], wrongEn: ['Two', 'Six'] },
+    { image: '/animals/fish.jpg', nameBm: 'Ikan', nameEn: 'Fish', qBm: 'Ikan bernafas guna apa?', qEn: 'How do fish breathe?', answerBm: 'Insang', answerEn: 'Gills', wrongBm: ['Hidung', 'Mulut'], wrongEn: ['Nose', 'Mouth'] },
+    { image: '/animals/frog.jpg', nameBm: 'Katak', nameEn: 'Frog', qBm: 'Katak pandai apa?', qEn: 'What can frogs do?', answerBm: 'Melompat', answerEn: 'Jump', wrongBm: ['Terbang', 'Menggali'], wrongEn: ['Fly', 'Dig'] },
+    { image: '/animals/monkey.jpg', nameBm: 'Monyet', nameEn: 'Monkey', qBm: 'Monyet suka makan apa?', qEn: 'What do monkeys like to eat?', answerBm: 'Pisang', answerEn: 'Bananas', wrongBm: ['Daging', 'Ikan'], wrongEn: ['Meat', 'Fish'] },
+    { image: '/animals/rooster.jpg', nameBm: 'Ayam', nameEn: 'Rooster', qBm: 'Ayam beri kita apa?', qEn: 'What do chickens give us?', answerBm: 'Telur', answerEn: 'Eggs', wrongBm: ['Susu', 'Madu'], wrongEn: ['Milk', 'Honey'] },
+    { image: '/animals/duck.jpg', nameBm: 'Itik', nameEn: 'Duck', qBm: 'Itik boleh buat apa?', qEn: 'What can ducks do?', answerBm: 'Berenang', answerEn: 'Swim', wrongBm: ['Terbang tinggi', 'Berlari laju'], wrongEn: ['Fly high', 'Run fast'] },
+    { image: '/animals/snake.jpg', nameBm: 'Ular', nameEn: 'Snake', qBm: 'Ular bergerak macam mana?', qEn: 'How do snakes move?', answerBm: 'Merayap', answerEn: 'Slither', wrongBm: ['Melompat', 'Berlari'], wrongEn: ['Jump', 'Run'] },
+    { image: '/animals/bee.jpg', nameBm: 'Lebah', nameEn: 'Bee', qBm: 'Lebah buat apa?', qEn: 'What do bees make?', answerBm: 'Madu', answerEn: 'Honey', wrongBm: ['Susu', 'Telur'], wrongEn: ['Milk', 'Eggs'] },
+    { image: '/animals/turtle.jpg', nameBm: 'Penyu', nameEn: 'Turtle', qBm: 'Penyu ada apa di belakang?', qEn: 'What does a turtle have on its back?', answerBm: 'Cengkerang', answerEn: 'Shell', wrongBm: ['Sayap', 'Bulu'], wrongEn: ['Wings', 'Fur'] },
+    { image: '/animals/butterfly.jpg', nameBm: 'Rama-rama', nameEn: 'Butterfly', qBm: 'Rama-rama suka apa?', qEn: 'What do butterflies like?', answerBm: 'Bunga', answerEn: 'Flowers', wrongBm: ['Daging', 'Ikan'], wrongEn: ['Meat', 'Fish'] },
+    { image: '/animals/sheep.jpg', nameBm: 'Kambing', nameEn: 'Sheep', qBm: 'Badan kambing ditutup apa?', qEn: 'What covers a sheep\'s body?', answerBm: 'Bulu', answerEn: 'Wool', wrongBm: ['Sisik', 'Kulit keras'], wrongEn: ['Scales', 'Hard skin'] },
+    { image: '/animals/bird.jpg', nameBm: 'Burung', nameEn: 'Bird', qBm: 'Burung tinggal di mana?', qEn: 'Where do birds live?', answerBm: 'Sarang', answerEn: 'Nest', wrongBm: ['Gua', 'Laut'], wrongEn: ['Cave', 'Ocean'] },
+    { image: '/animals/octopus.jpg', nameBm: 'Sotong', nameEn: 'Octopus', qBm: 'Sotong ada berapa tangan?', qEn: 'How many arms does an octopus have?', answerBm: 'Lapan', answerEn: 'Eight', wrongBm: ['Empat', 'Enam'], wrongEn: ['Four', 'Six'] },
   ];
 
-  const [idx, setIdx] = useState(0);
-  const [badges, setBadges] = useState([]);
+  const TOTAL_ROUNDS = 15;
+  const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
+  const [currentQ, setCurrentQ] = useState(null);
+  const [choices, setChoices] = useState([]);
   const [feedback, setFeedback] = useState(null);
+  const [wrongCount, setWrongCount] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
+  const [confettiPieces, setConfettiPieces] = useState([]);
+  const [usedIdx, setUsedIdx] = useState([]);
 
-  const handleAnswer = (answer) => {
-    const correct = answer === ANIMALS[idx].a;
-    if (correct) {
-      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
-      setBadges([...badges, ANIMALS[idx].emoji]);
-      setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
-      setScore(score + 1);
+  const generateRound = useCallback((prevUsed = []) => {
+    let available = ALL_QUESTIONS.map((_, i) => i).filter(i => !prevUsed.includes(i));
+    if (available.length === 0) available = ALL_QUESTIONS.map((_, i) => i);
+    const pickIdx = available[Math.floor(Math.random() * available.length)];
+    const q = ALL_QUESTIONS[pickIdx];
+    setCurrentQ(q);
+    const newUsed = [...prevUsed, pickIdx];
+    setUsedIdx(newUsed);
+    const correctText = lang === 'bm' ? q.answerBm : q.answerEn;
+    const wrongTexts = lang === 'bm' ? q.wrongBm : q.wrongEn;
+    const allChoices = [
+      { text: correctText, correct: true },
+      ...wrongTexts.map(t => ({ text: t, correct: false }))
+    ].sort(() => Math.random() - 0.5);
+    setChoices(allChoices);
+    setFeedback(null);
+    setWrongCount(0);
+    return newUsed;
+  }, [lang]);
+
+  useEffect(() => { generateRound([]); }, [generateRound]);
+
+  const handleAnswer = (choice) => {
+    if (feedback) return;
+    if (choice.correct) {
+      setScore(s => s + 10);
+      setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
+      setTimeout(() => {
+        if (round >= TOTAL_ROUNDS) {
+          const finalScore = score + 10;
+          const stars = finalScore >= 100 ? 3 : finalScore >= 60 ? 2 : 1;
+          completeGame('animals', 'animal-encyclopedia', stars, finalScore);
+          celebrationFeedback(lang, soundEnabled);
+          const colors = ['#F59E0B', '#FFD93D', '#6BCB77', '#4A90D9', '#FF6B9D'];
+          setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
+            id: i, left: Math.random() * 100, color: colors[i % colors.length],
+            delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
+          })));
+          setGameComplete(true);
+        } else {
+          setRound(r => r + 1);
+          generateRound(usedIdx);
+        }
+      }, 1200);
     } else {
-      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
-      setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
+      setWrongCount(c => c + 1);
+      setFeedback({ type: 'wrong', message: wrongFeedback(lang, soundEnabled) });
+      setTimeout(() => setFeedback(null), 900);
     }
-    setTimeout(() => {
-      setFeedback(null);
-      if (idx + 1 < ANIMALS.length) setIdx(idx + 1);
-      else {
-        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
-        const f = correct ? score + 1 : score;
-        completeGame('animals', 'animal-encyclopedia', f >= 4 ? 3 : f >= 2 ? 2 : 1, f * 20);
-        setGameComplete(true);
-      }
-    }, 800);
   };
 
-  if (gameComplete) {
-    return (
-      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
-        <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
-        <h1 style={{ fontFamily: 'var(--font-heading)', color: '#1B5E20' }}>{lang === 'bm' ? 'Ensaiklopedia Lengkap!' : 'Encyclopedia Complete!'}</h1>
-        <div style={{ fontSize: '2rem', margin: '8px 0' }}>{badges.join(' ')}</div>
-        <div style={{ fontSize: '2rem', margin: '8px 0' }}>{Array.from({ length: 3 }, (_, i) => <StarIcon key={i} size={28} />)}</div>
-        <button className="btn-premium" onClick={() => goToWorld('animals')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button>
-      </div>
-    );
-  }
+  const getStars = () => score >= 100 ? 3 : score >= 60 ? 2 : 1;
 
-  const a = ANIMALS[idx];
+  if (!currentQ) return null;
+
   return (
-    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/animal_encyclopedia_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
-      <div style={{ padding: 16, textAlign: 'center' }}>
-        <button className="icon-btn" onClick={() => goToWorld('animals')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        <h2 style={{ fontFamily: 'var(--font-heading)', color: '#1B5E20' }}>{a.name}</h2>
-        <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{ANIMALS.length}</div>
-        {badges.length > 0 && <div style={{ fontSize: '1.5rem', margin: '8px 0' }}>{badges.join(' ')}</div>}
-        <div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={a.emoji} size={80} /></div>
-        <div style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 16 }}>{a.q}</div>
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-          {a.choices.map((c, i) => (
-            <button key={i} onClick={() => handleAnswer(c)} style={{
-              fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white',
-              border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)',
-            }}>{c}</button>
-          ))}
+    <div className="game-screen" style={{ position: 'relative' }}>
+      <img src={assetPath('/images/game/animal_museum_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
+      <div className="game-header" style={{ background: 'linear-gradient(135deg, #F59E0B, #FBBF24)', color: 'white', borderBottom: '3px solid rgba(255,255,255,0.3)' }}>
+        <button className="back-btn" onClick={() => goToWorld('animals')} style={{ color: 'white', background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>←</button>
+        <span className="game-title" style={{ color: 'white', textShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
+          {lang === 'bm' ? 'Ensaiklopedia Haiwan' : 'Animal Encyclopedia'}
+        </span>
+        <div className="game-stars" style={{ background: 'rgba(255,255,255,0.25)', borderRadius: 20, padding: '4px 14px' }}>
+          <span style={{ fontWeight: 700, color: 'white', fontSize: '1rem' }}>{round}/{TOTAL_ROUNDS}</span>
         </div>
+      </div>
+
+      <div className="game-body" style={{ textAlign: 'center', gap: 'var(--space-md)' }}>
+        {/* Question card */}
+        <div style={{
+          background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)',
+          borderRadius: 24, padding: '16px 24px', color: '#333',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.15)', maxWidth: 340, margin: '0 auto',
+          border: '3px solid #FCD34D'
+        }}>
+          <div style={{
+            width: 90, height: 90, borderRadius: '50%', margin: '0 auto 8px',
+            background: 'white', border: '3px solid #FDE68A',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            overflow: 'hidden', boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+            animation: 'characterBob 2s ease-in-out infinite'
+          }}>
+            <img src={assetPath(currentQ.image)} alt=""
+              style={{ width: 70, height: 70, objectFit: 'contain' }} />
+          </div>
+          <div style={{ fontSize: '1.1rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: '#92400E' }}>
+            {lang === 'bm' ? currentQ.nameBm : currentQ.nameEn}
+          </div>
+          <div style={{
+            background: 'linear-gradient(135deg, #F59E0B, #FBBF24)',
+            borderRadius: 16, padding: '10px 20px', marginTop: 8,
+            fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
+            color: 'white', boxShadow: '0 4px 12px rgba(245,158,11,0.3)'
+          }}>
+            {lang === 'bm' ? currentQ.qBm : currentQ.qEn}
+          </div>
+        </div>
+
+        {/* Text answer buttons - NO EMOJI */}
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+          {choices.map((c, i) => {
+            const isCorrectFeedback = feedback && feedback.type === 'correct' && c.correct;
+            const showHint = wrongCount >= 2 && c.correct;
+            const btnColors = ['#F59E0B', '#EF4444', '#8B5CF6'];
+            return (
+              <button key={i} onClick={() => handleAnswer(c)} style={{
+                padding: '12px 24px', borderRadius: 20, minWidth: 100,
+                background: isCorrectFeedback ? '#6BCB77' : showHint ? '#FEF3C7' : 'white',
+                border: `4px solid ${isCorrectFeedback ? '#4CAF50' : showHint ? '#F59E0B' : btnColors[i % 3]}`,
+                fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
+                color: isCorrectFeedback ? 'white' : '#333',
+                cursor: feedback ? 'default' : 'pointer',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                transform: isCorrectFeedback ? 'scale(1.08)' : 'scale(1)',
+                transition: 'all 0.2s ease'
+              }}>
+                {c.text}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Feedback */}
         {feedback && (
-          <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>
-            {feedback.type === 'correct' ? '' : ''}{feedback.message}
+          <div style={{
+            padding: '10px 20px', borderRadius: 16,
+            background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B',
+            color: 'white', fontWeight: 700, fontSize: '1.1rem',
+            animation: 'popIn 0.3s ease'
+          }}>
+            {feedback.message}
           </div>
         )}
       </div>
+
+      {gameComplete && (
+        <GameCompleteModal
+          lang={lang} stars={getStars()} score={score}
+          accentColor="#F59E0B"
+          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); setUsedIdx([]); generateRound([]); }}
+          onBack={() => goToWorld('animals')}
+          confettiPieces={confettiPieces}
+        />
+      )}
     </div>
   );
 }
