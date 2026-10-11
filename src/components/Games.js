@@ -3107,7 +3107,7 @@ export function AnimalFoodGame() {
     { nameBm: 'Beruang', nameEn: 'Bear', image: assetPath('/animals/bear.jpg'), food: 'ikan', foodImg: assetPath('/images/food/ikan.jpg'), foodBm: 'Ikan', foodEn: 'Fish' },
     { nameBm: 'Katak', nameEn: 'Frog', image: assetPath('/animals/frog.jpg'), food: 'serangga', foodImg: assetPath('/images/food/serangga.jpg'), foodBm: 'Serangga', foodEn: 'Bugs' },
     { nameBm: 'Tupai', nameEn: 'Squirrel', image: assetPath('/animals/squirrel.jpg'), food: 'kacang', foodImg: assetPath('/images/food/kacang.jpg'), foodBm: 'Kacang', foodEn: 'Nuts' },
-    { nameBm: 'Babi', nameEn: 'Pig', image: assetPath('/animals/pig.jpg'), food: 'buah', foodImg: assetPath('/images/food/buah.jpg'), foodBm: 'Buah', foodEn: 'Fruits' },
+    { nameBm: 'Khinzir', nameEn: 'Pig', image: assetPath('/animals/pig.jpg'), food: 'buah', foodImg: assetPath('/images/food/buah.jpg'), foodBm: 'Buah', foodEn: 'Fruits' },
     { nameBm: 'Koala', nameEn: 'Koala', image: assetPath('/animals/koala.jpg'), food: 'eucalyptus', foodImg: assetPath('/images/food/eucalyptus.jpg'), foodBm: 'Daun kayu putih', foodEn: 'Eucalyptus' },
     { nameBm: 'Ikan', nameEn: 'Fish', image: assetPath('/animals/fish.jpg'), food: 'cacing', foodImg: assetPath('/images/food/cacing.jpg'), foodBm: 'Cacing', foodEn: 'Worms' },
     { nameBm: 'Ular', nameEn: 'Snake', image: assetPath('/animals/snake.jpg'), food: 'tikus', foodImg: assetPath('/images/food/tikus.jpg'), foodBm: 'Tikus', foodEn: 'Mouse' },
