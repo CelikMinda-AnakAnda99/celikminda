@@ -3084,37 +3084,56 @@ export function MathMachineGame() {
 
 // ============================================
 // ANIMAL FOOD GAME (Apa Dia Makan?)
-// Drag/tap to feed animals the right food!
+// Tap to feed animals the right food!
 // ============================================
 export function AnimalFoodGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
   const ANIMALS = [
-    { nameBm: 'Kucing', nameEn: 'Cat', image: assetPath('/animals/cat.jpg'), food: 'fish', foodEmoji: '🐟', foodBm: 'Ikan', foodEn: 'Fish' },
-    { nameBm: 'Arnab', nameEn: 'Rabbit', image: assetPath('/animals/rabbit.jpg'), food: 'carrot', foodEmoji: '🥕', foodBm: 'Lobak', foodEn: 'Carrot' },
-    { nameBm: 'Monyet', nameEn: 'Monkey', image: assetPath('/animals/monkey.jpg'), food: 'banana', foodEmoji: '🍌', foodBm: 'Pisang', foodEn: 'Banana' },
-    { nameBm: 'Gajah', nameEn: 'Elephant', image: assetPath('/animals/elephant.jpg'), food: 'leaves', foodEmoji: '🌿', foodBm: 'Daun', foodEn: 'Leaves' },
-    { nameBm: 'Anjing', nameEn: 'Dog', image: assetPath('/animals/dog.jpg'), food: 'bone', foodEmoji: '🦴', foodBm: 'Tulang', foodEn: 'Bone' },
-    { nameBm: 'Burung', nameEn: 'Bird', image: assetPath('/animals/bird.jpg'), food: 'seeds', foodEmoji: '🌾', foodBm: 'Biji', foodEn: 'Seeds' },
-    { nameBm: 'Panda', nameEn: 'Panda', image: assetPath('/animals/panda.jpg'), food: 'bamboo', foodEmoji: '🎋', foodBm: 'Buluh', foodEn: 'Bamboo' },
-    { nameBm: 'Singa', nameEn: 'Lion', image: assetPath('/animals/lion.jpg'), food: 'meat', foodEmoji: '🥩', foodBm: 'Daging', foodEn: 'Meat' },
+    { nameBm: 'Kucing', nameEn: 'Cat', emoji: '🐱', food: 'fish', foodEmoji: '🐟', foodBm: 'Ikan', foodEn: 'Fish' },
+    { nameBm: 'Arnab', nameEn: 'Rabbit', emoji: '🐰', food: 'carrot', foodEmoji: '🥕', foodBm: 'Lobak', foodEn: 'Carrot' },
+    { nameBm: 'Monyet', nameEn: 'Monkey', emoji: '🐵', food: 'banana', foodEmoji: '🍌', foodBm: 'Pisang', foodEn: 'Banana' },
+    { nameBm: 'Gajah', nameEn: 'Elephant', emoji: '🐘', food: 'leaves', foodEmoji: '🌿', foodBm: 'Daun', foodEn: 'Leaves' },
+    { nameBm: 'Anjing', nameEn: 'Dog', emoji: '🐶', food: 'bone', foodEmoji: '🦴', foodBm: 'Tulang', foodEn: 'Bone' },
+    { nameBm: 'Burung', nameEn: 'Bird', emoji: '🐦', food: 'seeds', foodEmoji: '🌾', foodBm: 'Biji', foodEn: 'Seeds' },
+    { nameBm: 'Panda', nameEn: 'Panda', emoji: '🐼', food: 'bamboo', foodEmoji: '🎋', foodBm: 'Buluh', foodEn: 'Bamboo' },
+    { nameBm: 'Singa', nameEn: 'Lion', emoji: '🦁', food: 'meat', foodEmoji: '🥩', foodBm: 'Daging', foodEn: 'Meat' },
+    { nameBm: 'Lembu', nameEn: 'Cow', emoji: '🐮', food: 'grass', foodEmoji: '🌱', foodBm: 'Rumput', foodEn: 'Grass' },
+    { nameBm: 'Ayam', nameEn: 'Chicken', emoji: '🐔', food: 'corn', foodEmoji: '🌽', foodBm: 'Jagung', foodEn: 'Corn' },
+    { nameBm: 'Kambing', nameEn: 'Goat', emoji: '🐐', food: 'hay', foodEmoji: '🌾', foodBm: 'Jerami', foodEn: 'Hay' },
+    { nameBm: 'Kuda', nameEn: 'Horse', emoji: '🐴', food: 'apple', foodEmoji: '🍎', foodBm: 'Epal', foodEn: 'Apple' },
+    { nameBm: 'Itik', nameEn: 'Duck', emoji: '🦆', food: 'bread', foodEmoji: '🍞', foodBm: 'Roti', foodEn: 'Bread' },
+    { nameBm: 'Beruang', nameEn: 'Bear', emoji: '🐻', food: 'honey', foodEmoji: '🍯', foodBm: 'Madu', foodEn: 'Honey' },
+    { nameBm: 'Katak', nameEn: 'Frog', emoji: '🐸', food: 'bugs', foodEmoji: '🪲', foodBm: 'Serangga', foodEn: 'Bugs' },
+    { nameBm: 'Tupai', nameEn: 'Squirrel', emoji: '🐿️', food: 'nuts', foodEmoji: '🥜', foodBm: 'Kacang', foodEn: 'Nuts' },
+    { nameBm: 'Babi', nameEn: 'Pig', emoji: '🐷', food: 'slop', foodEmoji: '🥘', foodBm: 'Sisa makanan', foodEn: 'Slop' },
+    { nameBm: 'Koala', nameEn: 'Koala', emoji: '🐨', food: 'eucalyptus', foodEmoji: '🍃', foodBm: 'Daun kayu putih', foodEn: 'Eucalyptus' },
+    { nameBm: 'Ikan', nameEn: 'Fish', emoji: '🐠', food: 'worms', foodEmoji: '🪱', foodBm: 'Cacing', foodEn: 'Worms' },
+    { nameBm: 'Ular', nameEn: 'Snake', emoji: '🐍', food: 'egg', foodEmoji: '🥚', foodBm: 'Telur', foodEn: 'Egg' },
   ];
 
   const TOTAL_ROUNDS = 15;
-  const [round, setRound] = useState(0);
+  const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
   const [currentAnimal, setCurrentAnimal] = useState(null);
   const [foodOptions, setFoodOptions] = useState([]);
   const [feedback, setFeedback] = useState(null);
+  const [wrongCount, setWrongCount] = useState(0);
+  const [showEating, setShowEating] = useState(false);
   const [gameComplete, setGameComplete] = useState(false);
-  const [usedAnimals, setUsedAnimals] = useState([]);
+  const [confettiPieces, setConfettiPieces] = useState([]);
+  const [usedIdx, setUsedIdx] = useState([]);
 
-  const generateRound = useCallback((used = []) => {
-    const available = ANIMALS.filter(a => !used.includes(a.food));
-    if (available.length === 0) return;
-    const animal = available[Math.floor(Math.random() * available.length)];
+  const generateRound = useCallback((prevUsed = []) => {
+    let available = ANIMALS.map((_, i) => i).filter(i => !prevUsed.includes(i));
+    if (available.length === 0) available = ANIMALS.map((_, i) => i);
+    const pickIdx = available[Math.floor(Math.random() * available.length)];
+    const animal = ANIMALS[pickIdx];
     setCurrentAnimal(animal);
+    setShowEating(false);
+    const newUsed = [...prevUsed, pickIdx];
+    setUsedIdx(newUsed);
 
     // Create food options: 1 correct + 3 wrong
     const allFoods = ANIMALS.map(a => ({ emoji: a.foodEmoji, name: lang === 'bm' ? a.foodBm : a.foodEn, key: a.food }));
@@ -3123,8 +3142,9 @@ export function AnimalFoodGame() {
     const shuffled = [correct, ...wrong].sort(() => Math.random() - 0.5);
     setFoodOptions(shuffled);
     setFeedback(null);
-    if (soundEnabled) playNewRoundSound();
-  }, [lang, soundEnabled]);
+    setWrongCount(0);
+    return newUsed;
+  }, [lang]);
 
   useEffect(() => { generateRound([]); }, [generateRound]);
 
@@ -3132,122 +3152,137 @@ export function AnimalFoodGame() {
     if (feedback) return;
     if (food.key === currentAnimal.food) {
       setScore(s => s + 10);
+      setShowEating(true);
       setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
-      const newUsed = [...usedAnimals, currentAnimal.food];
-      setUsedAnimals(newUsed);
       setTimeout(() => {
-        if (round + 1 >= TOTAL_ROUNDS) {
+        if (round >= TOTAL_ROUNDS) {
           const finalScore = score + 10;
-          const stars = finalScore >= 50 ? 3 : finalScore >= 30 ? 2 : 1;
+          const stars = finalScore >= 100 ? 3 : finalScore >= 60 ? 2 : 1;
           completeGame('animals', 'animal-food', stars, finalScore);
           celebrationFeedback(lang, soundEnabled);
+          const colors = ['#FF9800', '#4CAF50', '#2196F3', '#E91E63', '#FFD93D'];
+          setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
+            id: i, left: Math.random() * 100, color: colors[i % colors.length],
+            delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
+          })));
           setGameComplete(true);
         } else {
           setRound(r => r + 1);
-          generateRound(newUsed);
+          generateRound(usedIdx);
         }
-      }, 1200);
+      }, 1800);
     } else {
+      setWrongCount(c => c + 1);
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, soundEnabled) });
       setTimeout(() => setFeedback(null), 900);
     }
   };
 
-  if (gameComplete) {
-    const stars = score >= 50 ? 3 : score >= 30 ? 2 : 1;
-    return (
-      <div className="game-screen">
-        <div className="game-body" style={{ textAlign: 'center', justifyContent: 'center' }}>
-          <div style={{ marginBottom: 8 }}><TrophyIcon size={48} /></div>
-          <h2 style={{ fontFamily: 'var(--font-heading)', color: 'var(--cm-green)' }}>
-            {lang === 'bm' ? 'Semua Haiwan Kenyang!' : 'All Animals Fed!'}
-          </h2>
-          <div style={{ fontSize: '2rem', margin: 'var(--space-md) 0' }}>
-            {[1, 2, 3].map(s => <span key={s}>{s <= stars ? <StarIcon size={20} /> : <svg width={20} height={20} viewBox='0 0 24 24' fill='#DDD'><path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' /></svg>}</span>)}
-          </div>
-          <p style={{ fontSize: '1.3rem', fontWeight: 700 }}>{t('score', lang)}: {score}</p>
-          <div className="action-buttons" style={{ marginTop: 'var(--space-lg)' }}>
-            <button className="btn-secondary" onClick={() => { setRound(0); setScore(0); setGameComplete(false); setUsedAnimals([]); generateRound([]); }}>
-              <RefreshIcon size={16} /> {t('playAgain', lang)}
-            </button>
-            <button className="btn-success" onClick={() => goToWorld('animals')}>
-              <CheckIcon size={16} /> {t('backToWorld', lang)}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const getStars = () => score >= 100 ? 3 : score >= 60 ? 2 : 1;
 
   if (!currentAnimal) return null;
 
   return (
     <div className="game-screen" style={{ position: 'relative' }}>
-      <img src={assetPath('/images/game/animal_food_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
-      <div className="game-header">
-        <button className="back-btn" onClick={() => goToWorld('animals')}>←</button>
-        <span className="game-title">
+      <img src={assetPath('/images/game/animal_food_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} />
+      <div className="game-header" style={{ background: 'linear-gradient(135deg, #FF9800, #FFB74D)', color: 'white', borderBottom: '3px solid rgba(255,255,255,0.3)' }}>
+        <button className="back-btn" onClick={() => goToWorld('animals')} style={{ color: 'white', background: 'rgba(255,255,255,0.25)', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>←</button>
+        <span className="game-title" style={{ color: 'white', textShadow: '0 2px 6px rgba(0,0,0,0.2)' }}>
           {lang === 'bm' ? 'Apa Dia Makan?' : 'What Do They Eat?'}
         </span>
-        <div className="game-stars">
-          <span style={{ fontWeight: 700, color: 'var(--cm-green)' }}>
-            {round + 1}/{TOTAL_ROUNDS}
-          </span>
+        <div className="game-stars" style={{ background: 'rgba(255,255,255,0.25)', borderRadius: 20, padding: '4px 14px' }}>
+          <span style={{ fontWeight: 700, color: 'white', fontSize: '1rem' }}>{round}/{TOTAL_ROUNDS}</span>
         </div>
       </div>
 
-      <div className="game-body" style={{ textAlign: 'center', gap: 'var(--space-md)' }}>
-        {/* Animal Display */}
+      <div className="game-body" style={{ textAlign: 'center', gap: 10, padding: '8px 12px', justifyContent: 'center' }}>
+        {/* Animal Display - BIG emoji + name */}
         <div style={{
-          background: 'white', borderRadius: 24, padding: 'var(--space-lg)',
-          boxShadow: 'var(--shadow-lg)', maxWidth: 280, margin: '0 auto'
+          background: 'rgba(255,255,255,0.95)', borderRadius: 24,
+          padding: '16px 24px', maxWidth: 400, margin: '0 auto',
+          boxShadow: showEating ? '0 0 40px rgba(255,152,0,0.5), 0 8px 32px rgba(0,0,0,0.15)' : '0 8px 32px rgba(0,0,0,0.12)',
+          border: showEating ? '4px solid #FFD700' : '4px solid rgba(255,255,255,0.9)',
+          transition: 'all 0.5s ease', backdropFilter: 'blur(12px)'
         }}>
-          <img src={currentAnimal.image} alt={lang === 'bm' ? currentAnimal.nameBm : currentAnimal.nameEn}
-            style={{ width: 120, height: 120, borderRadius: '50%', objectFit: 'cover', border: '4px solid var(--cm-green)' }}
-            onError={(e) => { e.target.style.display = 'none'; }}
-          />
-          <h3 style={{ fontFamily: 'var(--font-heading)', color: 'var(--cm-green)', marginTop: 8 }}>
+          <div style={{ fontSize: '4.5rem', lineHeight: 1, marginBottom: 6, transition: 'transform 0.5s ease', transform: showEating ? 'scale(1.15)' : 'scale(1)' }}>
+            {currentAnimal.emoji}
+          </div>
+          <div style={{ fontSize: '1.5rem', fontWeight: 900, fontFamily: 'var(--font-heading)', color: '#FF9800' }}>
             {lang === 'bm' ? currentAnimal.nameBm : currentAnimal.nameEn}
-          </h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            {lang === 'bm' ? 'Apa makanan dia?' : 'What does it eat?'}
-          </p>
+          </div>
+          {showEating && (
+            <div style={{ fontSize: '1.8rem', marginTop: 4, animation: 'popIn 0.3s ease' }}>
+              {currentAnimal.foodEmoji} 😋
+            </div>
+          )}
         </div>
 
-        {/* Food Options */}
+        {/* Question banner */}
         <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12,
-          maxWidth: 320, margin: '0 auto'
+          background: showEating ? 'linear-gradient(135deg, #66BB6A, #A5D6A7)' : 'linear-gradient(135deg, #FF9800, #FFB74D)',
+          borderRadius: 22, padding: '10px 24px', width: '90%', maxWidth: 380, margin: '0 auto',
+          fontSize: '1.05rem', fontWeight: 800, fontFamily: 'var(--font-heading)',
+          color: 'white', boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+          transition: 'all 0.5s ease'
         }}>
-          {foodOptions.map((food, i) => (
-            <button key={i} onClick={() => handleFoodSelect(food)} style={{
-              background: feedback?.type === 'correct' && food.key === currentAnimal.food ? '#6BCB77' :
-                feedback?.type === 'wrong' && food.key !== currentAnimal.food ? '#fff5f5' :
-                  'white',
-              border: '3px solid #E0E0E0', borderRadius: 16, padding: '14px 8px',
-              cursor: 'pointer', boxShadow: 'var(--shadow-sm)',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-              transition: 'all 0.2s ease',
-              transform: feedback?.type === 'correct' && food.key === currentAnimal.food ? 'scale(1.1)' : 'scale(1)'
-            }}>
-              <GI e={food.emoji} size={35} />
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#555' }}>{food.name}</span>
-            </button>
-          ))}
+          {showEating
+            ? (lang === 'bm' ? `${currentAnimal.nameBm} suka makan ${lang === 'bm' ? currentAnimal.foodBm : currentAnimal.foodEn}!` : `${currentAnimal.nameEn} loves ${currentAnimal.foodEn}!`)
+            : (lang === 'bm' ? `Apa makanan ${currentAnimal.nameBm}?` : `What does ${currentAnimal.nameEn} eat?`)
+          }
         </div>
+
+        {/* Food choice buttons — BIG and responsive! */}
+        {!showEating && (
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12,
+            width: '95%', maxWidth: 420, margin: '0 auto'
+          }}>
+            {foodOptions.map((food, i) => {
+              const showHint = wrongCount >= 2 && food.key === currentAnimal.food;
+              const btnColors = ['#FF9800', '#4CAF50', '#2196F3', '#E91E63'];
+              return (
+                <button key={i} onClick={() => handleFoodSelect(food)} style={{
+                  background: showHint ? '#FFF3E0' : 'rgba(255,255,255,0.95)',
+                  border: `4px solid ${showHint ? '#66BB6A' : btnColors[i % 4]}`,
+                  borderRadius: 20, padding: '16px 10px',
+                  cursor: feedback ? 'default' : 'pointer',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                  transition: 'all 0.2s ease',
+                  backdropFilter: 'blur(8px)',
+                  minHeight: 90
+                }}>
+                  <span style={{ fontSize: '2.2rem', lineHeight: 1 }}>{food.emoji}</span>
+                  <span style={{ fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: '#333' }}>{food.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* Feedback */}
         {feedback && (
           <div style={{
-            padding: '10px 20px', borderRadius: 16,
-            background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B',
+            padding: '10px 24px', borderRadius: 18,
+            background: feedback.type === 'correct' ? '#66BB6A' : '#FF6B6B',
             color: 'white', fontWeight: 700, fontSize: '1.1rem',
-            animation: 'popIn 0.3s ease'
+            animation: 'popIn 0.3s ease',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
           }}>
-            {feedback.type === 'correct' ? '' : ''}{feedback.message}
+            {feedback.message}
           </div>
         )}
       </div>
+
+      {gameComplete && (
+        <GameCompleteModal
+          lang={lang} stars={getStars()} score={score}
+          accentColor="#FF9800"
+          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setShowEating(false); setConfettiPieces([]); setUsedIdx([]); generateRound([]); }}
+          onBack={() => goToWorld('animals')}
+          confettiPieces={confettiPieces}
+        />
+      )}
     </div>
   );
 }
