@@ -6975,7 +6975,7 @@ export function WorldVehiclesGame() {
 export function AnimalPuzzleGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
-  // 10 animals - BAHASA MUDAH untuk budak 1-6 tahun!
+  // 10 animals — Kosa kata disemak oleh LO, BM yang tepat!
   const ALL_PUZZLES = [
     {
       missingImg: '/images/puzzle/cow_missing.jpg',
@@ -6983,14 +6983,14 @@ export function AnimalPuzzleGame() {
       nameBm: 'Lembu', nameEn: 'Cow',
       questionBm: 'Lembu ini hilang apa?', questionEn: 'What is the cow missing?',
       answerBm: 'Tanduk', answerEn: 'Horns',
-      wrongBm: ['Sayap', 'Ekor'], wrongEn: ['Wings', 'Tail']
+      wrongBm: ['Sayap', 'Sirip'], wrongEn: ['Wings', 'Fins']
     },
     {
       missingImg: '/images/puzzle/elephant_missing.jpg',
       completeImg: '/images/puzzle/elephant_complete.jpg',
       nameBm: 'Gajah', nameEn: 'Elephant',
       questionBm: 'Gajah ini hilang apa?', questionEn: 'What is the elephant missing?',
-      answerBm: 'Hidung panjang', answerEn: 'Long nose',
+      answerBm: 'Belalai', answerEn: 'Trunk',
       wrongBm: ['Tanduk', 'Sayap'], wrongEn: ['Horns', 'Wings']
     },
     {
@@ -6998,8 +6998,8 @@ export function AnimalPuzzleGame() {
       completeImg: '/images/puzzle/lion_complete.jpg',
       nameBm: 'Singa', nameEn: 'Lion',
       questionBm: 'Singa ini hilang apa?', questionEn: 'What is the lion missing?',
-      answerBm: 'Rambut', answerEn: 'Hair',
-      wrongBm: ['Sayap', 'Tanduk'], wrongEn: ['Wings', 'Horns']
+      answerBm: 'Bulu tengkuk', answerEn: 'Mane',
+      wrongBm: ['Belalai', 'Sirip'], wrongEn: ['Trunk', 'Fins']
     },
     {
       missingImg: '/images/puzzle/bird_missing.jpg',
@@ -7007,30 +7007,30 @@ export function AnimalPuzzleGame() {
       nameBm: 'Burung', nameEn: 'Bird',
       questionBm: 'Burung ini hilang apa?', questionEn: 'What is the bird missing?',
       answerBm: 'Sayap', answerEn: 'Wings',
-      wrongBm: ['Tanduk', 'Ekor'], wrongEn: ['Horns', 'Tail']
+      wrongBm: ['Tanduk', 'Belalai'], wrongEn: ['Horns', 'Trunk']
     },
     {
       missingImg: '/images/puzzle/turtle_missing.jpg',
       completeImg: '/images/puzzle/turtle_complete.jpg',
       nameBm: 'Kura-kura', nameEn: 'Turtle',
       questionBm: 'Kura-kura ini hilang apa?', questionEn: 'What is the turtle missing?',
-      answerBm: 'Rumah dia', answerEn: 'Its house',
-      wrongBm: ['Sayap', 'Tanduk'], wrongEn: ['Wings', 'Horns']
+      answerBm: 'Tempurung', answerEn: 'Shell',
+      wrongBm: ['Sayap', 'Belalai'], wrongEn: ['Wings', 'Trunk']
     },
     {
       missingImg: '/images/puzzle/cat_missing.jpg',
       completeImg: '/images/puzzle/cat_complete.jpg',
       nameBm: 'Kucing', nameEn: 'Cat',
       questionBm: 'Kucing ini hilang apa?', questionEn: 'What is the cat missing?',
-      answerBm: 'Kumis', answerEn: 'Whiskers',
-      wrongBm: ['Tanduk', 'Sayap'], wrongEn: ['Horns', 'Wings']
+      answerBm: 'Misai', answerEn: 'Whiskers',
+      wrongBm: ['Tanduk', 'Sirip'], wrongEn: ['Horns', 'Fins']
     },
     {
       missingImg: '/images/puzzle/fish_missing.jpg',
       completeImg: '/images/puzzle/fish_complete.jpg',
       nameBm: 'Ikan', nameEn: 'Fish',
       questionBm: 'Ikan ini hilang apa?', questionEn: 'What is the fish missing?',
-      answerBm: 'Kipas renang', answerEn: 'Swim fins',
+      answerBm: 'Sirip', answerEn: 'Fins',
       wrongBm: ['Kaki', 'Tanduk'], wrongEn: ['Legs', 'Horns']
     },
     {
@@ -7038,8 +7038,8 @@ export function AnimalPuzzleGame() {
       completeImg: '/images/puzzle/rooster_complete.jpg',
       nameBm: 'Ayam', nameEn: 'Rooster',
       questionBm: 'Ayam ini hilang apa?', questionEn: 'What is the rooster missing?',
-      answerBm: 'Topi merah', answerEn: 'Red hat',
-      wrongBm: ['Sayap', 'Ekor'], wrongEn: ['Wings', 'Tail']
+      answerBm: 'Paruh', answerEn: 'Beak',
+      wrongBm: ['Belalai', 'Sirip'], wrongEn: ['Trunk', 'Fins']
     },
     {
       missingImg: '/images/puzzle/dog_missing.jpg',
@@ -7055,9 +7055,10 @@ export function AnimalPuzzleGame() {
       nameBm: 'Arnab', nameEn: 'Rabbit',
       questionBm: 'Arnab ini hilang apa?', questionEn: 'What is the rabbit missing?',
       answerBm: 'Telinga', answerEn: 'Ears',
-      wrongBm: ['Tanduk', 'Sayap'], wrongEn: ['Horns', 'Wings']
+      wrongBm: ['Belalai', 'Sirip'], wrongEn: ['Trunk', 'Fins']
     },
   ];
+
 
   const TOTAL_ROUNDS = 15;
   const [round, setRound] = useState(1);
@@ -7199,7 +7200,7 @@ export function AnimalPuzzleGame() {
           }
         </div>
 
-        {/* Text answer buttons - NO EMOJI */}
+        {/* Text answer buttons */}
         {!showComplete && (
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', width: '90%', maxWidth: 400, margin: '0 auto' }}>
             {choices.map((c, i) => {
