@@ -6997,9 +6997,9 @@ export function AnimalPuzzleGame() {
       missingImg: '/images/puzzle/lion_missing.png',
       completeImg: '/images/puzzle/lion_complete.png',
       nameBm: 'Singa', nameEn: 'Lion',
-      questionBm: 'Apa nama bulu lebat di kepala singa?', questionEn: 'What is the thick fur on the lion\'s head?',
-      answerBm: 'Surai', answerEn: 'Mane',
-      wrongBm: ['Misai', 'Sirip'], wrongEn: ['Whiskers', 'Fins']
+      questionBm: 'Apa yang tumbuh di sekeliling kepala singa?', questionEn: 'What grows around the lion\'s head?',
+      answerBm: 'Bulu lebat', answerEn: 'Mane',
+      wrongBm: ['Misai', 'Tanduk'], wrongEn: ['Whiskers', 'Horns']
     },
     {
       missingImg: '/images/puzzle/bird_missing.png',
