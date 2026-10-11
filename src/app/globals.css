@@ -1908,10 +1908,9 @@ img {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Background images — soft blur for dreamy effect */
+/* Background images — soft blur for dreamy effect (ONLY direct bg images, NOT content images) */
 .game-container > img[style*="absolute"],
-.game-screen > img[style*="absolute"],
-.game-body img[style*="absolute"] {
+.game-screen > img[style*="absolute"] {
   filter: blur(1px);
   transition: opacity 0.5s ease;
 }
