@@ -2572,7 +2572,7 @@ export function MatchColourGame() {
         objectFit: 'cover', zIndex: 0, opacity: 0.5,
       }} />
 
-      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%', padding: 'clamp(8px, 2vw, 16px)' }}>
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch', height: '100%', width: '100%', maxWidth: 600, padding: 'clamp(8px, 2vw, 16px)' }}>
         {/* Header - Responsive */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -2667,8 +2667,10 @@ export function MatchColourGame() {
         {/* Colour swatches grid - 2x2 BIG SQUARES */}
         <div style={{
           flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          alignSelf: 'stretch',
           padding: 'clamp(4px, 1vw, 10px) clamp(8px, 2vw, 16px)',
           minHeight: 0, overflow: 'hidden',
+          width: '100%',
         }}>
           <div style={{
             display: 'grid',
