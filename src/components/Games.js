@@ -2491,15 +2491,25 @@ export function MatchColourGame() {
     setSelectedIdx(null);
   }, []);
 
+  const mountedRef = useRef(false);
+
   useEffect(() => {
     generateRound(1);
-    playAudio('padankan_warna');
+    if (soundEnabled) {
+      try { new Audio(assetPath('/audio/bm/padankan_warna.mp3')).play(); } catch(e) {}
+    }
+    // Mark mounted after 2 seconds (after padankan_warna finishes)
+    const t = setTimeout(() => { mountedRef.current = true; }, 2000);
+    return () => clearTimeout(t);
   }, [generateRound]);
 
   // Play color name audio when target changes
   useEffect(() => {
     if (targetColour && targetColour.audio) {
-      const timer = setTimeout(() => playAudio(targetColour.audio), 500);
+      // On first mount, wait for padankan_warna to finish (2s), then play
+      // On subsequent rounds, play after 500ms
+      const delay = mountedRef.current ? 500 : 2000;
+      const timer = setTimeout(() => playAudio(targetColour.audio), delay);
       return () => clearTimeout(timer);
     }
   }, [targetColour, round]);
@@ -2654,46 +2664,42 @@ export function MatchColourGame() {
           </button>
         </div>
 
-        {/* Colour swatches grid - always 2x2 */}
+        {/* Colour swatches grid - 2x2 BIG */}
         <div style={{
-          flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: '0 clamp(10px, 3vw, 30px)',
+          flex: 1, display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: 'clamp(8px, 2vw, 14px)',
+          padding: '0 clamp(8px, 2vw, 16px)',
+          minHeight: 0,
         }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: 'clamp(10px, 2.5vw, 16px)',
-            width: '100%', maxWidth: 360,
-          }}>
-            {choices.map((colour, i) => (
-              <button key={colour.hex + round + i} onClick={() => handleAnswer(colour, i)} style={{
-                width: '100%',
-                height: 'clamp(80px, 18vh, 140px)',
-                borderRadius: 'clamp(16px, 3vw, 24px)',
-                background: colour.hex,
-                border: selectedIdx === i
-                  ? feedback?.type === 'correct'
-                    ? '5px solid #4CAF50'
-                    : '5px solid #F44336'
-                  : colour.hex === '#FFFFFF'
-                    ? '3px solid #ccc'
-                    : '3px solid rgba(255,255,255,0.5)',
-                boxShadow: selectedIdx === i && feedback?.type === 'correct'
-                  ? '0 0 25px rgba(76,175,80,0.5), 0 8px 25px rgba(0,0,0,0.2)'
-                  : '0 8px 25px rgba(0,0,0,0.15)',
-                cursor: feedback ? 'default' : 'pointer',
-                transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                transform: selectedIdx === i && feedback?.type === 'correct' ? 'scale(1.05)' : 'scale(1)',
-                animation: `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.08}s both`,
-              }} />
-            ))}
-          </div>
+          {choices.map((colour, i) => (
+            <button key={colour.hex + round + i} onClick={() => handleAnswer(colour, i)} style={{
+              width: '100%', height: '100%',
+              minHeight: 'clamp(70px, 15vh, 160px)',
+              borderRadius: 'clamp(16px, 3vw, 24px)',
+              background: colour.hex,
+              border: selectedIdx === i
+                ? feedback?.type === 'correct'
+                  ? '5px solid #4CAF50'
+                  : '5px solid #F44336'
+                : colour.hex === '#FFFFFF'
+                  ? '3px solid #ccc'
+                  : '3px solid rgba(255,255,255,0.5)',
+              boxShadow: selectedIdx === i && feedback?.type === 'correct'
+                ? '0 0 25px rgba(76,175,80,0.5), 0 8px 25px rgba(0,0,0,0.2)'
+                : '0 8px 25px rgba(0,0,0,0.15)',
+              cursor: feedback ? 'default' : 'pointer',
+              transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              transform: selectedIdx === i && feedback?.type === 'correct' ? 'scale(1.05)' : 'scale(1)',
+              animation: `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.08}s both`,
+            }} />
+          ))}
         </div>
 
         {/* Feedback toast */}
         {feedback && (
           <div style={{
-            position: 'absolute', bottom: 'clamp(60px, 12vh, 100px)', left: '50%', transform: 'translateX(-50%)',
+            position: 'absolute', bottom: 'clamp(20px, 5vh, 60px)', left: '50%', transform: 'translateX(-50%)',
             padding: 'clamp(8px, 1.5vw, 12px) clamp(20px, 4vw, 32px)',
             borderRadius: 'clamp(16px, 3vw, 24px)',
             background: feedback.type === 'correct'
@@ -2707,18 +2713,6 @@ export function MatchColourGame() {
             {feedback.message}
           </div>
         )}
-
-        {/* Stars earned */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 4, padding: '6px 0' }}>
-          {[1, 2, 3].map(s => (
-            <svg key={s} width="clamp(18, 4vw, 24)" height="clamp(18, 4vw, 24)" viewBox="0 0 24 24"
-              fill={s <= getStars() ? '#FFD700' : '#ddd'} stroke={s <= getStars() ? '#FFA000' : '#ccc'} strokeWidth="0.5"
-              style={{ filter: s <= getStars() ? 'drop-shadow(0 2px 4px rgba(255,193,7,0.4))' : 'none' }}
-            >
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-          ))}
-        </div>
       </div>
 
       {gameComplete && (
