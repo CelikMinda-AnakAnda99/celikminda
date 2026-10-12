@@ -2484,9 +2484,8 @@ export function MatchColourGame() {
   const generateRound = useCallback((roundNum) => {
     const target = ALL_COLOURS[Math.floor(Math.random() * ALL_COLOURS.length)];
     setTargetColour(target);
-    const numChoices = roundNum <= 5 ? 4 : roundNum <= 10 ? 5 : 6;
     const wrong = ALL_COLOURS.filter(c => c.hex !== target.hex)
-      .sort(() => Math.random() - 0.5).slice(0, numChoices - 1);
+      .sort(() => Math.random() - 0.5).slice(0, 3);
     setChoices([target, ...wrong].sort(() => Math.random() - 0.5));
     setFeedback(null);
     setSelectedIdx(null);
@@ -2655,34 +2654,36 @@ export function MatchColourGame() {
           </button>
         </div>
 
-        {/* Colour swatches grid */}
+        {/* Colour swatches grid - always 2x2 */}
         <div style={{
           flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '0 clamp(10px, 3vw, 30px)',
         }}>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: `repeat(${choices.length <= 4 ? 2 : 3}, 1fr)`,
-            gap: 'clamp(8px, 2vw, 14px)',
-            width: '100%', maxWidth: 'clamp(280px, 70vw, 420px)',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: 'clamp(10px, 2.5vw, 16px)',
+            width: '100%', maxWidth: 360,
           }}>
             {choices.map((colour, i) => (
               <button key={colour.hex + round + i} onClick={() => handleAnswer(colour, i)} style={{
-                width: '100%', aspectRatio: '1',
-                borderRadius: 'clamp(14px, 3vw, 22px)',
+                width: '100%',
+                height: 'clamp(80px, 18vh, 140px)',
+                borderRadius: 'clamp(16px, 3vw, 24px)',
                 background: colour.hex,
                 border: selectedIdx === i
                   ? feedback?.type === 'correct'
-                    ? '4px solid #4CAF50'
-                    : '4px solid #F44336'
+                    ? '5px solid #4CAF50'
+                    : '5px solid #F44336'
                   : colour.hex === '#FFFFFF'
-                    ? '3px solid #DDD'
-                    : '3px solid rgba(255,255,255,0.4)',
+                    ? '3px solid #ccc'
+                    : '3px solid rgba(255,255,255,0.5)',
                 boxShadow: selectedIdx === i && feedback?.type === 'correct'
-                  ? '0 0 20px rgba(76,175,80,0.5), 0 6px 20px rgba(0,0,0,0.15)'
-                  : '0 6px 20px rgba(0,0,0,0.12)',
+                  ? '0 0 25px rgba(76,175,80,0.5), 0 8px 25px rgba(0,0,0,0.2)'
+                  : '0 8px 25px rgba(0,0,0,0.15)',
                 cursor: feedback ? 'default' : 'pointer',
                 transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                transform: selectedIdx === i && feedback?.type === 'correct' ? 'scale(1.08)' : 'scale(1)',
+                transform: selectedIdx === i && feedback?.type === 'correct' ? 'scale(1.05)' : 'scale(1)',
                 animation: `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.08}s both`,
               }} />
             ))}
