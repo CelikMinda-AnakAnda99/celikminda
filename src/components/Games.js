@@ -6642,603 +6642,570 @@ export function MagicDiceGame() {
 }
 
 // ============================================
-// MAGIC COLOURING GAME (Mewarna Ajaib) — FREE PAINTING COLORING BOOK
-// Canvas-based free painting with outline overlays!
+// MAGIC COLOURING GAME (Mewarna Ajaib) — TAP-TO-FILL COLOUR PUZZLE
+// 15-round colour puzzle! Tap regions to fill with the correct colour.
+// Each round = SVG picture with colourable zones. Match the target!
 // ============================================
 export function MagicColouringGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  // 30 coloring pages - EVERY page has its own unique generated outline
-  const PAGES = [
-    { id: 'duck', nameBm: 'Itik', nameEn: 'Duck', outline: 'outline_duck' },
-    { id: 'cat', nameBm: 'Kucing', nameEn: 'Cat', outline: 'outline_cat' },
-    { id: 'dog', nameBm: 'Anjing', nameEn: 'Dog', outline: 'outline_dog' },
-    { id: 'fish', nameBm: 'Ikan', nameEn: 'Fish', outline: 'outline_fish' },
-    { id: 'butterfly', nameBm: 'Rama-rama', nameEn: 'Butterfly', outline: 'outline_butterfly' },
-    { id: 'flower', nameBm: 'Bunga', nameEn: 'Flower', outline: 'outline_flower' },
-    { id: 'house', nameBm: 'Rumah', nameEn: 'House', outline: 'outline_house' },
-    { id: 'car', nameBm: 'Kereta', nameEn: 'Car', outline: 'outline_car' },
-    { id: 'star', nameBm: 'Bintang', nameEn: 'Star', outline: 'outline_star' },
-    { id: 'rabbit', nameBm: 'Arnab', nameEn: 'Rabbit', outline: 'outline_rabbit' },
-    { id: 'bear', nameBm: 'Beruang', nameEn: 'Bear', outline: 'outline_bear' },
-    { id: 'frog', nameBm: 'Katak', nameEn: 'Frog', outline: 'outline_frog' },
-    { id: 'turtle', nameBm: 'Kura-kura', nameEn: 'Turtle', outline: 'outline_turtle' },
-    { id: 'elephant', nameBm: 'Gajah', nameEn: 'Elephant', outline: 'outline_elephant' },
-    { id: 'lion', nameBm: 'Singa', nameEn: 'Lion', outline: 'outline_lion' },
-    { id: 'rainbow', nameBm: 'Pelangi', nameEn: 'Rainbow', outline: 'outline_rainbow' },
-    { id: 'sunflower', nameBm: 'Bunga Matahari', nameEn: 'Sunflower', outline: 'outline_sunflower' },
-    { id: 'apple', nameBm: 'Epal', nameEn: 'Apple', outline: 'outline_apple' },
-    { id: 'balloon', nameBm: 'Belon', nameEn: 'Balloon', outline: 'outline_balloon' },
-    { id: 'boat', nameBm: 'Bot', nameEn: 'Boat', outline: 'outline_boat' },
-    { id: 'rocket', nameBm: 'Roket', nameEn: 'Rocket', outline: 'outline_rocket' },
-    { id: 'cake', nameBm: 'Kek', nameEn: 'Cake', outline: 'outline_cake' },
-    { id: 'icecream', nameBm: 'Aiskrim', nameEn: 'Ice Cream', outline: 'outline_icecream' },
-    { id: 'tree', nameBm: 'Pokok', nameEn: 'Tree', outline: 'outline_tree' },
-    { id: 'sun', nameBm: 'Matahari', nameEn: 'Sun', outline: 'outline_sun' },
-    { id: 'moon', nameBm: 'Bulan', nameEn: 'Moon', outline: 'outline_moon' },
-    { id: 'heart', nameBm: 'Hati', nameEn: 'Heart', outline: 'outline_heart' },
-    { id: 'strawberry', nameBm: 'Strawberi', nameEn: 'Strawberry', outline: 'outline_strawberry' },
-    { id: 'bird', nameBm: 'Burung', nameEn: 'Bird', outline: 'outline_bird' },
-    { id: 'cloud', nameBm: 'Awan', nameEn: 'Cloud', outline: 'outline_cloud' },
-  ];
+  const TOTAL_ROUNDS = 15;
 
-  const COLORS = [
-    '#FF0000', '#FF4444', '#FF6B9D', '#E91E63',
-    '#FF9800', '#FFB347', '#FFD93D', '#FFF176',
-    '#4CAF50', '#81C784', '#00BCD4', '#4ECDC4',
-    '#2196F3', '#64B5F6', '#3F51B5', '#9C27B0',
-    '#CE93D8', '#795548', '#A1887F', '#607D8B',
-    '#212121', '#FFFFFF', '#FFCDD2', '#B2EBF2',
-  ];
+  // 15 SVG pictures with colourable regions — each has target colours
+  // regions: { id, path (SVG d), targetColor, label }
+  const COLOUR_PALETTE = {
+    merah: { hex: '#EF4444', nameBm: 'Merah', nameEn: 'Red', gradient: 'linear-gradient(135deg, #EF4444, #DC2626)' },
+    oren: { hex: '#F97316', nameBm: 'Oren', nameEn: 'Orange', gradient: 'linear-gradient(135deg, #F97316, #EA580C)' },
+    kuning: { hex: '#EAB308', nameBm: 'Kuning', nameEn: 'Yellow', gradient: 'linear-gradient(135deg, #FACC15, #EAB308)' },
+    hijau: { hex: '#22C55E', nameBm: 'Hijau', nameEn: 'Green', gradient: 'linear-gradient(135deg, #22C55E, #16A34A)' },
+    biru: { hex: '#3B82F6', nameBm: 'Biru', nameEn: 'Blue', gradient: 'linear-gradient(135deg, #3B82F6, #2563EB)' },
+    ungu: { hex: '#A855F7', nameBm: 'Ungu', nameEn: 'Purple', gradient: 'linear-gradient(135deg, #A855F7, #9333EA)' },
+    pink: { hex: '#EC4899', nameBm: 'Pink', nameEn: 'Pink', gradient: 'linear-gradient(135deg, #EC4899, #DB2777)' },
+    coklat: { hex: '#92400E', nameBm: 'Coklat', nameEn: 'Brown', gradient: 'linear-gradient(135deg, #A16207, #92400E)' },
+    kelabu: { hex: '#9CA3AF', nameBm: 'Kelabu', nameEn: 'Grey', gradient: 'linear-gradient(135deg, #9CA3AF, #6B7280)' },
+    putih: { hex: '#F9FAFB', nameBm: 'Putih', nameEn: 'White', gradient: 'linear-gradient(135deg, #F9FAFB, #E5E7EB)' },
+  };
 
-  const COLOR_NAMES_BM = [
-    'Merah', 'Merah Terang', 'Pink', 'Magenta',
-    'Oren', 'Oren Muda', 'Kuning', 'Kuning Muda',
-    'Hijau', 'Hijau Muda', 'Cyan', 'Turquoise',
-    'Biru', 'Biru Muda', 'Biru Tua', 'Ungu',
-    'Ungu Muda', 'Coklat', 'Coklat Muda', 'Kelabu',
-    'Hitam', 'Putih', 'Pink Lembut', 'Biru Lembut',
-  ];
+  const PICTURES = useMemo(() => [
+    {
+      id: 'apple', nameBm: 'Epal', nameEn: 'Apple', bgColor: '#FEF3C7',
+      regions: [
+        { id: 'body', cx: 50, cy: 55, r: 32, shape: 'circle', targetColor: 'merah', labelBm: 'Badan', labelEn: 'Body' },
+        { id: 'leaf', cx: 50, cy: 18, rx: 12, ry: 8, shape: 'ellipse', targetColor: 'hijau', labelBm: 'Daun', labelEn: 'Leaf' },
+        { id: 'stem', cx: 50, cy: 25, w: 4, h: 14, shape: 'rect', targetColor: 'coklat', labelBm: 'Batang', labelEn: 'Stem' },
+      ],
+    },
+    {
+      id: 'sun', nameBm: 'Matahari', nameEn: 'Sun', bgColor: '#DBEAFE',
+      regions: [
+        { id: 'body', cx: 50, cy: 50, r: 28, shape: 'circle', targetColor: 'kuning', labelBm: 'Badan', labelEn: 'Body' },
+        { id: 'ray1', cx: 50, cy: 10, rx: 5, ry: 10, shape: 'ellipse', targetColor: 'oren', labelBm: 'Sinaran', labelEn: 'Ray' },
+        { id: 'ray2', cx: 85, cy: 50, rx: 10, ry: 5, shape: 'ellipse', targetColor: 'oren', labelBm: 'Sinaran', labelEn: 'Ray' },
+        { id: 'ray3', cx: 50, cy: 90, rx: 5, ry: 10, shape: 'ellipse', targetColor: 'oren', labelBm: 'Sinaran', labelEn: 'Ray' },
+        { id: 'ray4', cx: 15, cy: 50, rx: 10, ry: 5, shape: 'ellipse', targetColor: 'oren', labelBm: 'Sinaran', labelEn: 'Ray' },
+      ],
+    },
+    {
+      id: 'flower', nameBm: 'Bunga', nameEn: 'Flower', bgColor: '#FEF9C3',
+      regions: [
+        { id: 'center', cx: 50, cy: 40, r: 12, shape: 'circle', targetColor: 'kuning', labelBm: 'Tengah', labelEn: 'Center' },
+        { id: 'petal1', cx: 50, cy: 18, rx: 10, ry: 14, shape: 'ellipse', targetColor: 'pink', labelBm: 'Kelopak', labelEn: 'Petal' },
+        { id: 'petal2', cx: 70, cy: 32, rx: 14, ry: 10, shape: 'ellipse', targetColor: 'pink', labelBm: 'Kelopak', labelEn: 'Petal' },
+        { id: 'petal3', cx: 30, cy: 32, rx: 14, ry: 10, shape: 'ellipse', targetColor: 'pink', labelBm: 'Kelopak', labelEn: 'Petal' },
+        { id: 'stem', cx: 50, cy: 70, w: 5, h: 30, shape: 'rect', targetColor: 'hijau', labelBm: 'Batang', labelEn: 'Stem' },
+      ],
+    },
+    {
+      id: 'fish', nameBm: 'Ikan', nameEn: 'Fish', bgColor: '#DBEAFE',
+      regions: [
+        { id: 'body', cx: 45, cy: 50, rx: 30, ry: 18, shape: 'ellipse', targetColor: 'oren', labelBm: 'Badan', labelEn: 'Body' },
+        { id: 'tail', cx: 82, cy: 50, rx: 12, ry: 16, shape: 'ellipse', targetColor: 'kuning', labelBm: 'Ekor', labelEn: 'Tail' },
+        { id: 'eye', cx: 28, cy: 44, r: 5, shape: 'circle', targetColor: 'putih', labelBm: 'Mata', labelEn: 'Eye' },
+      ],
+    },
+    {
+      id: 'butterfly', nameBm: 'Rama-rama', nameEn: 'Butterfly', bgColor: '#F0FDF4',
+      regions: [
+        { id: 'body', cx: 50, cy: 50, rx: 5, ry: 22, shape: 'ellipse', targetColor: 'coklat', labelBm: 'Badan', labelEn: 'Body' },
+        { id: 'wingL', cx: 28, cy: 40, rx: 18, ry: 22, shape: 'ellipse', targetColor: 'ungu', labelBm: 'Sayap Kiri', labelEn: 'Left Wing' },
+        { id: 'wingR', cx: 72, cy: 40, rx: 18, ry: 22, shape: 'ellipse', targetColor: 'biru', labelBm: 'Sayap Kanan', labelEn: 'Right Wing' },
+        { id: 'wingLB', cx: 30, cy: 65, rx: 14, ry: 15, shape: 'ellipse', targetColor: 'pink', labelBm: 'Sayap Bawah', labelEn: 'Bottom Wing' },
+        { id: 'wingRB', cx: 70, cy: 65, rx: 14, ry: 15, shape: 'ellipse', targetColor: 'pink', labelBm: 'Sayap Bawah', labelEn: 'Bottom Wing' },
+      ],
+    },
+    {
+      id: 'house', nameBm: 'Rumah', nameEn: 'House', bgColor: '#DBEAFE',
+      regions: [
+        { id: 'wall', cx: 50, cy: 62, w: 50, h: 36, shape: 'rect', targetColor: 'kuning', labelBm: 'Dinding', labelEn: 'Wall' },
+        { id: 'roof', cx: 50, cy: 35, rx: 32, ry: 14, shape: 'ellipse', targetColor: 'merah', labelBm: 'Bumbung', labelEn: 'Roof' },
+        { id: 'door', cx: 50, cy: 72, w: 14, h: 20, shape: 'rect', targetColor: 'coklat', labelBm: 'Pintu', labelEn: 'Door' },
+        { id: 'window', cx: 36, cy: 58, w: 10, h: 10, shape: 'rect', targetColor: 'biru', labelBm: 'Tingkap', labelEn: 'Window' },
+      ],
+    },
+    {
+      id: 'car', nameBm: 'Kereta', nameEn: 'Car', bgColor: '#F0FDF4',
+      regions: [
+        { id: 'body', cx: 50, cy: 50, rx: 35, ry: 14, shape: 'ellipse', targetColor: 'merah', labelBm: 'Badan', labelEn: 'Body' },
+        { id: 'top', cx: 50, cy: 34, rx: 20, ry: 12, shape: 'ellipse', targetColor: 'merah', labelBm: 'Atas', labelEn: 'Top' },
+        { id: 'wheel1', cx: 30, cy: 66, r: 9, shape: 'circle', targetColor: 'kelabu', labelBm: 'Roda', labelEn: 'Wheel' },
+        { id: 'wheel2', cx: 70, cy: 66, r: 9, shape: 'circle', targetColor: 'kelabu', labelBm: 'Roda', labelEn: 'Wheel' },
+        { id: 'window1', cx: 42, cy: 36, w: 12, h: 10, shape: 'rect', targetColor: 'biru', labelBm: 'Tingkap', labelEn: 'Window' },
+      ],
+    },
+    {
+      id: 'star_pic', nameBm: 'Bintang', nameEn: 'Star', bgColor: '#1E1B4B',
+      regions: [
+        { id: 'star', cx: 50, cy: 45, r: 30, shape: 'circle', targetColor: 'kuning', labelBm: 'Bintang', labelEn: 'Star' },
+        { id: 'glow', cx: 50, cy: 45, r: 38, shape: 'circle', targetColor: 'oren', labelBm: 'Sinaran', labelEn: 'Glow' },
+      ],
+    },
+    {
+      id: 'tree', nameBm: 'Pokok', nameEn: 'Tree', bgColor: '#DBEAFE',
+      regions: [
+        { id: 'leaves', cx: 50, cy: 30, r: 26, shape: 'circle', targetColor: 'hijau', labelBm: 'Daun', labelEn: 'Leaves' },
+        { id: 'trunk', cx: 50, cy: 70, w: 14, h: 30, shape: 'rect', targetColor: 'coklat', labelBm: 'Batang', labelEn: 'Trunk' },
+        { id: 'fruit1', cx: 40, cy: 25, r: 5, shape: 'circle', targetColor: 'merah', labelBm: 'Buah', labelEn: 'Fruit' },
+        { id: 'fruit2', cx: 60, cy: 30, r: 5, shape: 'circle', targetColor: 'merah', labelBm: 'Buah', labelEn: 'Fruit' },
+      ],
+    },
+    {
+      id: 'balloon', nameBm: 'Belon', nameEn: 'Balloon', bgColor: '#FEF9C3',
+      regions: [
+        { id: 'ball1', cx: 30, cy: 35, rx: 16, ry: 22, shape: 'ellipse', targetColor: 'merah', labelBm: 'Belon', labelEn: 'Balloon' },
+        { id: 'ball2', cx: 50, cy: 30, rx: 16, ry: 22, shape: 'ellipse', targetColor: 'biru', labelBm: 'Belon', labelEn: 'Balloon' },
+        { id: 'ball3', cx: 70, cy: 35, rx: 16, ry: 22, shape: 'ellipse', targetColor: 'hijau', labelBm: 'Belon', labelEn: 'Balloon' },
+      ],
+    },
+    {
+      id: 'cake', nameBm: 'Kek', nameEn: 'Cake', bgColor: '#FFF7ED',
+      regions: [
+        { id: 'base', cx: 50, cy: 65, rx: 30, ry: 16, shape: 'ellipse', targetColor: 'coklat', labelBm: 'Kek', labelEn: 'Cake' },
+        { id: 'icing', cx: 50, cy: 48, rx: 28, ry: 10, shape: 'ellipse', targetColor: 'pink', labelBm: 'Krim', labelEn: 'Icing' },
+        { id: 'cherry', cx: 50, cy: 35, r: 6, shape: 'circle', targetColor: 'merah', labelBm: 'Ceri', labelEn: 'Cherry' },
+      ],
+    },
+    {
+      id: 'rainbow', nameBm: 'Pelangi', nameEn: 'Rainbow', bgColor: '#DBEAFE',
+      regions: [
+        { id: 'band1', cx: 50, cy: 50, rx: 40, ry: 30, shape: 'ellipse', targetColor: 'merah', labelBm: 'Jalur', labelEn: 'Band' },
+        { id: 'band2', cx: 50, cy: 52, rx: 34, ry: 24, shape: 'ellipse', targetColor: 'oren', labelBm: 'Jalur', labelEn: 'Band' },
+        { id: 'band3', cx: 50, cy: 54, rx: 28, ry: 18, shape: 'ellipse', targetColor: 'kuning', labelBm: 'Jalur', labelEn: 'Band' },
+        { id: 'band4', cx: 50, cy: 56, rx: 22, ry: 12, shape: 'ellipse', targetColor: 'hijau', labelBm: 'Jalur', labelEn: 'Band' },
+        { id: 'band5', cx: 50, cy: 58, rx: 16, ry: 8, shape: 'ellipse', targetColor: 'biru', labelBm: 'Jalur', labelEn: 'Band' },
+      ],
+    },
+    {
+      id: 'cat', nameBm: 'Kucing', nameEn: 'Cat', bgColor: '#FEF3C7',
+      regions: [
+        { id: 'body', cx: 50, cy: 58, rx: 22, ry: 24, shape: 'ellipse', targetColor: 'oren', labelBm: 'Badan', labelEn: 'Body' },
+        { id: 'head', cx: 50, cy: 28, r: 18, shape: 'circle', targetColor: 'oren', labelBm: 'Kepala', labelEn: 'Head' },
+        { id: 'earL', cx: 36, cy: 12, rx: 6, ry: 10, shape: 'ellipse', targetColor: 'pink', labelBm: 'Telinga', labelEn: 'Ear' },
+        { id: 'earR', cx: 64, cy: 12, rx: 6, ry: 10, shape: 'ellipse', targetColor: 'pink', labelBm: 'Telinga', labelEn: 'Ear' },
+        { id: 'nose', cx: 50, cy: 32, r: 3, shape: 'circle', targetColor: 'pink', labelBm: 'Hidung', labelEn: 'Nose' },
+      ],
+    },
+    {
+      id: 'rocket', nameBm: 'Roket', nameEn: 'Rocket', bgColor: '#1E1B4B',
+      regions: [
+        { id: 'body', cx: 50, cy: 45, rx: 14, ry: 30, shape: 'ellipse', targetColor: 'putih', labelBm: 'Badan', labelEn: 'Body' },
+        { id: 'nose', cx: 50, cy: 12, rx: 8, ry: 12, shape: 'ellipse', targetColor: 'merah', labelBm: 'Hidung', labelEn: 'Nose' },
+        { id: 'finL', cx: 32, cy: 72, rx: 10, ry: 8, shape: 'ellipse', targetColor: 'biru', labelBm: 'Sirip', labelEn: 'Fin' },
+        { id: 'finR', cx: 68, cy: 72, rx: 10, ry: 8, shape: 'ellipse', targetColor: 'biru', labelBm: 'Sirip', labelEn: 'Fin' },
+        { id: 'flame', cx: 50, cy: 85, rx: 10, ry: 12, shape: 'ellipse', targetColor: 'oren', labelBm: 'Api', labelEn: 'Flame' },
+      ],
+    },
+    {
+      id: 'heart', nameBm: 'Hati', nameEn: 'Heart', bgColor: '#FFF1F2',
+      regions: [
+        { id: 'left', cx: 38, cy: 40, r: 18, shape: 'circle', targetColor: 'merah', labelBm: 'Kiri', labelEn: 'Left' },
+        { id: 'right', cx: 62, cy: 40, r: 18, shape: 'circle', targetColor: 'merah', labelBm: 'Kanan', labelEn: 'Right' },
+        { id: 'bottom', cx: 50, cy: 65, rx: 22, ry: 16, shape: 'ellipse', targetColor: 'pink', labelBm: 'Bawah', labelEn: 'Bottom' },
+      ],
+    },
+  ], []);
 
-  const COLOR_NAMES_EN = [
-    'Red', 'Light Red', 'Pink', 'Magenta',
-    'Orange', 'Light Orange', 'Yellow', 'Light Yellow',
-    'Green', 'Light Green', 'Cyan', 'Turquoise',
-    'Blue', 'Light Blue', 'Dark Blue', 'Purple',
-    'Light Purple', 'Brown', 'Light Brown', 'Grey',
-    'Black', 'White', 'Soft Pink', 'Soft Blue',
-  ];
-
-  const BRUSH_SIZES = [8, 16, 28, 40];
-
-  const TOTAL = PAGES.length;
-  const [pageIdx, setPageIdx] = useState(0);
-  const [selectedColor, setSelectedColor] = useState('#FF0000');
-  const [colorIdx, setColorIdx] = useState(0);
-  const [brushSize, setBrushSize] = useState(16);
-  const [showPicker, setShowPicker] = useState(false);
-  const [undoStack, setUndoStack] = useState({});
+  const [round, setRound] = useState(1);
+  const [score, setScore] = useState(0);
+  const [currentPicture, setCurrentPicture] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [regionColors, setRegionColors] = useState({});
+  const [feedback, setFeedback] = useState(null);
+  const [sparkleEffect, setSparkleEffect] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
   const [confettiPieces, setConfettiPieces] = useState([]);
+  const [showTarget, setShowTarget] = useState(true);
+  const [roundOrder, setRoundOrder] = useState([]);
+  const lastPicsRef = useRef([]);
 
-  const canvasRef = useRef(null);
-  const ctxRef = useRef(null);
-  const lastPosRef = useRef(null);
-  const isDrawingRef = useRef(false);
-  const selectedColorRef = useRef('#FF0000');
-  const brushSizeRef = useRef(16);
-  const canvasDataRef = useRef({});
-  const outlineImgRef = useRef(null);
-  const maskDataRef = useRef(null);
-
-  const page = PAGES[pageIdx];
-  const pageName = lang === 'bm' ? page.nameBm : page.nameEn;
-  const colorName = lang === 'bm' ? COLOR_NAMES_BM[colorIdx] : COLOR_NAMES_EN[colorIdx];
-
-  // Initialize canvas
+  // Generate non-repeating picture order
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    ctxRef.current = ctx;
+    const shuffled = [...Array(PICTURES.length).keys()].sort(() => Math.random() - 0.5);
+    setRoundOrder(shuffled.slice(0, TOTAL_ROUNDS));
+  }, [PICTURES.length]);
 
-    // Set canvas size
-    const rect = canvas.parentElement.getBoundingClientRect();
-    const size = Math.min(rect.width, rect.height, 400);
-    canvas.width = size;
-    canvas.height = size;
+  const generateRound = useCallback((roundNum) => {
+    if (roundOrder.length === 0) return;
+    const picIdx = roundOrder[(roundNum - 1) % roundOrder.length];
+    const pic = PICTURES[picIdx];
+    setCurrentPicture(pic);
+    setRegionColors({});
+    setSelectedColor(null);
+    setFeedback(null);
+    setSparkleEffect(null);
+    setShowTarget(true);
+    // Auto-hide target preview after 3 seconds
+    setTimeout(() => setShowTarget(false), 3000);
+  }, [PICTURES, roundOrder]);
 
-    // Restore saved data or clear
-    if (canvasDataRef.current[pageIdx]) {
-      const img = new Image();
-      img.onload = () => ctx.drawImage(img, 0, 0);
-      img.src = canvasDataRef.current[pageIdx];
+  useEffect(() => {
+    if (roundOrder.length > 0) generateRound(1);
+  }, [roundOrder, generateRound]);
+
+  // Get unique colours used in current picture
+  const getPaletteColors = () => {
+    if (!currentPicture) return [];
+    const usedKeys = [...new Set(currentPicture.regions.map(r => r.targetColor))];
+    return usedKeys.map(k => ({ key: k, ...COLOUR_PALETTE[k] }));
+  };
+
+  const handleRegionTap = (region) => {
+    if (!selectedColor || feedback?.type === 'correct-all') return;
+    if (regionColors[region.id]) return; // Already filled
+
+    const isCorrect = selectedColor === region.targetColor;
+    const newColors = { ...regionColors, [region.id]: selectedColor };
+    setRegionColors(newColors);
+
+    if (isCorrect) {
+      setScore(prev => prev + 10);
+      setSparkleEffect({ cx: region.cx, cy: region.cy });
+      setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
+      setTimeout(() => setSparkleEffect(null), 800);
     } else {
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      setFeedback({ type: 'wrong', message: wrongFeedback(lang, soundEnabled) });
+      // Remove wrong colour after a moment
+      setTimeout(() => {
+        setRegionColors(prev => {
+          const copy = { ...prev };
+          delete copy[region.id];
+          return copy;
+        });
+      }, 600);
     }
 
-    // Load outline for mask
-    const outlineImg = new Image();
-    outlineImg.crossOrigin = 'anonymous';
-    outlineImg.onload = () => {
-      outlineImgRef.current = outlineImg;
-      // Create mask data
-      const tempCanvas = document.createElement('canvas');
-      tempCanvas.width = canvas.width;
-      tempCanvas.height = canvas.height;
-      const tempCtx = tempCanvas.getContext('2d');
-      tempCtx.drawImage(outlineImg, 0, 0, canvas.width, canvas.height);
-      maskDataRef.current = tempCtx.getImageData(0, 0, canvas.width, canvas.height);
-    };
-    outlineImg.src = assetPath(`/images/game/outlines/${page.outline}.jpg`);
-  }, [pageIdx]);
+    // Check if all regions filled correctly
+    const allRegions = currentPicture.regions;
+    const allFilled = allRegions.every(r => newColors[r.id] === r.targetColor);
+    if (allFilled) {
+      setFeedback({ type: 'correct-all', message: lang === 'bm' ? 'Sempurna!' : 'Perfect!' });
+      celebrationFeedback(lang, soundEnabled);
 
-  // Check if pixel is inside the lines (white area)
-  const isInsideLines = (x, y) => {
-    if (!maskDataRef.current) return true;
-    const w = maskDataRef.current.width;
-    const idx = (Math.floor(y) * w + Math.floor(x)) * 4;
-    const r = maskDataRef.current.data[idx];
-    const g = maskDataRef.current.data[idx + 1];
-    const b = maskDataRef.current.data[idx + 2];
-    // If pixel is bright (white area), allow painting
-    return (r + g + b) / 3 > 180;
-  };
-
-  const getCanvasPos = (e) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return null;
-    const rect = canvas.getBoundingClientRect();
-    const touch = e.touches ? e.touches[0] : e;
-    return {
-      x: (touch.clientX - rect.left) * (canvas.width / rect.width),
-      y: (touch.clientY - rect.top) * (canvas.height / rect.height),
-    };
-  };
-
-  const saveSnapshot = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    canvasDataRef.current[pageIdx] = canvas.toDataURL();
-  };
-
-  // Keep refs in sync with state
-  const selectColor = (color, idx) => {
-    setSelectedColor(color);
-    selectedColorRef.current = color;
-    setColorIdx(idx);
-  };
-  const selectBrush = (size) => {
-    setBrushSize(size);
-    brushSizeRef.current = size;
-  };
-
-  const paintDot = (x, y) => {
-    const ctx = ctxRef.current;
-    if (!ctx) return;
-    if (isInsideLines(x, y)) {
-      ctx.fillStyle = selectedColorRef.current;
-      ctx.beginPath();
-      ctx.arc(x, y, brushSizeRef.current / 2, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  };
-
-  const startDraw = (e) => {
-    e.preventDefault();
-    isDrawingRef.current = true;
-    const pos = getCanvasPos(e);
-    if (!pos) return;
-    lastPosRef.current = pos;
-    // Save undo state
-    const canvas = canvasRef.current;
-    if (canvas) {
-      setUndoStack(prev => ({
-        ...prev,
-        [pageIdx]: [...(prev[pageIdx] || []), canvas.toDataURL()].slice(-10),
-      }));
-    }
-    // Paint initial dot on click
-    paintDot(pos.x, pos.y);
-    if (soundEnabled) playTapSound();
-  };
-
-  const draw = (e) => {
-    e.preventDefault();
-    if (!isDrawingRef.current) return;
-    const ctx = ctxRef.current;
-    const canvas = canvasRef.current;
-    if (!ctx || !canvas) return;
-
-    const pos = getCanvasPos(e);
-    if (!pos) return;
-    const last = lastPosRef.current || pos;
-
-    // Draw line from last to current position
-    const dist = Math.sqrt((pos.x - last.x) ** 2 + (pos.y - last.y) ** 2);
-    const steps = Math.max(1, Math.ceil(dist / 2));
-
-    for (let i = 0; i <= steps; i++) {
-      const t = i / steps;
-      const x = last.x + (pos.x - last.x) * t;
-      const y = last.y + (pos.y - last.y) * t;
-      paintDot(x, y);
-    }
-
-    lastPosRef.current = pos;
-  };
-
-  const endDraw = (e) => {
-    if (e) e.preventDefault();
-    if (isDrawingRef.current) {
-      isDrawingRef.current = false;
-      lastPosRef.current = null;
-      saveSnapshot();
-    }
-  };
-
-  const clearCanvas = () => {
-    const ctx = ctxRef.current;
-    const canvas = canvasRef.current;
-    if (!ctx || !canvas) return;
-    // Save undo state
-    setUndoStack(prev => ({
-      ...prev,
-      [pageIdx]: [...(prev[pageIdx] || []), canvas.toDataURL()].slice(-10),
-    }));
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    saveSnapshot();
-    if (soundEnabled) playTapSound();
-  };
-
-  const undoLast = () => {
-    const stack = undoStack[pageIdx];
-    if (!stack || stack.length === 0) return;
-    const lastState = stack[stack.length - 1];
-    const ctx = ctxRef.current;
-    const canvas = canvasRef.current;
-    if (!ctx || !canvas) return;
-    const img = new Image();
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0);
-      saveSnapshot();
-    };
-    img.src = lastState;
-    setUndoStack(prev => ({
-      ...prev,
-      [pageIdx]: stack.slice(0, -1),
-    }));
-    if (soundEnabled) playTapSound();
-  };
-
-  const goToPage = (idx) => {
-    saveSnapshot();
-    setPageIdx(idx);
-    setShowPicker(false);
-  };
-
-  // Page picker
-  if (showPicker) {
-    return (
-      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-        <img src={assetPath('/images/game/mewarna_ajaib_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.4, pointerEvents: "none" }} />
-        <div style={{ position: 'relative', zIndex: 1, padding: '12px 16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-            <button className="icon-btn" onClick={() => setShowPicker(false)} style={{ background: 'rgba(255,255,255,0.9)', borderRadius: '50%', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-sm)', border: 'none', cursor: 'pointer' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7B1FA2" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            </button>
-            <h2 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2', fontSize: '1.1rem', margin: 0 }}>
-              {lang === 'bm' ? 'Pilih Lukisan' : 'Choose Drawing'}
-            </h2>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: 10, maxHeight: 'calc(100vh - 120px)', overflowY: 'auto', paddingBottom: 20 }}>
-            {PAGES.map((p, i) => (
-              <button key={i} onClick={() => goToPage(i)} style={{
-                background: pageIdx === i ? 'rgba(123,31,162,0.1)' : 'rgba(255,255,255,0.95)',
-                border: pageIdx === i ? '3px solid #7B1FA2' : '2px solid rgba(0,0,0,0.08)',
-                borderRadius: 16, padding: 6, cursor: 'pointer', textAlign: 'center',
-                boxShadow: 'var(--shadow-sm)', transition: 'all 0.2s ease',
-              }}>
-                <img src={assetPath(`/images/game/outlines/${p.outline}.jpg`)} alt="" style={{ width: '100%', height: 70, objectFit: 'contain', borderRadius: 10, background: '#fff' }} />
-                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#333', marginTop: 4, fontFamily: 'var(--font-heading)' }}>
-                  {lang === 'bm' ? p.nameBm : p.nameEn}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Calculate how much of the colorable area has been painted
-  const calculateCoverage = () => {
-    const canvas = canvasRef.current;
-    const mask = maskDataRef.current;
-    if (!canvas || !mask) return 0;
-    const ctx = canvas.getContext('2d');
-    const paintData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    let colorablePixels = 0;
-    let coloredPixels = 0;
-    for (let i = 0; i < mask.data.length; i += 4) {
-      const mr = mask.data[i], mg = mask.data[i + 1], mb = mask.data[i + 2];
-      // This pixel is in the colorable (white) area of the outline
-      if ((mr + mg + mb) / 3 > 180) {
-        colorablePixels++;
-        const pr = paintData.data[i], pg = paintData.data[i + 1], pb = paintData.data[i + 2];
-        // Check if this pixel has been painted (not white anymore)
-        if (pr < 245 || pg < 245 || pb < 245) {
-          coloredPixels++;
+      setTimeout(() => {
+        if (round >= TOTAL_ROUNDS) {
+          const finalScore = score + 10;
+          const stars = finalScore >= 120 ? 3 : finalScore >= 70 ? 2 : 1;
+          completeGame('colours', 'magic-colouring', stars, finalScore);
+          setGameComplete(true);
+          spawnConfetti();
+        } else {
+          setRound(prev => prev + 1);
+          generateRound(round + 1);
         }
-      }
-    }
-    if (colorablePixels === 0) return 0;
-    return (coloredPixels / colorablePixels) * 100;
-  };
-
-  const [showResult, setShowResult] = useState(false);
-  const [starCount, setStarCount] = useState(0);
-
-  const submitColoring = () => {
-    const coverage = calculateCoverage();
-    let stars = 1;
-    if (coverage >= 70) stars = 3;
-    else if (coverage >= 35) stars = 2;
-    setStarCount(stars);
-    setShowResult(true);
-    if (soundEnabled) {
-      if (stars === 3) {
-        try { new Audio(assetPath('/audio/bm/tahniah.mp3')).play(); } catch(e) {}
-        setTimeout(() => { try { new Audio(assetPath('/audio/bm/syabas.mp3')).play(); } catch(e) {} }, 1200);
-      } else if (stars === 2) {
-        try { new Audio(assetPath('/audio/bm/bagus_sekali.mp3')).play(); } catch(e) {}
-      } else {
-        try { new Audio(assetPath('/audio/bm/cuba_lagi_sayang.mp3')).play(); } catch(e) {}
-      }
+      }, 1500);
+    } else {
+      setTimeout(() => setFeedback(null), 1000);
     }
   };
 
-  const dismissResult = () => {
-    setShowResult(false);
-    if (starCount === 3) {
-      completeGame('magic-colouring', starCount);
-    }
+  const spawnConfetti = () => {
+    const colors = ['#EF4444', '#F97316', '#EAB308', '#22C55E', '#3B82F6', '#A855F7', '#EC4899'];
+    setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
+      id: i, left: Math.random() * 100, color: colors[i % colors.length],
+      delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
+    })));
   };
 
-  const nextAfterResult = () => {
-    setShowResult(false);
-    if (starCount >= 1) {
-      completeGame('magic-colouring', starCount);
+  const getStars = () => score >= 120 ? 3 : score >= 70 ? 2 : 1;
+
+  // Render SVG shape
+  const renderRegion = (region, isFilled, fillColor) => {
+    const color = isFilled ? COLOUR_PALETTE[fillColor]?.hex || '#ccc' : 'rgba(255,255,255,0.7)';
+    const stroke = isFilled ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.3)';
+    const common = {
+      fill: color,
+      stroke,
+      strokeWidth: 2,
+      cursor: isFilled ? 'default' : 'pointer',
+      style: {
+        transition: 'fill 0.4s ease, transform 0.2s ease',
+        filter: isFilled ? 'drop-shadow(0 2px 6px rgba(0,0,0,0.15))' : 'none',
+      },
+      onClick: () => handleRegionTap(region),
+    };
+    if (region.shape === 'circle') {
+      return <circle key={region.id} cx={region.cx} cy={region.cy} r={region.r} {...common} />;
+    } else if (region.shape === 'ellipse') {
+      return <ellipse key={region.id} cx={region.cx} cy={region.cy} rx={region.rx} ry={region.ry} {...common} />;
+    } else if (region.shape === 'rect') {
+      return <rect key={region.id} x={region.cx - region.w / 2} y={region.cy - region.h / 2} width={region.w} height={region.h} rx={3} {...common} />;
     }
-    goToPage((pageIdx + 1) % TOTAL);
+    return null;
   };
+
+  if (!currentPicture) return null;
 
   return (
-    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', touchAction: 'none' }}>
-      <img src={assetPath('/images/game/mewarna_ajaib_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.4, pointerEvents: "none" }} />
-
-      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%', padding: '8px 12px', gap: 6 }}>
-        {/* Top Bar - BIGGER & RESPONSIVE */}
+    <div className="game-screen" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div className="game-body" style={{ padding: 0 }}>
         <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
-          background: 'rgba(255,255,255,0.92)', borderRadius: 20, padding: '8px 14px',
-          boxShadow: '0 4px 20px rgba(123,31,162,0.12)',
+          width: '100%', height: '100%', position: 'relative',
+          overflow: 'hidden',
         }}>
-          <button onClick={() => goToWorld('colours')} style={{
-            background: 'linear-gradient(135deg, #CE93D8, #7B1FA2)', borderRadius: '50%',
-            width: 'clamp(36px, 6vw, 44px)', height: 'clamp(36px, 6vw, 44px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 3px 10px rgba(123,31,162,0.3)', border: 'none', cursor: 'pointer',
-          }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          </button>
+          {/* Beautiful responsive background */}
+          <img src={assetPath('/images/game/mewarna_ajaib_bg_v2.jpg')} alt="" style={{
+            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+            objectFit: 'cover', zIndex: 0, opacity: 0.5,
+          }} />
 
-          <button onClick={() => { saveSnapshot(); setShowPicker(true); }} style={{
-            background: 'linear-gradient(135deg, #F3E5F5, #E1BEE7)', borderRadius: 20,
-            padding: 'clamp(6px, 1.5vw, 10px) clamp(14px, 3vw, 24px)',
-            border: '2px solid rgba(123,31,162,0.15)', cursor: 'pointer',
-            fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.85rem, 2.5vw, 1.1rem)',
-            color: '#7B1FA2', boxShadow: '0 3px 10px rgba(123,31,162,0.1)',
-            display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700,
-          }}>
-            {pageName}
-            <span style={{ fontSize: 'clamp(0.65rem, 1.8vw, 0.85rem)', color: '#9C27B0', fontWeight: 500 }}>({pageIdx + 1}/{TOTAL})</span>
-          </button>
-
-          <div style={{ display: 'flex', gap: 'clamp(4px, 1vw, 8px)' }}>
-            <button onClick={undoLast} title={lang === 'bm' ? 'Buat Semula' : 'Undo'} style={{
-              background: 'rgba(255,255,255,0.95)', borderRadius: '50%',
-              width: 'clamp(34px, 5.5vw, 42px)', height: 'clamp(34px, 5.5vw, 42px)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+          <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch', height: '100%', width: '100%', maxWidth: 600, margin: '0 auto', padding: 'clamp(8px, 2vw, 16px)' }}>
+            {/* Header - Padankan Warna Style */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(10px)',
+              borderRadius: 'clamp(16px, 3vw, 24px)', padding: 'clamp(8px, 1.5vw, 14px) clamp(12px, 2vw, 20px)',
+              boxShadow: '0 4px 20px rgba(123,31,162,0.12)', marginBottom: 'clamp(8px, 1.5vw, 14px)',
             }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2"><path d="M3 10h10a5 5 0 015 5v2M3 10l5-5M3 10l5 5"/></svg>
-            </button>
-            <button onClick={clearCanvas} title={lang === 'bm' ? 'Padam' : 'Clear'} style={{
-              background: 'rgba(255,255,255,0.95)', borderRadius: '50%',
-              width: 'clamp(34px, 5.5vw, 42px)', height: 'clamp(34px, 5.5vw, 42px)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-            }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E91E63" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14"/></svg>
-            </button>
-            <button onClick={() => goToPage((pageIdx + 1) % TOTAL)} title={lang === 'bm' ? 'Seterusnya' : 'Next'} style={{
-              background: 'rgba(255,255,255,0.95)', borderRadius: '50%',
-              width: 'clamp(34px, 5.5vw, 42px)', height: 'clamp(34px, 5.5vw, 42px)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-            }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B1FA2" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
-            {/* SUBMIT Button */}
-            <button onClick={submitColoring} title={lang === 'bm' ? 'Hantar' : 'Submit'} style={{
-              background: 'linear-gradient(135deg, #4CAF50, #2E7D32)', borderRadius: '50%',
-              width: 'clamp(34px, 5.5vw, 42px)', height: 'clamp(34px, 5.5vw, 42px)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              border: 'none', cursor: 'pointer', boxShadow: '0 3px 10px rgba(76,175,80,0.35)',
-            }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
-            </button>
-          </div>
-        </div>
-
-        {/* Canvas Area -- the main painting zone */}
-        <div style={{
-          flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          minHeight: 200, position: 'relative',
-        }}>
-          <div style={{
-            position: 'relative',
-            width: 'min(calc(100vh - 260px), calc(100vw - 40px), 420px)',
-            height: 'min(calc(100vh - 260px), calc(100vw - 40px), 420px)',
-            borderRadius: 16, overflow: 'hidden',
-            boxShadow: '0 8px 40px rgba(123,31,162,0.15), inset 0 0 0 2px rgba(123,31,162,0.06)',
-            background: '#fff',
-          }}>
-            {/* Paint Canvas (bottom layer) */}
-            <canvas
-              ref={canvasRef}
-              onMouseDown={startDraw}
-              onMouseMove={draw}
-              onMouseUp={endDraw}
-              onMouseLeave={endDraw}
-              onTouchStart={startDraw}
-              onTouchMove={draw}
-              onTouchEnd={endDraw}
-              style={{
-                position: 'absolute', top: 0, left: 0,
-                width: '100%', height: '100%',
-                cursor: 'crosshair', touchAction: 'none',
-                zIndex: 1,
-              }}
-            />
-            {/* Outline overlay (top layer -- multiply blend) */}
-            <img
-              src={assetPath(`/images/game/outlines/${page.outline}.jpg`)}
-              alt=""
-              style={{
-                position: 'absolute', top: 0, left: 0,
-                width: '100%', height: '100%',
-                objectFit: 'contain',
-                pointerEvents: 'none',
-                zIndex: 2,
-                mixBlendMode: 'multiply',
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Selected color + brush size */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, flexShrink: 0 }}>
-          <div style={{ width: 22, height: 22, borderRadius: '50%', background: selectedColor, border: selectedColor === '#FFFFFF' ? '2px solid #ccc' : '2px solid rgba(0,0,0,0.15)', boxShadow: `0 2px 6px ${selectedColor}44` }} />
-          <span style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.65rem, 2vw, 0.8rem)', color: '#555' }}>{colorName}</span>
-          <div style={{ display: 'flex', gap: 4, alignItems: 'center', marginLeft: 8 }}>
-            {BRUSH_SIZES.map((s) => (
-              <button key={s} onClick={() => { selectBrush(s); if (soundEnabled) playTapSound(); }} style={{
-                width: s + 8, height: s + 8, borderRadius: '50%', border: brushSize === s ? '2px solid #7B1FA2' : '2px solid rgba(0,0,0,0.1)',
-                background: brushSize === s ? '#7B1FA2' : 'rgba(255,255,255,0.9)',
-                cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'all 0.15s ease',
+              <button onClick={() => goToWorld('colours')} style={{
+                background: 'linear-gradient(135deg, #CE93D8, #7B1FA2)', borderRadius: '50%',
+                width: 'clamp(36px, 6vw, 46px)', height: 'clamp(36px, 6vw, 46px)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                border: 'none', cursor: 'pointer', boxShadow: '0 3px 10px rgba(123,31,162,0.3)',
               }}>
-                <div style={{ width: s * 0.5, height: s * 0.5, borderRadius: '50%', background: brushSize === s ? '#fff' : '#999' }} />
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
               </button>
-            ))}
-          </div>
-        </div>
 
-        {/* Color Palette */}
-        <div style={{
-          display: 'flex', gap: 'clamp(3px, 0.8vw, 5px)', justifyContent: 'center', flexWrap: 'wrap',
-          background: 'rgba(255,255,255,0.95)', borderRadius: 16, padding: 'clamp(4px, 1vw, 8px) clamp(6px, 1.5vw, 10px)',
-          boxShadow: 'var(--shadow-sm)', maxWidth: 440, margin: '0 auto', flexShrink: 0,
-        }}>
-          {COLORS.map((c, i) => (
-            <button key={i} onClick={() => {
-              selectColor(c, i);
-              if (soundEnabled) playTapSound();
-            }} style={{
-              width: 'clamp(22px, 5vw, 28px)', height: 'clamp(22px, 5vw, 28px)', borderRadius: '50%', background: c,
-              border: selectedColor === c ? '3px solid #333' : c === '#FFFFFF' ? '2px solid #ccc' : '2px solid rgba(255,255,255,0.8)',
-              cursor: 'pointer',
-              transform: selectedColor === c ? 'scale(1.3)' : 'scale(1)',
-              transition: 'all 0.15s cubic-bezier(0.34,1.56,0.64,1)',
-              boxShadow: selectedColor === c ? `0 3px 12px ${c}66` : '0 1px 3px rgba(0,0,0,0.1)',
-              padding: 0,
-            }} title={lang === 'bm' ? COLOR_NAMES_BM[i] : COLOR_NAMES_EN[i]} />
-          ))}
-        </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.9rem, 2.5vw, 1.2rem)', fontWeight: 800, color: '#7B1FA2' }}>
+                  {lang === 'bm' ? 'Mewarna Ajaib' : 'Magic Colouring'}
+                </div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.6rem, 1.5vw, 0.75rem)', color: '#9C27B0', fontWeight: 500 }}>
+                  {t('round', lang)} {round}/{TOTAL_ROUNDS}
+                </div>
+              </div>
 
-        {/* Page dots */}
-        <div style={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap', maxWidth: 400, margin: '2px auto', flexShrink: 0 }}>
-          {PAGES.map((_, i) => (
-            <button key={i} onClick={() => goToPage(i)} style={{
-              width: 7, height: 7, borderRadius: '50%', border: 'none', cursor: 'pointer', padding: 0,
-              background: i === pageIdx ? '#7B1FA2' : canvasDataRef.current[i] ? '#6BCB77' : 'rgba(0,0,0,0.15)',
-              transition: 'all 0.2s ease',
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{
+                  background: 'linear-gradient(135deg, #FFD700, #FFA000)', borderRadius: 16,
+                  padding: 'clamp(4px, 1vw, 8px) clamp(10px, 2vw, 16px)',
+                  display: 'flex', alignItems: 'center', gap: 4,
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  <span style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.75rem, 2vw, 1rem)', fontWeight: 800, color: '#fff' }}>{score}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div style={{
+              background: 'rgba(255,255,255,0.6)', borderRadius: 20, height: 'clamp(6px, 1vw, 10px)',
+              marginBottom: 'clamp(8px, 1.5vw, 14px)', overflow: 'hidden',
+            }}>
+              <div style={{
+                width: `${(round / TOTAL_ROUNDS) * 100}%`, height: '100%',
+                background: 'linear-gradient(90deg, #CE93D8, #7B1FA2)',
+                borderRadius: 20, transition: 'width 0.5s ease',
+              }} />
+            </div>
+
+          {/* Floating sparkle decorations */}
+          {!gameComplete && [...Array(8)].map((_, i) => (
+            <div key={`sp-${i}`} style={{
+              position: 'absolute',
+              left: `${10 + (i * 12)}%`, top: `${8 + (i % 3) * 25}%`,
+              width: 5 + (i % 3) * 3, height: 5 + (i % 3) * 3,
+              borderRadius: '50%',
+              background: ['#EF4444', '#3B82F6', '#22C55E', '#A855F7', '#EAB308', '#EC4899', '#F97316', '#6366F1'][i],
+              opacity: 0.25,
+              animation: `sparkleFloat ${3 + (i % 3)}s ease-in-out infinite alternate`,
+              animationDelay: `${i * 0.4}s`,
+              zIndex: 1,
             }} />
           ))}
-        </div>
-      </div>
 
-      {/* Star Result Overlay */}
-      {showResult && (
-        <div style={{
-          position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-          background: 'rgba(0,0,0,0.6)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          backdropFilter: 'blur(8px)',
-        }}>
-          <div style={{
-            background: 'linear-gradient(135deg, #fff, #F3E5F5)', borderRadius: 28, padding: 'clamp(24px, 5vw, 40px)',
-            textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', maxWidth: 340, width: '85%',
-            animation: 'bounceIn 0.4s ease',
-          }}>
-            <div style={{ fontSize: 'clamp(1rem, 3vw, 1.3rem)', fontFamily: 'var(--font-heading)', color: '#7B1FA2', marginBottom: 8, fontWeight: 700 }}>
-              {lang === 'bm' ? 'Tahniah!' : 'Well Done!'}
+          {/* Instruction */}
+          {!gameComplete && (
+            <div style={{
+              display: 'flex', justifyContent: 'center', marginBottom: 'clamp(6px, 1vw, 12px)',
+            }}>
+              <div style={{
+                background: 'rgba(255,255,255,0.95)',
+                backdropFilter: 'blur(12px)',
+                padding: '8px 20px', borderRadius: 50,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                fontFamily: 'var(--font-heading)', fontWeight: 700,
+                fontSize: 'clamp(0.8rem, 2.5vw, 1.05rem)',
+                display: 'flex', alignItems: 'center', gap: 8,
+                flexWrap: 'wrap', justifyContent: 'center',
+                color: '#555',
+              }}>
+                {lang === 'bm' ? 'Warnakan' : 'Colour the'}{' '}
+                <span style={{ color: '#7B1FA2', fontWeight: 900 }}>
+                  {lang === 'bm' ? currentPicture.nameBm : currentPicture.nameEn}
+                </span>
+                {selectedColor && (
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                    background: COLOUR_PALETTE[selectedColor]?.hex, color: '#fff',
+                    padding: '2px 10px', borderRadius: 20, fontSize: '0.8em',
+                    boxShadow: `0 2px 8px ${COLOUR_PALETTE[selectedColor]?.hex}66`,
+                  }}>
+                    {lang === 'bm' ? COLOUR_PALETTE[selectedColor]?.nameBm : COLOUR_PALETTE[selectedColor]?.nameEn}
+                  </span>
+                )}
+              </div>
             </div>
-            <div style={{ fontSize: 'clamp(1rem, 3vw, 1.3rem)', fontFamily: 'var(--font-heading)', color: '#555', marginBottom: 16 }}>
-              {pageName}
-            </div>
-            {/* Stars */}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 20 }}>
-              {[1, 2, 3].map(s => (
-                <svg key={s} width="clamp(36, 8vw, 52)" height="clamp(36, 8vw, 52)" viewBox="0 0 24 24"
-                  fill={s <= starCount ? '#FFD700' : '#ddd'}
-                  stroke={s <= starCount ? '#FFA000' : '#ccc'} strokeWidth="0.5"
-                  style={{ filter: s <= starCount ? 'drop-shadow(0 3px 6px rgba(255,193,7,0.5))' : 'none', transition: 'all 0.3s ease' }}
-                >
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          )}
+
+          {/* Main SVG Drawing Area */}
+          {!gameComplete && (
+            <div style={{
+              display: 'flex', justifyContent: 'center', alignItems: 'center',
+              flex: 1, minHeight: 0,
+            }}>
+            <div style={{
+              width: 'min(75vw, 75vh, 380px)', height: 'min(75vw, 75vh, 380px)',
+            }}>
+              <div style={{
+                width: '100%', height: '100%', borderRadius: 24,
+                background: currentPicture.bgColor || '#fff',
+                boxShadow: '0 12px 48px rgba(0,0,0,0.15), inset 0 0 0 3px rgba(255,255,255,0.5)',
+                overflow: 'hidden', position: 'relative',
+              }}>
+                <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%' }}>
+                  {/* Render regions — back to front ordering */}
+                  {currentPicture.regions.map(region => {
+                    const filledColor = regionColors[region.id];
+                    return renderRegion(region, !!filledColor, filledColor);
+                  })}
                 </svg>
+
+                {/* Sparkle effect on correct fill */}
+                {sparkleEffect && (
+                  <div style={{
+                    position: 'absolute',
+                    left: `${sparkleEffect.cx}%`, top: `${sparkleEffect.cy}%`,
+                    transform: 'translate(-50%, -50%)',
+                    zIndex: 30, pointerEvents: 'none',
+                  }}>
+                    {[...Array(6)].map((_, i) => (
+                      <div key={i} style={{
+                        position: 'absolute', width: 8, height: 8, borderRadius: '50%',
+                        background: ['#FFD93D', '#FF6B9D', '#6BCB77', '#A855F7', '#4FC3F7', '#FF8C42'][i],
+                        animation: 'popSparkle 0.6s ease-out forwards',
+                        animationDelay: `${i * 0.04}s`,
+                        transform: `rotate(${i * 60}deg) translateY(-18px)`,
+                      }} />
+                    ))}
+                  </div>
+                )}
+
+                {/* Target preview overlay — shows correct colours briefly */}
+                {showTarget && (
+                  <div style={{
+                    position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                    background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(4px)',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    zIndex: 20, borderRadius: 24, animation: 'fadeInUp 0.3s ease',
+                  }}>
+                    <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(0.9rem, 3vw, 1.2rem)', color: '#7B1FA2', marginBottom: 8 }}>
+                      {lang === 'bm' ? 'Sasaran Warna:' : 'Target Colours:'}
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center', padding: '0 12px' }}>
+                      {currentPicture.regions.map(r => (
+                        <div key={r.id} style={{
+                          display: 'flex', alignItems: 'center', gap: 4,
+                          background: 'rgba(255,255,255,0.95)', borderRadius: 16,
+                          padding: '4px 10px', boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+                        }}>
+                          <div style={{
+                            width: 16, height: 16, borderRadius: '50%',
+                            background: COLOUR_PALETTE[r.targetColor]?.hex,
+                            border: '2px solid rgba(0,0,0,0.1)',
+                          }} />
+                          <span style={{ fontSize: '0.7rem', fontFamily: 'var(--font-heading)', color: '#555' }}>
+                            {lang === 'bm' ? r.labelBm : r.labelEn}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ fontSize: '0.7rem', color: '#999', marginTop: 8, fontFamily: 'var(--font-heading)' }}>
+                {lang === 'bm' ? 'Hilang dalam 3 saat...' : 'Disappears in 3 seconds...'}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            </div>
+          )}
+
+          {/* Colour Palette — bottom */}
+          {!gameComplete && (
+            <div style={{
+              display: 'flex', gap: 'clamp(6px, 1.5vw, 10px)',
+              background: 'rgba(255,255,255,0.95)', borderRadius: 24,
+              padding: 'clamp(8px, 2vw, 14px) clamp(12px, 3vw, 20px)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+              flexWrap: 'wrap', justifyContent: 'center', maxWidth: '92vw',
+            }}>
+              {getPaletteColors().map(color => (
+                <button key={color.key} onClick={() => {
+                  setSelectedColor(color.key);
+                  if (soundEnabled) playTapSound();
+                }} style={{
+                  width: 'clamp(38px, 9vw, 52px)', height: 'clamp(38px, 9vw, 52px)',
+                  borderRadius: '50%', background: color.gradient,
+                  border: selectedColor === color.key ? '4px solid #333' : '3px solid rgba(255,255,255,0.9)',
+                  cursor: 'pointer', padding: 0,
+                  transform: selectedColor === color.key ? 'scale(1.25)' : 'scale(1)',
+                  transition: 'all 0.2s cubic-bezier(0.34,1.56,0.64,1)',
+                  boxShadow: selectedColor === color.key
+                    ? `0 6px 20px ${color.hex}66, 0 0 0 3px rgba(255,255,255,0.8)`
+                    : `0 3px 10px ${color.hex}33`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  WebkitTapHighlightColor: 'transparent',
+                }}>
+                  {selectedColor === color.key && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
+                  )}
+                </button>
               ))}
-            </div>
-            <div style={{ fontSize: 'clamp(0.75rem, 2vw, 0.9rem)', color: '#888', marginBottom: 20, fontFamily: 'var(--font-heading)' }}>
-              {starCount === 3
-                ? (lang === 'bm' ? 'Sempurna! Kamu warnakan semuanya!' : 'Perfect! You colored everything!')
-                : starCount === 2
-                ? (lang === 'bm' ? 'Bagus! Cuba warnakan lagi!' : 'Good! Try coloring more!')
-                : (lang === 'bm' ? 'Cuba lagi! Warnakan lebih banyak!' : 'Try again! Color more!')}
-            </div>
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
-              <button onClick={dismissResult} style={{
-                background: 'rgba(123,31,162,0.1)', border: '2px solid #7B1FA2', borderRadius: 16,
-                padding: '10px 20px', cursor: 'pointer', fontFamily: 'var(--font-heading)',
-                fontSize: 'clamp(0.8rem, 2vw, 0.95rem)', color: '#7B1FA2', fontWeight: 700,
-              }}>
-                {lang === 'bm' ? 'Cuba Lagi' : 'Try Again'}
-              </button>
-              <button onClick={nextAfterResult} style={{
-                background: 'linear-gradient(135deg, #7B1FA2, #9C27B0)', border: 'none', borderRadius: 16,
-                padding: '10px 20px', cursor: 'pointer', fontFamily: 'var(--font-heading)',
-                fontSize: 'clamp(0.8rem, 2vw, 0.95rem)', color: '#fff', fontWeight: 700,
-                boxShadow: '0 4px 15px rgba(123,31,162,0.3)',
-              }}>
-                {lang === 'bm' ? 'Seterusnya' : 'Next'}
+              {/* Show peek button */}
+              <button onClick={() => setShowTarget(true)} style={{
+                width: 'clamp(38px, 9vw, 52px)', height: 'clamp(38px, 9vw, 52px)',
+                borderRadius: '50%', background: 'rgba(123,31,162,0.1)',
+                border: '2px dashed #7B1FA2', cursor: 'pointer', padding: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                WebkitTapHighlightColor: 'transparent',
+              }} title={lang === 'bm' ? 'Tunjuk Sasaran' : 'Show Target'}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7B1FA2" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
-          </div>
-        </div>
+          )}
+
+          {/* Feedback toast */}
+          {feedback && (
+            <div style={{
+              display: 'flex', justifyContent: 'center', marginTop: 8,
+              zIndex: 20,
+              background: feedback.type === 'wrong'
+                ? 'linear-gradient(135deg, #FF6B6B, #ee5a24)'
+                : 'linear-gradient(135deg, #6BCB77, #48C9B0)',
+              color: 'white', padding: '10px 24px', borderRadius: 50,
+              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
+              boxShadow: '0 6px 24px rgba(0,0,0,0.2)',
+              animation: 'fadeInUp 0.3s ease-out',
+              whiteSpace: 'nowrap',
+            }}>
+              {feedback.type !== 'wrong' ? '🎨 ' : ''}{feedback.message}
+            </div>
+          )}
+          </div>{/* close layout wrapper */}
+        </div>{/* close position:relative */}
+      </div>{/* close game-body */}
+
+      {gameComplete && (
+        <GameCompleteModal
+          lang={lang} stars={getStars()} score={score}
+          accentColor="#7B1FA2"
+          onPlayAgain={() => {
+            setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]);
+            const shuffled = [...Array(PICTURES.length).keys()].sort(() => Math.random() - 0.5);
+            setRoundOrder(shuffled.slice(0, TOTAL_ROUNDS));
+          }}
+          onBack={() => goToWorld('colours')}
+          confettiPieces={confettiPieces}
+        />
       )}
     </div>
   );
