@@ -7517,99 +7517,255 @@ export function SockPairsGame() {
 }
 
 // ============================================
-// COLOUR HUNTER GAME (Pemburu Warna)
-// Find items of the target colour!
+// TEKA WARNA GAME (Guess the Colour)
+// Show an item, kid picks the correct colour!
 // ============================================
 export function ColourHunterGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const ROUNDS = [
-    { color: lang === 'bm' ? 'Merah' : 'Red', bg: '#FF6B6B', targets: ['🍎', '🌹', '❤️', '🍒'], distractors: ['🍌', '🥒', '🔵', '🟢'] },
-    { color: lang === 'bm' ? 'Biru' : 'Blue', bg: '#42A5F5', targets: ['🫐', '💙', '🧊', '🌊'], distractors: ['🍊', '🍋', '🔴', '🟡'] },
-    { color: lang === 'bm' ? 'Hijau' : 'Green', bg: '#66BB6A', targets: ['🥒', '🌿', '🐸', '🍀'], distractors: ['🍓', '🍑', '🔵', '🟡'] },
-    { color: lang === 'bm' ? 'Kuning' : 'Yellow', bg: '#FFD93D', targets: ['🍌', '⭐', '🌻', '🐤'], distractors: ['🍇', '🫐', '🔴', '🟢'] },
+  // All items with their colours - using generated kawaii images
+  const ALL_ITEMS = [
+    { img: 'red_apple', colour: 'merah', colourEn: 'red', hex: '#EF5350' },
+    { img: 'red_firetruck', colour: 'merah', colourEn: 'red', hex: '#EF5350' },
+    { img: 'red_strawberry', colour: 'merah', colourEn: 'red', hex: '#EF5350' },
+    { img: 'red_heart', colour: 'merah', colourEn: 'red', hex: '#EF5350' },
+    { img: 'blue_whale', colour: 'biru', colourEn: 'blue', hex: '#42A5F5' },
+    { img: 'blue_bird', colour: 'biru', colourEn: 'blue', hex: '#42A5F5' },
+    { img: 'green_frog', colour: 'hijau', colourEn: 'green', hex: '#66BB6A' },
+    { img: 'green_leaf', colour: 'hijau', colourEn: 'green', hex: '#66BB6A' },
+    { img: 'yellow_banana', colour: 'kuning', colourEn: 'yellow', hex: '#FFD93D' },
+    { img: 'yellow_chick', colour: 'kuning', colourEn: 'yellow', hex: '#FFD93D' },
+    { img: 'yellow_sun', colour: 'kuning', colourEn: 'yellow', hex: '#FFD93D' },
+    { img: 'orange_carrot', colour: 'oren', colourEn: 'orange', hex: '#FF9800' },
+    { img: 'orange_fish', colour: 'oren', colourEn: 'orange', hex: '#FF9800' },
+    { img: 'purple_grapes', colour: 'ungu', colourEn: 'purple', hex: '#AB47BC' },
+    { img: 'purple_butterfly', colour: 'ungu', colourEn: 'purple', hex: '#AB47BC' },
   ];
 
-  const [roundIdx, setRoundIdx] = useState(0);
-  const [found, setFound] = useState([]);
-  const [items, setItems] = useState([]);
+  const ALL_COLOURS = [
+    { bm: 'Merah', en: 'Red', hex: '#EF5350', key: 'merah' },
+    { bm: 'Biru', en: 'Blue', hex: '#42A5F5', key: 'biru' },
+    { bm: 'Hijau', en: 'Green', hex: '#66BB6A', key: 'hijau' },
+    { bm: 'Kuning', en: 'Yellow', hex: '#FFD93D', key: 'kuning' },
+    { bm: 'Oren', en: 'Orange', hex: '#FF9800', key: 'oren' },
+    { bm: 'Ungu', en: 'Purple', hex: '#AB47BC', key: 'ungu' },
+  ];
+
+  const TOTAL_ROUNDS = 15;
+  const CORRECT_SOUNDS = ['betul', 'hebat', 'pandainya', 'terbaik', 'tepat_sekali', 'bagus_sekali'];
+  const WRONG_SOUNDS = ['cuba_lagi', 'tak_apa_cuba_lagi', 'hampir_betul'];
+
+  const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
+  const [currentItem, setCurrentItem] = useState(null);
+  const [options, setOptions] = useState([]);
   const [feedback, setFeedback] = useState(null);
+  const [answered, setAnswered] = useState(false);
   const [gameComplete, setGameComplete] = useState(false);
+  const [confettiPieces, setConfettiPieces] = useState([]);
+  const [roundSequence, setRoundSequence] = useState([]);
 
-  const setupRound = useCallback((idx) => {
-    const r = ROUNDS[idx];
-    const all = [...r.targets.slice(0, 3), ...r.distractors.slice(0, 3)].sort(() => Math.random() - 0.5);
-    setItems(all);
-    setFound([]);
-  }, []);
-
-  useEffect(() => { setupRound(0); }, []);
-
-  const handleTap = (item) => {
-    const r = ROUNDS[roundIdx];
-    if (found.includes(item)) return;
-    if (r.targets.includes(item)) {
-      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
-      const newFound = [...found, item];
-      setFound(newFound);
-      setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
-      if (newFound.length === 3) {
-        setScore(score + 1);
-        setTimeout(() => {
-          setFeedback(null);
-          if (roundIdx + 1 < ROUNDS.length) { setRoundIdx(roundIdx + 1); setupRound(roundIdx + 1); }
-          else {
-            if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
-            completeGame('colours', 'colour-hunter', score + 1 >= 4 ? 3 : score + 1 >= 2 ? 2 : 1, (score + 1) * 25);
-            setGameComplete(true);
-          }
-        }, 800);
-      }
-    } else {
-      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
-      setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
-    }
-    setTimeout(() => setFeedback(null), 1200);
+  const playAudio = (name) => {
+    if (!soundEnabled) return;
+    try { new Audio(assetPath(`/audio/bm/${name}.mp3`)).play(); } catch(e) {}
   };
 
-  if (gameComplete) {
-    return (
-      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
-        <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
-        <h1 style={{ fontFamily: 'var(--font-heading)', color: '#F57F17' }}>{lang === 'bm' ? 'Pemburu Warna Hebat!' : 'Colour Hunter!'}</h1>
-        <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
-        <button className="btn-premium" onClick={() => goToWorld('colours')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button>
-      </div>
-    );
-  }
+  const buildSequence = useCallback(() => {
+    return [...ALL_ITEMS].sort(() => Math.random() - 0.5).slice(0, TOTAL_ROUNDS);
+  }, []);
 
-  const r = ROUNDS[roundIdx];
+  const setupRound = useCallback((r, seq) => {
+    const item = seq[r - 1];
+    setCurrentItem(item);
+    // Build 4 colour options: 1 correct + 3 wrong
+    const correctColour = ALL_COLOURS.find(c => c.key === item.colour);
+    const wrongColours = ALL_COLOURS.filter(c => c.key !== item.colour)
+      .sort(() => Math.random() - 0.5).slice(0, 3);
+    const allOpts = [correctColour, ...wrongColours].sort(() => Math.random() - 0.5);
+    setOptions(allOpts);
+    setFeedback(null);
+    setAnswered(false);
+  }, []);
+
+  useEffect(() => {
+    const seq = buildSequence();
+    setRoundSequence(seq);
+    setupRound(1, seq);
+    playAudio('jom_main');
+  }, [buildSequence, setupRound]);
+
+  const handlePick = (colourKey) => {
+    if (answered || !currentItem) return;
+    setAnswered(true);
+
+    if (colourKey === currentItem.colour) {
+      // Correct!
+      setFeedback('correct');
+      setScore(prev => prev + 10);
+
+      if (round >= TOTAL_ROUNDS) {
+        // Game complete
+        const finalScore = score + 10;
+        const stars = finalScore >= 120 ? 3 : finalScore >= 80 ? 2 : 1;
+        completeGame('colours', 'colour-hunter', stars, finalScore);
+        if (stars === 3) { playAudio('tahniah'); }
+        else if (stars === 2) { playAudio('bagus_sekali'); }
+        else { playAudio('hebat'); }
+        const colors = ['#EF5350', '#42A5F5', '#66BB6A', '#FFD93D', '#FF9800', '#AB47BC'];
+        setConfettiPieces(Array.from({ length: 60 }, (_, i) => ({
+          id: i, left: Math.random() * 100, color: colors[i % colors.length],
+          delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
+        })));
+        setTimeout(() => setGameComplete(true), 800);
+      } else {
+        const snd = CORRECT_SOUNDS[Math.floor(Math.random() * CORRECT_SOUNDS.length)];
+        playAudio(snd);
+        setTimeout(() => {
+          setRound(prev => prev + 1);
+          setupRound(round + 1, roundSequence);
+        }, 1000);
+      }
+    } else {
+      // Wrong
+      setFeedback('wrong');
+      const snd = WRONG_SOUNDS[Math.floor(Math.random() * WRONG_SOUNDS.length)];
+      playAudio(snd);
+      setTimeout(() => { setFeedback(null); setAnswered(false); }, 1000);
+    }
+  };
+
+  const getStars = () => score >= 120 ? 3 : score >= 80 ? 2 : 1;
+
+  if (!currentItem) return <div className="game-container" />;
+
   return (
-    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/colour_hunt_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
-      <div style={{ padding: 16, textAlign: 'center' }}>
-        <button className="icon-btn" onClick={() => goToWorld('colours')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        <h2 style={{ fontFamily: 'var(--font-heading)', color: r.bg }}>
-          {lang === 'bm' ? `Cari benda ${r.color}!` : `Find ${r.color} things!`}
-        </h2>
-        <div style={{ fontSize: '0.8rem', color: '#999' }}>{roundIdx + 1}/{ROUNDS.length} • {found.length}/3</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, maxWidth: 280, margin: '24px auto' }}>
-          {items.map((item, i) => (
-            <button key={i} onClick={() => handleTap(item)} style={{
-              padding: 14, borderRadius: 18, background: found.includes(item) ? `${r.bg}33` : 'white',
-              border: found.includes(item) ? `3px solid ${r.bg}` : '2px solid rgba(0,0,0,0.08)',
-              cursor: 'pointer', boxShadow: 'var(--shadow-sm)', opacity: found.includes(item) ? 0.6 : 1,
-            }}><GI e={item} size={40} /></button>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden' }}>
+      {/* Background */}
+      <img src={assetPath('/images/game/teka_warna_bg.jpg')} alt="" style={{
+        position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+        objectFit: 'cover', zIndex: 0, opacity: 0.35,
+      }} />
+
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', width: '100%', maxWidth: 500, padding: 'clamp(8px, 2vw, 16px)' }}>
+        {/* Header */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%',
+          background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(10px)',
+          borderRadius: 'clamp(16px, 3vw, 24px)', padding: 'clamp(8px, 1.5vw, 14px) clamp(12px, 2vw, 20px)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)', marginBottom: 'clamp(6px, 1.5vw, 12px)',
+        }}>
+          <button onClick={() => goToWorld('colours')} style={{
+            background: 'linear-gradient(135deg, #FF9800, #F57C00)', borderRadius: '50%',
+            width: 'clamp(36px, 6vw, 46px)', height: 'clamp(36px, 6vw, 46px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            border: 'none', cursor: 'pointer', boxShadow: '0 3px 10px rgba(255,152,0,0.3)',
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </button>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.85rem, 2.5vw, 1.15rem)', fontWeight: 800, color: '#E65100' }}>
+              {lang === 'bm' ? 'Teka Warna!' : 'Guess the Colour!'}
+            </div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.55rem, 1.4vw, 0.7rem)', color: '#FF9800', fontWeight: 500 }}>
+              {t('round', lang)} {round}/{TOTAL_ROUNDS}
+            </div>
+          </div>
+          <div style={{
+            background: 'linear-gradient(135deg, #FFD700, #FFA000)', borderRadius: 16,
+            padding: 'clamp(4px, 1vw, 8px) clamp(10px, 2vw, 16px)',
+            display: 'flex', alignItems: 'center', gap: 4,
+          }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.75rem, 2vw, 1rem)', fontWeight: 800, color: '#fff' }}>{score}</span>
+          </div>
+        </div>
+
+        {/* Progress */}
+        <div style={{
+          width: '100%', background: 'rgba(255,255,255,0.6)', borderRadius: 20,
+          height: 'clamp(5px, 1vw, 8px)', marginBottom: 'clamp(8px, 2vw, 16px)', overflow: 'hidden',
+        }}>
+          <div style={{
+            width: `${(round / TOTAL_ROUNDS) * 100}%`, height: '100%',
+            background: 'linear-gradient(90deg, #FF9800, #F57C00)',
+            borderRadius: 20, transition: 'width 0.5s ease',
+          }} />
+        </div>
+
+        {/* Question */}
+        <div style={{
+          fontFamily: 'var(--font-heading)', fontSize: 'clamp(1rem, 3vw, 1.3rem)',
+          fontWeight: 700, color: '#E65100', textAlign: 'center',
+          marginBottom: 'clamp(6px, 1.5vw, 12px)',
+          background: 'rgba(255,255,255,0.85)', borderRadius: 16,
+          padding: 'clamp(6px, 1vw, 10px) clamp(16px, 3vw, 24px)',
+        }}>
+          {lang === 'bm' ? 'Apakah warna benda ini?' : 'What colour is this?'}
+        </div>
+
+        {/* Item Image */}
+        <div style={{
+          flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: '100%', minHeight: 0,
+        }}>
+          <div style={{
+            background: feedback === 'correct' ? 'rgba(102,187,106,0.15)' : feedback === 'wrong' ? 'rgba(239,83,80,0.15)' : 'rgba(255,255,255,0.9)',
+            borderRadius: 'clamp(20px, 4vw, 32px)',
+            padding: 'clamp(12px, 3vw, 24px)',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.1)',
+            border: feedback === 'correct' ? '4px solid #66BB6A' : feedback === 'wrong' ? '4px solid #EF5350' : '4px solid rgba(255,152,0,0.2)',
+            transition: 'all 0.3s ease',
+            width: 'clamp(160px, 40vw, 240px)', height: 'clamp(160px, 40vw, 240px)',
+          }}>
+            <img
+              src={assetPath(`/images/game/colours/${currentItem.img}.jpg`)}
+              alt=""
+              style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 16 }}
+            />
+          </div>
+        </div>
+
+        {/* Colour Options */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: 'clamp(8px, 2vw, 14px)', width: '100%', maxWidth: 380,
+          marginTop: 'clamp(10px, 2vw, 16px)', marginBottom: 'clamp(8px, 2vw, 12px)',
+        }}>
+          {options.map((opt, i) => (
+            <button key={`${round}-${i}`} onClick={() => handlePick(opt.key)} style={{
+              padding: 'clamp(12px, 2.5vw, 18px)',
+              borderRadius: 'clamp(14px, 3vw, 20px)',
+              background: answered && opt.key === currentItem.colour
+                ? 'linear-gradient(135deg, #A5D6A7, #66BB6A)'
+                : `linear-gradient(135deg, ${opt.hex}dd, ${opt.hex})`,
+              border: 'none',
+              cursor: answered ? 'default' : 'pointer',
+              boxShadow: `0 4px 15px ${opt.hex}44`,
+              transition: 'all 0.3s ease',
+              transform: answered && opt.key === currentItem.colour ? 'scale(1.05)' : 'scale(1)',
+              opacity: answered && opt.key !== currentItem.colour ? 0.5 : 1,
+            }}>
+              <div style={{
+                fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.9rem, 2.5vw, 1.2rem)',
+                fontWeight: 800, color: '#fff', textShadow: '0 1px 3px rgba(0,0,0,0.2)',
+              }}>
+                {lang === 'bm' ? opt.bm : opt.en}
+              </div>
+            </button>
           ))}
         </div>
-        {feedback && (
-          <div style={{ marginTop: 12, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>
-            {feedback.type === 'correct' ? '' : ''}{feedback.message}
-          </div>
-        )}
       </div>
+
+      {gameComplete && (
+        <GameCompleteModal
+          lang={lang} stars={getStars()} score={score}
+          accentColor="#FF9800"
+          onPlayAgain={() => { const seq = buildSequence(); setRoundSequence(seq); setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); setupRound(1, seq); }}
+          onBack={() => goToWorld('colours')}
+          confettiPieces={confettiPieces}
+        />
+      )}
     </div>
   );
 }
