@@ -797,17 +797,16 @@ const GAME_SCENE_MAP = {
   </>,
 
   'sock-pairs': <>
-    <rect width="64" height="64" rx="12" fill="url(#sp-bg)"/>
-    <defs><linearGradient id="sp-bg" x1="0" y1="0" x2="64" y2="64"><stop offset="0%" stopColor="#FFF3E0"/><stop offset="100%" stopColor="#FFE0B2"/></linearGradient></defs>
-    <path d="M10 10 L10 36 Q10 46 18 46 L22 46 Q28 46 28 36 L28 10" fill="#EF5350"/>
-    <rect x="10" y="10" width="18" height="8" fill="#C62828"/>
-    <path d="M36 10 L36 36 Q36 46 44 46 L48 46 Q54 46 54 36 L54 10" fill="#EF5350"/>
-    <rect x="36" y="10" width="18" height="8" fill="#C62828"/>
-    <rect x="12" y="22" width="14" height="3" rx="1" fill="#FFCDD2"/>
-    <rect x="12" y="28" width="14" height="3" rx="1" fill="#FFCDD2"/>
-    <rect x="38" y="22" width="14" height="3" rx="1" fill="#FFCDD2"/>
-    <rect x="38" y="28" width="14" height="3" rx="1" fill="#FFCDD2"/>
-    <text x="14" y="56" fontSize="7" fontWeight="700" fill="#E65100" fontFamily="sans-serif">Padan!</text>
+    <rect width="64" height="64" rx="12" fill="url(#ia-bg)"/>
+    <defs><linearGradient id="ia-bg" x1="0" y1="0" x2="64" y2="64"><stop offset="0%" stopColor="#EDE7F6"/><stop offset="100%" stopColor="#D1C4E9"/></linearGradient></defs>
+    {/* Two cards */}
+    <rect x="8" y="12" width="22" height="28" rx="4" fill="#7E57C2" stroke="#5E35B1" strokeWidth="1"/>
+    <text x="15" y="31" fontSize="16" fill="#fff">✨</text>
+    <rect x="34" y="12" width="22" height="28" rx="4" fill="#7E57C2" stroke="#5E35B1" strokeWidth="1"/>
+    <text x="41" y="31" fontSize="16" fill="#fff">✨</text>
+    {/* Stars */}
+    <text x="10" y="55" fontSize="8" fill="#FFD700">⭐</text>
+    <text x="24" y="58" fontSize="6" fontWeight="700" fill="#673AB7" fontFamily="sans-serif">Ajaib!</text>
     <circle cx="54" cy="54" r="4" fill="#66BB6A"/><text x="51.5" y="57" fontSize="7" fill="#fff" fontWeight="900" fontFamily="sans-serif">✓</text>
   </>,
 

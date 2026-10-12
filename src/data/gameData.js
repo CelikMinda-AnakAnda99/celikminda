@@ -79,7 +79,7 @@ export const WORLDS = [
       { id: 'colour-mixing', name: 'Campur Warna', nameEn: 'Colour Mixing', icon: '', description: 'Mix colours in the lab!' },
       { id: 'magic-colouring', name: 'Mewarna Ajaib', nameEn: 'Magic Colouring', icon: '', description: 'Colour and watch it animate!' },
       { id: 'match-colour', name: 'Padankan Warna', nameEn: 'Match Colour', icon: '', description: 'Match names to colours!' },
-      { id: 'sock-pairs', name: 'Pasangan Stokin', nameEn: 'Sock Pairs', icon: '', description: 'Find matching socks!' },
+      { id: 'sock-pairs', name: 'Ingatan Ajaib', nameEn: 'Magic Memory', icon: '', description: 'Find matching pairs!' },
       { id: 'colour-hunter', name: 'Pemburu Warna', nameEn: 'Colour Hunter', icon: '', description: 'Find colours around you!' },
       { id: 'free-draw', name: 'Lukis Bersama', nameEn: 'Draw Together', icon: '', description: 'Free drawing canvas!' },
     ]

@@ -7244,89 +7244,250 @@ export function MagicColouringGame() {
   );
 }
 // ============================================
-// SOCK PAIRS GAME (Pasangan Stokin)
-// Memory match — find matching sock pairs!
+// MAGIC MEMORY GAME (Ingatan Ajaib)
+// Memory match — find matching pairs of cute items!
 // ============================================
 export function SockPairsGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const SOCK_COLORS = ['🧦🔴', '🧦🔵', '🧦🟢', '🧦🟡', '🧦🟣', '🧦🟠'];
+  // Cute item pools for variety across rounds
+  const ITEM_POOLS = [
+    ['🌸', '🦋', '🌈', '🎨', '🌟', '🎀', '🍎', '🍊', '🍋', '🍇'],
+    ['🐰', '🐱', '🐶', '🐼', '🦊', '🐸', '🐢', '🦄', '🐝', '🐞'],
+    ['🎵', '🎺', '🥁', '🎸', '🪘', '🎹', '🔔', '🎶', '🎤', '🎻'],
+    ['⭐', '💎', '🌙', '☀️', '❤️', '🧩', '🎯', '🎪', '🏆', '🎁'],
+    ['🌻', '🌺', '🍓', '🍉', '🥝', '🍰', '🧁', '🍬', '🎂', '🍭'],
+  ];
+
+  const TOTAL_ROUNDS = 15;
+  const CORRECT_SOUNDS = ['betul', 'hebat', 'pandainya', 'terbaik', 'tepat_sekali', 'bagus_sekali', 'wah_pandai'];
+  const WRONG_SOUNDS = ['cuba_lagi', 'tak_apa_cuba_lagi', 'hampir_betul'];
+
+  const [round, setRound] = useState(1);
+  const [totalMoves, setTotalMoves] = useState(0);
+  const [roundMoves, setRoundMoves] = useState(0);
+  const [score, setScore] = useState(0);
   const [cards, setCards] = useState([]);
   const [flipped, setFlipped] = useState([]);
   const [matched, setMatched] = useState([]);
-  const [moves, setMoves] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
+  const [confettiPieces, setConfettiPieces] = useState([]);
+  const [roundComplete, setRoundComplete] = useState(false);
 
-  useEffect(() => {
-    const pairs = SOCK_COLORS.slice(0, 4);
-    const allCards = [...pairs, ...pairs].sort(() => Math.random() - 0.5);
+  const playAudio = (name) => {
+    if (!soundEnabled) return;
+    try { new Audio(assetPath(`/audio/bm/${name}.mp3`)).play(); } catch(e) {}
+  };
+
+  const getPairsCount = (r) => r <= 5 ? 4 : r <= 10 ? 5 : 6;
+
+  const setupRound = useCallback((r) => {
+    const pool = ITEM_POOLS[Math.floor(Math.random() * ITEM_POOLS.length)];
+    const numPairs = r <= 5 ? 4 : r <= 10 ? 5 : 6;
+    const items = [...pool].sort(() => Math.random() - 0.5).slice(0, numPairs);
+    const allCards = [...items, ...items].sort(() => Math.random() - 0.5);
     setCards(allCards);
+    setFlipped([]);
+    setMatched([]);
+    setRoundMoves(0);
+    setRoundComplete(false);
   }, []);
 
+  useEffect(() => {
+    setupRound(1);
+    playAudio('jom_main');
+  }, [setupRound]);
+
   const handleFlip = (idx) => {
-    if (flipped.length === 2 || flipped.includes(idx) || matched.includes(idx)) return;
-    if (soundEnabled) playTapSound();
+    if (flipped.length === 2 || flipped.includes(idx) || matched.includes(idx) || roundComplete) return;
+
     const newFlipped = [...flipped, idx];
     setFlipped(newFlipped);
 
     if (newFlipped.length === 2) {
-      setMoves(moves + 1);
+      setRoundMoves(prev => prev + 1);
+      setTotalMoves(prev => prev + 1);
+
       if (cards[newFlipped[0]] === cards[newFlipped[1]]) {
-        if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
+        // Match found!
+        const snd = CORRECT_SOUNDS[Math.floor(Math.random() * CORRECT_SOUNDS.length)];
+        playAudio(snd);
         const newMatched = [...matched, ...newFlipped];
         setMatched(newMatched);
         setFlipped([]);
+
+        // Bonus score: fewer moves = more points
+        setScore(prev => prev + 10);
+
         if (newMatched.length === cards.length) {
-          if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
-          const stars = moves + 1 <= 6 ? 3 : moves + 1 <= 10 ? 2 : 1;
-          completeGame('colours', 'sock-pairs', stars, (12 - Math.min(moves + 1, 11)) * 10);
-          setGameComplete(true);
+          // Round complete!
+          setRoundComplete(true);
+          const roundBonus = Math.max(0, (getPairsCount(round) * 3 - roundMoves) * 2);
+          setScore(prev => prev + roundBonus);
+
+          if (round >= TOTAL_ROUNDS) {
+            // Game complete!
+            const finalScore = score + 10 + roundBonus;
+            const stars = finalScore >= 200 ? 3 : finalScore >= 120 ? 2 : 1;
+            completeGame('colours', 'sock-pairs', stars, finalScore);
+            if (stars === 3) {
+              playAudio('tahniah');
+              setTimeout(() => playAudio('syabas'), 1200);
+              setTimeout(() => playAudio('sempurna'), 2400);
+            } else if (stars === 2) {
+              playAudio('bagus_sekali');
+            }
+            const colors = ['#CE93D8', '#FFD93D', '#4FC3F7', '#81C784', '#FF8A65', '#F48FB1'];
+            setConfettiPieces(Array.from({ length: 60 }, (_, i) => ({
+              id: i, left: Math.random() * 100, color: colors[i % colors.length],
+              delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
+            })));
+            setGameComplete(true);
+          } else {
+            playAudio('hebat');
+            setTimeout(() => {
+              setRound(prev => prev + 1);
+              setupRound(round + 1);
+            }, 1200);
+          }
         }
       } else {
-        if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
+        // No match
+        const snd = WRONG_SOUNDS[Math.floor(Math.random() * WRONG_SOUNDS.length)];
+        playAudio(snd);
         setTimeout(() => setFlipped([]), 800);
       }
     }
   };
 
-  if (gameComplete) {
-    const stars = moves <= 6 ? 3 : moves <= 10 ? 2 : 1;
-    return (
-      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
-        <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
-        <h1 style={{ fontFamily: 'var(--font-heading)', color: '#283593' }}>{lang === 'bm' ? 'Semua berpasangan!' : 'All matched!'}</h1>
-        <p>{moves} {lang === 'bm' ? 'cubaan' : 'moves'}</p>
-        <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
-        <button className="btn-premium" onClick={() => goToWorld('colours')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button>
-      </div>
-    );
-  }
+  const getStars = () => score >= 200 ? 3 : score >= 120 ? 2 : 1;
+  const gridCols = cards.length <= 8 ? 4 : cards.length <= 10 ? 5 : 4;
+  const gridRows = cards.length <= 8 ? 2 : cards.length <= 10 ? 2 : 3;
 
   return (
-    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/sock_room_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
-      <div style={{ padding: 16, textAlign: 'center' }}>
-        <button className="icon-btn" onClick={() => goToWorld('colours')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        <h2 style={{ fontFamily: 'var(--font-heading)', color: '#283593' }}>{lang === 'bm' ? 'Cari Pasangan!' : 'Find Pairs!'}</h2>
-        <div style={{ fontSize: '0.8rem', color: '#999' }}>{lang === 'bm' ? `Cubaan: ${moves}` : `Moves: ${moves}`}</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, maxWidth: 300, margin: '20px auto' }}>
-          {cards.map((card, i) => {
-            const isVisible = flipped.includes(i) || matched.includes(i);
-            return (
-              <button key={i} onClick={() => handleFlip(i)} style={{
-                width: '100%', aspectRatio: '1', borderRadius: 16, fontSize: '1.8rem',
-                background: matched.includes(i) ? '#C8E6C9' : isVisible ? 'white' : 'linear-gradient(135deg, #5C6BC0, #3F51B5)',
-                border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'transform 0.3s ease', transform: isVisible ? 'rotateY(0deg)' : 'rotateY(180deg)',
-              }}>
-                {isVisible ? card.slice(0, 2) : '?'}
-              </button>
-            );
-          })}
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden' }}>
+      {/* Background */}
+      <img src={assetPath('/images/game/ingatan_ajaib_bg.jpg')} alt="" style={{
+        position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+        objectFit: 'cover', zIndex: 0, opacity: 0.45,
+      }} />
+
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch', height: '100%', width: '100%', maxWidth: 600, padding: 'clamp(8px, 2vw, 16px)' }}>
+        {/* Header */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(10px)',
+          borderRadius: 'clamp(16px, 3vw, 24px)', padding: 'clamp(8px, 1.5vw, 14px) clamp(12px, 2vw, 20px)',
+          boxShadow: '0 4px 20px rgba(103,58,183,0.12)', marginBottom: 'clamp(6px, 1.5vw, 12px)',
+        }}>
+          <button onClick={() => goToWorld('colours')} style={{
+            background: 'linear-gradient(135deg, #B39DDB, #673AB7)', borderRadius: '50%',
+            width: 'clamp(36px, 6vw, 46px)', height: 'clamp(36px, 6vw, 46px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            border: 'none', cursor: 'pointer', boxShadow: '0 3px 10px rgba(103,58,183,0.3)',
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </button>
+
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.85rem, 2.5vw, 1.15rem)', fontWeight: 800, color: '#673AB7' }}>
+              {lang === 'bm' ? '✨ Ingatan Ajaib' : '✨ Magic Memory'}
+            </div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.55rem, 1.4vw, 0.7rem)', color: '#9575CD', fontWeight: 500 }}>
+              {t('round', lang)} {round}/{TOTAL_ROUNDS}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #FFD700, #FFA000)', borderRadius: 16,
+              padding: 'clamp(4px, 1vw, 8px) clamp(10px, 2vw, 16px)',
+              display: 'flex', alignItems: 'center', gap: 4,
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <span style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.75rem, 2vw, 1rem)', fontWeight: 800, color: '#fff' }}>{score}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Progress Bar */}
+        <div style={{
+          background: 'rgba(255,255,255,0.6)', borderRadius: 20, height: 'clamp(5px, 1vw, 8px)',
+          marginBottom: 'clamp(6px, 1.2vw, 10px)', overflow: 'hidden',
+        }}>
+          <div style={{
+            width: `${(round / TOTAL_ROUNDS) * 100}%`, height: '100%',
+            background: 'linear-gradient(90deg, #B39DDB, #673AB7)',
+            borderRadius: 20, transition: 'width 0.5s ease',
+          }} />
+        </div>
+
+        {/* Moves counter */}
+        <div style={{
+          textAlign: 'center', fontFamily: 'var(--font-heading)',
+          fontSize: 'clamp(0.7rem, 1.8vw, 0.85rem)', color: '#673AB7', fontWeight: 600,
+          marginBottom: 'clamp(6px, 1.2vw, 10px)',
+        }}>
+          {lang === 'bm' ? `Cubaan: ${roundMoves}` : `Moves: ${roundMoves}`}
+        </div>
+
+        {/* Card Grid */}
+        <div style={{
+          flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          alignSelf: 'stretch', width: '100%', minHeight: 0,
+        }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(${gridCols}, 1fr)`,
+            gap: 'clamp(6px, 1.5vw, 12px)',
+            width: '100%', maxWidth: 420,
+          }}>
+            {cards.map((card, i) => {
+              const isVisible = flipped.includes(i) || matched.includes(i);
+              const isMatched = matched.includes(i);
+              return (
+                <button key={`${round}-${i}`} onClick={() => handleFlip(i)} style={{
+                  width: '100%', aspectRatio: '1',
+                  borderRadius: 'clamp(12px, 2.5vw, 18px)',
+                  fontSize: 'clamp(1.5rem, 5vw, 2.5rem)',
+                  background: isMatched
+                    ? 'linear-gradient(135deg, #C8E6C9, #A5D6A7)'
+                    : isVisible
+                      ? 'rgba(255,255,255,0.95)'
+                      : 'linear-gradient(135deg, #7E57C2, #5E35B1)',
+                  border: isMatched ? '3px solid #66BB6A' : isVisible ? '3px solid #B39DDB' : '3px solid rgba(255,255,255,0.3)',
+                  cursor: isMatched ? 'default' : 'pointer',
+                  boxShadow: isMatched
+                    ? '0 4px 15px rgba(102,187,106,0.3)'
+                    : isVisible
+                      ? '0 6px 20px rgba(103,58,183,0.2)'
+                      : '0 6px 20px rgba(94,53,177,0.3)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  transform: isVisible ? 'rotateY(0deg) scale(1)' : 'scale(0.95)',
+                  animation: `bounceIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.04}s both`,
+                  opacity: isMatched ? 0.7 : 1,
+                }}>
+                  {isVisible ? card : (
+                    <span style={{ fontSize: 'clamp(1rem, 3vw, 1.5rem)', color: 'rgba(255,255,255,0.6)' }}>✨</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
+
+      {gameComplete && (
+        <GameCompleteModal
+          lang={lang} stars={getStars()} score={score}
+          accentColor="#673AB7"
+          onPlayAgain={() => { setRound(1); setScore(0); setTotalMoves(0); setGameComplete(false); setConfettiPieces([]); setupRound(1); }}
+          onBack={() => goToWorld('colours')}
+          confettiPieces={confettiPieces}
+        />
+      )}
     </div>
   );
 }
