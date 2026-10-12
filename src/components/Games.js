@@ -7302,6 +7302,23 @@ export function SockPairsGame() {
   const handleFlip = (idx) => {
     if (flipped.length === 2 || flipped.includes(idx) || matched.includes(idx) || roundComplete) return;
 
+    // Play card flip pop sound
+    if (soundEnabled) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.setValueAtTime(800, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.12);
+      } catch(e) {}
+    }
+
     const newFlipped = [...flipped, idx];
     setFlipped(newFlipped);
 
