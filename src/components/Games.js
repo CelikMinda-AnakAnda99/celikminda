@@ -7251,13 +7251,10 @@ export function SockPairsGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  // Cute item pools for variety across rounds
-  const ITEM_POOLS = [
-    ['🌸', '🦋', '🌈', '🎨', '🌟', '🎀', '🍎', '🍊', '🍋', '🍇'],
-    ['🐰', '🐱', '🐶', '🐼', '🦊', '🐸', '🐢', '🦄', '🐝', '🐞'],
-    ['🎵', '🎺', '🥁', '🎸', '🪘', '🎹', '🔔', '🎶', '🎤', '🎻'],
-    ['⭐', '💎', '🌙', '☀️', '❤️', '🧩', '🎯', '🎪', '🏆', '🎁'],
-    ['🌻', '🌺', '🍓', '🍉', '🥝', '🍰', '🧁', '🍬', '🎂', '🍭'],
+  // All card items - generated kawaii images
+  const ALL_CARD_ITEMS = [
+    'flower', 'butterfly', 'star', 'bunny', 'rainbow',
+    'diamond', 'sun', 'heart', 'moon', 'strawberry', 'cat',
   ];
 
   const TOTAL_ROUNDS = 15;
@@ -7283,9 +7280,8 @@ export function SockPairsGame() {
   const getPairsCount = (r) => r <= 5 ? 4 : r <= 10 ? 5 : 6;
 
   const setupRound = useCallback((r) => {
-    const pool = ITEM_POOLS[Math.floor(Math.random() * ITEM_POOLS.length)];
     const numPairs = r <= 5 ? 4 : r <= 10 ? 5 : 6;
-    const items = [...pool].sort(() => Math.random() - 0.5).slice(0, numPairs);
+    const items = [...ALL_CARD_ITEMS].sort(() => Math.random() - 0.5).slice(0, numPairs);
     const allCards = [...items, ...items].sort(() => Math.random() - 0.5);
     setCards(allCards);
     setFlipped([]);
@@ -7467,13 +7463,13 @@ export function SockPairsGame() {
                 <button key={`${round}-${i}`} onClick={() => handleFlip(i)} style={{
                   width: '100%', aspectRatio: '1',
                   borderRadius: 'clamp(12px, 2.5vw, 18px)',
-                  fontSize: 'clamp(1.5rem, 5vw, 2.5rem)',
+                  padding: 0, overflow: 'hidden',
                   background: isMatched
                     ? 'linear-gradient(135deg, #C8E6C9, #A5D6A7)'
                     : isVisible
-                      ? 'rgba(255,255,255,0.95)'
-                      : 'linear-gradient(135deg, #7E57C2, #5E35B1)',
-                  border: isMatched ? '3px solid #66BB6A' : isVisible ? '3px solid #B39DDB' : '3px solid rgba(255,255,255,0.3)',
+                      ? '#fff'
+                      : 'transparent',
+                  border: isMatched ? '3px solid #66BB6A' : isVisible ? '3px solid #B39DDB' : '3px solid transparent',
                   cursor: isMatched ? 'default' : 'pointer',
                   boxShadow: isMatched
                     ? '0 4px 15px rgba(102,187,106,0.3)'
@@ -7482,13 +7478,18 @@ export function SockPairsGame() {
                       : '0 6px 20px rgba(94,53,177,0.3)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                  transform: isVisible ? 'rotateY(0deg) scale(1)' : 'scale(0.95)',
+                  transform: isVisible ? 'scale(1)' : 'scale(0.95)',
                   animation: `bounceIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.04}s both`,
                   opacity: isMatched ? 0.7 : 1,
                 }}>
-                  {isVisible ? card : (
-                    <span style={{ fontSize: 'clamp(1rem, 3vw, 1.5rem)', color: 'rgba(255,255,255,0.6)' }}>✨</span>
-                  )}
+                  <img
+                    src={assetPath(isVisible ? `/images/game/memory/${card}.jpg` : '/images/game/memory/card_back.jpg')}
+                    alt=""
+                    style={{
+                      width: '100%', height: '100%', objectFit: 'cover',
+                      borderRadius: 'clamp(9px, 2vw, 15px)',
+                    }}
+                  />
                 </button>
               );
             })}
