@@ -7325,13 +7325,11 @@ export function SockPairsGame() {
 
       if (cards[newFlipped[0]] === cards[newFlipped[1]]) {
         // Match found!
-        const snd = CORRECT_SOUNDS[Math.floor(Math.random() * CORRECT_SOUNDS.length)];
-        playAudio(snd);
         const newMatched = [...matched, ...newFlipped];
         setMatched(newMatched);
         setFlipped([]);
 
-        // Bonus score: fewer moves = more points
+        // Bonus score
         setScore(prev => prev + 10);
 
         if (newMatched.length === cards.length) {
@@ -7341,7 +7339,7 @@ export function SockPairsGame() {
           setScore(prev => prev + roundBonus);
 
           if (round >= TOTAL_ROUNDS) {
-            // Game complete!
+            // Game complete - only play celebration sounds
             const finalScore = score + 10 + roundBonus;
             const stars = finalScore >= 200 ? 3 : finalScore >= 120 ? 2 : 1;
             completeGame('colours', 'sock-pairs', stars, finalScore);
@@ -7351,6 +7349,8 @@ export function SockPairsGame() {
               setTimeout(() => playAudio('sempurna'), 2400);
             } else if (stars === 2) {
               playAudio('bagus_sekali');
+            } else {
+              playAudio('hebat');
             }
             const colors = ['#CE93D8', '#FFD93D', '#4FC3F7', '#81C784', '#FF8A65', '#F48FB1'];
             setConfettiPieces(Array.from({ length: 60 }, (_, i) => ({
@@ -7359,12 +7359,17 @@ export function SockPairsGame() {
             })));
             setGameComplete(true);
           } else {
+            // Next round - only play 1 sound
             playAudio('hebat');
             setTimeout(() => {
               setRound(prev => prev + 1);
               setupRound(round + 1);
             }, 1200);
           }
+        } else {
+          // Not last match - play random correct sound
+          const snd = CORRECT_SOUNDS[Math.floor(Math.random() * CORRECT_SOUNDS.length)];
+          playAudio(snd);
         }
       } else {
         // No match
