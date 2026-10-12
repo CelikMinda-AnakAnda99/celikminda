@@ -2466,9 +2466,17 @@ export function MatchColourGame() {
   const CORRECT_SOUNDS = ['betul', 'hebat', 'pandainya', 'terbaik', 'tepat_sekali', 'bagus_sekali', 'wah_pandai', 'hebat_sangat'];
   const WRONG_SOUNDS = ['cuba_lagi', 'cuba_lagi_sayang', 'tak_apa_cuba_lagi', 'hampir_betul'];
 
+  // Pre-build a shuffled sequence of 15 targets: all 11 first, then 4 random extras
+  const buildSequence = () => {
+    const shuffled = [...ALL_COLOURS].sort(() => Math.random() - 0.5);
+    const extras = [...ALL_COLOURS].sort(() => Math.random() - 0.5).slice(0, TOTAL_ROUNDS - ALL_COLOURS.length);
+    return [...shuffled, ...extras];
+  };
+
+  const [roundSequence, setRoundSequence] = useState(() => buildSequence());
   const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
-  const [targetColour, setTargetColour] = useState(ALL_COLOURS[0]);
+  const [targetColour, setTargetColour] = useState(null);
   const [choices, setChoices] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const [selectedIdx, setSelectedIdx] = useState(null);
@@ -2481,8 +2489,8 @@ export function MatchColourGame() {
     try { new Audio(assetPath(`/audio/bm/${name}.mp3`)).play(); } catch(e) {}
   };
 
-  const generateRound = useCallback((roundNum) => {
-    const target = ALL_COLOURS[Math.floor(Math.random() * ALL_COLOURS.length)];
+  const setupRound = useCallback((roundNum, seq) => {
+    const target = seq[roundNum - 1];
     setTargetColour(target);
     const wrong = ALL_COLOURS.filter(c => c.hex !== target.hex)
       .sort(() => Math.random() - 0.5).slice(0, 3);
@@ -2494,14 +2502,13 @@ export function MatchColourGame() {
   const mountedRef = useRef(false);
 
   useEffect(() => {
-    generateRound(1);
+    setupRound(1, roundSequence);
     if (soundEnabled) {
       try { new Audio(assetPath('/audio/bm/padankan_warna.mp3')).play(); } catch(e) {}
     }
-    // Mark mounted after 2 seconds (after padankan_warna finishes)
     const t = setTimeout(() => { mountedRef.current = true; }, 2000);
     return () => clearTimeout(t);
-  }, [generateRound]);
+  }, [setupRound]);
 
   // Play color name audio when target changes
   useEffect(() => {
@@ -2550,7 +2557,7 @@ export function MatchColourGame() {
           })));
         } else {
           setRound(prev => prev + 1);
-          generateRound(round + 1);
+          setupRound(round + 1, roundSequence);
         }
       }, 1200);
     } else {
@@ -2563,6 +2570,8 @@ export function MatchColourGame() {
   };
 
   const getStars = () => score >= 120 ? 3 : score >= 80 ? 2 : 1;
+
+  if (!targetColour) return <div className="game-container" />;
 
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden' }}>
@@ -2727,7 +2736,7 @@ export function MatchColourGame() {
         <GameCompleteModal
           lang={lang} stars={getStars()} score={score}
           accentColor="#7B1FA2"
-          onPlayAgain={() => { setRound(1); setScore(0); setStreak(0); setGameComplete(false); setConfettiPieces([]); generateRound(1); }}
+          onPlayAgain={() => { const newSeq = buildSequence(); setRoundSequence(newSeq); setRound(1); setScore(0); setStreak(0); setGameComplete(false); setConfettiPieces([]); setupRound(1, newSeq); }}
           onBack={() => goToWorld('colours')}
           confettiPieces={confettiPieces}
         />
