@@ -2664,36 +2664,42 @@ export function MatchColourGame() {
           </button>
         </div>
 
-        {/* Colour swatches grid - 2x2 BIG */}
+        {/* Colour swatches grid - 2x2 BIG SQUARES */}
         <div style={{
-          flex: 1, display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: 'clamp(8px, 2vw, 14px)',
-          padding: '0 clamp(8px, 2vw, 16px)',
-          minHeight: 0,
+          flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 'clamp(4px, 1vw, 10px) clamp(8px, 2vw, 16px)',
+          minHeight: 0, overflow: 'hidden',
         }}>
-          {choices.map((colour, i) => (
-            <button key={colour.hex + round + i} onClick={() => handleAnswer(colour, i)} style={{
-              width: '100%', height: '100%',
-              minHeight: 'clamp(70px, 15vh, 160px)',
-              borderRadius: 'clamp(16px, 3vw, 24px)',
-              background: colour.hex,
-              border: selectedIdx === i
-                ? feedback?.type === 'correct'
-                  ? '5px solid #4CAF50'
-                  : '5px solid #F44336'
-                : colour.hex === '#FFFFFF'
-                  ? '3px solid #ccc'
-                  : '3px solid rgba(255,255,255,0.5)',
-              boxShadow: selectedIdx === i && feedback?.type === 'correct'
-                ? '0 0 25px rgba(76,175,80,0.5), 0 8px 25px rgba(0,0,0,0.2)'
-                : '0 8px 25px rgba(0,0,0,0.15)',
-              cursor: feedback ? 'default' : 'pointer',
-              transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
-              transform: selectedIdx === i && feedback?.type === 'correct' ? 'scale(1.05)' : 'scale(1)',
-              animation: `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.08}s both`,
-            }} />
-          ))}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gridTemplateRows: 'repeat(2, 1fr)',
+            gap: 'clamp(8px, 2vw, 14px)',
+            width: '100%', height: '100%',
+            maxWidth: 500, maxHeight: 500,
+          }}>
+            {choices.map((colour, i) => (
+              <button key={colour.hex + round + i} onClick={() => handleAnswer(colour, i)} style={{
+                width: '100%', height: '100%',
+                borderRadius: 'clamp(16px, 3vw, 24px)',
+                background: colour.hex,
+                border: selectedIdx === i
+                  ? feedback?.type === 'correct'
+                    ? '5px solid #4CAF50'
+                    : '5px solid #F44336'
+                  : colour.hex === '#FFFFFF'
+                    ? '3px solid #ccc'
+                    : '3px solid rgba(255,255,255,0.5)',
+                boxShadow: selectedIdx === i && feedback?.type === 'correct'
+                  ? '0 0 25px rgba(76,175,80,0.5), 0 8px 25px rgba(0,0,0,0.2)'
+                  : '0 8px 25px rgba(0,0,0,0.15)',
+                cursor: feedback ? 'default' : 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                transform: selectedIdx === i && feedback?.type === 'correct' ? 'scale(1.05)' : 'scale(1)',
+                animation: `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.08}s both`,
+              }} />
+            ))}
+          </div>
         </div>
 
         {/* Feedback toast */}
