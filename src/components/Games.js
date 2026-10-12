@@ -6825,32 +6825,124 @@ export function MagicColouringGame() {
     );
   }
 
+  // Calculate how much of the colorable area has been painted
+  const calculateCoverage = () => {
+    const canvas = canvasRef.current;
+    const mask = maskDataRef.current;
+    if (!canvas || !mask) return 0;
+    const ctx = canvas.getContext('2d');
+    const paintData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let colorablePixels = 0;
+    let coloredPixels = 0;
+    for (let i = 0; i < mask.data.length; i += 4) {
+      const mr = mask.data[i], mg = mask.data[i + 1], mb = mask.data[i + 2];
+      // This pixel is in the colorable (white) area of the outline
+      if ((mr + mg + mb) / 3 > 180) {
+        colorablePixels++;
+        const pr = paintData.data[i], pg = paintData.data[i + 1], pb = paintData.data[i + 2];
+        // Check if this pixel has been painted (not white anymore)
+        if (pr < 245 || pg < 245 || pb < 245) {
+          coloredPixels++;
+        }
+      }
+    }
+    if (colorablePixels === 0) return 0;
+    return (coloredPixels / colorablePixels) * 100;
+  };
+
+  const [showResult, setShowResult] = useState(false);
+  const [starCount, setStarCount] = useState(0);
+
+  const submitColoring = () => {
+    const coverage = calculateCoverage();
+    let stars = 1;
+    if (coverage >= 70) stars = 3;
+    else if (coverage >= 35) stars = 2;
+    setStarCount(stars);
+    setShowResult(true);
+    if (soundEnabled) playTapSound();
+  };
+
+  const dismissResult = () => {
+    setShowResult(false);
+    if (starCount === 3) {
+      completeGame('magic-colouring', starCount);
+    }
+  };
+
+  const nextAfterResult = () => {
+    setShowResult(false);
+    if (starCount >= 1) {
+      completeGame('magic-colouring', starCount);
+    }
+    goToPage((pageIdx + 1) % TOTAL);
+  };
+
   return (
     <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', touchAction: 'none' }}>
       <img src={assetPath('/images/game/mewarna_ajaib_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.4, pointerEvents: "none" }} />
 
-      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%', padding: '6px 10px', gap: 4 }}>
-        {/* Top Bar */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-          <button onClick={() => goToWorld('colours')} style={{ background: 'rgba(255,255,255,0.9)', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-sm)', border: 'none', cursor: 'pointer' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B1FA2" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%', padding: '8px 12px', gap: 6 }}>
+        {/* Top Bar - BIGGER & RESPONSIVE */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
+          background: 'rgba(255,255,255,0.92)', borderRadius: 20, padding: '8px 14px',
+          boxShadow: '0 4px 20px rgba(123,31,162,0.12)',
+        }}>
+          <button onClick={() => goToWorld('colours')} style={{
+            background: 'linear-gradient(135deg, #CE93D8, #7B1FA2)', borderRadius: '50%',
+            width: 'clamp(36px, 6vw, 44px)', height: 'clamp(36px, 6vw, 44px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 3px 10px rgba(123,31,162,0.3)', border: 'none', cursor: 'pointer',
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
           </button>
+
           <button onClick={() => { saveSnapshot(); setShowPicker(true); }} style={{
-            background: 'rgba(255,255,255,0.95)', borderRadius: 16, padding: '4px 12px', border: 'none', cursor: 'pointer',
-            fontFamily: 'var(--font-heading)', fontSize: '0.75rem', color: '#7B1FA2', boxShadow: 'var(--shadow-sm)', display: 'flex', alignItems: 'center', gap: 6,
+            background: 'linear-gradient(135deg, #F3E5F5, #E1BEE7)', borderRadius: 20,
+            padding: 'clamp(6px, 1.5vw, 10px) clamp(14px, 3vw, 24px)',
+            border: '2px solid rgba(123,31,162,0.15)', cursor: 'pointer',
+            fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.85rem, 2.5vw, 1.1rem)',
+            color: '#7B1FA2', boxShadow: '0 3px 10px rgba(123,31,162,0.1)',
+            display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700,
           }}>
             {pageName}
-            <span style={{ fontSize: '0.6rem', color: '#999' }}>({pageIdx + 1}/{TOTAL})</span>
+            <span style={{ fontSize: 'clamp(0.65rem, 1.8vw, 0.85rem)', color: '#9C27B0', fontWeight: 500 }}>({pageIdx + 1}/{TOTAL})</span>
           </button>
-          <div style={{ display: 'flex', gap: 4 }}>
-            <button onClick={undoLast} title={lang === 'bm' ? 'Buat Semula' : 'Undo'} style={{ background: 'rgba(255,255,255,0.9)', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2"><path d="M3 10h10a5 5 0 015 5v2M3 10l5-5M3 10l5 5"/></svg>
+
+          <div style={{ display: 'flex', gap: 'clamp(4px, 1vw, 8px)' }}>
+            <button onClick={undoLast} title={lang === 'bm' ? 'Buat Semula' : 'Undo'} style={{
+              background: 'rgba(255,255,255,0.95)', borderRadius: '50%',
+              width: 'clamp(34px, 5.5vw, 42px)', height: 'clamp(34px, 5.5vw, 42px)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2"><path d="M3 10h10a5 5 0 015 5v2M3 10l5-5M3 10l5 5"/></svg>
             </button>
-            <button onClick={clearCanvas} title={lang === 'bm' ? 'Padam' : 'Clear'} style={{ background: 'rgba(255,255,255,0.9)', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E91E63" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14"/></svg>
+            <button onClick={clearCanvas} title={lang === 'bm' ? 'Padam' : 'Clear'} style={{
+              background: 'rgba(255,255,255,0.95)', borderRadius: '50%',
+              width: 'clamp(34px, 5.5vw, 42px)', height: 'clamp(34px, 5.5vw, 42px)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E91E63" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14"/></svg>
             </button>
-            <button onClick={() => goToPage((pageIdx + 1) % TOTAL)} title={lang === 'bm' ? 'Seterusnya' : 'Next'} style={{ background: 'rgba(255,255,255,0.9)', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7B1FA2" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <button onClick={() => goToPage((pageIdx + 1) % TOTAL)} title={lang === 'bm' ? 'Seterusnya' : 'Next'} style={{
+              background: 'rgba(255,255,255,0.95)', borderRadius: '50%',
+              width: 'clamp(34px, 5.5vw, 42px)', height: 'clamp(34px, 5.5vw, 42px)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B1FA2" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            {/* SUBMIT Button */}
+            <button onClick={submitColoring} title={lang === 'bm' ? 'Hantar' : 'Submit'} style={{
+              background: 'linear-gradient(135deg, #4CAF50, #2E7D32)', borderRadius: '50%',
+              width: 'clamp(34px, 5.5vw, 42px)', height: 'clamp(34px, 5.5vw, 42px)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: 'none', cursor: 'pointer', boxShadow: '0 3px 10px rgba(76,175,80,0.35)',
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
             </button>
           </div>
         </div>
@@ -6862,8 +6954,8 @@ export function MagicColouringGame() {
         }}>
           <div style={{
             position: 'relative',
-            width: 'min(calc(100vh - 220px), calc(100vw - 40px), 400px)',
-            height: 'min(calc(100vh - 220px), calc(100vw - 40px), 400px)',
+            width: 'min(calc(100vh - 260px), calc(100vw - 40px), 420px)',
+            height: 'min(calc(100vh - 260px), calc(100vw - 40px), 420px)',
             borderRadius: 16, overflow: 'hidden',
             boxShadow: '0 8px 40px rgba(123,31,162,0.15), inset 0 0 0 2px rgba(123,31,162,0.06)',
             background: '#fff',
@@ -6903,8 +6995,8 @@ export function MagicColouringGame() {
 
         {/* Selected color + brush size */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, flexShrink: 0 }}>
-          <div style={{ width: 20, height: 20, borderRadius: '50%', background: selectedColor, border: selectedColor === '#FFFFFF' ? '2px solid #ccc' : '2px solid rgba(0,0,0,0.15)', boxShadow: `0 2px 6px ${selectedColor}44` }} />
-          <span style={{ fontFamily: 'var(--font-heading)', fontSize: '0.7rem', color: '#555' }}>{colorName}</span>
+          <div style={{ width: 22, height: 22, borderRadius: '50%', background: selectedColor, border: selectedColor === '#FFFFFF' ? '2px solid #ccc' : '2px solid rgba(0,0,0,0.15)', boxShadow: `0 2px 6px ${selectedColor}44` }} />
+          <span style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.65rem, 2vw, 0.8rem)', color: '#555' }}>{colorName}</span>
           <div style={{ display: 'flex', gap: 4, alignItems: 'center', marginLeft: 8 }}>
             {BRUSH_SIZES.map((s) => (
               <button key={s} onClick={() => { selectBrush(s); if (soundEnabled) playTapSound(); }} style={{
@@ -6921,16 +7013,16 @@ export function MagicColouringGame() {
 
         {/* Color Palette */}
         <div style={{
-          display: 'flex', gap: 4, justifyContent: 'center', flexWrap: 'wrap',
-          background: 'rgba(255,255,255,0.95)', borderRadius: 16, padding: '6px 8px',
-          boxShadow: 'var(--shadow-sm)', maxWidth: 400, margin: '0 auto', flexShrink: 0,
+          display: 'flex', gap: 'clamp(3px, 0.8vw, 5px)', justifyContent: 'center', flexWrap: 'wrap',
+          background: 'rgba(255,255,255,0.95)', borderRadius: 16, padding: 'clamp(4px, 1vw, 8px) clamp(6px, 1.5vw, 10px)',
+          boxShadow: 'var(--shadow-sm)', maxWidth: 440, margin: '0 auto', flexShrink: 0,
         }}>
           {COLORS.map((c, i) => (
             <button key={i} onClick={() => {
               selectColor(c, i);
               if (soundEnabled) playTapSound();
             }} style={{
-              width: 26, height: 26, borderRadius: '50%', background: c,
+              width: 'clamp(22px, 5vw, 28px)', height: 'clamp(22px, 5vw, 28px)', borderRadius: '50%', background: c,
               border: selectedColor === c ? '3px solid #333' : c === '#FFFFFF' ? '2px solid #ccc' : '2px solid rgba(255,255,255,0.8)',
               cursor: 'pointer',
               transform: selectedColor === c ? 'scale(1.3)' : 'scale(1)',
@@ -6952,6 +7044,64 @@ export function MagicColouringGame() {
           ))}
         </div>
       </div>
+
+      {/* Star Result Overlay */}
+      {showResult && (
+        <div style={{
+          position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+          background: 'rgba(0,0,0,0.6)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          backdropFilter: 'blur(8px)',
+        }}>
+          <div style={{
+            background: 'linear-gradient(135deg, #fff, #F3E5F5)', borderRadius: 28, padding: 'clamp(24px, 5vw, 40px)',
+            textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', maxWidth: 340, width: '85%',
+            animation: 'bounceIn 0.4s ease',
+          }}>
+            <div style={{ fontSize: 'clamp(1rem, 3vw, 1.3rem)', fontFamily: 'var(--font-heading)', color: '#7B1FA2', marginBottom: 8, fontWeight: 700 }}>
+              {lang === 'bm' ? 'Tahniah!' : 'Well Done!'}
+            </div>
+            <div style={{ fontSize: 'clamp(1rem, 3vw, 1.3rem)', fontFamily: 'var(--font-heading)', color: '#555', marginBottom: 16 }}>
+              {pageName}
+            </div>
+            {/* Stars */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 20 }}>
+              {[1, 2, 3].map(s => (
+                <svg key={s} width="clamp(36, 8vw, 52)" height="clamp(36, 8vw, 52)" viewBox="0 0 24 24"
+                  fill={s <= starCount ? '#FFD700' : '#ddd'}
+                  stroke={s <= starCount ? '#FFA000' : '#ccc'} strokeWidth="0.5"
+                  style={{ filter: s <= starCount ? 'drop-shadow(0 3px 6px rgba(255,193,7,0.5))' : 'none', transition: 'all 0.3s ease' }}
+                >
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              ))}
+            </div>
+            <div style={{ fontSize: 'clamp(0.75rem, 2vw, 0.9rem)', color: '#888', marginBottom: 20, fontFamily: 'var(--font-heading)' }}>
+              {starCount === 3
+                ? (lang === 'bm' ? 'Sempurna! Kamu warnakan semuanya!' : 'Perfect! You colored everything!')
+                : starCount === 2
+                ? (lang === 'bm' ? 'Bagus! Cuba warnakan lagi!' : 'Good! Try coloring more!')
+                : (lang === 'bm' ? 'Cuba lagi! Warnakan lebih banyak!' : 'Try again! Color more!')}
+            </div>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+              <button onClick={dismissResult} style={{
+                background: 'rgba(123,31,162,0.1)', border: '2px solid #7B1FA2', borderRadius: 16,
+                padding: '10px 20px', cursor: 'pointer', fontFamily: 'var(--font-heading)',
+                fontSize: 'clamp(0.8rem, 2vw, 0.95rem)', color: '#7B1FA2', fontWeight: 700,
+              }}>
+                {lang === 'bm' ? 'Cuba Lagi' : 'Try Again'}
+              </button>
+              <button onClick={nextAfterResult} style={{
+                background: 'linear-gradient(135deg, #7B1FA2, #9C27B0)', border: 'none', borderRadius: 16,
+                padding: '10px 20px', cursor: 'pointer', fontFamily: 'var(--font-heading)',
+                fontSize: 'clamp(0.8rem, 2vw, 0.95rem)', color: '#fff', fontWeight: 700,
+                boxShadow: '0 4px 15px rgba(123,31,162,0.3)',
+              }}>
+                {lang === 'bm' ? 'Seterusnya' : 'Next'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
