@@ -2449,57 +2449,93 @@ export function MatchColourGame() {
   const lang = language;
 
   const ALL_COLOURS = [
-    { hex: '#FF0000', nameBm: 'Merah', nameEn: 'Red' },
-    { hex: '#0000FF', nameBm: 'Biru', nameEn: 'Blue' },
-    { hex: '#FFFF00', nameBm: 'Kuning', nameEn: 'Yellow' },
-    { hex: '#008000', nameBm: 'Hijau', nameEn: 'Green' },
-    { hex: '#FF8C00', nameBm: 'Jingga', nameEn: 'Orange' },
-    { hex: '#800080', nameBm: 'Ungu', nameEn: 'Purple' },
-    { hex: '#FFB6C1', nameBm: 'Merah Jambu', nameEn: 'Pink' },
-    { hex: '#000000', nameBm: 'Hitam', nameEn: 'Black' },
-    { hex: '#FFFFFF', nameBm: 'Putih', nameEn: 'White' },
-    { hex: '#808080', nameBm: 'Kelabu', nameEn: 'Grey' },
-    { hex: '#8B4513', nameBm: 'Coklat', nameEn: 'Brown' },
+    { hex: '#FF0000', nameBm: 'Merah', nameEn: 'Red', audio: 'merah' },
+    { hex: '#0000FF', nameBm: 'Biru', nameEn: 'Blue', audio: 'biru' },
+    { hex: '#FFFF00', nameBm: 'Kuning', nameEn: 'Yellow', audio: 'kuning' },
+    { hex: '#008000', nameBm: 'Hijau', nameEn: 'Green', audio: 'hijau' },
+    { hex: '#FF8C00', nameBm: 'Jingga', nameEn: 'Orange', audio: 'jingga' },
+    { hex: '#800080', nameBm: 'Ungu', nameEn: 'Purple', audio: 'ungu' },
+    { hex: '#FFB6C1', nameBm: 'Merah Jambu', nameEn: 'Pink', audio: 'merah_jambu' },
+    { hex: '#000000', nameBm: 'Hitam', nameEn: 'Black', audio: 'hitam' },
+    { hex: '#FFFFFF', nameBm: 'Putih', nameEn: 'White', audio: 'putih' },
+    { hex: '#808080', nameBm: 'Kelabu', nameEn: 'Grey', audio: 'kelabu' },
+    { hex: '#8B4513', nameBm: 'Coklat', nameEn: 'Brown', audio: 'coklat' },
   ];
 
   const TOTAL_ROUNDS = 15;
+  const CORRECT_SOUNDS = ['betul', 'hebat', 'pandainya', 'terbaik', 'tepat_sekali', 'bagus_sekali', 'wah_pandai', 'hebat_sangat'];
+  const WRONG_SOUNDS = ['cuba_lagi', 'cuba_lagi_sayang', 'tak_apa_cuba_lagi', 'hampir_betul'];
 
   const [round, setRound] = useState(1);
   const [score, setScore] = useState(0);
   const [targetColour, setTargetColour] = useState(ALL_COLOURS[0]);
   const [choices, setChoices] = useState([]);
   const [feedback, setFeedback] = useState(null);
+  const [selectedIdx, setSelectedIdx] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
   const [confettiPieces, setConfettiPieces] = useState([]);
+  const [streak, setStreak] = useState(0);
+
+  const playAudio = (name) => {
+    if (!soundEnabled) return;
+    try { new Audio(assetPath(`/audio/bm/${name}.mp3`)).play(); } catch(e) {}
+  };
 
   const generateRound = useCallback((roundNum) => {
     const target = ALL_COLOURS[Math.floor(Math.random() * ALL_COLOURS.length)];
     setTargetColour(target);
-
+    const numChoices = roundNum <= 5 ? 4 : roundNum <= 10 ? 5 : 6;
     const wrong = ALL_COLOURS.filter(c => c.hex !== target.hex)
-      .sort(() => Math.random() - 0.5).slice(0, 3);
+      .sort(() => Math.random() - 0.5).slice(0, numChoices - 1);
     setChoices([target, ...wrong].sort(() => Math.random() - 0.5));
     setFeedback(null);
+    setSelectedIdx(null);
   }, []);
 
-  useEffect(() => { generateRound(1); }, [generateRound]);
+  useEffect(() => {
+    generateRound(1);
+    playAudio('padankan_warna');
+  }, [generateRound]);
 
-  const handleAnswer = (colour) => {
+  // Play color name audio when target changes
+  useEffect(() => {
+    if (targetColour && targetColour.audio) {
+      const timer = setTimeout(() => playAudio(targetColour.audio), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [targetColour, round]);
+
+  const handleAnswer = (colour, idx) => {
     if (feedback) return;
+    setSelectedIdx(idx);
 
     if (colour.hex === targetColour.hex) {
-      setScore(prev => prev + 10);
-      setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
+      const newStreak = streak + 1;
+      setStreak(newStreak);
+      const bonus = newStreak >= 3 ? 15 : 10;
+      setScore(prev => prev + bonus);
+      setFeedback({ type: 'correct', message: lang === 'bm' ? (newStreak >= 3 ? '🔥 Hebat Sangat!' : '✅ Betul!') : (newStreak >= 3 ? '🔥 Amazing!' : '✅ Correct!') });
+
+      // Play random correct sound
+      const snd = CORRECT_SOUNDS[Math.floor(Math.random() * CORRECT_SOUNDS.length)];
+      playAudio(snd);
 
       setTimeout(() => {
         if (round >= TOTAL_ROUNDS) {
-          const finalScore = score + 10;
-          const stars = finalScore >= 70 ? 3 : finalScore >= 40 ? 2 : 1;
+          const finalScore = score + bonus;
+          const stars = finalScore >= 120 ? 3 : finalScore >= 80 ? 2 : 1;
           completeGame('colours', 'match-colour', stars, finalScore);
           setGameComplete(true);
-          celebrationFeedback(lang, soundEnabled);
-          const colors = ['#FF6B9D', '#FFD93D', '#4A90D9', '#6BCB77', '#9B72CF'];
-          setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
+          // Play celebration sounds
+          if (stars === 3) {
+            playAudio('tahniah');
+            setTimeout(() => playAudio('syabas'), 1200);
+            setTimeout(() => playAudio('sempurna'), 2400);
+          } else if (stars === 2) {
+            playAudio('bagus_sekali');
+          }
+          const colors = ['#FF6B9D', '#FFD93D', '#4A90D9', '#6BCB77', '#9B72CF', '#FF8C00'];
+          setConfettiPieces(Array.from({ length: 60 }, (_, i) => ({
             id: i, left: Math.random() * 100, color: colors[i % colors.length],
             delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
           })));
@@ -2509,105 +2545,186 @@ export function MatchColourGame() {
         }
       }, 1200);
     } else {
-      setFeedback({ type: 'wrong', message: wrongFeedback(lang, soundEnabled) });
-      setTimeout(() => setFeedback(null), 1000);
+      setStreak(0);
+      setFeedback({ type: 'wrong', message: lang === 'bm' ? '❌ Cuba lagi!' : '❌ Try again!' });
+      const snd = WRONG_SOUNDS[Math.floor(Math.random() * WRONG_SOUNDS.length)];
+      playAudio(snd);
+      setTimeout(() => { setFeedback(null); setSelectedIdx(null); }, 1000);
     }
   };
 
-  const getStars = () => score >= 70 ? 3 : score >= 40 ? 2 : 1;
+  const getStars = () => score >= 120 ? 3 : score >= 80 ? 2 : 1;
 
   return (
-    <div className="game-screen">
-      <div className="game-header">
-        <button className="back-btn" onClick={() => goToWorld('colours')}>←</button>
-        <span className="game-title">
-          {lang === 'bm' ? 'Padankan Warna' : 'Match Colour'}
-        </span>
-        <div className="game-stars">
-          {[1, 2, 3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
-        </div>
-      </div>
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden' }}>
+      {/* Background */}
+      <img src={assetPath('/images/game/padankan_warna_bg.jpg')} alt="" style={{
+        position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+        objectFit: 'cover', zIndex: 0, opacity: 0.5,
+      }} />
 
-      <div className="game-body">
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%', padding: 'clamp(8px, 2vw, 16px)' }}>
+        {/* Header - Responsive */}
         <div style={{
-          width: '100%', height: '100%', position: 'relative',
-          borderRadius: 0, overflow: 'hidden',
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          padding: 'var(--space-lg)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(10px)',
+          borderRadius: 'clamp(16px, 3vw, 24px)', padding: 'clamp(8px, 1.5vw, 14px) clamp(12px, 2vw, 20px)',
+          boxShadow: '0 4px 20px rgba(123,31,162,0.12)', marginBottom: 'clamp(8px, 1.5vw, 14px)',
         }}>
-          <img src={assetPath('/images/game/sock_room_bg.jpg')} alt="" style={{
-            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-            objectFit: 'cover', zIndex: 0, opacity: 0.855,
-          }} />
-          {/* Round & Score */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-lg)' }}>
-            <div className="round-counter" style={{ position: 'static' }}>{t('round', lang)} {round}/{TOTAL_ROUNDS}</div>
-            <div className="game-score" style={{ position: 'static' }}>
-              <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#EC4899" style={{ display: "inline-block", verticalAlign: "middle" }}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg></span><span className="score-value">{score}</span>
+          <button onClick={() => goToWorld('colours')} style={{
+            background: 'linear-gradient(135deg, #CE93D8, #7B1FA2)', borderRadius: '50%',
+            width: 'clamp(36px, 6vw, 46px)', height: 'clamp(36px, 6vw, 46px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            border: 'none', cursor: 'pointer', boxShadow: '0 3px 10px rgba(123,31,162,0.3)',
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </button>
+
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.9rem, 2.5vw, 1.2rem)', fontWeight: 800, color: '#7B1FA2' }}>
+              {lang === 'bm' ? 'Padankan Warna' : 'Match Colour'}
+            </div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.6rem, 1.5vw, 0.75rem)', color: '#9C27B0', fontWeight: 500 }}>
+              {t('round', lang)} {round}/{TOTAL_ROUNDS}
             </div>
           </div>
 
-          {/* Target — show the colour NAME, ask to pick swatch */}
-          <div style={{
-            background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(12px)',
-            padding: 'var(--space-lg) var(--space-xxl)', borderRadius: 'var(--radius-xl)',
-            boxShadow: 'var(--shadow-lg)', marginBottom: 'var(--space-lg)',
-            textAlign: 'center', border: '1px solid rgba(255,255,255,0.5)',
-          }}>
-            <p style={{
-              fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '0.9rem',
-              color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)',
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #FFD700, #FFA000)', borderRadius: 16,
+              padding: 'clamp(4px, 1vw, 8px) clamp(10px, 2vw, 16px)',
+              display: 'flex', alignItems: 'center', gap: 4,
             }}>
-              {lang === 'bm' ? 'Cari warna ini:' : 'Find this colour:'}
-            </p>
-            <p style={{
-              fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '2rem',
-              color: 'var(--text-primary)',
-            }}>
-              {lang === 'bm' ? targetColour.nameBm : targetColour.nameEn}
-            </p>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <span style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.75rem, 2vw, 1rem)', fontWeight: 800, color: '#fff' }}>{score}</span>
+            </div>
           </div>
+        </div>
 
-          {/* Colour swatches */}
+        {/* Progress Bar */}
+        <div style={{
+          background: 'rgba(255,255,255,0.6)', borderRadius: 20, height: 'clamp(6px, 1vw, 10px)',
+          marginBottom: 'clamp(8px, 1.5vw, 14px)', overflow: 'hidden',
+        }}>
           <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: 'var(--space-md)', width: '100%', maxWidth: 350,
+            width: `${(round / TOTAL_ROUNDS) * 100}%`, height: '100%',
+            background: 'linear-gradient(90deg, #CE93D8, #7B1FA2)',
+            borderRadius: 20, transition: 'width 0.5s ease',
+          }} />
+        </div>
+
+        {/* Streak indicator */}
+        {streak >= 2 && (
+          <div style={{
+            textAlign: 'center', fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.7rem, 1.8vw, 0.85rem)',
+            color: '#FF6B00', fontWeight: 700, marginBottom: 6,
+            animation: 'pulse 0.5s ease',
+          }}>
+            🔥 {lang === 'bm' ? `Kombo ${streak}x!` : `${streak}x Streak!`}
+          </div>
+        )}
+
+        {/* Target colour name card */}
+        <div style={{
+          background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(15px)',
+          padding: 'clamp(14px, 3vw, 24px)', borderRadius: 'clamp(16px, 3vw, 24px)',
+          boxShadow: '0 8px 30px rgba(123,31,162,0.15)',
+          textAlign: 'center', marginBottom: 'clamp(10px, 2vw, 18px)',
+          border: '2px solid rgba(123,31,162,0.08)',
+        }}>
+          <p style={{
+            fontFamily: 'var(--font-heading)', fontWeight: 600,
+            fontSize: 'clamp(0.75rem, 2vw, 0.95rem)', color: '#888', margin: 0, marginBottom: 4,
+          }}>
+            {lang === 'bm' ? '🎨 Cari warna ini:' : '🎨 Find this colour:'}
+          </p>
+          <p style={{
+            fontFamily: 'var(--font-heading)', fontWeight: 900,
+            fontSize: 'clamp(1.6rem, 5vw, 2.4rem)', color: '#333', margin: 0,
+            textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}>
+            {lang === 'bm' ? targetColour.nameBm : targetColour.nameEn}
+          </p>
+          {/* Audio replay button */}
+          <button onClick={() => playAudio(targetColour.audio)} style={{
+            background: 'linear-gradient(135deg, #E1BEE7, #CE93D8)', border: 'none', borderRadius: '50%',
+            width: 32, height: 32, cursor: 'pointer', marginTop: 8,
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#7B1FA2"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          </button>
+        </div>
+
+        {/* Colour swatches grid */}
+        <div style={{
+          flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(${choices.length <= 4 ? 2 : 3}, 1fr)`,
+            gap: 'clamp(8px, 2vw, 14px)',
+            width: '100%', maxWidth: 'clamp(280px, 70vw, 420px)',
           }}>
             {choices.map((colour, i) => (
-              <button key={colour.hex + i} onClick={() => handleAnswer(colour)} style={{
-                width: '100%', aspectRatio: '1', borderRadius: 'var(--radius-lg)',
+              <button key={colour.hex + round + i} onClick={() => handleAnswer(colour, i)} style={{
+                width: '100%', aspectRatio: '1',
+                borderRadius: 'clamp(14px, 3vw, 22px)',
                 background: colour.hex,
-                border: feedback?.type === 'correct' && colour.hex === targetColour.hex
-                  ? '5px solid var(--cm-green)'
-                  : colour.hex === '#FFFFFF' ? '3px solid #DDD' : '3px solid rgba(255,255,255,0.3)',
-                boxShadow: 'var(--shadow-card)', cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                animation: `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.1}s both`,
+                border: selectedIdx === i
+                  ? feedback?.type === 'correct'
+                    ? '4px solid #4CAF50'
+                    : '4px solid #F44336'
+                  : colour.hex === '#FFFFFF'
+                    ? '3px solid #DDD'
+                    : '3px solid rgba(255,255,255,0.4)',
+                boxShadow: selectedIdx === i && feedback?.type === 'correct'
+                  ? '0 0 20px rgba(76,175,80,0.5), 0 6px 20px rgba(0,0,0,0.15)'
+                  : '0 6px 20px rgba(0,0,0,0.12)',
+                cursor: feedback ? 'default' : 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                transform: selectedIdx === i && feedback?.type === 'correct' ? 'scale(1.08)' : 'scale(1)',
+                animation: `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.08}s both`,
               }} />
             ))}
           </div>
+        </div>
 
-          {/* Feedback */}
-          {feedback && (
-            <div style={{
-              marginTop: 'var(--space-lg)', padding: '10px 24px', borderRadius: 'var(--radius-full)',
-              background: feedback.type === 'correct'
-                ? 'linear-gradient(135deg, #6BCB77, #48C9B0)'
-                : 'linear-gradient(135deg, #FF6B6B, #ee5a24)',
-              color: 'white', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.1rem',
-              boxShadow: 'var(--shadow-md)',
-            }}>
-              {feedback.message}
-            </div>
-          )}
+        {/* Feedback toast */}
+        {feedback && (
+          <div style={{
+            position: 'absolute', bottom: 'clamp(60px, 12vh, 100px)', left: '50%', transform: 'translateX(-50%)',
+            padding: 'clamp(8px, 1.5vw, 12px) clamp(20px, 4vw, 32px)',
+            borderRadius: 'clamp(16px, 3vw, 24px)',
+            background: feedback.type === 'correct'
+              ? 'linear-gradient(135deg, #4CAF50, #2E7D32)'
+              : 'linear-gradient(135deg, #F44336, #C62828)',
+            color: 'white', fontFamily: 'var(--font-heading)', fontWeight: 700,
+            fontSize: 'clamp(0.9rem, 2.5vw, 1.2rem)',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.25)',
+            animation: 'bounceIn 0.3s ease', zIndex: 10,
+          }}>
+            {feedback.message}
+          </div>
+        )}
+
+        {/* Stars earned */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 4, padding: '6px 0' }}>
+          {[1, 2, 3].map(s => (
+            <svg key={s} width="clamp(18, 4vw, 24)" height="clamp(18, 4vw, 24)" viewBox="0 0 24 24"
+              fill={s <= getStars() ? '#FFD700' : '#ddd'} stroke={s <= getStars() ? '#FFA000' : '#ccc'} strokeWidth="0.5"
+              style={{ filter: s <= getStars() ? 'drop-shadow(0 2px 4px rgba(255,193,7,0.4))' : 'none' }}
+            >
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          ))}
         </div>
       </div>
 
       {gameComplete && (
         <GameCompleteModal
           lang={lang} stars={getStars()} score={score}
-          accentColor="var(--cm-purple)"
-          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); generateRound(1); }}
+          accentColor="#7B1FA2"
+          onPlayAgain={() => { setRound(1); setScore(0); setStreak(0); setGameComplete(false); setConfettiPieces([]); generateRound(1); }}
           onBack={() => goToWorld('colours')}
           confettiPieces={confettiPieces}
         />
@@ -6860,7 +6977,16 @@ export function MagicColouringGame() {
     else if (coverage >= 35) stars = 2;
     setStarCount(stars);
     setShowResult(true);
-    if (soundEnabled) playTapSound();
+    if (soundEnabled) {
+      if (stars === 3) {
+        try { new Audio(assetPath('/audio/bm/tahniah.mp3')).play(); } catch(e) {}
+        setTimeout(() => { try { new Audio(assetPath('/audio/bm/syabas.mp3')).play(); } catch(e) {} }, 1200);
+      } else if (stars === 2) {
+        try { new Audio(assetPath('/audio/bm/bagus_sekali.mp3')).play(); } catch(e) {}
+      } else {
+        try { new Audio(assetPath('/audio/bm/cuba_lagi_sayang.mp3')).play(); } catch(e) {}
+      }
+    }
   };
 
   const dismissResult = () => {
