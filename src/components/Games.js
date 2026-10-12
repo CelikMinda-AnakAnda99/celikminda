@@ -6513,87 +6513,441 @@ export function MagicDiceGame() {
 }
 
 // ============================================
-// 🖌️ MAGIC COLOURING GAME (Mewarna Ajaib)
-// Colour regions and watch them animate!
+// MAGIC COLOURING GAME (Mewarna Ajaib) — FREE PAINTING COLORING BOOK
+// Canvas-based free painting with outline overlays!
 // ============================================
 export function MagicColouringGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const SCENES = [
-    { name: lang === 'bm' ? 'Kucing' : 'Cat', parts: ['Badan', 'Telinga', 'Ekor'], emoji: '🐱' },
-    { name: lang === 'bm' ? 'Bunga' : 'Flower', parts: ['Kelopak', 'Daun', 'Batang'], emoji: '🌸' },
-    { name: lang === 'bm' ? 'Rumah' : 'House', parts: ['Dinding', 'Bumbung', 'Pintu'], emoji: '🏠' },
+  // 30 coloring pages - EVERY page has its own unique generated outline
+  const PAGES = [
+    { id: 'duck', nameBm: 'Itik', nameEn: 'Duck', outline: 'outline_duck' },
+    { id: 'cat', nameBm: 'Kucing', nameEn: 'Cat', outline: 'outline_cat' },
+    { id: 'dog', nameBm: 'Anjing', nameEn: 'Dog', outline: 'outline_dog' },
+    { id: 'fish', nameBm: 'Ikan', nameEn: 'Fish', outline: 'outline_fish' },
+    { id: 'butterfly', nameBm: 'Rama-rama', nameEn: 'Butterfly', outline: 'outline_butterfly' },
+    { id: 'flower', nameBm: 'Bunga', nameEn: 'Flower', outline: 'outline_flower' },
+    { id: 'house', nameBm: 'Rumah', nameEn: 'House', outline: 'outline_house' },
+    { id: 'car', nameBm: 'Kereta', nameEn: 'Car', outline: 'outline_car' },
+    { id: 'star', nameBm: 'Bintang', nameEn: 'Star', outline: 'outline_star' },
+    { id: 'rabbit', nameBm: 'Arnab', nameEn: 'Rabbit', outline: 'outline_rabbit' },
+    { id: 'bear', nameBm: 'Beruang', nameEn: 'Bear', outline: 'outline_bear' },
+    { id: 'frog', nameBm: 'Katak', nameEn: 'Frog', outline: 'outline_frog' },
+    { id: 'turtle', nameBm: 'Kura-kura', nameEn: 'Turtle', outline: 'outline_turtle' },
+    { id: 'elephant', nameBm: 'Gajah', nameEn: 'Elephant', outline: 'outline_elephant' },
+    { id: 'lion', nameBm: 'Singa', nameEn: 'Lion', outline: 'outline_lion' },
+    { id: 'rainbow', nameBm: 'Pelangi', nameEn: 'Rainbow', outline: 'outline_rainbow' },
+    { id: 'sunflower', nameBm: 'Bunga Matahari', nameEn: 'Sunflower', outline: 'outline_sunflower' },
+    { id: 'apple', nameBm: 'Epal', nameEn: 'Apple', outline: 'outline_apple' },
+    { id: 'balloon', nameBm: 'Belon', nameEn: 'Balloon', outline: 'outline_balloon' },
+    { id: 'boat', nameBm: 'Bot', nameEn: 'Boat', outline: 'outline_boat' },
+    { id: 'rocket', nameBm: 'Roket', nameEn: 'Rocket', outline: 'outline_rocket' },
+    { id: 'cake', nameBm: 'Kek', nameEn: 'Cake', outline: 'outline_cake' },
+    { id: 'icecream', nameBm: 'Aiskrim', nameEn: 'Ice Cream', outline: 'outline_icecream' },
+    { id: 'tree', nameBm: 'Pokok', nameEn: 'Tree', outline: 'outline_tree' },
+    { id: 'sun', nameBm: 'Matahari', nameEn: 'Sun', outline: 'outline_sun' },
+    { id: 'moon', nameBm: 'Bulan', nameEn: 'Moon', outline: 'outline_moon' },
+    { id: 'heart', nameBm: 'Hati', nameEn: 'Heart', outline: 'outline_heart' },
+    { id: 'strawberry', nameBm: 'Strawberi', nameEn: 'Strawberry', outline: 'outline_strawberry' },
+    { id: 'bird', nameBm: 'Burung', nameEn: 'Bird', outline: 'outline_bird' },
+    { id: 'cloud', nameBm: 'Awan', nameEn: 'Cloud', outline: 'outline_cloud' },
   ];
-  const COLORS = ['#FF6B6B', '#4ECDC4', '#FFD93D', '#6BCB77', '#9B72CF', '#FF9800', '#2196F3', '#E91E63'];
 
-  const [sceneIdx, setSceneIdx] = useState(0);
-  const [selectedColor, setSelectedColor] = useState(COLORS[0]);
-  const [partColors, setPartColors] = useState({});
-  const [score, setScore] = useState(0);
+  const COLORS = [
+    '#FF0000', '#FF4444', '#FF6B9D', '#E91E63',
+    '#FF9800', '#FFB347', '#FFD93D', '#FFF176',
+    '#4CAF50', '#81C784', '#00BCD4', '#4ECDC4',
+    '#2196F3', '#64B5F6', '#3F51B5', '#9C27B0',
+    '#CE93D8', '#795548', '#A1887F', '#607D8B',
+    '#212121', '#FFFFFF', '#FFCDD2', '#B2EBF2',
+  ];
+
+  const COLOR_NAMES_BM = [
+    'Merah', 'Merah Terang', 'Pink', 'Magenta',
+    'Oren', 'Oren Muda', 'Kuning', 'Kuning Muda',
+    'Hijau', 'Hijau Muda', 'Cyan', 'Turquoise',
+    'Biru', 'Biru Muda', 'Biru Tua', 'Ungu',
+    'Ungu Muda', 'Coklat', 'Coklat Muda', 'Kelabu',
+    'Hitam', 'Putih', 'Pink Lembut', 'Biru Lembut',
+  ];
+
+  const COLOR_NAMES_EN = [
+    'Red', 'Light Red', 'Pink', 'Magenta',
+    'Orange', 'Light Orange', 'Yellow', 'Light Yellow',
+    'Green', 'Light Green', 'Cyan', 'Turquoise',
+    'Blue', 'Light Blue', 'Dark Blue', 'Purple',
+    'Light Purple', 'Brown', 'Light Brown', 'Grey',
+    'Black', 'White', 'Soft Pink', 'Soft Blue',
+  ];
+
+  const BRUSH_SIZES = [8, 16, 28, 40];
+
+  const TOTAL = PAGES.length;
+  const [pageIdx, setPageIdx] = useState(0);
+  const [selectedColor, setSelectedColor] = useState('#FF0000');
+  const [colorIdx, setColorIdx] = useState(0);
+  const [brushSize, setBrushSize] = useState(16);
+  const [showPicker, setShowPicker] = useState(false);
+  const [undoStack, setUndoStack] = useState({});
   const [gameComplete, setGameComplete] = useState(false);
+  const [confettiPieces, setConfettiPieces] = useState([]);
 
-  const handleColorPart = (partIdx) => {
-    if (soundEnabled) playTapSound();
-    const key = `${sceneIdx}-${partIdx}`;
-    setPartColors({ ...partColors, [key]: selectedColor });
+  const canvasRef = useRef(null);
+  const ctxRef = useRef(null);
+  const lastPosRef = useRef(null);
+  const isDrawingRef = useRef(false);
+  const selectedColorRef = useRef('#FF0000');
+  const brushSizeRef = useRef(16);
+  const canvasDataRef = useRef({});
+  const outlineImgRef = useRef(null);
+  const maskDataRef = useRef(null);
 
-    const allColored = SCENES[sceneIdx].parts.every((_, i) => partColors[`${sceneIdx}-${i}`] || `${sceneIdx}-${i}` === key);
-    if (allColored) {
-      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
-      const newScore = score + 1;
-      setScore(newScore);
-      setTimeout(() => {
-        if (sceneIdx + 1 < SCENES.length) setSceneIdx(sceneIdx + 1);
-        else {
-          if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
-          completeGame('colours', 'magic-colouring', newScore >= 3 ? 3 : 2, newScore * 30);
-          setGameComplete(true);
-        }
-      }, 1000);
+  const page = PAGES[pageIdx];
+  const pageName = lang === 'bm' ? page.nameBm : page.nameEn;
+  const colorName = lang === 'bm' ? COLOR_NAMES_BM[colorIdx] : COLOR_NAMES_EN[colorIdx];
+
+  // Initialize canvas
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctxRef.current = ctx;
+
+    // Set canvas size
+    const rect = canvas.parentElement.getBoundingClientRect();
+    const size = Math.min(rect.width, rect.height, 400);
+    canvas.width = size;
+    canvas.height = size;
+
+    // Restore saved data or clear
+    if (canvasDataRef.current[pageIdx]) {
+      const img = new Image();
+      img.onload = () => ctx.drawImage(img, 0, 0);
+      img.src = canvasDataRef.current[pageIdx];
+    } else {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // Load outline for mask
+    const outlineImg = new Image();
+    outlineImg.crossOrigin = 'anonymous';
+    outlineImg.onload = () => {
+      outlineImgRef.current = outlineImg;
+      // Create mask data
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCtx.drawImage(outlineImg, 0, 0, canvas.width, canvas.height);
+      maskDataRef.current = tempCtx.getImageData(0, 0, canvas.width, canvas.height);
+    };
+    outlineImg.src = assetPath(`/images/game/outlines/${page.outline}.jpg`);
+  }, [pageIdx]);
+
+  // Check if pixel is inside the lines (white area)
+  const isInsideLines = (x, y) => {
+    if (!maskDataRef.current) return true;
+    const w = maskDataRef.current.width;
+    const idx = (Math.floor(y) * w + Math.floor(x)) * 4;
+    const r = maskDataRef.current.data[idx];
+    const g = maskDataRef.current.data[idx + 1];
+    const b = maskDataRef.current.data[idx + 2];
+    // If pixel is bright (white area), allow painting
+    return (r + g + b) / 3 > 180;
+  };
+
+  const getCanvasPos = (e) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return null;
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches ? e.touches[0] : e;
+    return {
+      x: (touch.clientX - rect.left) * (canvas.width / rect.width),
+      y: (touch.clientY - rect.top) * (canvas.height / rect.height),
+    };
+  };
+
+  const saveSnapshot = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    canvasDataRef.current[pageIdx] = canvas.toDataURL();
+  };
+
+  // Keep refs in sync with state
+  const selectColor = (color, idx) => {
+    setSelectedColor(color);
+    selectedColorRef.current = color;
+    setColorIdx(idx);
+  };
+  const selectBrush = (size) => {
+    setBrushSize(size);
+    brushSizeRef.current = size;
+  };
+
+  const paintDot = (x, y) => {
+    const ctx = ctxRef.current;
+    if (!ctx) return;
+    if (isInsideLines(x, y)) {
+      ctx.fillStyle = selectedColorRef.current;
+      ctx.beginPath();
+      ctx.arc(x, y, brushSizeRef.current / 2, 0, Math.PI * 2);
+      ctx.fill();
     }
   };
 
-  if (gameComplete) {
+  const startDraw = (e) => {
+    e.preventDefault();
+    isDrawingRef.current = true;
+    const pos = getCanvasPos(e);
+    if (!pos) return;
+    lastPosRef.current = pos;
+    // Save undo state
+    const canvas = canvasRef.current;
+    if (canvas) {
+      setUndoStack(prev => ({
+        ...prev,
+        [pageIdx]: [...(prev[pageIdx] || []), canvas.toDataURL()].slice(-10),
+      }));
+    }
+    // Paint initial dot on click
+    paintDot(pos.x, pos.y);
+    if (soundEnabled) playTapSound();
+  };
+
+  const draw = (e) => {
+    e.preventDefault();
+    if (!isDrawingRef.current) return;
+    const ctx = ctxRef.current;
+    const canvas = canvasRef.current;
+    if (!ctx || !canvas) return;
+
+    const pos = getCanvasPos(e);
+    if (!pos) return;
+    const last = lastPosRef.current || pos;
+
+    // Draw line from last to current position
+    const dist = Math.sqrt((pos.x - last.x) ** 2 + (pos.y - last.y) ** 2);
+    const steps = Math.max(1, Math.ceil(dist / 2));
+
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const x = last.x + (pos.x - last.x) * t;
+      const y = last.y + (pos.y - last.y) * t;
+      paintDot(x, y);
+    }
+
+    lastPosRef.current = pos;
+  };
+
+  const endDraw = (e) => {
+    if (e) e.preventDefault();
+    if (isDrawingRef.current) {
+      isDrawingRef.current = false;
+      lastPosRef.current = null;
+      saveSnapshot();
+    }
+  };
+
+  const clearCanvas = () => {
+    const ctx = ctxRef.current;
+    const canvas = canvasRef.current;
+    if (!ctx || !canvas) return;
+    // Save undo state
+    setUndoStack(prev => ({
+      ...prev,
+      [pageIdx]: [...(prev[pageIdx] || []), canvas.toDataURL()].slice(-10),
+    }));
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    saveSnapshot();
+    if (soundEnabled) playTapSound();
+  };
+
+  const undoLast = () => {
+    const stack = undoStack[pageIdx];
+    if (!stack || stack.length === 0) return;
+    const lastState = stack[stack.length - 1];
+    const ctx = ctxRef.current;
+    const canvas = canvasRef.current;
+    if (!ctx || !canvas) return;
+    const img = new Image();
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0);
+      saveSnapshot();
+    };
+    img.src = lastState;
+    setUndoStack(prev => ({
+      ...prev,
+      [pageIdx]: stack.slice(0, -1),
+    }));
+    if (soundEnabled) playTapSound();
+  };
+
+  const goToPage = (idx) => {
+    saveSnapshot();
+    setPageIdx(idx);
+    setShowPicker(false);
+  };
+
+  // Page picker
+  if (showPicker) {
     return (
-      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
-        <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
-        <h1 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2' }}>{lang === 'bm' ? 'Lukisan cantik!' : 'Beautiful art!'}</h1>
-        <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
-        <button className="btn-premium" onClick={() => goToWorld('colours')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button>
+      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+        <img src={assetPath('/images/game/mewarna_ajaib_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.4, pointerEvents: "none" }} />
+        <div style={{ position: 'relative', zIndex: 1, padding: '12px 16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+            <button className="icon-btn" onClick={() => setShowPicker(false)} style={{ background: 'rgba(255,255,255,0.9)', borderRadius: '50%', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-sm)', border: 'none', cursor: 'pointer' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7B1FA2" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </button>
+            <h2 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2', fontSize: '1.1rem', margin: 0 }}>
+              {lang === 'bm' ? 'Pilih Lukisan' : 'Choose Drawing'}
+            </h2>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: 10, maxHeight: 'calc(100vh - 120px)', overflowY: 'auto', paddingBottom: 20 }}>
+            {PAGES.map((p, i) => (
+              <button key={i} onClick={() => goToPage(i)} style={{
+                background: pageIdx === i ? 'rgba(123,31,162,0.1)' : 'rgba(255,255,255,0.95)',
+                border: pageIdx === i ? '3px solid #7B1FA2' : '2px solid rgba(0,0,0,0.08)',
+                borderRadius: 16, padding: 6, cursor: 'pointer', textAlign: 'center',
+                boxShadow: 'var(--shadow-sm)', transition: 'all 0.2s ease',
+              }}>
+                <img src={assetPath(`/images/game/outlines/${p.outline}.jpg`)} alt="" style={{ width: '100%', height: 70, objectFit: 'contain', borderRadius: 10, background: '#fff' }} />
+                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#333', marginTop: 4, fontFamily: 'var(--font-heading)' }}>
+                  {lang === 'bm' ? p.nameBm : p.nameEn}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
-  const scene = SCENES[sceneIdx];
   return (
-    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/magic_colouring_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
-      <div style={{ padding: 16, textAlign: 'center' }}>
-        <button className="icon-btn" onClick={() => goToWorld('colours')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        <h2 style={{ fontFamily: 'var(--font-heading)', color: '#7B1FA2' }}>{lang === 'bm' ? `Warnakan ${scene.name}!` : `Colour the ${scene.name}!`}</h2>
-        <div style={{ fontSize: '0.8rem', color: '#999' }}>{sceneIdx + 1}/{SCENES.length}</div>
-        <div style={{ textAlign: 'center', margin: '12px 0' }}><GI e={scene.emoji} size={64} /></div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, margin: '16px auto', maxWidth: 280 }}>
-          {scene.parts.map((part, i) => {
-            const key = `${sceneIdx}-${i}`;
-            return (
-              <button key={i} onClick={() => handleColorPart(i)} style={{
-                padding: '12px 16px', borderRadius: 14, border: '2px solid rgba(0,0,0,0.1)',
-                background: partColors[key] || '#F5F5F5', color: partColors[key] ? 'white' : '#333',
-                fontWeight: 700, cursor: 'pointer', textShadow: partColors[key] ? '0 1px 2px rgba(0,0,0,0.3)' : 'none',
-                transition: 'all 0.3s ease', fontSize: '1rem',
-              }}>{part}</button>
-            );
-          })}
+    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent', touchAction: 'none' }}>
+      <img src={assetPath('/images/game/mewarna_ajaib_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.4, pointerEvents: "none" }} />
+
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%', padding: '6px 10px', gap: 4 }}>
+        {/* Top Bar */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+          <button onClick={() => goToWorld('colours')} style={{ background: 'rgba(255,255,255,0.9)', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-sm)', border: 'none', cursor: 'pointer' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B1FA2" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </button>
+          <button onClick={() => { saveSnapshot(); setShowPicker(true); }} style={{
+            background: 'rgba(255,255,255,0.95)', borderRadius: 16, padding: '4px 12px', border: 'none', cursor: 'pointer',
+            fontFamily: 'var(--font-heading)', fontSize: '0.75rem', color: '#7B1FA2', boxShadow: 'var(--shadow-sm)', display: 'flex', alignItems: 'center', gap: 6,
+          }}>
+            {pageName}
+            <span style={{ fontSize: '0.6rem', color: '#999' }}>({pageIdx + 1}/{TOTAL})</span>
+          </button>
+          <div style={{ display: 'flex', gap: 4 }}>
+            <button onClick={undoLast} title={lang === 'bm' ? 'Buat Semula' : 'Undo'} style={{ background: 'rgba(255,255,255,0.9)', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2"><path d="M3 10h10a5 5 0 015 5v2M3 10l5-5M3 10l5 5"/></svg>
+            </button>
+            <button onClick={clearCanvas} title={lang === 'bm' ? 'Padam' : 'Clear'} style={{ background: 'rgba(255,255,255,0.9)', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E91E63" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14"/></svg>
+            </button>
+            <button onClick={() => goToPage((pageIdx + 1) % TOTAL)} title={lang === 'bm' ? 'Seterusnya' : 'Next'} style={{ background: 'rgba(255,255,255,0.9)', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', boxShadow: 'var(--shadow-sm)' }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7B1FA2" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: 6, justifyContent: 'center', flexWrap: 'wrap', margin: '12px 0' }}>
+
+        {/* Canvas Area -- the main painting zone */}
+        <div style={{
+          flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          minHeight: 200, position: 'relative',
+        }}>
+          <div style={{
+            position: 'relative',
+            width: 'min(calc(100vh - 220px), calc(100vw - 40px), 400px)',
+            height: 'min(calc(100vh - 220px), calc(100vw - 40px), 400px)',
+            borderRadius: 16, overflow: 'hidden',
+            boxShadow: '0 8px 40px rgba(123,31,162,0.15), inset 0 0 0 2px rgba(123,31,162,0.06)',
+            background: '#fff',
+          }}>
+            {/* Paint Canvas (bottom layer) */}
+            <canvas
+              ref={canvasRef}
+              onMouseDown={startDraw}
+              onMouseMove={draw}
+              onMouseUp={endDraw}
+              onMouseLeave={endDraw}
+              onTouchStart={startDraw}
+              onTouchMove={draw}
+              onTouchEnd={endDraw}
+              style={{
+                position: 'absolute', top: 0, left: 0,
+                width: '100%', height: '100%',
+                cursor: 'crosshair', touchAction: 'none',
+                zIndex: 1,
+              }}
+            />
+            {/* Outline overlay (top layer -- multiply blend) */}
+            <img
+              src={assetPath(`/images/game/outlines/${page.outline}.jpg`)}
+              alt=""
+              style={{
+                position: 'absolute', top: 0, left: 0,
+                width: '100%', height: '100%',
+                objectFit: 'contain',
+                pointerEvents: 'none',
+                zIndex: 2,
+                mixBlendMode: 'multiply',
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Selected color + brush size */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, flexShrink: 0 }}>
+          <div style={{ width: 20, height: 20, borderRadius: '50%', background: selectedColor, border: selectedColor === '#FFFFFF' ? '2px solid #ccc' : '2px solid rgba(0,0,0,0.15)', boxShadow: `0 2px 6px ${selectedColor}44` }} />
+          <span style={{ fontFamily: 'var(--font-heading)', fontSize: '0.7rem', color: '#555' }}>{colorName}</span>
+          <div style={{ display: 'flex', gap: 4, alignItems: 'center', marginLeft: 8 }}>
+            {BRUSH_SIZES.map((s) => (
+              <button key={s} onClick={() => { selectBrush(s); if (soundEnabled) playTapSound(); }} style={{
+                width: s + 8, height: s + 8, borderRadius: '50%', border: brushSize === s ? '2px solid #7B1FA2' : '2px solid rgba(0,0,0,0.1)',
+                background: brushSize === s ? '#7B1FA2' : 'rgba(255,255,255,0.9)',
+                cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'all 0.15s ease',
+              }}>
+                <div style={{ width: s * 0.5, height: s * 0.5, borderRadius: '50%', background: brushSize === s ? '#fff' : '#999' }} />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Color Palette */}
+        <div style={{
+          display: 'flex', gap: 4, justifyContent: 'center', flexWrap: 'wrap',
+          background: 'rgba(255,255,255,0.95)', borderRadius: 16, padding: '6px 8px',
+          boxShadow: 'var(--shadow-sm)', maxWidth: 400, margin: '0 auto', flexShrink: 0,
+        }}>
           {COLORS.map((c, i) => (
-            <button key={i} onClick={() => { setSelectedColor(c); if (soundEnabled) playTapSound(); }} style={{
-              width: 32, height: 32, borderRadius: '50%', background: c,
-              border: selectedColor === c ? '3px solid #333' : '2px solid rgba(0,0,0,0.1)',
-              cursor: 'pointer', transform: selectedColor === c ? 'scale(1.2)' : 'scale(1)',
-              transition: 'all 0.15s ease',
+            <button key={i} onClick={() => {
+              selectColor(c, i);
+              if (soundEnabled) playTapSound();
+            }} style={{
+              width: 26, height: 26, borderRadius: '50%', background: c,
+              border: selectedColor === c ? '3px solid #333' : c === '#FFFFFF' ? '2px solid #ccc' : '2px solid rgba(255,255,255,0.8)',
+              cursor: 'pointer',
+              transform: selectedColor === c ? 'scale(1.3)' : 'scale(1)',
+              transition: 'all 0.15s cubic-bezier(0.34,1.56,0.64,1)',
+              boxShadow: selectedColor === c ? `0 3px 12px ${c}66` : '0 1px 3px rgba(0,0,0,0.1)',
+              padding: 0,
+            }} title={lang === 'bm' ? COLOR_NAMES_BM[i] : COLOR_NAMES_EN[i]} />
+          ))}
+        </div>
+
+        {/* Page dots */}
+        <div style={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap', maxWidth: 400, margin: '2px auto', flexShrink: 0 }}>
+          {PAGES.map((_, i) => (
+            <button key={i} onClick={() => goToPage(i)} style={{
+              width: 7, height: 7, borderRadius: '50%', border: 'none', cursor: 'pointer', padding: 0,
+              background: i === pageIdx ? '#7B1FA2' : canvasDataRef.current[i] ? '#6BCB77' : 'rgba(0,0,0,0.15)',
+              transition: 'all 0.2s ease',
             }} />
           ))}
         </div>
@@ -6601,7 +6955,6 @@ export function MagicColouringGame() {
     </div>
   );
 }
-
 // ============================================
 // SOCK PAIRS GAME (Pasangan Stokin)
 // Memory match — find matching sock pairs!
