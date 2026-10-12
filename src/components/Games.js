@@ -6720,6 +6720,50 @@ export function MagicColouringGame() {
   const [brushSize, setBrushSize] = useState(16);
   const [showPicker, setShowPicker] = useState(false);
   const [undoStack, setUndoStack] = useState({});
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [feedbackStars, setFeedbackStars] = useState(0);
+  const [feedbackCoverage, setFeedbackCoverage] = useState(0);
+
+  // Calculate how much of the white area has been coloured
+  const calculateCoverage = () => {
+    const canvas = canvasRef.current;
+    if (!canvas || !maskDataRef.current) return 0;
+    const ctx = canvas.getContext('2d');
+    const paintData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const mask = maskDataRef.current;
+    let totalWhitePixels = 0;
+    let colouredPixels = 0;
+    for (let i = 0; i < mask.data.length; i += 4) {
+      const mr = mask.data[i], mg = mask.data[i+1], mb = mask.data[i+2];
+      // Is this a white (paintable) area in the mask?
+      if ((mr + mg + mb) / 3 > 180) {
+        totalWhitePixels++;
+        const pr = paintData.data[i], pg = paintData.data[i+1], pb = paintData.data[i+2];
+        // If the paint pixel is NOT white (255,255,255), it's been coloured
+        if (pr < 245 || pg < 245 || pb < 245) {
+          colouredPixels++;
+        }
+      }
+    }
+    return totalWhitePixels > 0 ? (colouredPixels / totalWhitePixels) * 100 : 0;
+  };
+
+  // Submit current drawing — calculate coverage → stars
+  const submitDrawing = () => {
+    saveSnapshot();
+    const coverage = calculateCoverage();
+    const stars = coverage >= 60 ? 3 : coverage >= 30 ? 2 : 1;
+    setFeedbackCoverage(Math.round(coverage));
+    setFeedbackStars(stars);
+    setShowFeedback(true);
+    if (soundEnabled) correctFeedback(lang, soundEnabled);
+    setTimeout(() => {
+      setShowFeedback(false);
+      if (pageIdx < TOTAL - 1) {
+        goToPage(pageIdx + 1);
+      }
+    }, 2500);
+  };
 
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
@@ -6997,16 +7041,47 @@ export function MagicColouringGame() {
                 <button onClick={clearCanvas} title={lang === 'bm' ? 'Padam' : 'Clear'} style={{ background: 'rgba(255,255,255,0.9)', borderRadius: '50%', width: 'clamp(30px, 5vw, 38px)', height: 'clamp(30px, 5vw, 38px)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E91E63" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14"/></svg>
                 </button>
-                <button onClick={() => goToPage((pageIdx + 1) % TOTAL)} style={{
-                  background: 'linear-gradient(135deg, #FFD700, #FFA000)', borderRadius: '50%',
+                <button onClick={() => goToPage((pageIdx + 1) % TOTAL)} title={lang === 'bm' ? 'Seterusnya' : 'Next'} style={{ background: 'rgba(255,255,255,0.9)', borderRadius: '50%', width: 'clamp(30px, 5vw, 38px)', height: 'clamp(30px, 5vw, 38px)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7B1FA2" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+                <button onClick={submitDrawing} title={lang === 'bm' ? 'Siap!' : 'Done!'} style={{
+                  background: 'linear-gradient(135deg, #4CAF50, #2E7D32)', borderRadius: '50%',
                   width: 'clamp(30px, 5vw, 38px)', height: 'clamp(30px, 5vw, 38px)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  border: 'none', cursor: 'pointer', boxShadow: '0 2px 6px rgba(255,160,0,0.3)',
+                  border: 'none', cursor: 'pointer', boxShadow: '0 2px 6px rgba(76,175,80,0.4)',
                 }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
                 </button>
               </div>
             </div>
+
+            {/* Celebration feedback overlay */}
+            {showFeedback && (
+              <div style={{
+                position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 100,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(0,0,0,0.3)', borderRadius: 16,
+                animation: 'fadeIn 0.3s ease',
+              }}>
+                <div style={{
+                  background: 'rgba(255,255,255,0.95)', borderRadius: 24, padding: '24px 40px',
+                  textAlign: 'center', boxShadow: '0 8px 40px rgba(0,0,0,0.2)',
+                  animation: 'popIn 0.4s cubic-bezier(0.34,1.56,0.64,1)',
+                }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: 4 }}>
+                    {[1,2,3].map(s => (
+                      <span key={s} style={{ opacity: s <= feedbackStars ? 1 : 0.2, filter: s <= feedbackStars ? 'none' : 'grayscale(1)' }}>⭐</span>
+                    ))}
+                  </div>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', fontWeight: 800, color: feedbackStars === 3 ? '#FFB300' : feedbackStars === 2 ? '#4CAF50' : '#FF9800' }}>
+                    {feedbackStars === 3 ? (lang === 'bm' ? 'Terbaik!' : 'Amazing!') : feedbackStars === 2 ? (lang === 'bm' ? 'Bagus!' : 'Great!') : (lang === 'bm' ? 'Cuba lagi!' : 'Try more!')}
+                  </div>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: '0.75rem', color: '#777', marginTop: 4 }}>
+                    {lang === 'bm' ? `${feedbackCoverage}% diwarnakan` : `${feedbackCoverage}% coloured`}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Canvas Area */}
             <div style={{
@@ -7092,15 +7167,37 @@ export function MagicColouringGame() {
               ))}
             </div>
 
-            {/* Page dots */}
-            <div style={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap', maxWidth: 400, margin: '2px auto', flexShrink: 0 }}>
-              {PAGES.map((_, i) => (
-                <button key={i} onClick={() => goToPage(i)} style={{
-                  width: 7, height: 7, borderRadius: '50%', border: 'none', cursor: 'pointer', padding: 0,
-                  background: i === pageIdx ? '#7B1FA2' : canvasDataRef.current[i] ? '#6BCB77' : 'rgba(0,0,0,0.15)',
-                  transition: 'all 0.2s ease',
-                }} />
-              ))}
+            {/* Bottom navigation bar - phone friendly */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              flexShrink: 0, padding: '6px 0 2px',
+            }}>
+              <button onClick={() => goToPage(pageIdx > 0 ? pageIdx - 1 : TOTAL - 1)} style={{
+                background: 'rgba(255,255,255,0.9)', borderRadius: 12, padding: '8px 16px',
+                border: 'none', cursor: 'pointer', fontFamily: 'var(--font-heading)',
+                fontSize: '0.75rem', fontWeight: 700, color: '#7B1FA2',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', gap: 4,
+              }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7B1FA2" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                {lang === 'bm' ? 'Sebelum' : 'Prev'}
+              </button>
+              <button onClick={() => { saveSnapshot(); setShowPicker(true); }} style={{
+                background: 'rgba(123,31,162,0.1)', borderRadius: 12, padding: '8px 20px',
+                border: 'none', cursor: 'pointer', fontFamily: 'var(--font-heading)',
+                fontSize: '0.8rem', fontWeight: 800, color: '#7B1FA2',
+                boxShadow: '0 2px 8px rgba(123,31,162,0.1)',
+              }}>
+                📖 {pageIdx + 1}/{TOTAL}
+              </button>
+              <button onClick={() => goToPage(pageIdx < TOTAL - 1 ? pageIdx + 1 : 0)} style={{
+                background: 'rgba(255,255,255,0.9)', borderRadius: 12, padding: '8px 16px',
+                border: 'none', cursor: 'pointer', fontFamily: 'var(--font-heading)',
+                fontSize: '0.75rem', fontWeight: 700, color: '#7B1FA2',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', gap: 4,
+              }}>
+                {lang === 'bm' ? 'Seterus' : 'Next'}
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7B1FA2" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
             </div>
           </div>
         </div>
