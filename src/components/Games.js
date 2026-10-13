@@ -8031,8 +8031,10 @@ export function MagicColorDropsGame() {
   };
 
   const nextRound = () => {
+    setRoundComplete(false);
+    setFeedback(null);
     if (roundIdx + 1 < TOTAL_ROUNDS) {
-      setRoundIdx(roundIdx + 1); setShowIntro(true); setRoundComplete(false); setFeedback(null);
+      setRoundIdx(roundIdx + 1); setShowIntro(true);
     } else {
       const stars = score >= 120 ? 3 : score >= 70 ? 2 : 1;
       completeGame('colours', 'color-drops', stars, score);
