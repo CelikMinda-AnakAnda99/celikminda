@@ -2955,7 +2955,7 @@ export function GameCompleteModal({ lang, stars, score, accentColor, onPlayAgain
   return createPortal(
     <>
       <div className="confetti-container">
-        {confettiPieces.map(p => (
+        {(confettiPieces || []).map(p => (
           <div key={p.id} className="confetti-piece" style={{
             left: `${p.left}%`, background: p.color, width: p.size, height: p.size,
             animationDelay: `${p.delay}s`,
@@ -7747,54 +7747,49 @@ export function MagicColorDropsGame() {
 
   // 15 UNIQUE rounds — all different themes, 3-6 glasses, 12-18 drops each
   const ROUNDS = useMemo(() => [
+    // --- ROUNDS 1-3: 1 glass ---
     { id: 1, titleBm: 'Buah-buahan Segar', titleEn: 'Fresh Fruits',
-      instrBm: 'Isikan gelas dengan warna buah yang betul!', instrEn: 'Fill glasses with the right fruit color!',
+      instrBm: 'Isikan gelas blueberry!', instrEn: 'Fill the blueberry glass!',
       glasses: [
         { fruit: 'Blueberry', fruitBm: 'Blueberry', color: '#2196F3', colorName: 'Biru', colorNameEn: 'Blue' },
-        { fruit: 'Raspberry', fruitBm: 'Raspberi', color: '#F44336', colorName: 'Merah', colorNameEn: 'Red' },
-        { fruit: 'Kiwi', fruitBm: 'Kiwi', color: '#4CAF50', colorName: 'Hijau', colorNameEn: 'Green' },
       ],
-      drops: [...D('#2196F3',0,4), ...D('#F44336',1,4), ...D('#4CAF50',2,4), ...D('#FFEB3B',-1,2)] },
+      drops: [...D('#2196F3',0,4), ...D('#F44336',-1,2), ...D('#FFEB3B',-1,1)] },
     { id: 2, titleBm: 'Buah Citrus', titleEn: 'Citrus Party',
-      instrBm: 'Warnakan gelas citrus!', instrEn: 'Color the citrus glasses!',
+      instrBm: 'Warnakan gelas oren!', instrEn: 'Color the orange glass!',
       glasses: [
         { fruit: 'Orange', fruitBm: 'Oren', color: '#FF9800', colorName: 'Oren', colorNameEn: 'Orange' },
-        { fruit: 'Lemon', fruitBm: 'Lemon', color: '#FFEB3B', colorName: 'Kuning', colorNameEn: 'Yellow' },
-        { fruit: 'Lime', fruitBm: 'Limau', color: '#8BC34A', colorName: 'Hijau Muda', colorNameEn: 'Lime' },
       ],
-      drops: [...D('#FF9800',0,4), ...D('#FFEB3B',1,4), ...D('#8BC34A',2,4), ...D('#F44336',-1,2)] },
+      drops: [...D('#FF9800',0,4), ...D('#FFEB3B',-1,2), ...D('#F44336',-1,1)] },
+    // --- ROUND 3: 1 glass ---
     { id: 3, titleBm: 'Kebun Anggur', titleEn: 'Grape Garden',
-      instrBm: 'Isi gelas kebun!', instrEn: 'Fill the garden glasses!',
+      instrBm: 'Isi gelas anggur!', instrEn: 'Fill the grape glass!',
       glasses: [
         { fruit: 'Grape', fruitBm: 'Anggur', color: '#9C27B0', colorName: 'Ungu', colorNameEn: 'Purple' },
-        { fruit: 'Strawberry', fruitBm: 'Strawberi', color: '#E91E63', colorName: 'Merah Jambu', colorNameEn: 'Pink' },
-        { fruit: 'Apple', fruitBm: 'Epal', color: '#F44336', colorName: 'Merah', colorNameEn: 'Red' },
       ],
-      drops: [...D('#9C27B0',0,4), ...D('#E91E63',1,4), ...D('#F44336',2,4), ...D('#2196F3',-1,2)] },
+      drops: [...D('#9C27B0',0,4), ...D('#E91E63',-1,2), ...D('#2196F3',-1,1)] },
+    // --- ROUNDS 4-6: 2 glasses ---
     { id: 4, titleBm: 'Tropika Eksotik', titleEn: 'Exotic Tropics',
       instrBm: 'Warnakan buah tropika!', instrEn: 'Color the tropical fruits!',
       glasses: [
         { fruit: 'Mango', fruitBm: 'Mangga', color: '#FFB300', colorName: 'Kuning Tua', colorNameEn: 'Gold' },
         { fruit: 'Watermelon', fruitBm: 'Tembikai', color: '#E91E63', colorName: 'Merah Jambu', colorNameEn: 'Pink' },
-        { fruit: 'Coconut', fruitBm: 'Kelapa', color: '#795548', colorName: 'Coklat', colorNameEn: 'Brown' },
       ],
-      drops: [...D('#FFB300',0,4), ...D('#E91E63',1,4), ...D('#795548',2,4), ...D('#4CAF50',-1,2)] },
+      drops: [...D('#FFB300',0,4), ...D('#E91E63',1,4), ...D('#4CAF50',-1,2)] },
     { id: 5, titleBm: 'Sayur-sayuran', titleEn: 'Veggie Fun',
       instrBm: 'Isi gelas sayur!', instrEn: 'Fill the veggie glasses!',
       glasses: [
         { fruit: 'Carrot', fruitBm: 'Lobak', color: '#FF9800', colorName: 'Oren', colorNameEn: 'Orange' },
         { fruit: 'Broccoli', fruitBm: 'Brokoli', color: '#4CAF50', colorName: 'Hijau', colorNameEn: 'Green' },
-        { fruit: 'Tomato', fruitBm: 'Tomato', color: '#F44336', colorName: 'Merah', colorNameEn: 'Red' },
       ],
-      drops: [...D('#FF9800',0,4), ...D('#4CAF50',1,4), ...D('#F44336',2,4), ...D('#9C27B0',-1,2)] },
+      drops: [...D('#FF9800',0,4), ...D('#4CAF50',1,4), ...D('#9C27B0',-1,2)] },
     { id: 6, titleBm: 'Taman Bunga', titleEn: 'Flower Garden',
       instrBm: 'Warnakan gelas bunga cantik!', instrEn: 'Color the beautiful flower glasses!',
       glasses: [
         { fruit: 'Rose', fruitBm: 'Mawar', color: '#E91E63', colorName: 'Merah Jambu', colorNameEn: 'Rose' },
         { fruit: 'Sunflower', fruitBm: 'Bunga Matahari', color: '#FFEB3B', colorName: 'Kuning', colorNameEn: 'Yellow' },
-        { fruit: 'Lavender', fruitBm: 'Lavender', color: '#9C27B0', colorName: 'Ungu', colorNameEn: 'Purple' },
       ],
-      drops: [...D('#E91E63',0,4), ...D('#FFEB3B',1,4), ...D('#9C27B0',2,4), ...D('#FF9800',-1,2)] },
+      drops: [...D('#E91E63',0,4), ...D('#FFEB3B',1,4), ...D('#FF9800',-1,2)] },
+    // --- ROUNDS 7-9: 3 glasses ---
     { id: 7, titleBm: 'Hidupan Laut', titleEn: 'Ocean Life',
       instrBm: 'Warnakan dunia bawah laut!', instrEn: 'Color the underwater world!',
       glasses: [
@@ -7803,43 +7798,33 @@ export function MagicColorDropsGame() {
         { fruit: 'Starfish', fruitBm: 'Bintang Laut', color: '#FF9800', colorName: 'Oren', colorNameEn: 'Orange' },
       ],
       drops: [...D('#2196F3',0,4), ...D('#E91E63',1,4), ...D('#FF9800',2,4), ...D('#4CAF50',-1,2)] },
-    { id: 8, titleBm: '4 Buah Klasik', titleEn: '4 Classic Fruits',
-      instrBm: 'Isi 4 gelas buah!', instrEn: 'Fill 4 fruit glasses!',
-      glasses: [
-        { fruit: 'Blueberry', fruitBm: 'Blueberry', color: '#2196F3', colorName: 'Biru', colorNameEn: 'Blue' },
-        { fruit: 'Raspberry', fruitBm: 'Raspberi', color: '#F44336', colorName: 'Merah', colorNameEn: 'Red' },
-        { fruit: 'Kiwi', fruitBm: 'Kiwi', color: '#4CAF50', colorName: 'Hijau', colorNameEn: 'Green' },
-        { fruit: 'Lemon', fruitBm: 'Lemon', color: '#FFEB3B', colorName: 'Kuning', colorNameEn: 'Yellow' },
-      ],
-      drops: [...D('#2196F3',0,3), ...D('#F44336',1,3), ...D('#4CAF50',2,3), ...D('#FFEB3B',3,3), ...D('#9C27B0',-1,2)] },
-    { id: 9, titleBm: 'Salad Buah', titleEn: 'Fruit Salad',
+    { id: 8, titleBm: 'Salad Buah', titleEn: 'Fruit Salad',
       instrBm: 'Campurkan semua buah!', instrEn: 'Mix all the fruits!',
       glasses: [
         { fruit: 'Grape', fruitBm: 'Anggur', color: '#9C27B0', colorName: 'Ungu', colorNameEn: 'Purple' },
         { fruit: 'Orange', fruitBm: 'Oren', color: '#FF9800', colorName: 'Oren', colorNameEn: 'Orange' },
         { fruit: 'Apple', fruitBm: 'Epal', color: '#F44336', colorName: 'Merah', colorNameEn: 'Red' },
-        { fruit: 'Lime', fruitBm: 'Limau', color: '#8BC34A', colorName: 'Hijau Muda', colorNameEn: 'Lime' },
       ],
-      drops: [...D('#9C27B0',0,3), ...D('#FF9800',1,3), ...D('#F44336',2,3), ...D('#8BC34A',3,3), ...D('#2196F3',-1,2)] },
-    { id: 10, titleBm: 'Alam Semula Jadi', titleEn: 'Nature Colors',
-      instrBm: 'Warnakan alam semula jadi!', instrEn: 'Color the nature!',
-      glasses: [
-        { fruit: 'Sky', fruitBm: 'Langit', color: '#2196F3', colorName: 'Biru', colorNameEn: 'Blue' },
-        { fruit: 'Tree', fruitBm: 'Pokok', color: '#4CAF50', colorName: 'Hijau', colorNameEn: 'Green' },
-        { fruit: 'Sun', fruitBm: 'Matahari', color: '#FFEB3B', colorName: 'Kuning', colorNameEn: 'Yellow' },
-        { fruit: 'Earth', fruitBm: 'Tanah', color: '#795548', colorName: 'Coklat', colorNameEn: 'Brown' },
-      ],
-      drops: [...D('#2196F3',0,3), ...D('#4CAF50',1,3), ...D('#FFEB3B',2,3), ...D('#795548',3,3), ...D('#E91E63',-1,2)] },
-    { id: 11, titleBm: 'Haiwan Comel', titleEn: 'Cute Animals',
+      drops: [...D('#9C27B0',0,4), ...D('#FF9800',1,4), ...D('#F44336',2,4), ...D('#2196F3',-1,2)] },
+    { id: 9, titleBm: 'Haiwan Comel', titleEn: 'Cute Animals',
       instrBm: 'Warnakan haiwan comel!', instrEn: 'Color the cute animals!',
       glasses: [
         { fruit: 'Frog', fruitBm: 'Katak', color: '#4CAF50', colorName: 'Hijau', colorNameEn: 'Green' },
         { fruit: 'Flamingo', fruitBm: 'Flamingo', color: '#E91E63', colorName: 'Merah Jambu', colorNameEn: 'Pink' },
         { fruit: 'Bee', fruitBm: 'Lebah', color: '#FFEB3B', colorName: 'Kuning', colorNameEn: 'Yellow' },
-        { fruit: 'Whale', fruitBm: 'Ikan Paus', color: '#2196F3', colorName: 'Biru', colorNameEn: 'Blue' },
       ],
-      drops: [...D('#4CAF50',0,3), ...D('#E91E63',1,3), ...D('#FFEB3B',2,3), ...D('#2196F3',3,3), ...D('#FF9800',-1,2)] },
-    { id: 12, titleBm: 'Pencuci Mulut', titleEn: 'Dessert Time',
+      drops: [...D('#4CAF50',0,4), ...D('#E91E63',1,4), ...D('#FFEB3B',2,4), ...D('#FF9800',-1,2)] },
+    // --- ROUNDS 10-12: 4 glasses ---
+    { id: 10, titleBm: 'Alam Semula Jadi', titleEn: 'Nature Colors',
+      instrBm: 'Warnakan alam semula jadi!', instrEn: 'Color the nature!',
+      glasses: [
+        { fruit: 'Blueberry', fruitBm: 'Blueberry', color: '#2196F3', colorName: 'Biru', colorNameEn: 'Blue' },
+        { fruit: 'Kiwi', fruitBm: 'Kiwi', color: '#4CAF50', colorName: 'Hijau', colorNameEn: 'Green' },
+        { fruit: 'Lemon', fruitBm: 'Lemon', color: '#FFEB3B', colorName: 'Kuning', colorNameEn: 'Yellow' },
+        { fruit: 'Coconut', fruitBm: 'Kelapa', color: '#795548', colorName: 'Coklat', colorNameEn: 'Brown' },
+      ],
+      drops: [...D('#2196F3',0,3), ...D('#4CAF50',1,3), ...D('#FFEB3B',2,3), ...D('#795548',3,3), ...D('#E91E63',-1,2)] },
+    { id: 11, titleBm: 'Pencuci Mulut', titleEn: 'Dessert Time',
       instrBm: 'Warnakan pencuci mulut!', instrEn: 'Color the desserts!',
       glasses: [
         { fruit: 'Strawberry', fruitBm: 'Strawberi', color: '#E91E63', colorName: 'Merah Jambu', colorNameEn: 'Pink' },
@@ -7848,6 +7833,16 @@ export function MagicColorDropsGame() {
         { fruit: 'Mango', fruitBm: 'Mangga', color: '#FFB300', colorName: 'Kuning Tua', colorNameEn: 'Gold' },
       ],
       drops: [...D('#E91E63',0,3), ...D('#795548',1,3), ...D('#00BCD4',2,3), ...D('#FFB300',3,3), ...D('#9C27B0',-1,2)] },
+    { id: 12, titleBm: '4 Buah Klasik', titleEn: '4 Classic Fruits',
+      instrBm: 'Isi 4 gelas buah!', instrEn: 'Fill 4 fruit glasses!',
+      glasses: [
+        { fruit: 'Blueberry', fruitBm: 'Blueberry', color: '#2196F3', colorName: 'Biru', colorNameEn: 'Blue' },
+        { fruit: 'Raspberry', fruitBm: 'Raspberi', color: '#F44336', colorName: 'Merah', colorNameEn: 'Red' },
+        { fruit: 'Kiwi', fruitBm: 'Kiwi', color: '#4CAF50', colorName: 'Hijau', colorNameEn: 'Green' },
+        { fruit: 'Lemon', fruitBm: 'Lemon', color: '#FFEB3B', colorName: 'Kuning', colorNameEn: 'Yellow' },
+      ],
+      drops: [...D('#2196F3',0,3), ...D('#F44336',1,3), ...D('#4CAF50',2,3), ...D('#FFEB3B',3,3), ...D('#9C27B0',-1,2)] },
+    // --- ROUNDS 13-15: 5 glasses ---
     { id: 13, titleBm: '5 Gelas Pelangi', titleEn: '5 Rainbow Glasses',
       instrBm: 'Isi semua gelas pelangi!', instrEn: 'Fill the rainbow glasses!',
       glasses: [
@@ -7868,17 +7863,16 @@ export function MagicColorDropsGame() {
         { fruit: 'Fish', fruitBm: 'Ikan', color: '#2196F3', colorName: 'Biru', colorNameEn: 'Blue' },
       ],
       drops: [...D('#9C27B0',0,3), ...D('#E91E63',1,3), ...D('#FF9800',2,3), ...D('#4CAF50',3,3), ...D('#2196F3',4,3), ...D('#FFEB3B',-1,2)] },
-    { id: 15, titleBm: 'Cabaran Akhir Pelangi!', titleEn: 'Rainbow Final Challenge!',
-      instrBm: 'Isi semua 6 gelas pelangi!', instrEn: 'Fill all 6 rainbow glasses!',
+    { id: 15, titleBm: 'Cabaran Akhir!', titleEn: 'Final Challenge!',
+      instrBm: 'Isi semua 5 gelas akhir!', instrEn: 'Fill all 5 final glasses!',
       glasses: [
-        { fruit: 'Raspberry', fruitBm: 'Raspberi', color: '#F44336', colorName: 'Merah', colorNameEn: 'Red' },
-        { fruit: 'Orange', fruitBm: 'Oren', color: '#FF9800', colorName: 'Oren', colorNameEn: 'Orange' },
-        { fruit: 'Lemon', fruitBm: 'Lemon', color: '#FFEB3B', colorName: 'Kuning', colorNameEn: 'Yellow' },
-        { fruit: 'Kiwi', fruitBm: 'Kiwi', color: '#4CAF50', colorName: 'Hijau', colorNameEn: 'Green' },
-        { fruit: 'Blueberry', fruitBm: 'Blueberry', color: '#2196F3', colorName: 'Biru', colorNameEn: 'Blue' },
-        { fruit: 'Grape', fruitBm: 'Anggur', color: '#9C27B0', colorName: 'Ungu', colorNameEn: 'Purple' },
+        { fruit: 'Strawberry', fruitBm: 'Strawberi', color: '#E91E63', colorName: 'Merah Jambu', colorNameEn: 'Pink' },
+        { fruit: 'Lime', fruitBm: 'Limau', color: '#8BC34A', colorName: 'Hijau Muda', colorNameEn: 'Lime' },
+        { fruit: 'Chocolate', fruitBm: 'Coklat', color: '#795548', colorName: 'Coklat', colorNameEn: 'Brown' },
+        { fruit: 'Whale', fruitBm: 'Ikan Paus', color: '#2196F3', colorName: 'Biru', colorNameEn: 'Blue' },
+        { fruit: 'Bee', fruitBm: 'Lebah', color: '#FFEB3B', colorName: 'Kuning', colorNameEn: 'Yellow' },
       ],
-      drops: [...D('#F44336',0,3), ...D('#FF9800',1,3), ...D('#FFEB3B',2,3), ...D('#4CAF50',3,3), ...D('#2196F3',4,3), ...D('#9C27B0',5,3), ...D('#E91E63',-1,2), ...D('#00BCD4',-1,1)] },
+      drops: [...D('#E91E63',0,3), ...D('#8BC34A',1,3), ...D('#795548',2,3), ...D('#2196F3',3,3), ...D('#FFEB3B',4,3), ...D('#9C27B0',-1,2), ...D('#00BCD4',-1,1)] },
   ], []);
 
   // Image map for items with generated HD kawaii images
@@ -8046,9 +8040,16 @@ export function MagicColorDropsGame() {
     }
   };
 
+  // Generate confetti pieces for GameCompleteModal
+  const completePieces = useMemo(() => Array.from({length: 50}, (_, i) => ({
+    id: i, left: Math.random() * 100, color: ['#F44336','#FF9800','#FFEB3B','#4CAF50','#2196F3','#9C27B0','#E91E63'][Math.floor(Math.random()*7)],
+    size: 6 + Math.random() * 8, delay: Math.random() * 2,
+  })), []);
+
   if (gameComplete) {
     const stars = score >= 120 ? 3 : score >= 70 ? 2 : 1;
     return <GameCompleteModal lang={lang} stars={stars} score={score} accentColor={ACCENT}
+      confettiPieces={completePieces}
       onPlayAgain={() => { setRoundIdx(0); setScore(0); setGameComplete(false); setShowIntro(true); setRoundComplete(false); }}
       onBack={() => goToWorld('colours')} />;
   }
