@@ -7734,98 +7734,351 @@ export function ColourHunterGame() {
 
 // ============================================
 // BUILD VEHICLE GAME (Bina Kenderaan)
-// Pick the right parts to build a vehicle!
+// 15-round vehicle quiz! Identify vehicle parts and pick correct answers!
 // ============================================
 export function BuildVehicleGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const VEHICLES = [
-    { name: lang === 'bm' ? 'Kereta' : 'Car', emoji: '🚗', parts: ['🔧', '🛞', '🪟', '🚗'], wrong: ['⛵', '✈️', '🚂'] },
-    { name: lang === 'bm' ? 'Kapal Terbang' : 'Airplane', emoji: '✈️', parts: ['🛫', '✈️', '💺', '🔧'], wrong: ['🚗', '⛵', '🚲'] },
-    { name: lang === 'bm' ? 'Kapal' : 'Ship', emoji: '🚢', parts: ['⚓', '🚢', '⛵', '🔧'], wrong: ['🚗', '✈️', '🚂'] },
-  ];
+  const TOTAL_ROUNDS = 15;
+  const CORRECT_SOUNDS = ['betul', 'hebat', 'pandainya', 'terbaik', 'tepat_sekali', 'bagus_sekali', 'wah_pandai'];
+  const ACCENT = '#E65100';
 
-  const [vIdx, setVIdx] = useState(0);
+  // 15 vehicles with generated images + 3 wrong choices each
+  const ALL_VEHICLES = useMemo(() => [
+    { id: 'car', nameBm: 'Kereta', nameEn: 'Car', img: 'car', category: 'darat',
+      partsBm: ['Tayar', 'Enjin', 'Stereng', 'Cermin'], partsEn: ['Tyre', 'Engine', 'Steering', 'Window'],
+      wrongBm: ['Sayap', 'Sauh', 'Baling-baling'], wrongEn: ['Wing', 'Anchor', 'Propeller'] },
+    { id: 'bus', nameBm: 'Bas', nameEn: 'Bus', img: 'bus', category: 'darat',
+      partsBm: ['Tayar Besar', 'Pintu', 'Tempat Duduk', 'Wisel'], partsEn: ['Big Tyres', 'Door', 'Seats', 'Whistle'],
+      wrongBm: ['Kipas', 'Layar', 'Pedal'], wrongEn: ['Fan', 'Sail', 'Pedal'] },
+    { id: 'truck', nameBm: 'Lori', nameEn: 'Truck', img: 'truck', category: 'darat',
+      partsBm: ['Tayar', 'Badan Lori', 'Enjin', 'Lampu'], partsEn: ['Tyres', 'Truck Body', 'Engine', 'Lights'],
+      wrongBm: ['Sayap', 'Dayung', 'Pedal'], wrongEn: ['Wings', 'Oar', 'Pedal'] },
+    { id: 'motorcycle', nameBm: 'Motosikal', nameEn: 'Motorcycle', img: 'motorcycle', category: 'darat',
+      partsBm: ['Roda 2', 'Enjin', 'Pemegang', 'Topi Keledar'], partsEn: ['2 Wheels', 'Engine', 'Handle', 'Helmet'],
+      wrongBm: ['Sayap', 'Sauh', 'Layar'], wrongEn: ['Wing', 'Anchor', 'Sail'] },
+    { id: 'airplane', nameBm: 'Kapal Terbang', nameEn: 'Airplane', img: 'airplane', category: 'udara',
+      partsBm: ['Sayap', 'Enjin Jet', 'Ekor', 'Kokpit'], partsEn: ['Wings', 'Jet Engine', 'Tail', 'Cockpit'],
+      wrongBm: ['Tayar', 'Sauh', 'Pedal'], wrongEn: ['Tyre', 'Anchor', 'Pedal'] },
+    { id: 'helicopter', nameBm: 'Helikopter', nameEn: 'Helicopter', img: 'helicopter', category: 'udara',
+      partsBm: ['Baling-baling', 'Badan', 'Ekor', 'Tempat Duduk'], partsEn: ['Rotor', 'Body', 'Tail', 'Seat'],
+      wrongBm: ['Tayar', 'Layar', 'Pedal'], wrongEn: ['Tyre', 'Sail', 'Pedal'] },
+    { id: 'ship', nameBm: 'Kapal', nameEn: 'Ship', img: 'ship', category: 'air',
+      partsBm: ['Badan Kapal', 'Sauh', 'Tiang', 'Stereng'], partsEn: ['Hull', 'Anchor', 'Mast', 'Helm'],
+      wrongBm: ['Sayap', 'Tayar', 'Pedal'], wrongEn: ['Wings', 'Tyre', 'Pedal'] },
+    { id: 'boat', nameBm: 'Bot', nameEn: 'Boat', img: 'boat', category: 'air',
+      partsBm: ['Dayung', 'Badan Bot', 'Layar', 'Tali'], partsEn: ['Oar', 'Boat Body', 'Sail', 'Rope'],
+      wrongBm: ['Enjin Jet', 'Tayar', 'Stereng'], wrongEn: ['Jet Engine', 'Tyre', 'Steering'] },
+    { id: 'train', nameBm: 'Keretapi', nameEn: 'Train', img: 'train', category: 'darat',
+      partsBm: ['Roda Keretapi', 'Enjin Wap', 'Landasan', 'Gerabak'], partsEn: ['Train Wheels', 'Steam Engine', 'Track', 'Carriage'],
+      wrongBm: ['Sayap', 'Sauh', 'Layar'], wrongEn: ['Wings', 'Anchor', 'Sail'] },
+    { id: 'bicycle', nameBm: 'Basikal', nameEn: 'Bicycle', img: 'bicycle', category: 'darat',
+      partsBm: ['Roda', 'Pedal', 'Rantai', 'Pemegang'], partsEn: ['Wheel', 'Pedal', 'Chain', 'Handle'],
+      wrongBm: ['Enjin', 'Sayap', 'Sauh'], wrongEn: ['Engine', 'Wings', 'Anchor'] },
+    { id: 'ambulance', nameBm: 'Ambulans', nameEn: 'Ambulance', img: 'ambulance', category: 'darat',
+      partsBm: ['Siren', 'Tayar', 'Tandu', 'Palang Merah'], partsEn: ['Siren', 'Tyres', 'Stretcher', 'Red Cross'],
+      wrongBm: ['Sayap', 'Layar', 'Baling-baling'], wrongEn: ['Wings', 'Sail', 'Propeller'] },
+    { id: 'police_car', nameBm: 'Kereta Polis', nameEn: 'Police Car', img: 'police_car', category: 'darat',
+      partsBm: ['Siren', 'Lampu Biru', 'Radio', 'Tayar'], partsEn: ['Siren', 'Blue Light', 'Radio', 'Tyres'],
+      wrongBm: ['Sauh', 'Dayung', 'Baling-baling'], wrongEn: ['Anchor', 'Oar', 'Propeller'] },
+    { id: 'fire_truck', nameBm: 'Kereta Bomba', nameEn: 'Fire Truck', img: 'fire_truck', category: 'darat',
+      partsBm: ['Hos Air', 'Tangga', 'Siren', 'Tayar'], partsEn: ['Water Hose', 'Ladder', 'Siren', 'Tyres'],
+      wrongBm: ['Sayap', 'Sauh', 'Pedal'], wrongEn: ['Wings', 'Anchor', 'Pedal'] },
+    { id: 'taxi', nameBm: 'Teksi', nameEn: 'Taxi', img: 'taxi', category: 'darat',
+      partsBm: ['Tanda Teksi', 'Meter', 'Tayar', 'Stereng'], partsEn: ['Taxi Sign', 'Meter', 'Tyres', 'Steering'],
+      wrongBm: ['Sayap', 'Sauh', 'Baling-baling'], wrongEn: ['Wings', 'Anchor', 'Propeller'] },
+    { id: 'rocket', nameBm: 'Roket', nameEn: 'Rocket', img: 'rocket', category: 'udara',
+      partsBm: ['Booster', 'Muncung', 'Badan Roket', 'Api'], partsEn: ['Booster', 'Nose Cone', 'Rocket Body', 'Flame'],
+      wrongBm: ['Tayar', 'Dayung', 'Pedal'], wrongEn: ['Tyre', 'Oar', 'Pedal'] },
+  ], [lang]);
+
+  const [rounds, setRounds] = useState(() => {
+    const shuffled = [...ALL_VEHICLES].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, TOTAL_ROUNDS);
+  });
+  const [roundIdx, setRoundIdx] = useState(0);
   const [partIdx, setPartIdx] = useState(0);
   const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
   const [builtParts, setBuiltParts] = useState([]);
+  const [shakeWrong, setShakeWrong] = useState(false);
+  const [showVehicleIntro, setShowVehicleIntro] = useState(true);
+  const [confetti, setConfetti] = useState([]);
 
-  const handlePick = (emoji) => {
-    const v = VEHICLES[vIdx];
-    if (emoji === v.parts[partIdx]) {
-      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
+  const round = rounds[roundIdx];
+  const vName = lang === 'bm' ? round?.nameBm : round?.nameEn;
+  const progress = ((roundIdx) / TOTAL_ROUNDS) * 100;
+
+  // Vehicle intro — show vehicle image for 1.5s before quiz
+  useEffect(() => {
+    if (showVehicleIntro && round) {
+      const t = setTimeout(() => setShowVehicleIntro(false), 1500);
+      return () => clearTimeout(t);
+    }
+  }, [showVehicleIntro, roundIdx]);
+
+  // Generate choices for current part
+  const choices = useMemo(() => {
+    if (!round) return [];
+    const parts = lang === 'bm' ? round.partsBm : round.partsEn;
+    const wrong = lang === 'bm' ? round.wrongBm : round.wrongEn;
+    const correct = parts[partIdx];
+    const wrongChoices = wrong.sort(() => Math.random() - 0.5).slice(0, 3);
+    return [correct, ...wrongChoices].sort(() => Math.random() - 0.5);
+  }, [round, partIdx, lang]);
+
+  const handlePick = (choice) => {
+    if (feedback) return;
+    const parts = lang === 'bm' ? round.partsBm : round.partsEn;
+    const correct = parts[partIdx];
+
+    if (choice === correct) {
+      const newStreak = streak + 1;
+      setStreak(newStreak);
+      if (soundEnabled) {
+        if (lang === 'bm') {
+          const snd = CORRECT_SOUNDS[Math.floor(Math.random() * CORRECT_SOUNDS.length)];
+          try { new Audio(assetPath(`/sounds/${snd}.mp3`)).play(); } catch(e) { playCorrectSound(); }
+        } else playCorrectSound();
+      }
       setFeedback({ type: 'correct', message: correctFeedback(lang, false) });
-      const newBuilt = [...builtParts, emoji];
+      const newBuilt = [...builtParts, choice];
       setBuiltParts(newBuilt);
+
       setTimeout(() => {
         setFeedback(null);
-        if (partIdx + 1 < v.parts.length) setPartIdx(partIdx + 1);
-        else {
-          const newScore = score + 1;
+        if (partIdx + 1 < parts.length) {
+          setPartIdx(partIdx + 1);
+        } else {
+          // Vehicle complete!
+          const bonus = newStreak >= 4 ? 15 : newStreak >= 2 ? 10 : 5;
+          const newScore = score + bonus;
           setScore(newScore);
-          if (vIdx + 1 < VEHICLES.length) { setVIdx(vIdx + 1); setPartIdx(0); setBuiltParts([]); }
-          else {
+          // Confetti burst
+          setConfetti(Array.from({length: 12}, (_, i) => ({
+            id: Date.now() + i,
+            x: Math.random() * 100,
+            color: ['#FF6B6B','#FFD93D','#6BCB77','#4ECDC4','#9B59B6','#FF9800'][Math.floor(Math.random()*6)],
+            delay: Math.random() * 0.5,
+          })));
+          setTimeout(() => setConfetti([]), 1500);
+
+          if (roundIdx + 1 < TOTAL_ROUNDS) {
+            setTimeout(() => {
+              setRoundIdx(roundIdx + 1);
+              setPartIdx(0);
+              setBuiltParts([]);
+              setShowVehicleIntro(true);
+            }, 1200);
+          } else {
+            const stars = newScore >= 180 ? 3 : newScore >= 100 ? 2 : 1;
             if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
-            completeGame('transport', 'build-vehicle', newScore >= 3 ? 3 : 2, newScore * 30);
-            setGameComplete(true);
+            completeGame('transport', 'build-vehicle', stars, newScore);
+            setTimeout(() => setGameComplete(true), 800);
           }
         }
-      }, 600);
+      }, 700);
     } else {
+      setStreak(0);
+      setShakeWrong(true);
       if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, false) });
-      setTimeout(() => setFeedback(null), 1000);
+      setTimeout(() => { setFeedback(null); setShakeWrong(false); }, 1000);
     }
   };
 
   if (gameComplete) {
-    return (
-      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
-        <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
-        <h1 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? 'Jurutera Hebat!' : 'Great Engineer!'}</h1>
-        <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
-        <button className="btn-premium" onClick={() => goToWorld('transport')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button>
-      </div>
-    );
+    const stars = score >= 180 ? 3 : score >= 100 ? 2 : 1;
+    return <GameCompleteModal lang={lang} stars={stars} score={score} accentColor={ACCENT}
+      onPlayAgain={() => { setRoundIdx(0); setPartIdx(0); setScore(0); setStreak(0); setBuiltParts([]); setGameComplete(false); setShowVehicleIntro(true); setRounds([...ALL_VEHICLES].sort(() => Math.random() - 0.5).slice(0, TOTAL_ROUNDS)); }}
+      onBack={() => goToWorld('transport')} />;
   }
 
-  const v = VEHICLES[vIdx];
-  const choices = [v.parts[partIdx], ...v.wrong.slice(0, 2)].sort(() => Math.random() - 0.5);
+  if (!round) return null;
+
+  const parts = lang === 'bm' ? round.partsBm : round.partsEn;
+  const categoryEmoji = round.category === 'udara' ? '✈️' : round.category === 'air' ? '🚢' : '🚗';
+  const categoryLabel = lang === 'bm'
+    ? (round.category === 'udara' ? 'Udara' : round.category === 'air' ? 'Air' : 'Darat')
+    : (round.category === 'udara' ? 'Air' : round.category === 'air' ? 'Water' : 'Land');
+
   return (
-    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/build_vehicle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
-      <div style={{ padding: 16, textAlign: 'center' }}>
-        <button className="icon-btn" onClick={() => goToWorld('transport')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        <h2 style={{ fontFamily: 'var(--font-heading)', color: '#E65100' }}>{lang === 'bm' ? `Bina ${v.name}!` : `Build a ${v.name}!`}</h2>
-        <div style={{ fontSize: '0.8rem', color: '#999' }}>{vIdx + 1}/{VEHICLES.length}</div>
-        <div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={v.emoji} size={64} /></div>
-        <div style={{ display: 'flex', gap: 4, justifyContent: 'center', marginBottom: 16 }}>
-          {v.parts.map((_, i) => (
-            <div key={i} style={{
-              width: 30, height: 30, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: i < builtParts.length ? '#6BCB77' : '#E0E0E0', fontSize: '0.8rem',
-            }}>{i < builtParts.length ? '✓' : i + 1}</div>
+    <div className="game-screen" style={{ touchAction: 'none' }}>
+      <div className="game-body" style={{ padding: 0 }}>
+        <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
+          <img src={assetPath('/images/game/build_vehicle_bg_v2.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.5, pointerEvents: "none" }} />
+
+          {/* Confetti */}
+          {confetti.map(c => (
+            <div key={c.id} style={{
+              position: 'absolute', left: `${c.x}%`, top: '-10px', width: 8, height: 8,
+              background: c.color, borderRadius: '50%', zIndex: 50,
+              animation: `confettiFall 1.5s ease-out ${c.delay}s forwards`,
+            }} />
           ))}
-        </div>
-        <div style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: 12 }}>
-          {lang === 'bm' ? `Bahagian ${partIdx + 1}: Pilih yang betul!` : `Part ${partIdx + 1}: Pick the right one!`}
-        </div>
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-          {choices.map((c, i) => (
-            <button key={i} onClick={() => handlePick(c)} style={{
-              fontSize: '2.5rem', padding: 14, borderRadius: 18, background: 'white',
-              border: '2px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: 'var(--shadow-sm)',
-            }}>{c}</button>
-          ))}
-        </div>
-        {feedback && (
-          <div style={{ marginTop: 14, padding: '8px 16px', borderRadius: 12, background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B', color: 'white', fontWeight: 700, display: 'inline-block' }}>
-            {feedback.type === 'correct' ? '' : ''}{feedback.message}
+
+          <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%', width: '100%', maxWidth: 500, margin: '0 auto', padding: 'clamp(8px, 2vw, 14px)', gap: 'clamp(6px, 1.5vw, 10px)' }}>
+            {/* Header - Padankan Warna Style */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(10px)',
+              borderRadius: 'clamp(16px, 3vw, 24px)', padding: 'clamp(6px, 1vw, 10px) clamp(10px, 1.5vw, 16px)',
+              boxShadow: '0 4px 20px rgba(230,81,0,0.12)', flexShrink: 0,
+            }}>
+              <button onClick={() => goToWorld('transport')} style={{
+                background: `linear-gradient(135deg, #FFB74D, ${ACCENT})`, borderRadius: '50%',
+                width: 'clamp(32px, 5vw, 42px)', height: 'clamp(32px, 5vw, 42px)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                border: 'none', cursor: 'pointer', boxShadow: '0 3px 10px rgba(230,81,0,0.3)',
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              </button>
+
+              <div style={{ textAlign: 'center', flex: 1 }}>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.7rem, 2vw, 0.9rem)', fontWeight: 800, color: ACCENT }}>
+                  {lang === 'bm' ? 'Bina Kenderaan' : 'Build Vehicle'} 🔧
+                </div>
+                <div style={{ fontSize: '0.6rem', color: '#999', fontWeight: 500 }}>
+                  {roundIdx + 1}/{TOTAL_ROUNDS} · ⭐ {score}
+                </div>
+              </div>
+
+              <div style={{
+                background: 'rgba(230,81,0,0.1)', borderRadius: 12, padding: '4px 10px',
+                fontFamily: 'var(--font-heading)', fontSize: '0.65rem', fontWeight: 700, color: ACCENT,
+              }}>
+                {streak > 0 && `🔥${streak}`}
+              </div>
+            </div>
+
+            {/* Progress bar */}
+            <div style={{ height: 6, background: 'rgba(0,0,0,0.06)', borderRadius: 3, overflow: 'hidden', flexShrink: 0 }}>
+              <div style={{
+                height: '100%', width: `${progress}%`, borderRadius: 3,
+                background: `linear-gradient(90deg, #FFB74D, ${ACCENT})`,
+                transition: 'width 0.5s ease',
+              }} />
+            </div>
+
+            {/* Vehicle Intro */}
+            {showVehicleIntro ? (
+              <div style={{
+                flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                animation: 'popIn 0.5s ease',
+              }}>
+                <div style={{
+                  background: 'rgba(255,255,255,0.95)', borderRadius: 24, padding: 'clamp(20px, 4vw, 32px)',
+                  textAlign: 'center', boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                }}>
+                  <GI e={round.img} size={80} />
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.2rem, 3vw, 1.6rem)', fontWeight: 800, color: ACCENT, marginTop: 12 }}>
+                    {lang === 'bm' ? `Bina ${vName}!` : `Build a ${vName}!`}
+                  </div>
+                  <div style={{
+                    display: 'inline-block', marginTop: 8, padding: '4px 14px', borderRadius: 20,
+                    background: 'rgba(230,81,0,0.08)', fontSize: '0.75rem', fontWeight: 600, color: ACCENT,
+                  }}>
+                    {categoryEmoji} {categoryLabel}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Vehicle display + Parts progress */}
+                <div style={{
+                  background: 'rgba(255,255,255,0.92)', borderRadius: 20, padding: 'clamp(12px, 2vw, 20px)',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.06)', textAlign: 'center', flexShrink: 0,
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 8 }}>
+                    <GI e={round.img} size={48} />
+                    <div>
+                      <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(1rem, 2.5vw, 1.3rem)', fontWeight: 800, color: ACCENT }}>
+                        {vName}
+                      </div>
+                      <div style={{ fontSize: '0.65rem', color: '#999' }}>
+                        {categoryEmoji} {categoryLabel}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Parts progress dots */}
+                  <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+                    {parts.map((p, i) => (
+                      <div key={i} style={{
+                        padding: '4px 10px', borderRadius: 12, fontSize: '0.7rem', fontWeight: 700,
+                        background: i < builtParts.length ? 'linear-gradient(135deg, #6BCB77, #4CAF50)' :
+                                    i === partIdx ? `linear-gradient(135deg, #FFB74D, ${ACCENT})` : 'rgba(0,0,0,0.06)',
+                        color: i <= partIdx || i < builtParts.length ? '#fff' : '#aaa',
+                        transition: 'all 0.3s ease',
+                        transform: i === partIdx ? 'scale(1.1)' : 'scale(1)',
+                      }}>
+                        {i < builtParts.length ? '✓' : p}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Question */}
+                <div style={{
+                  textAlign: 'center', fontFamily: 'var(--font-heading)',
+                  fontSize: 'clamp(0.85rem, 2.2vw, 1.1rem)', fontWeight: 700,
+                  color: '#333', flexShrink: 0,
+                }}>
+                  {lang === 'bm'
+                    ? `Bahagian ${partIdx + 1}: Apakah bahagian ${vName}?`
+                    : `Part ${partIdx + 1}: What part of a ${vName}?`}
+                </div>
+
+                {/* Choices grid */}
+                <div style={{
+                  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <div style={{
+                    display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 'clamp(8px, 2vw, 14px)',
+                    width: '100%', maxWidth: 340,
+                    animation: shakeWrong ? 'shakeX 0.4s ease' : undefined,
+                  }}>
+                    {choices.map((c, i) => (
+                      <button key={`${roundIdx}-${partIdx}-${i}-${c}`} onClick={() => handlePick(c)} style={{
+                        background: 'rgba(255,255,255,0.95)', borderRadius: 'clamp(14px, 3vw, 20px)',
+                        padding: 'clamp(14px, 3vw, 22px)', border: '2px solid rgba(0,0,0,0.06)',
+                        cursor: 'pointer', fontFamily: 'var(--font-heading)',
+                        fontSize: 'clamp(0.8rem, 2vw, 1rem)', fontWeight: 700, color: '#444',
+                        boxShadow: '0 3px 12px rgba(0,0,0,0.06)',
+                        transition: 'all 0.15s ease',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        minHeight: 'clamp(50px, 10vw, 70px)',
+                      }}>
+                        {c}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Feedback */}
+                {feedback && (
+                  <div style={{
+                    position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+                    zIndex: 50, animation: 'popIn 0.3s ease',
+                  }}>
+                    <div style={{
+                      padding: 'clamp(12px, 3vw, 20px) clamp(24px, 5vw, 40px)',
+                      borderRadius: 20, fontFamily: 'var(--font-heading)',
+                      fontSize: 'clamp(1rem, 2.5vw, 1.3rem)', fontWeight: 800,
+                      background: feedback.type === 'correct' ? 'rgba(107,203,119,0.95)' : 'rgba(255,107,107,0.95)',
+                      color: '#fff', boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
+                    }}>
+                      {feedback.type === 'correct' ? '✅ ' : '❌ '}{feedback.message}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
