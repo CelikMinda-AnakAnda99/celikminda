@@ -1,4 +1,5 @@
 'use client';
+import { assetPath } from '@/utils/assetPath';
 /**
  * GameIcons.js — Comprehensive SVG icon system for CelikMinda
  * Replaces ALL emojis with premium inline SVGs
@@ -448,8 +449,7 @@ export function GameThumbnail({ gameId, size = 48 }) {
   const IMAGE_THUMBS = { 'color-drops': '/images/game/thumb_color_drops.jpg' };
   const imgSrc = IMAGE_THUMBS[gameId];
   if (imgSrc) {
-    const prefix = typeof window !== 'undefined' && window.__ASSET_PREFIX__ ? window.__ASSET_PREFIX__ : '';
-    return <img src={`${prefix}${imgSrc}`} alt={gameId} style={{ width: size, height: size, objectFit: 'cover', borderRadius: 10 }} />;
+    return <img src={assetPath(imgSrc)} alt={gameId} style={{ width: size, height: size, objectFit: 'cover', borderRadius: 10 }} />;
   }
   const scene = GAME_SCENE_MAP[gameId];
   if (scene) {
