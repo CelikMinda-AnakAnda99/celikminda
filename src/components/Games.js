@@ -8084,18 +8084,18 @@ export function MagicColorDropsGame() {
 
             {showIntro ? (
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', animation: 'popIn 0.5s ease' }}>
-                <div style={{ background: 'rgba(255,255,255,0.95)', borderRadius: 24, padding: 'clamp(18px, 3.5vw, 28px)', textAlign: 'center', boxShadow: '0 8px 32px rgba(0,0,0,0.1)', maxWidth: 300 }}>
-                  <svg width="44" height="44" viewBox="0 0 60 60">
+                <div style={{ background: 'rgba(255,255,255,0.95)', borderRadius: 24, padding: 'clamp(24px, 5vw, 40px)', textAlign: 'center', boxShadow: '0 8px 32px rgba(0,0,0,0.1)', maxWidth: 400, width: '90%' }}>
+                  <svg width="64" height="64" viewBox="0 0 60 60">
                     <defs><radialGradient id={`dg${roundIdx}`} cx="40%" cy="35%"><stop offset="0%" stopColor={round.glasses[0]?.color} stopOpacity="0.6"/><stop offset="100%" stopColor={round.glasses[0]?.color} stopOpacity="0.9"/></radialGradient></defs>
                     <path d="M30 5 C30 5 10 30 10 40 C10 51 19 58 30 58 C41 58 50 51 50 40 C50 30 30 5 30 5Z" fill={`url(#dg${roundIdx})`} stroke="rgba(0,0,0,0.1)" strokeWidth="1"/>
                     <ellipse cx="22" cy="35" rx="5" ry="3" fill="rgba(255,255,255,0.4)" transform="rotate(-20 22 35)"/>
                   </svg>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.9rem, 2.3vw, 1.2rem)', fontWeight: 800, color: ACCENT, marginTop: 6 }}>{roundTitle}</div>
-                  <div style={{ fontSize: 'clamp(0.6rem, 1.4vw, 0.75rem)', color: '#666', marginTop: 4, lineHeight: 1.3 }}>{lang === 'bm' ? round.instrBm : round.instrEn}</div>
-                  <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginTop: 10 }}>
-                    {round.glasses.map((g, i) => <div key={i}>{ITEM_ICON(g.fruit, 32)}</div>)}
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.1rem, 3vw, 1.5rem)', fontWeight: 800, color: ACCENT, marginTop: 10 }}>{roundTitle}</div>
+                  <div style={{ fontSize: 'clamp(0.75rem, 2vw, 0.95rem)', color: '#666', marginTop: 6, lineHeight: 1.4 }}>{lang === 'bm' ? round.instrBm : round.instrEn}</div>
+                  <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 14, flexWrap: 'wrap' }}>
+                    {round.glasses.map((g, i) => <div key={i}>{ITEM_ICON(g.fruit, 48)}</div>)}
                   </div>
-                  <div style={{ display: 'inline-block', marginTop: 8, padding: '2px 10px', borderRadius: 16, background: 'rgba(156,39,176,0.08)', fontSize: '0.6rem', fontWeight: 600, color: ACCENT }}>
+                  <div style={{ display: 'inline-block', marginTop: 12, padding: '4px 16px', borderRadius: 16, background: 'rgba(156,39,176,0.08)', fontSize: 'clamp(0.7rem, 1.5vw, 0.85rem)', fontWeight: 600, color: ACCENT }}>
                     {lang === 'bm' ? `Pusingan ${roundIdx + 1}` : `Round ${roundIdx + 1}`}
                   </div>
                 </div>
