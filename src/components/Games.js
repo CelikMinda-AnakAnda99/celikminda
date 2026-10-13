@@ -7922,8 +7922,11 @@ export function MagicColorDropsGame() {
   const [usedDrops, setUsedDrops] = useState({});
   const [glassFills, setGlassFills] = useState({});
   const [dragging, setDragging] = useState(null);
+  const [dropZOrder, setDropZOrder] = useState({});
+  const [zCounter, setZCounter] = useState(20);
   const containerRef = useRef(null);
   const glassRefs = useRef([]);
+  const paperRef = useRef(null);
   // Stable random stains for paper texture
   const [stains] = useState(() => Array.from({length: 8}, () => ({
     x: 5 + Math.random() * 90, y: 5 + Math.random() * 90,
@@ -8013,7 +8016,23 @@ export function MagicColorDropsGame() {
         setFeedback({ type: 'wrong', message: dropData.correct === -1 ? (lang === 'bm' ? 'Warna perangkap!' : 'Trap color!') : (lang === 'bm' ? 'Gelas salah!' : 'Wrong glass!') });
         setTimeout(() => setFeedback(null), 800);
       }
+    } else {
+      // Drop released outside glass -- save new position so it stays where dragged
+      const paper = paperRef.current;
+      if (paper) {
+        const pr = paper.getBoundingClientRect();
+        const newX = ((dragging.currentX - pr.left) / pr.width) * 100;
+        const newY = ((dragging.currentY - pr.top) / pr.height) * 100;
+        setDropPositions(prev => {
+          const next = [...prev];
+          next[dragging.dropIdx] = { x: Math.max(2, Math.min(92, newX)), y: Math.max(2, Math.min(45, newY)) };
+          return next;
+        });
+      }
     }
+    // Bump z-index so last-touched drop is always on top
+    setZCounter(prev => prev + 1);
+    setDropZOrder(prev => ({ ...prev, [dragging.dropIdx]: zCounter + 1 }));
     setDragging(null);
   };
 
@@ -8046,7 +8065,7 @@ export function MagicColorDropsGame() {
           {confetti.map(c => (
             <div key={c.id} style={{ position: 'absolute', left: `${c.x}%`, top: '-10px', width: 8, height: 8, background: c.color, borderRadius: '50%', zIndex: 60, animation: `confettiFall 1.5s ease-out ${c.delay}s forwards` }} />
           ))}
-          <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%', width: '100%', maxWidth: 700, margin: '0 auto', padding: 'clamp(8px, 1.5vw, 14px)', gap: 'clamp(4px, 0.8vw, 8px)' }}>
+          <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%', width: '100%', maxWidth: 700, margin: '0 auto', padding: 'clamp(8px, 1.5vw, 14px)', paddingTop: 'max(clamp(8px, 1.5vw, 14px), env(safe-area-inset-top))', gap: 'clamp(4px, 0.8vw, 8px)' }}>
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(10px)', borderRadius: 'clamp(12px, 2.5vw, 20px)', padding: 'clamp(4px, 0.7vw, 6px) clamp(7px, 1.2vw, 12px)', boxShadow: '0 4px 20px rgba(156,39,176,0.12)', flexShrink: 0 }}>
               <button onClick={() => goToWorld('colours')} style={{ background: `linear-gradient(135deg, #CE93D8, ${ACCENT})`, borderRadius: '50%', width: 'clamp(26px, 4.5vw, 34px)', height: 'clamp(26px, 4.5vw, 34px)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', boxShadow: '0 3px 10px rgba(156,39,176,0.3)' }}>
@@ -8084,7 +8103,7 @@ export function MagicColorDropsGame() {
             ) : (
               <>
                 {/* PAPER AREA */}
-                <div style={{ flex: 1, position: 'relative', borderRadius: 14, boxShadow: '0 3px 16px rgba(0,0,0,0.06)', minHeight: 0, overflow: 'hidden',
+                <div ref={paperRef} style={{ flex: 1, position: 'relative', borderRadius: 14, boxShadow: '0 3px 16px rgba(0,0,0,0.06)', minHeight: 0, overflow: 'hidden',
                   background: 'linear-gradient(145deg, #FFF8F0 0%, #FDF0E8 30%, #FFF5EE 60%, #F8F4FF 100%)' }}>
                   {/* Watercolor stains */}
                   {stains.map((s, i) => (
@@ -8125,7 +8144,7 @@ export function MagicColorDropsGame() {
                           boxShadow: isDrag ? `0 8px 24px ${drop.color}60, 0 0 20px ${drop.color}30` : `0 3px 10px ${drop.color}50, inset 0 -2px 4px rgba(0,0,0,0.1)`,
                           transform: isDrag ? 'scale(1.35)' : 'scale(1)',
                           transition: isDrag ? 'none' : 'transform 0.2s ease',
-                          zIndex: isDrag ? 100 : 10,
+                          zIndex: isDrag ? 100 : (dropZOrder[di] || 10),
                           touchAction: 'none',
                           animation: isDrag ? undefined : `characterBob 3s ease-in-out ${di * 0.15}s infinite`,
                         }}>
