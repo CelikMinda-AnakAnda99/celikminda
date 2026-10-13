@@ -8199,11 +8199,11 @@ export function MagicColorDropsGame() {
                 {/* Round complete */}
                 {roundComplete && (
                   <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 40, animation: 'popIn 0.3s ease' }}>
-                    <div style={{ background: 'rgba(255,255,255,0.97)', borderRadius: 24, padding: 'clamp(16px, 3.5vw, 26px)', textAlign: 'center', boxShadow: '0 12px 40px rgba(0,0,0,0.15)', maxWidth: 260 }}>
-                      <svg width="40" height="40" viewBox="0 0 50 50"><circle cx="25" cy="25" r="22" fill="#4CAF50"/><path d="M15 25 L22 32 L35 18" stroke="#fff" strokeWidth="3.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                      <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.85rem, 2.2vw, 1.1rem)', fontWeight: 800, color: ACCENT, marginTop: 6 }}>{lang === 'bm' ? 'Gelas Penuh!' : 'Glasses Full!'}</div>
-                      <div style={{ fontSize: '0.7rem', color: '#666', marginTop: 3 }}>{roundTitle}</div>
-                      <button onClick={nextRound} style={{ marginTop: 12, padding: '8px 24px', borderRadius: 18, background: `linear-gradient(135deg, #CE93D8, ${ACCENT})`, color: '#fff', border: 'none', fontFamily: 'var(--font-heading)', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 15px rgba(156,39,176,0.3)' }}>
+                    <div style={{ background: 'rgba(255,255,255,0.97)', borderRadius: 28, padding: 'clamp(24px, 5vw, 40px)', textAlign: 'center', boxShadow: '0 12px 40px rgba(0,0,0,0.15)', maxWidth: 380, width: '85%' }}>
+                      <svg width="60" height="60" viewBox="0 0 50 50"><circle cx="25" cy="25" r="22" fill="#4CAF50"/><path d="M15 25 L22 32 L35 18" stroke="#fff" strokeWidth="3.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.1rem, 3vw, 1.5rem)', fontWeight: 800, color: ACCENT, marginTop: 10 }}>{lang === 'bm' ? 'Gelas Penuh!' : 'Glasses Full!'}</div>
+                      <div style={{ fontSize: 'clamp(0.8rem, 2vw, 1rem)', color: '#666', marginTop: 6 }}>{roundTitle}</div>
+                      <button onClick={nextRound} style={{ marginTop: 16, padding: '12px 36px', borderRadius: 22, background: `linear-gradient(135deg, #CE93D8, ${ACCENT})`, color: '#fff', border: 'none', fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.85rem, 2vw, 1rem)', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 15px rgba(156,39,176,0.3)' }}>
                         {roundIdx + 1 < TOTAL_ROUNDS ? (lang === 'bm' ? 'Seterusnya' : 'Next') : (lang === 'bm' ? 'Selesai!' : 'Finish!')}
                       </button>
                     </div>
