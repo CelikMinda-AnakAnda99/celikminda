@@ -8046,17 +8046,12 @@ export function MagicColorDropsGame() {
     size: 6 + Math.random() * 8, delay: Math.random() * 2,
   })), []);
 
-  if (gameComplete) {
-    const stars = score >= 120 ? 3 : score >= 70 ? 2 : 1;
-    return <GameCompleteModal lang={lang} stars={stars} score={score} accentColor={ACCENT}
-      confettiPieces={completePieces}
-      onPlayAgain={() => { setRoundIdx(0); setScore(0); setGameComplete(false); setShowIntro(true); setRoundComplete(false); }}
-      onBack={() => goToWorld('colours')} />;
-  }
+  const gameCompleteStars = score >= 120 ? 3 : score >= 70 ? 2 : 1;
   if (!round) return null;
   const roundTitle = lang === 'bm' ? round.titleBm : round.titleEn;
 
   return (
+    <>
     <div className="game-screen" style={{ touchAction: 'none' }}
       onMouseMove={handleDragMove} onMouseUp={handleDragEnd}
       onTouchMove={handleDragMove} onTouchEnd={handleDragEnd}>
@@ -8224,6 +8219,11 @@ export function MagicColorDropsGame() {
         </div>
       </div>
     </div>
+    {gameComplete && <GameCompleteModal lang={lang} stars={gameCompleteStars} score={score} accentColor={ACCENT}
+      confettiPieces={completePieces}
+      onPlayAgain={() => { setRoundIdx(0); setScore(0); setGameComplete(false); setShowIntro(true); setRoundComplete(false); setDropZOrder({}); setZCounter(20); }}
+      onBack={() => goToWorld('colours')} />}
+    </>
   );
 }
 // ============================================
