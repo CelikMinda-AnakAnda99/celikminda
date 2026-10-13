@@ -81,6 +81,7 @@ export const WORLDS = [
       { id: 'match-colour', name: 'Padankan Warna', nameEn: 'Match Colour', icon: '', description: 'Match names to colours!' },
       { id: 'sock-pairs', name: 'Ingatan Ajaib', nameEn: 'Magic Memory', icon: '', description: 'Find matching pairs!' },
       { id: 'colour-hunter', name: 'Teka Warna', nameEn: 'Guess the Colour', icon: '', description: 'Guess the colour of each item!' },
+      { id: 'color-drops', name: 'Titisan Warna Ajaib', nameEn: 'Magic Color Drops', icon: '', description: 'Drop colors on paper and watch them spread!' },
       { id: 'free-draw', name: 'Lukis Bersama', nameEn: 'Draw Together', icon: '', description: 'Free drawing canvas!' },
     ]
   },

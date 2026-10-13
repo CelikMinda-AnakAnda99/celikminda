@@ -7733,6 +7733,480 @@ export function ColourHunterGame() {
 }
 
 // ============================================
+// MAGIC COLOR DROPS GAME (Titisan Warna Ajaib)
+// Drag colored drops into matching glasses!
+// Glasses fill up like rising liquid!
+// ============================================
+export function MagicColorDropsGame() {
+  const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
+  const lang = language;
+  const ACCENT = '#9C27B0';
+  const TOTAL_ROUNDS = 15;
+
+  const D = (color, correct, n=1) => Array.from({length:n}, () => ({ color, correct }));
+
+  // 15 UNIQUE rounds — all different themes, 3-6 glasses, 12-18 drops each
+  const ROUNDS = useMemo(() => [
+    { id: 1, titleBm: 'Buah-buahan Segar', titleEn: 'Fresh Fruits',
+      instrBm: 'Isikan gelas dengan warna buah yang betul!', instrEn: 'Fill glasses with the right fruit color!',
+      glasses: [
+        { fruit: 'Blueberry', fruitBm: 'Blueberry', color: '#2196F3', colorName: 'Biru', colorNameEn: 'Blue' },
+        { fruit: 'Raspberry', fruitBm: 'Raspberi', color: '#F44336', colorName: 'Merah', colorNameEn: 'Red' },
+        { fruit: 'Kiwi', fruitBm: 'Kiwi', color: '#4CAF50', colorName: 'Hijau', colorNameEn: 'Green' },
+      ],
+      drops: [...D('#2196F3',0,4), ...D('#F44336',1,4), ...D('#4CAF50',2,4), ...D('#FFEB3B',-1,2)] },
+    { id: 2, titleBm: 'Buah Citrus', titleEn: 'Citrus Party',
+      instrBm: 'Warnakan gelas citrus!', instrEn: 'Color the citrus glasses!',
+      glasses: [
+        { fruit: 'Orange', fruitBm: 'Oren', color: '#FF9800', colorName: 'Oren', colorNameEn: 'Orange' },
+        { fruit: 'Lemon', fruitBm: 'Lemon', color: '#FFEB3B', colorName: 'Kuning', colorNameEn: 'Yellow' },
+        { fruit: 'Lime', fruitBm: 'Limau', color: '#8BC34A', colorName: 'Hijau Muda', colorNameEn: 'Lime' },
+      ],
+      drops: [...D('#FF9800',0,4), ...D('#FFEB3B',1,4), ...D('#8BC34A',2,4), ...D('#F44336',-1,2)] },
+    { id: 3, titleBm: 'Kebun Anggur', titleEn: 'Grape Garden',
+      instrBm: 'Isi gelas kebun!', instrEn: 'Fill the garden glasses!',
+      glasses: [
+        { fruit: 'Grape', fruitBm: 'Anggur', color: '#9C27B0', colorName: 'Ungu', colorNameEn: 'Purple' },
+        { fruit: 'Strawberry', fruitBm: 'Strawberi', color: '#E91E63', colorName: 'Merah Jambu', colorNameEn: 'Pink' },
+        { fruit: 'Apple', fruitBm: 'Epal', color: '#F44336', colorName: 'Merah', colorNameEn: 'Red' },
+      ],
+      drops: [...D('#9C27B0',0,4), ...D('#E91E63',1,4), ...D('#F44336',2,4), ...D('#2196F3',-1,2)] },
+    { id: 4, titleBm: 'Tropika Eksotik', titleEn: 'Exotic Tropics',
+      instrBm: 'Warnakan buah tropika!', instrEn: 'Color the tropical fruits!',
+      glasses: [
+        { fruit: 'Mango', fruitBm: 'Mangga', color: '#FFB300', colorName: 'Kuning Tua', colorNameEn: 'Gold' },
+        { fruit: 'Watermelon', fruitBm: 'Tembikai', color: '#E91E63', colorName: 'Merah Jambu', colorNameEn: 'Pink' },
+        { fruit: 'Coconut', fruitBm: 'Kelapa', color: '#795548', colorName: 'Coklat', colorNameEn: 'Brown' },
+      ],
+      drops: [...D('#FFB300',0,4), ...D('#E91E63',1,4), ...D('#795548',2,4), ...D('#4CAF50',-1,2)] },
+    { id: 5, titleBm: 'Sayur-sayuran', titleEn: 'Veggie Fun',
+      instrBm: 'Isi gelas sayur!', instrEn: 'Fill the veggie glasses!',
+      glasses: [
+        { fruit: 'Carrot', fruitBm: 'Lobak', color: '#FF9800', colorName: 'Oren', colorNameEn: 'Orange' },
+        { fruit: 'Broccoli', fruitBm: 'Brokoli', color: '#4CAF50', colorName: 'Hijau', colorNameEn: 'Green' },
+        { fruit: 'Tomato', fruitBm: 'Tomato', color: '#F44336', colorName: 'Merah', colorNameEn: 'Red' },
+      ],
+      drops: [...D('#FF9800',0,4), ...D('#4CAF50',1,4), ...D('#F44336',2,4), ...D('#9C27B0',-1,2)] },
+    { id: 6, titleBm: 'Taman Bunga', titleEn: 'Flower Garden',
+      instrBm: 'Warnakan gelas bunga cantik!', instrEn: 'Color the beautiful flower glasses!',
+      glasses: [
+        { fruit: 'Rose', fruitBm: 'Mawar', color: '#E91E63', colorName: 'Merah Jambu', colorNameEn: 'Rose' },
+        { fruit: 'Sunflower', fruitBm: 'Bunga Matahari', color: '#FFEB3B', colorName: 'Kuning', colorNameEn: 'Yellow' },
+        { fruit: 'Lavender', fruitBm: 'Lavender', color: '#9C27B0', colorName: 'Ungu', colorNameEn: 'Purple' },
+      ],
+      drops: [...D('#E91E63',0,4), ...D('#FFEB3B',1,4), ...D('#9C27B0',2,4), ...D('#FF9800',-1,2)] },
+    { id: 7, titleBm: 'Hidupan Laut', titleEn: 'Ocean Life',
+      instrBm: 'Warnakan dunia bawah laut!', instrEn: 'Color the underwater world!',
+      glasses: [
+        { fruit: 'Fish', fruitBm: 'Ikan', color: '#2196F3', colorName: 'Biru', colorNameEn: 'Blue' },
+        { fruit: 'Octopus', fruitBm: 'Sotong', color: '#E91E63', colorName: 'Merah Jambu', colorNameEn: 'Pink' },
+        { fruit: 'Starfish', fruitBm: 'Bintang Laut', color: '#FF9800', colorName: 'Oren', colorNameEn: 'Orange' },
+      ],
+      drops: [...D('#2196F3',0,4), ...D('#E91E63',1,4), ...D('#FF9800',2,4), ...D('#4CAF50',-1,2)] },
+    { id: 8, titleBm: '4 Buah Klasik', titleEn: '4 Classic Fruits',
+      instrBm: 'Isi 4 gelas buah!', instrEn: 'Fill 4 fruit glasses!',
+      glasses: [
+        { fruit: 'Blueberry', fruitBm: 'Blueberry', color: '#2196F3', colorName: 'Biru', colorNameEn: 'Blue' },
+        { fruit: 'Raspberry', fruitBm: 'Raspberi', color: '#F44336', colorName: 'Merah', colorNameEn: 'Red' },
+        { fruit: 'Kiwi', fruitBm: 'Kiwi', color: '#4CAF50', colorName: 'Hijau', colorNameEn: 'Green' },
+        { fruit: 'Lemon', fruitBm: 'Lemon', color: '#FFEB3B', colorName: 'Kuning', colorNameEn: 'Yellow' },
+      ],
+      drops: [...D('#2196F3',0,3), ...D('#F44336',1,3), ...D('#4CAF50',2,3), ...D('#FFEB3B',3,3), ...D('#9C27B0',-1,2)] },
+    { id: 9, titleBm: 'Salad Buah', titleEn: 'Fruit Salad',
+      instrBm: 'Campurkan semua buah!', instrEn: 'Mix all the fruits!',
+      glasses: [
+        { fruit: 'Grape', fruitBm: 'Anggur', color: '#9C27B0', colorName: 'Ungu', colorNameEn: 'Purple' },
+        { fruit: 'Orange', fruitBm: 'Oren', color: '#FF9800', colorName: 'Oren', colorNameEn: 'Orange' },
+        { fruit: 'Apple', fruitBm: 'Epal', color: '#F44336', colorName: 'Merah', colorNameEn: 'Red' },
+        { fruit: 'Lime', fruitBm: 'Limau', color: '#8BC34A', colorName: 'Hijau Muda', colorNameEn: 'Lime' },
+      ],
+      drops: [...D('#9C27B0',0,3), ...D('#FF9800',1,3), ...D('#F44336',2,3), ...D('#8BC34A',3,3), ...D('#2196F3',-1,2)] },
+    { id: 10, titleBm: 'Alam Semula Jadi', titleEn: 'Nature Colors',
+      instrBm: 'Warnakan alam semula jadi!', instrEn: 'Color the nature!',
+      glasses: [
+        { fruit: 'Sky', fruitBm: 'Langit', color: '#2196F3', colorName: 'Biru', colorNameEn: 'Blue' },
+        { fruit: 'Tree', fruitBm: 'Pokok', color: '#4CAF50', colorName: 'Hijau', colorNameEn: 'Green' },
+        { fruit: 'Sun', fruitBm: 'Matahari', color: '#FFEB3B', colorName: 'Kuning', colorNameEn: 'Yellow' },
+        { fruit: 'Earth', fruitBm: 'Tanah', color: '#795548', colorName: 'Coklat', colorNameEn: 'Brown' },
+      ],
+      drops: [...D('#2196F3',0,3), ...D('#4CAF50',1,3), ...D('#FFEB3B',2,3), ...D('#795548',3,3), ...D('#E91E63',-1,2)] },
+    { id: 11, titleBm: 'Haiwan Comel', titleEn: 'Cute Animals',
+      instrBm: 'Warnakan haiwan comel!', instrEn: 'Color the cute animals!',
+      glasses: [
+        { fruit: 'Frog', fruitBm: 'Katak', color: '#4CAF50', colorName: 'Hijau', colorNameEn: 'Green' },
+        { fruit: 'Flamingo', fruitBm: 'Flamingo', color: '#E91E63', colorName: 'Merah Jambu', colorNameEn: 'Pink' },
+        { fruit: 'Bee', fruitBm: 'Lebah', color: '#FFEB3B', colorName: 'Kuning', colorNameEn: 'Yellow' },
+        { fruit: 'Whale', fruitBm: 'Ikan Paus', color: '#2196F3', colorName: 'Biru', colorNameEn: 'Blue' },
+      ],
+      drops: [...D('#4CAF50',0,3), ...D('#E91E63',1,3), ...D('#FFEB3B',2,3), ...D('#2196F3',3,3), ...D('#FF9800',-1,2)] },
+    { id: 12, titleBm: 'Pencuci Mulut', titleEn: 'Dessert Time',
+      instrBm: 'Warnakan pencuci mulut!', instrEn: 'Color the desserts!',
+      glasses: [
+        { fruit: 'Strawberry', fruitBm: 'Strawberi', color: '#E91E63', colorName: 'Merah Jambu', colorNameEn: 'Pink' },
+        { fruit: 'Chocolate', fruitBm: 'Coklat', color: '#795548', colorName: 'Coklat', colorNameEn: 'Brown' },
+        { fruit: 'Mint', fruitBm: 'Pudina', color: '#00BCD4', colorName: 'Sian', colorNameEn: 'Cyan' },
+        { fruit: 'Mango', fruitBm: 'Mangga', color: '#FFB300', colorName: 'Kuning Tua', colorNameEn: 'Gold' },
+      ],
+      drops: [...D('#E91E63',0,3), ...D('#795548',1,3), ...D('#00BCD4',2,3), ...D('#FFB300',3,3), ...D('#9C27B0',-1,2)] },
+    { id: 13, titleBm: '5 Gelas Pelangi', titleEn: '5 Rainbow Glasses',
+      instrBm: 'Isi semua gelas pelangi!', instrEn: 'Fill the rainbow glasses!',
+      glasses: [
+        { fruit: 'Raspberry', fruitBm: 'Raspberi', color: '#F44336', colorName: 'Merah', colorNameEn: 'Red' },
+        { fruit: 'Orange', fruitBm: 'Oren', color: '#FF9800', colorName: 'Oren', colorNameEn: 'Orange' },
+        { fruit: 'Lemon', fruitBm: 'Lemon', color: '#FFEB3B', colorName: 'Kuning', colorNameEn: 'Yellow' },
+        { fruit: 'Kiwi', fruitBm: 'Kiwi', color: '#4CAF50', colorName: 'Hijau', colorNameEn: 'Green' },
+        { fruit: 'Blueberry', fruitBm: 'Blueberry', color: '#2196F3', colorName: 'Biru', colorNameEn: 'Blue' },
+      ],
+      drops: [...D('#F44336',0,3), ...D('#FF9800',1,3), ...D('#FFEB3B',2,3), ...D('#4CAF50',3,3), ...D('#2196F3',4,3), ...D('#E91E63',-1,2)] },
+    { id: 14, titleBm: 'Pesta Warna!', titleEn: 'Color Party!',
+      instrBm: 'Pesta warna besar-besaran!', instrEn: 'Big color party!',
+      glasses: [
+        { fruit: 'Grape', fruitBm: 'Anggur', color: '#9C27B0', colorName: 'Ungu', colorNameEn: 'Purple' },
+        { fruit: 'Watermelon', fruitBm: 'Tembikai', color: '#E91E63', colorName: 'Merah Jambu', colorNameEn: 'Pink' },
+        { fruit: 'Carrot', fruitBm: 'Lobak', color: '#FF9800', colorName: 'Oren', colorNameEn: 'Orange' },
+        { fruit: 'Broccoli', fruitBm: 'Brokoli', color: '#4CAF50', colorName: 'Hijau', colorNameEn: 'Green' },
+        { fruit: 'Fish', fruitBm: 'Ikan', color: '#2196F3', colorName: 'Biru', colorNameEn: 'Blue' },
+      ],
+      drops: [...D('#9C27B0',0,3), ...D('#E91E63',1,3), ...D('#FF9800',2,3), ...D('#4CAF50',3,3), ...D('#2196F3',4,3), ...D('#FFEB3B',-1,2)] },
+    { id: 15, titleBm: 'Cabaran Akhir Pelangi!', titleEn: 'Rainbow Final Challenge!',
+      instrBm: 'Isi semua 6 gelas pelangi!', instrEn: 'Fill all 6 rainbow glasses!',
+      glasses: [
+        { fruit: 'Raspberry', fruitBm: 'Raspberi', color: '#F44336', colorName: 'Merah', colorNameEn: 'Red' },
+        { fruit: 'Orange', fruitBm: 'Oren', color: '#FF9800', colorName: 'Oren', colorNameEn: 'Orange' },
+        { fruit: 'Lemon', fruitBm: 'Lemon', color: '#FFEB3B', colorName: 'Kuning', colorNameEn: 'Yellow' },
+        { fruit: 'Kiwi', fruitBm: 'Kiwi', color: '#4CAF50', colorName: 'Hijau', colorNameEn: 'Green' },
+        { fruit: 'Blueberry', fruitBm: 'Blueberry', color: '#2196F3', colorName: 'Biru', colorNameEn: 'Blue' },
+        { fruit: 'Grape', fruitBm: 'Anggur', color: '#9C27B0', colorName: 'Ungu', colorNameEn: 'Purple' },
+      ],
+      drops: [...D('#F44336',0,3), ...D('#FF9800',1,3), ...D('#FFEB3B',2,3), ...D('#4CAF50',3,3), ...D('#2196F3',4,3), ...D('#9C27B0',5,3), ...D('#E91E63',-1,2), ...D('#00BCD4',-1,1)] },
+  ], []);
+
+  // Image map for items with generated HD kawaii images
+  const IMG_ITEMS = ['Blueberry','Raspberry','Kiwi','Orange','Lemon','Grape','Strawberry','Apple','Mango','Watermelon','Lime','Carrot'];
+  const ITEM_ICON = (fruit, s) => {
+    const imgFile = { Blueberry:'drop_blueberry.jpg', Raspberry:'drop_raspberry.jpg', Kiwi:'drop_kiwi.jpg', Orange:'drop_orange.jpg', Lemon:'drop_lemon.jpg', Grape:'drop_grape.jpg', Strawberry:'drop_strawberry.jpg', Apple:'drop_apple.jpg', Mango:'drop_mango.jpg', Watermelon:'drop_watermelon.jpg', Lime:'drop_lime.jpg', Carrot:'drop_carrot.jpg', Broccoli:'drop_broccoli.jpg', Tomato:'drop_tomato.jpg', Coconut:'drop_coconut.jpg', Rose:'drop_rose.jpg', Sunflower:'drop_sunflower.jpg', Lavender:'drop_lavender.jpg', Fish:'drop_fish.jpg', Octopus:'drop_octopus.jpg', Starfish:'drop_starfish.jpg', Frog:'drop_frog.jpg', Flamingo:'drop_flamingo.jpg', Bee:'drop_bee.jpg', Whale:'drop_whale.jpg', Chocolate:'drop_chocolate.jpg', Mint:'drop_mint.jpg' }[fruit];
+    if (imgFile) return <img src={assetPath(`/images/game/${imgFile}`)} alt={fruit} style={{ width: s, height: s, objectFit: 'contain', pointerEvents: 'none', mixBlendMode: 'multiply' }} />;
+    // SVG fallback for items without generated images
+    const svgs = {
+      Coconut: <svg width={s} height={s} viewBox="0 0 40 40"><circle cx="20" cy="24" r="12" fill="#795548"/><circle cx="20" cy="24" r="10" fill="#8D6E63"/><circle cx="16" cy="22" r="2" fill="#5D4037"/><circle cx="24" cy="22" r="2" fill="#5D4037"/><circle cx="20" cy="27" r="1.5" fill="#5D4037"/></svg>,
+      Broccoli: <svg width={s} height={s} viewBox="0 0 40 40"><rect x="17" y="24" width="6" height="12" rx="2" fill="#689F38"/><circle cx="14" cy="18" r="7" fill="#4CAF50"/><circle cx="26" cy="18" r="7" fill="#4CAF50"/><circle cx="20" cy="14" r="7" fill="#66BB6A"/></svg>,
+      Tomato: <svg width={s} height={s} viewBox="0 0 40 40"><circle cx="20" cy="24" r="13" fill="#F44336"/><circle cx="20" cy="24" r="11" fill="#EF5350"/><path d="M14 12 Q17 8 20 12 Q23 8 26 12" fill="#4CAF50"/></svg>,
+      Rose: <svg width={s} height={s} viewBox="0 0 40 40"><circle cx="20" cy="18" r="5" fill="#C2185B"/><circle cx="14" cy="20" r="5" fill="#E91E63"/><circle cx="26" cy="20" r="5" fill="#E91E63"/><circle cx="16" cy="26" r="5" fill="#F06292"/><circle cx="24" cy="26" r="5" fill="#F06292"/><circle cx="20" cy="22" r="3" fill="#AD1457"/><path d="M20 30 L20 38" stroke="#4CAF50" strokeWidth="2"/></svg>,
+      Sunflower: <svg width={s} height={s} viewBox="0 0 40 40">{[0,45,90,135,180,225,270,315].map((a,i) => <ellipse key={i} cx={20+Math.cos(a*Math.PI/180)*10} cy={20+Math.sin(a*Math.PI/180)*10} rx="5" ry="3" fill="#FFEB3B" transform={`rotate(${a} ${20+Math.cos(a*Math.PI/180)*10} ${20+Math.sin(a*Math.PI/180)*10})`}/>)}<circle cx="20" cy="20" r="6" fill="#795548"/></svg>,
+      Lavender: <svg width={s} height={s} viewBox="0 0 40 40"><path d="M20 38 L20 16" stroke="#4CAF50" strokeWidth="2"/><circle cx="17" cy="16" r="3" fill="#9C27B0" opacity="0.7"/><circle cx="23" cy="16" r="3" fill="#9C27B0" opacity="0.7"/><circle cx="17" cy="20" r="3" fill="#9C27B0" opacity="0.78"/><circle cx="23" cy="20" r="3" fill="#9C27B0" opacity="0.78"/><circle cx="17" cy="24" r="3" fill="#9C27B0" opacity="0.86"/><circle cx="23" cy="24" r="3" fill="#9C27B0" opacity="0.86"/><circle cx="17" cy="28" r="3" fill="#9C27B0" opacity="0.94"/><circle cx="23" cy="28" r="3" fill="#9C27B0" opacity="0.94"/><circle cx="20" cy="12" r="3" fill="#AB47BC"/></svg>,
+      Fish: <svg width={s} height={s} viewBox="0 0 40 40"><ellipse cx="20" cy="22" rx="14" ry="9" fill="#2196F3"/><path d="M34 22 L40 14 L40 30Z" fill="#1976D2"/><circle cx="12" cy="20" r="2.5" fill="#FFF"/><circle cx="12" cy="20" r="1.5" fill="#333"/></svg>,
+      Octopus: <svg width={s} height={s} viewBox="0 0 40 40"><ellipse cx="20" cy="16" rx="10" ry="9" fill="#E91E63"/><circle cx="16" cy="14" r="2" fill="#FFF"/><circle cx="24" cy="14" r="2" fill="#FFF"/><circle cx="16" cy="14" r="1" fill="#333"/><circle cx="24" cy="14" r="1" fill="#333"/>{[8,14,20,26,32].map((x,i) => <path key={i} d={`M${x} 24 Q${x+(i%2?2:-2)} 32 ${x+1} 38`} stroke="#E91E63" strokeWidth="2.5" fill="none"/>)}</svg>,
+      Starfish: <svg width={s} height={s} viewBox="0 0 40 40"><path d="M20 4 L23 16 L36 16 L26 23 L30 36 L20 28 L10 36 L14 23 L4 16 L17 16Z" fill="#FF9800"/></svg>,
+      Sky: <svg width={s} height={s} viewBox="0 0 40 40"><rect x="4" y="4" width="32" height="32" rx="8" fill="#BBDEFB"/><path d="M10 22 Q14 16 20 20 Q26 16 30 22 Q34 18 36 22" fill="#FFF"/><circle cx="30" cy="12" r="5" fill="#FFEB3B"/></svg>,
+      Tree: <svg width={s} height={s} viewBox="0 0 40 40"><rect x="17" y="26" width="6" height="12" rx="1" fill="#795548"/><circle cx="20" cy="18" r="12" fill="#4CAF50"/><circle cx="14" cy="20" r="8" fill="#66BB6A"/><circle cx="26" cy="20" r="8" fill="#66BB6A"/></svg>,
+      Sun: <svg width={s} height={s} viewBox="0 0 40 40"><circle cx="20" cy="20" r="9" fill="#FFEB3B"/>{[0,45,90,135,180,225,270,315].map((a,i) => <line key={i} x1={20+Math.cos(a*Math.PI/180)*12} y1={20+Math.sin(a*Math.PI/180)*12} x2={20+Math.cos(a*Math.PI/180)*17} y2={20+Math.sin(a*Math.PI/180)*17} stroke="#FFEB3B" strokeWidth="2.5" strokeLinecap="round"/>)}</svg>,
+      Earth: <svg width={s} height={s} viewBox="0 0 40 40"><circle cx="20" cy="22" r="12" fill="#795548"/><circle cx="20" cy="22" r="10" fill="#8D6E63"/><path d="M14 18 Q17 14 20 18 Q23 14 26 18" fill="#4CAF50" opacity="0.5"/></svg>,
+      Frog: <svg width={s} height={s} viewBox="0 0 40 40"><ellipse cx="20" cy="26" rx="12" ry="8" fill="#4CAF50"/><circle cx="14" cy="16" r="5" fill="#66BB6A"/><circle cx="26" cy="16" r="5" fill="#66BB6A"/><circle cx="14" cy="15" r="2.5" fill="#FFF"/><circle cx="26" cy="15" r="2.5" fill="#FFF"/><circle cx="14" cy="15" r="1.5" fill="#333"/><circle cx="26" cy="15" r="1.5" fill="#333"/><path d="M16 28 Q20 31 24 28" stroke="#33691E" strokeWidth="1.5" fill="none"/></svg>,
+      Flamingo: <svg width={s} height={s} viewBox="0 0 40 40"><circle cx="20" cy="10" r="5" fill="#E91E63"/><path d="M20 15 Q18 22 20 30" stroke="#E91E63" strokeWidth="3" fill="none"/><line x1="20" y1="30" x2="18" y2="38" stroke="#FF9800" strokeWidth="2"/><line x1="20" y1="30" x2="22" y2="38" stroke="#FF9800" strokeWidth="2"/><circle cx="18" cy="9" r="1" fill="#333"/></svg>,
+      Bee: <svg width={s} height={s} viewBox="0 0 40 40"><ellipse cx="20" cy="24" rx="8" ry="10" fill="#FFEB3B"/><rect x="12" y="20" width="16" height="3" fill="#333"/><rect x="12" y="26" width="16" height="3" fill="#333"/><circle cx="20" cy="14" r="4" fill="#FFEB3B"/><circle cx="17" cy="13" r="1.5" fill="#333"/><circle cx="23" cy="13" r="1.5" fill="#333"/><ellipse cx="13" cy="18" rx="5" ry="3" fill="rgba(200,220,255,0.5)" transform="rotate(-30 13 18)"/><ellipse cx="27" cy="18" rx="5" ry="3" fill="rgba(200,220,255,0.5)" transform="rotate(30 27 18)"/></svg>,
+      Whale: <svg width={s} height={s} viewBox="0 0 40 40"><ellipse cx="20" cy="24" rx="15" ry="10" fill="#2196F3"/><circle cx="10" cy="22" r="2" fill="#FFF"/><circle cx="10" cy="22" r="1" fill="#333"/><path d="M35 24 Q38 16 34 14 Q36 20 33 22" fill="#1565C0"/></svg>,
+      Chocolate: <svg width={s} height={s} viewBox="0 0 40 40"><rect x="8" y="12" width="24" height="20" rx="3" fill="#8D6E63"/><line x1="16" y1="12" x2="16" y2="32" stroke="#6D4C41" strokeWidth="1"/><line x1="24" y1="12" x2="24" y2="32" stroke="#6D4C41" strokeWidth="1"/><line x1="8" y1="22" x2="32" y2="22" stroke="#6D4C41" strokeWidth="1"/></svg>,
+      Mint: <svg width={s} height={s} viewBox="0 0 40 40"><ellipse cx="20" cy="22" rx="12" ry="10" fill="#00BCD4"/><ellipse cx="20" cy="22" rx="10" ry="8" fill="#4DD0E1"/><path d="M20 14 L20 22 M16 18 L24 18" stroke="#006064" strokeWidth="1"/></svg>,
+    };
+    return svgs[fruit] || null;
+  };
+
+  const [roundIdx, setRoundIdx] = useState(0);
+  const [score, setScore] = useState(0);
+  const [gameComplete, setGameComplete] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
+  const [feedback, setFeedback] = useState(null);
+  const [confetti, setConfetti] = useState([]);
+  const [roundComplete, setRoundComplete] = useState(false);
+  const [dropPositions, setDropPositions] = useState([]);
+  const [usedDrops, setUsedDrops] = useState({});
+  const [glassFills, setGlassFills] = useState({});
+  const [dragging, setDragging] = useState(null);
+  const containerRef = useRef(null);
+  const glassRefs = useRef([]);
+  // Stable random stains for paper texture
+  const [stains] = useState(() => Array.from({length: 8}, () => ({
+    x: 5 + Math.random() * 90, y: 5 + Math.random() * 90,
+    r: 15 + Math.random() * 25,
+    color: ['#FFE0B2','#C8E6C9','#BBDEFB','#F8BBD0','#E1BEE7','#FFF9C4','#D7CCC8'][Math.floor(Math.random()*7)],
+    opacity: 0.15 + Math.random() * 0.12,
+  })));
+
+  const round = ROUNDS[roundIdx];
+  const progress = (roundIdx / TOTAL_ROUNDS) * 100;
+  const dropsNeededPerGlass = round ? Math.max(1, Math.floor(round.drops.filter(d => d.correct >= 0).length / round.glasses.length)) : 3;
+
+  useEffect(() => {
+    if (!round) return;
+    const positions = round.drops.map(() => ({
+      x: 8 + Math.random() * 84,
+      y: 5 + Math.random() * 38,
+    }));
+    setDropPositions(positions);
+    setUsedDrops({});
+    setGlassFills({});
+    setDragging(null);
+  }, [roundIdx]);
+
+  useEffect(() => {
+    if (showIntro) {
+      const t = setTimeout(() => setShowIntro(false), 2000);
+      return () => clearTimeout(t);
+    }
+  }, [showIntro, roundIdx]);
+
+  useEffect(() => {
+    if (!round || showIntro || roundComplete) return;
+    const allFull = round.glasses.every((_, i) => (glassFills[i] || 0) >= 0.95);
+    if (allFull) {
+      setTimeout(() => {
+        setScore(prev => prev + 10);
+        setConfetti(Array.from({ length: 14 }, (_, i) => ({
+          id: Date.now() + i, x: Math.random() * 100,
+          color: ['#F44336','#FF9800','#FFEB3B','#4CAF50','#2196F3','#9C27B0'][Math.floor(Math.random()*6)],
+          delay: Math.random() * 0.5,
+        })));
+        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
+        setRoundComplete(true);
+        setTimeout(() => setConfetti([]), 2000);
+      }, 300);
+    }
+  }, [glassFills]);
+
+  const handleDragStart = (e, dropIdx) => {
+    if (usedDrops[dropIdx] || roundComplete) return;
+    e.preventDefault();
+    const cX = e.touches ? e.touches[0].clientX : e.clientX;
+    const cY = e.touches ? e.touches[0].clientY : e.clientY;
+    setDragging({ dropIdx, currentX: cX, currentY: cY });
+  };
+  const handleDragMove = (e) => {
+    if (!dragging) return;
+    e.preventDefault();
+    const cX = e.touches ? e.touches[0].clientX : e.clientX;
+    const cY = e.touches ? e.touches[0].clientY : e.clientY;
+    setDragging(prev => ({ ...prev, currentX: cX, currentY: cY }));
+  };
+  const handleDragEnd = () => {
+    if (!dragging) return;
+    const dropData = round.drops[dragging.dropIdx];
+    let hitGlass = -1;
+    // Use actual glass element positions for accurate hit detection
+    round.glasses.forEach((_, gi) => {
+      const el = glassRefs.current[gi];
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const cx = dragging.currentX;
+      const cy = dragging.currentY;
+      if (cx >= r.left - 10 && cx <= r.right + 10 && cy >= r.top - 30 && cy <= r.bottom + 10) {
+        hitGlass = gi;
+      }
+    });
+    if (hitGlass >= 0) {
+      if (dropData.correct === hitGlass) {
+        if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
+        const inc = 1 / dropsNeededPerGlass;
+        setGlassFills(prev => ({ ...prev, [hitGlass]: Math.min(1, (prev[hitGlass] || 0) + inc) }));
+        setUsedDrops(prev => ({ ...prev, [dragging.dropIdx]: true }));
+      } else {
+        if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
+        setFeedback({ type: 'wrong', message: dropData.correct === -1 ? (lang === 'bm' ? 'Warna perangkap!' : 'Trap color!') : (lang === 'bm' ? 'Gelas salah!' : 'Wrong glass!') });
+        setTimeout(() => setFeedback(null), 800);
+      }
+    }
+    setDragging(null);
+  };
+
+  const nextRound = () => {
+    if (roundIdx + 1 < TOTAL_ROUNDS) {
+      setRoundIdx(roundIdx + 1); setShowIntro(true); setRoundComplete(false); setFeedback(null);
+    } else {
+      const stars = score >= 120 ? 3 : score >= 70 ? 2 : 1;
+      completeGame('colours', 'color-drops', stars, score);
+      setGameComplete(true);
+    }
+  };
+
+  if (gameComplete) {
+    const stars = score >= 120 ? 3 : score >= 70 ? 2 : 1;
+    return <GameCompleteModal lang={lang} stars={stars} score={score} accentColor={ACCENT}
+      onPlayAgain={() => { setRoundIdx(0); setScore(0); setGameComplete(false); setShowIntro(true); setRoundComplete(false); }}
+      onBack={() => goToWorld('colours')} />;
+  }
+  if (!round) return null;
+  const roundTitle = lang === 'bm' ? round.titleBm : round.titleEn;
+
+  return (
+    <div className="game-screen" style={{ touchAction: 'none' }}
+      onMouseMove={handleDragMove} onMouseUp={handleDragEnd}
+      onTouchMove={handleDragMove} onTouchEnd={handleDragEnd}>
+      <div className="game-body" style={{ padding: 0 }}>
+        <div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
+          <img src={assetPath('/images/game/color_drops_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.35, pointerEvents: "none" }} />
+          {confetti.map(c => (
+            <div key={c.id} style={{ position: 'absolute', left: `${c.x}%`, top: '-10px', width: 8, height: 8, background: c.color, borderRadius: '50%', zIndex: 60, animation: `confettiFall 1.5s ease-out ${c.delay}s forwards` }} />
+          ))}
+          <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%', width: '100%', maxWidth: 700, margin: '0 auto', padding: 'clamp(8px, 1.5vw, 14px)', gap: 'clamp(4px, 0.8vw, 8px)' }}>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(10px)', borderRadius: 'clamp(12px, 2.5vw, 20px)', padding: 'clamp(4px, 0.7vw, 6px) clamp(7px, 1.2vw, 12px)', boxShadow: '0 4px 20px rgba(156,39,176,0.12)', flexShrink: 0 }}>
+              <button onClick={() => goToWorld('colours')} style={{ background: `linear-gradient(135deg, #CE93D8, ${ACCENT})`, borderRadius: '50%', width: 'clamp(26px, 4.5vw, 34px)', height: 'clamp(26px, 4.5vw, 34px)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', boxShadow: '0 3px 10px rgba(156,39,176,0.3)' }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              </button>
+              <div style={{ textAlign: 'center', flex: 1 }}>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.55rem, 1.5vw, 0.75rem)', fontWeight: 800, color: ACCENT }}>{lang === 'bm' ? 'Titisan Warna Ajaib' : 'Magic Color Drops'}</div>
+                <div style={{ fontSize: '0.45rem', color: '#999', fontWeight: 500 }}>{roundIdx + 1}/{TOTAL_ROUNDS} | {score} pts</div>
+              </div>
+              <div style={{ background: 'rgba(156,39,176,0.1)', borderRadius: 10, padding: '2px 6px', fontFamily: 'var(--font-heading)', fontSize: '0.5rem', fontWeight: 700, color: ACCENT }}>{roundIdx + 1}</div>
+            </div>
+            {/* Progress */}
+            <div style={{ height: 4, background: 'rgba(0,0,0,0.06)', borderRadius: 2, overflow: 'hidden', flexShrink: 0 }}>
+              <div style={{ height: '100%', width: `${progress}%`, borderRadius: 2, background: `linear-gradient(90deg, #CE93D8, ${ACCENT})`, transition: 'width 0.5s ease' }} />
+            </div>
+
+            {showIntro ? (
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', animation: 'popIn 0.5s ease' }}>
+                <div style={{ background: 'rgba(255,255,255,0.95)', borderRadius: 24, padding: 'clamp(18px, 3.5vw, 28px)', textAlign: 'center', boxShadow: '0 8px 32px rgba(0,0,0,0.1)', maxWidth: 300 }}>
+                  <svg width="44" height="44" viewBox="0 0 60 60">
+                    <defs><radialGradient id={`dg${roundIdx}`} cx="40%" cy="35%"><stop offset="0%" stopColor={round.glasses[0]?.color} stopOpacity="0.6"/><stop offset="100%" stopColor={round.glasses[0]?.color} stopOpacity="0.9"/></radialGradient></defs>
+                    <path d="M30 5 C30 5 10 30 10 40 C10 51 19 58 30 58 C41 58 50 51 50 40 C50 30 30 5 30 5Z" fill={`url(#dg${roundIdx})`} stroke="rgba(0,0,0,0.1)" strokeWidth="1"/>
+                    <ellipse cx="22" cy="35" rx="5" ry="3" fill="rgba(255,255,255,0.4)" transform="rotate(-20 22 35)"/>
+                  </svg>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.9rem, 2.3vw, 1.2rem)', fontWeight: 800, color: ACCENT, marginTop: 6 }}>{roundTitle}</div>
+                  <div style={{ fontSize: 'clamp(0.6rem, 1.4vw, 0.75rem)', color: '#666', marginTop: 4, lineHeight: 1.3 }}>{lang === 'bm' ? round.instrBm : round.instrEn}</div>
+                  <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginTop: 10 }}>
+                    {round.glasses.map((g, i) => <div key={i}>{ITEM_ICON(g.fruit, 32)}</div>)}
+                  </div>
+                  <div style={{ display: 'inline-block', marginTop: 8, padding: '2px 10px', borderRadius: 16, background: 'rgba(156,39,176,0.08)', fontSize: '0.6rem', fontWeight: 600, color: ACCENT }}>
+                    {lang === 'bm' ? `Pusingan ${roundIdx + 1}` : `Round ${roundIdx + 1}`}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* PAPER AREA */}
+                <div style={{ flex: 1, position: 'relative', borderRadius: 14, boxShadow: '0 3px 16px rgba(0,0,0,0.06)', minHeight: 0, overflow: 'hidden',
+                  background: 'linear-gradient(145deg, #FFF8F0 0%, #FDF0E8 30%, #FFF5EE 60%, #F8F4FF 100%)' }}>
+                  {/* Watercolor stains */}
+                  {stains.map((s, i) => (
+                    <div key={`stain${i}`} style={{
+                      position: 'absolute', left: `${s.x}%`, top: `${s.y}%`,
+                      width: s.r * 2, height: s.r * 2, borderRadius: '50%',
+                      background: `radial-gradient(circle, ${s.color} 0%, transparent 70%)`,
+                      opacity: s.opacity, transform: 'translate(-50%, -50%)',
+                      pointerEvents: 'none',
+                    }} />
+                  ))}
+                  {/* Paper texture dots */}
+                  {Array.from({ length: 40 }).map((_, i) => (
+                    <div key={`dot${i}`} style={{ position: 'absolute', left: `${5 + Math.random() * 90}%`, top: `${3 + Math.random() * 44}%`, width: 2 + Math.random() * 2, height: 2 + Math.random() * 2, borderRadius: '50%', background: 'rgba(200,180,160,0.12)', pointerEvents: 'none' }} />
+                  ))}
+
+                  {/* Instruction */}
+                  <div style={{ position: 'absolute', top: 4, left: 0, right: 0, textAlign: 'center', fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.5rem, 1.2vw, 0.6rem)', fontWeight: 600, color: '#bbb', zIndex: 2 }}>
+                    {lang === 'bm' ? 'Seret titisan ke gelas yang betul' : 'Drag drops to the right glass'}
+                  </div>
+
+                  {/* Scattered drops */}
+                  {round.drops.map((drop, di) => {
+                    if (usedDrops[di]) return null;
+                    const isDrag = dragging?.dropIdx === di;
+                    const pos = dropPositions[di] || { x: 50, y: 25 };
+                    return (
+                      <div key={`drop-${roundIdx}-${di}`}
+                        onMouseDown={(e) => handleDragStart(e, di)}
+                        onTouchStart={(e) => handleDragStart(e, di)}
+                        style={{
+                          position: isDrag ? 'fixed' : 'absolute',
+                          left: isDrag ? dragging.currentX - 16 : `${pos.x}%`,
+                          top: isDrag ? dragging.currentY - 16 : `${pos.y}%`,
+                          width: 'clamp(26px, 5.5vw, 36px)', height: 'clamp(26px, 5.5vw, 36px)',
+                          borderRadius: '50%', cursor: 'grab',
+                          background: `radial-gradient(circle at 32% 32%, ${drop.color}AA, ${drop.color})`,
+                          boxShadow: isDrag ? `0 8px 24px ${drop.color}60, 0 0 20px ${drop.color}30` : `0 3px 10px ${drop.color}50, inset 0 -2px 4px rgba(0,0,0,0.1)`,
+                          transform: isDrag ? 'scale(1.35)' : 'scale(1)',
+                          transition: isDrag ? 'none' : 'transform 0.2s ease',
+                          zIndex: isDrag ? 100 : 10,
+                          touchAction: 'none',
+                          animation: isDrag ? undefined : `characterBob 3s ease-in-out ${di * 0.15}s infinite`,
+                        }}>
+                        <div style={{ position: 'absolute', top: '15%', left: '20%', width: '28%', height: '18%', borderRadius: '50%', background: 'rgba(255,255,255,0.5)', transform: 'rotate(-25deg)' }} />
+                      </div>
+                    );
+                  })}
+
+                  {/* GLASSES */}
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, display: 'flex', justifyContent: 'space-evenly', alignItems: 'flex-end', padding: 'clamp(3px, 0.8vw, 8px)', height: '46%' }}>
+                    {round.glasses.map((glass, gi) => {
+                      const fill = glassFills[gi] || 0;
+                      const mxW = round.glasses.length <= 3 ? 100 : round.glasses.length <= 4 ? 80 : round.glasses.length <= 5 ? 65 : 55;
+                      const iconSz = round.glasses.length > 5 ? 30 : round.glasses.length > 4 ? 36 : round.glasses.length > 3 ? 40 : 48;
+                      return (
+                        <div key={gi} ref={el => glassRefs.current[gi] = el} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, flex: 1, maxWidth: mxW }}>
+                          <div style={{ animation: fill >= 0.95 ? 'characterBob 1s ease-in-out infinite' : undefined }}>
+                            {ITEM_ICON(glass.fruit, iconSz)}
+                          </div>
+                          <div style={{
+                            position: 'relative', width: '100%', aspectRatio: '0.5',
+                            background: 'linear-gradient(180deg, rgba(220,235,255,0.2), rgba(200,220,240,0.12))',
+                            border: '2px solid rgba(0,0,0,0.07)',
+                            borderBottom: '3px solid rgba(0,0,0,0.1)',
+                            borderRadius: '3px 3px 10px 10px',
+                            overflow: 'hidden',
+                            boxShadow: fill >= 0.95 ? `0 0 18px ${glass.color}50` : '0 2px 6px rgba(0,0,0,0.04)',
+                          }}>
+                            <div style={{
+                              position: 'absolute', bottom: 0, left: 0, right: 0,
+                              height: `${fill * 100}%`,
+                              background: `linear-gradient(180deg, ${glass.color}70, ${glass.color}BB)`,
+                              borderRadius: '0 0 8px 8px',
+                              transition: 'height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                            }}>
+                              {fill > 0.05 && <div style={{ position: 'absolute', top: -3, left: -4, right: -4, height: 8, background: `${glass.color}50`, borderRadius: '50%' }} />}
+                              {fill > 0.25 && [0,1,2].map(b => (
+                                <div key={b} style={{ position: 'absolute', left: `${18+b*28}%`, bottom: `${8+b*22}%`, width: 3+b, height: 3+b, borderRadius: '50%', background: 'rgba(255,255,255,0.35)', animation: `characterBob 2s ease-in-out ${b*0.3}s infinite` }} />
+                              ))}
+                            </div>
+                            <div style={{ position: 'absolute', top: 0, left: '6%', width: '12%', height: '75%', background: 'linear-gradient(180deg, rgba(255,255,255,0.3), transparent)', borderRadius: 3 }} />
+                          </div>
+                          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.4rem, 1vw, 0.55rem)', fontWeight: 700, color: glass.color, textAlign: 'center', lineHeight: 1 }}>
+                            {lang === 'bm' ? glass.colorName : glass.colorNameEn}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Round complete */}
+                {roundComplete && (
+                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 40, animation: 'popIn 0.3s ease' }}>
+                    <div style={{ background: 'rgba(255,255,255,0.97)', borderRadius: 24, padding: 'clamp(16px, 3.5vw, 26px)', textAlign: 'center', boxShadow: '0 12px 40px rgba(0,0,0,0.15)', maxWidth: 260 }}>
+                      <svg width="40" height="40" viewBox="0 0 50 50"><circle cx="25" cy="25" r="22" fill="#4CAF50"/><path d="M15 25 L22 32 L35 18" stroke="#fff" strokeWidth="3.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.85rem, 2.2vw, 1.1rem)', fontWeight: 800, color: ACCENT, marginTop: 6 }}>{lang === 'bm' ? 'Gelas Penuh!' : 'Glasses Full!'}</div>
+                      <div style={{ fontSize: '0.7rem', color: '#666', marginTop: 3 }}>{roundTitle}</div>
+                      <button onClick={nextRound} style={{ marginTop: 12, padding: '8px 24px', borderRadius: 18, background: `linear-gradient(135deg, #CE93D8, ${ACCENT})`, color: '#fff', border: 'none', fontFamily: 'var(--font-heading)', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 15px rgba(156,39,176,0.3)' }}>
+                        {roundIdx + 1 < TOTAL_ROUNDS ? (lang === 'bm' ? 'Seterusnya' : 'Next') : (lang === 'bm' ? 'Selesai!' : 'Finish!')}
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {/* Feedback */}
+                {feedback && (
+                  <div style={{ position: 'absolute', top: '38%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 50, animation: 'popIn 0.3s ease' }}>
+                    <div style={{ padding: 'clamp(8px, 2vw, 14px) clamp(16px, 4vw, 30px)', borderRadius: 18, fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.8rem, 2vw, 1rem)', fontWeight: 800, background: 'rgba(255,107,107,0.95)', color: '#fff', boxShadow: '0 6px 24px rgba(0,0,0,0.15)' }}>
+                      {feedback.message}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+// ============================================
 // BUILD VEHICLE GAME (Bina Kenderaan)
 // 15-round vehicle quiz! Identify vehicle parts and pick correct answers!
 // ============================================
@@ -7900,7 +8374,7 @@ export function BuildVehicleGame() {
   if (!round) return null;
 
   const parts = lang === 'bm' ? round.partsBm : round.partsEn;
-  const categoryEmoji = round.category === 'udara' ? '✈️' : round.category === 'air' ? '🚢' : '🚗';
+  // Category labels (no emoji)
   const categoryLabel = lang === 'bm'
     ? (round.category === 'udara' ? 'Udara' : round.category === 'air' ? 'Air' : 'Darat')
     : (round.category === 'udara' ? 'Air' : round.category === 'air' ? 'Water' : 'Land');
@@ -7939,10 +8413,10 @@ export function BuildVehicleGame() {
 
               <div style={{ textAlign: 'center', flex: 1 }}>
                 <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.7rem, 2vw, 0.9rem)', fontWeight: 800, color: ACCENT }}>
-                  {lang === 'bm' ? 'Bina Kenderaan' : 'Build Vehicle'} 🔧
+                  {lang === 'bm' ? 'Bina Kenderaan' : 'Build Vehicle'}
                 </div>
                 <div style={{ fontSize: '0.6rem', color: '#999', fontWeight: 500 }}>
-                  {roundIdx + 1}/{TOTAL_ROUNDS} · ⭐ {score}
+                  {roundIdx + 1}/{TOTAL_ROUNDS} · {score} pts
                 </div>
               </div>
 
@@ -7950,7 +8424,7 @@ export function BuildVehicleGame() {
                 background: 'rgba(230,81,0,0.1)', borderRadius: 12, padding: '4px 10px',
                 fontFamily: 'var(--font-heading)', fontSize: '0.65rem', fontWeight: 700, color: ACCENT,
               }}>
-                {streak > 0 && `🔥${streak}`}
+                {streak > 0 && `x${streak}`}
               </div>
             </div>
 
@@ -7973,7 +8447,7 @@ export function BuildVehicleGame() {
                   background: 'rgba(255,255,255,0.95)', borderRadius: 24, padding: 'clamp(20px, 4vw, 32px)',
                   textAlign: 'center', boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
                 }}>
-                  <GI e={round.img} size={80} />
+                  <img src={assetPath(`/images/vehicles/${round.img}.jpg`)} alt={vName} style={{ width: 120, height: 120, objectFit: 'contain', borderRadius: 16, animation: 'characterBob 2s ease-in-out infinite' }} />
                   <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.2rem, 3vw, 1.6rem)', fontWeight: 800, color: ACCENT, marginTop: 12 }}>
                     {lang === 'bm' ? `Bina ${vName}!` : `Build a ${vName}!`}
                   </div>
@@ -7981,7 +8455,7 @@ export function BuildVehicleGame() {
                     display: 'inline-block', marginTop: 8, padding: '4px 14px', borderRadius: 20,
                     background: 'rgba(230,81,0,0.08)', fontSize: '0.75rem', fontWeight: 600, color: ACCENT,
                   }}>
-                    {categoryEmoji} {categoryLabel}
+                    {categoryLabel}
                   </div>
                 </div>
               </div>
@@ -7993,13 +8467,13 @@ export function BuildVehicleGame() {
                   boxShadow: '0 4px 16px rgba(0,0,0,0.06)', textAlign: 'center', flexShrink: 0,
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 8 }}>
-                    <GI e={round.img} size={48} />
+                    <img src={assetPath(`/images/vehicles/${round.img}.jpg`)} alt={vName} style={{ width: 56, height: 56, objectFit: 'contain', borderRadius: 12 }} />
                     <div>
                       <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(1rem, 2.5vw, 1.3rem)', fontWeight: 800, color: ACCENT }}>
                         {vName}
                       </div>
                       <div style={{ fontSize: '0.65rem', color: '#999' }}>
-                        {categoryEmoji} {categoryLabel}
+                        {categoryLabel}
                       </div>
                     </div>
                   </div>
@@ -8071,7 +8545,7 @@ export function BuildVehicleGame() {
                       background: feedback.type === 'correct' ? 'rgba(107,203,119,0.95)' : 'rgba(255,107,107,0.95)',
                       color: '#fff', boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
                     }}>
-                      {feedback.type === 'correct' ? '✅ ' : '❌ '}{feedback.message}
+                      {feedback.message}
                     </div>
                   </div>
                 )}

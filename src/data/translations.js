@@ -97,6 +97,14 @@ const translations = {
       'animal-food': { name: 'Apa Dia Makan?', desc: 'Beri makan haiwan!' },
       'animal-encyclopedia': { name: 'Ensaiklopedia', desc: 'Kumpul lencana haiwan!' },
       'mimic-animal': { name: 'Tiru Haiwan', desc: 'Berlakon macam haiwan!' },
+      'colour-mixing': { name: 'Campur Warna', desc: 'Campurkan warna di makmal!' },
+      'magic-colouring': { name: 'Mewarna Ajaib', desc: 'Warnakan dan lihat ia bergerak!' },
+      'match-colour': { name: 'Padankan Warna', desc: 'Padankan nama dengan warna!' },
+      'sock-pairs': { name: 'Ingatan Ajaib', desc: 'Cari pasangan yang sama!' },
+      'colour-hunter': { name: 'Teka Warna', desc: 'Teka warna setiap benda!' },
+      'color-drops': { name: 'Titisan Warna Ajaib', desc: 'Seret titisan warna ke gelas yang betul!' },
+      'free-draw': { name: 'Lukis Bersama', desc: 'Kanvas lukisan bebas!' },
+      'build-vehicle': { name: 'Bina Kenderaan', desc: 'Kenal pasti kenderaan!' },
     },
     
     // Encouragements (random)
@@ -223,6 +231,14 @@ const translations = {
       'animal-food': { name: 'What Do They Eat?', desc: 'Feed the animals!' },
       'animal-encyclopedia': { name: 'Encyclopedia', desc: 'Collect animal badges!' },
       'mimic-animal': { name: 'Mimic Animal', desc: 'Act like an animal!' },
+      'colour-mixing': { name: 'Colour Mixing', desc: 'Mix colours in the lab!' },
+      'magic-colouring': { name: 'Magic Colouring', desc: 'Colour and watch it animate!' },
+      'match-colour': { name: 'Match Colour', desc: 'Match names to colours!' },
+      'sock-pairs': { name: 'Magic Memory', desc: 'Find matching pairs!' },
+      'colour-hunter': { name: 'Guess the Colour', desc: 'Guess the colour of each item!' },
+      'color-drops': { name: 'Magic Color Drops', desc: 'Drag colour drops to the right glass!' },
+      'free-draw': { name: 'Draw Together', desc: 'Free drawing canvas!' },
+      'build-vehicle': { name: 'Build Vehicle', desc: 'Identify vehicles!' },
     },
     
     // Encouragements
