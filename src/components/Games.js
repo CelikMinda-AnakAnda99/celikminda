@@ -792,7 +792,7 @@ export function BeeFlowerGame() {
               boxShadow: '0 6px 24px rgba(0,0,0,0.2)',
               animation: 'fadeInUp 0.3s ease-out',
             }}>
-              {feedback.type === 'correct' ? '🍯 ' : ''}{feedback.message}
+              {feedback.message}
             </div>
           )}
 
@@ -2530,7 +2530,7 @@ export function MatchColourGame() {
       setStreak(newStreak);
       const bonus = newStreak >= 3 ? 15 : 10;
       setScore(prev => prev + bonus);
-      setFeedback({ type: 'correct', message: lang === 'bm' ? (newStreak >= 3 ? '🔥 Hebat Sangat!' : '✅ Betul!') : (newStreak >= 3 ? '🔥 Amazing!' : '✅ Correct!') });
+      setFeedback({ type: 'correct', message: lang === 'bm' ? (newStreak >= 3 ? 'Hebat Sangat!' : 'Betul!') : (newStreak >= 3 ? 'Amazing!' : 'Correct!') });
 
       // Play random correct sound
       const snd = CORRECT_SOUNDS[Math.floor(Math.random() * CORRECT_SOUNDS.length)];
@@ -2562,7 +2562,7 @@ export function MatchColourGame() {
       }, 1200);
     } else {
       setStreak(0);
-      setFeedback({ type: 'wrong', message: lang === 'bm' ? '❌ Cuba lagi!' : '❌ Try again!' });
+      setFeedback({ type: 'wrong', message: lang === 'bm' ? 'Cuba lagi!' : 'Try again!' });
       const snd = WRONG_SOUNDS[Math.floor(Math.random() * WRONG_SOUNDS.length)];
       playAudio(snd);
       setTimeout(() => { setFeedback(null); setSelectedIdx(null); }, 1000);
@@ -2574,7 +2574,7 @@ export function MatchColourGame() {
   if (!targetColour) return <div className="game-container" />;
 
   return (
-    <div className="game-container" style={{ position: 'relative', overflow: 'hidden' }}>
+    <div className="game-screen" style={{ position: 'relative', overflow: 'hidden' }}>
       {/* Background */}
       <img src={assetPath('/images/game/padankan_warna_bg.jpg')} alt="" style={{
         position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
@@ -2638,7 +2638,7 @@ export function MatchColourGame() {
             color: '#FF6B00', fontWeight: 700, marginBottom: 6,
             animation: 'pulse 0.5s ease',
           }}>
-            🔥 {lang === 'bm' ? `Kombo ${streak}x!` : `${streak}x Streak!`}
+            {lang === 'bm' ? `Kombo ${streak}x!` : `${streak}x Streak!`}
           </div>
         )}
 
@@ -2654,7 +2654,7 @@ export function MatchColourGame() {
             fontFamily: 'var(--font-heading)', fontWeight: 600,
             fontSize: 'clamp(0.75rem, 2vw, 0.95rem)', color: '#888', margin: 0, marginBottom: 4,
           }}>
-            {lang === 'bm' ? '🎨 Cari warna ini:' : '🎨 Find this colour:'}
+            {lang === 'bm' ? 'Cari warna ini:' : 'Find this colour:'}
           </p>
           <p style={{
             fontFamily: 'var(--font-heading)', fontWeight: 900,
@@ -2747,197 +2747,291 @@ export function MatchColourGame() {
 
 // ============================================
 // SORT TRANSPORT GAME (Susun Kenderaan)
-// Sort vehicles into Land, Air, or Water!
+// "Bantu Kenderaan Pulang ke Tempatnya"
+// Rebuilt: 15 rounds, HD images, visual zones, hints, GameCompleteModal
 // ============================================
 export function SortTransportGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const CATEGORIES = [
-    { id: 'land', emoji: '🛤️', nameBm: 'Darat', nameEn: 'Land', color: '#A5D6A7' },
-    { id: 'air', emoji: '☁️', nameBm: 'Udara', nameEn: 'Air', color: '#90CAF9' },
-    { id: 'water', emoji: '🌊', nameBm: 'Air', nameEn: 'Water', color: '#80DEEA' },
-  ];
-
-  const VEHICLES = [
-    { emoji: '🚗', image: assetPath('/transport/car.jpg'), nameBm: 'Kereta', nameEn: 'Car', category: 'land' },
-    { emoji: '🚌', image: assetPath('/transport/bus.jpg'), nameBm: 'Bas', nameEn: 'Bus', category: 'land' },
-    { emoji: '🚲', image: assetPath('/transport/bicycle.jpg'), nameBm: 'Basikal', nameEn: 'Bicycle', category: 'land' },
-    { emoji: '🏍️', image: assetPath('/transport/motorcycle.jpg'), nameBm: 'Motosikal', nameEn: 'Motorcycle', category: 'land' },
-    { emoji: '🚂', image: assetPath('/transport/train.jpg'), nameBm: 'Keretapi', nameEn: 'Train', category: 'land' },
-    { emoji: '🚑', image: assetPath('/transport/ambulance.jpg'), nameBm: 'Ambulans', nameEn: 'Ambulance', category: 'land' },
-    { emoji: '✈️', image: assetPath('/transport/airplane.jpg'), nameBm: 'Kapal Terbang', nameEn: 'Airplane', category: 'air' },
-    { emoji: '🚁', image: assetPath('/transport/helicopter.jpg'), nameBm: 'Helikopter', nameEn: 'Helicopter', category: 'air' },
-    { emoji: '🎈', image: assetPath('/transport/balloon.jpg'), nameBm: 'Belon Udara', nameEn: 'Hot Air Balloon', category: 'air' },
-    { emoji: '🚀', image: assetPath('/transport/rocket.jpg'), nameBm: 'Roket', nameEn: 'Rocket', category: 'air' },
-    { emoji: '🚢', image: assetPath('/transport/ship.jpg'), nameBm: 'Kapal', nameEn: 'Ship', category: 'water' },
-    { emoji: '⛵', image: assetPath('/transport/sailboat.jpg'), nameBm: 'Perahu Layar', nameEn: 'Sailboat', category: 'water' },
-    { emoji: '🛶', image: assetPath('/transport/kayak.jpg'), nameBm: 'Kayak', nameEn: 'Kayak', category: 'water' },
-    { emoji: '🚤', image: assetPath('/transport/speedboat.jpg'), nameBm: 'Bot Laju', nameEn: 'Speedboat', category: 'water' },
-  ];
-
+  const ACCENT = '#FF6D00';
+  const ACCENT_LIGHT = '#FF9E40';
   const TOTAL_ROUNDS = 15;
 
-  const [round, setRound] = useState(1);
+  const ZONES = [
+    { id: 'land', nameBm: 'Darat', nameEn: 'Land', color: '#66BB6A', gradient: 'linear-gradient(135deg, #A5D6A7, #66BB6A)', icon: 'road' },
+    { id: 'air', nameBm: 'Udara', nameEn: 'Air', color: '#42A5F5', gradient: 'linear-gradient(135deg, #90CAF9, #42A5F5)', icon: 'cloud' },
+    { id: 'water', nameBm: 'Air', nameEn: 'Water', color: '#26C6DA', gradient: 'linear-gradient(135deg, #80DEEA, #26C6DA)', icon: 'wave' },
+  ];
+
+  const ALL_VEHICLES = useMemo(() => [
+    { id: 'car', img: '/transport/car.jpg', nameBm: 'Kereta', nameEn: 'Car', zone: 'land' },
+    { id: 'bus', img: '/transport/bus.jpg', nameBm: 'Bas', nameEn: 'Bus', zone: 'land' },
+    { id: 'bicycle', img: '/images/vehicles/bicycle.jpg', nameBm: 'Basikal', nameEn: 'Bicycle', zone: 'land' },
+    { id: 'motorcycle', img: '/transport/motorcycle.jpg', nameBm: 'Motosikal', nameEn: 'Motorcycle', zone: 'land' },
+    { id: 'train', img: '/transport/train.jpg', nameBm: 'Kereta Api', nameEn: 'Train', zone: 'land' },
+    { id: 'ambulance', img: '/transport/ambulance.jpg', nameBm: 'Ambulans', nameEn: 'Ambulance', zone: 'land' },
+    { id: 'van', img: '/images/vehicles/truck.jpg', nameBm: 'Van', nameEn: 'Van', zone: 'land' },
+    { id: 'airplane', img: '/transport/airplane.jpg', nameBm: 'Kapal Terbang', nameEn: 'Airplane', zone: 'air' },
+    { id: 'helicopter', img: '/transport/helicopter.jpg', nameBm: 'Helikopter', nameEn: 'Helicopter', zone: 'air' },
+    { id: 'balloon', img: '/transport/balloon.jpg', nameBm: 'Belon Udara', nameEn: 'Hot Air Balloon', zone: 'air' },
+    { id: 'rocket', img: '/transport/rocket.jpg', nameBm: 'Roket', nameEn: 'Rocket', zone: 'air' },
+    { id: 'ship', img: '/transport/ship.jpg', nameBm: 'Kapal', nameEn: 'Ship', zone: 'water' },
+    { id: 'sailboat', img: '/transport/sailboat.jpg', nameBm: 'Perahu Layar', nameEn: 'Sailboat', zone: 'water' },
+    { id: 'kayak', img: '/transport/kayak.jpg', nameBm: 'Kayak', nameEn: 'Kayak', zone: 'water' },
+    { id: 'speedboat', img: '/transport/speedboat.jpg', nameBm: 'Bot Laju', nameEn: 'Speedboat', zone: 'water' },
+  ], []);
+
+  const [rounds, setRounds] = useState(() =>
+    [...ALL_VEHICLES].sort(() => Math.random() - 0.5).slice(0, TOTAL_ROUNDS)
+  );
+  const [roundIdx, setRoundIdx] = useState(0);
   const [score, setScore] = useState(0);
-  const [currentVehicle, setCurrentVehicle] = useState(VEHICLES[0]);
+  const [streak, setStreak] = useState(0);
+  const [wrongCount, setWrongCount] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
-  const [confettiPieces, setConfettiPieces] = useState([]);
+  const [confetti, setConfetti] = useState([]);
+  const [sorted, setSorted] = useState([]);
 
-  const generateRound = useCallback((roundNum) => {
-    const vehicle = VEHICLES[Math.floor(Math.random() * VEHICLES.length)];
-    setCurrentVehicle(vehicle);
-    setFeedback(null);
-  }, []);
+  const vehicle = rounds[roundIdx];
+  const vName = lang === 'bm' ? vehicle?.nameBm : vehicle?.nameEn;
+  const progress = ((roundIdx) / TOTAL_ROUNDS) * 100;
 
-  useEffect(() => { generateRound(1); }, [generateRound]);
-
-  const handleCategoryTap = (category) => {
+  const handleZoneTap = (zone) => {
     if (feedback) return;
 
-    if (category.id === currentVehicle.category) {
-      setScore(prev => prev + 10);
-      setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
+    if (zone.id === vehicle.zone) {
+      const newStreak = streak + 1;
+      setStreak(newStreak);
+      const bonus = newStreak >= 3 ? 15 : 10;
+      setScore(prev => prev + bonus);
+      setSorted(prev => [...prev, { ...vehicle, zoneColor: zone.color }]);
+      setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled), zone: zone.id });
 
       setTimeout(() => {
-        if (round >= TOTAL_ROUNDS) {
-          const finalScore = score + 10;
-          const stars = finalScore >= 80 ? 3 : finalScore >= 50 ? 2 : 1;
+        setFeedback(null);
+        setWrongCount(0);
+        if (roundIdx + 1 >= TOTAL_ROUNDS) {
+          const finalScore = score + bonus;
+          const stars = finalScore >= 180 ? 3 : finalScore >= 100 ? 2 : 1;
           completeGame('transport', 'sort-transport', stars, finalScore);
-          setGameComplete(true);
-          celebrationFeedback(lang, soundEnabled);
-          const colors = ['#FF6B9D', '#FFD93D', '#4A90D9', '#6BCB77', '#FF8C42'];
-          setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
+          if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
+          const colors = ['#66BB6A', '#42A5F5', '#26C6DA', '#FFD93D', '#FF6D00', '#9B72CF'];
+          setConfetti(Array.from({ length: 60 }, (_, i) => ({
             id: i, left: Math.random() * 100, color: colors[i % colors.length],
             delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
           })));
+          setGameComplete(true);
         } else {
-          setRound(prev => prev + 1);
-          generateRound(round + 1);
+          setRoundIdx(prev => prev + 1);
         }
-      }, 1200);
+      }, 1000);
     } else {
+      setStreak(0);
+      setWrongCount(prev => prev + 1);
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, soundEnabled) });
-      setTimeout(() => setFeedback(null), 1000);
+      setTimeout(() => setFeedback(null), 900);
     }
   };
 
-  const getStars = () => score >= 80 ? 3 : score >= 50 ? 2 : 1;
+  const getStars = () => score >= 180 ? 3 : score >= 100 ? 2 : 1;
+
+  if (!vehicle) return null;
+
+  // Zone icons as SVG paths
+  const zoneIcons = {
+    road: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 18V6c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2zM8.5 12.5l2.5 3.01L14.5 11l4.5 6H5l3.5-4.5z"/></svg>,
+    cloud: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04A7.49 7.49 0 0012 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 000 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>,
+    wave: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M21 14c-1.1 0-1.82-.63-2.44-1.13-.55-.45-1.01-.87-1.56-.87s-1.01.42-1.56.87c-.62.5-1.34 1.13-2.44 1.13s-1.82-.63-2.44-1.13c-.55-.45-1.01-.87-1.56-.87s-1.01.42-1.56.87C6.82 13.37 6.1 14 5 14c-1.1 0-1.82-.63-2.44-1.13C2.01 12.42 1.55 12 1 12v2c1.1 0 1.82.63 2.44 1.13.55.45 1.01.87 1.56.87s1.01-.42 1.56-.87C7.18 14.63 7.9 14 9 14s1.82.63 2.44 1.13c.55.45 1.01.87 1.56.87s1.01-.42 1.56-.87c.62-.5 1.34-1.13 2.44-1.13s1.82.63 2.44 1.13c.55.45 1.01.87 1.56.87V14z"/></svg>,
+  };
 
   return (
-    <div className="game-screen">
-      <div className="game-header">
-        <button className="back-btn" onClick={() => goToWorld('transport')}>←</button>
-        <span className="game-title">
-          {lang === 'bm' ? 'Susun Kenderaan' : 'Sort Transport'}
-        </span>
-        <div className="game-stars">
-          {[1, 2, 3].map(s => <span key={s} className={s <= getStars() ? 'star-earned' : 'star-empty'}><StarIcon size={20} /></span>)}
-        </div>
-      </div>
-
-      <div className="game-body">
-        <div style={{
-          width: '100%', height: '100%', position: 'relative',
-          borderRadius: 0, overflow: 'hidden',
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          padding: 'var(--space-lg)',
-        }}>
-          <img src={assetPath('/images/game/transport_bg.jpg')} alt="" style={{
+    <div className="game-screen" style={{ touchAction: 'none' }}>
+      <div className="game-body" style={{ padding: 0 }}>
+        <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
+          <img src={assetPath('/images/game/sort_transport_bg.jpg')} alt="" style={{
             position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-            objectFit: 'cover', zIndex: 0, opacity: 0.3,
+            objectFit: 'cover', zIndex: 0, opacity: 0.45, pointerEvents: 'none',
           }} />
-          {/* Round & Score */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: 'var(--space-lg)' }}>
-            <div className="round-counter" style={{ position: 'static' }}>{t('round', lang)} {round}/{TOTAL_ROUNDS}</div>
-            <div className="game-score" style={{ position: 'static' }}>
-              <span className="score-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#10B981" style={{ display: "inline-block", verticalAlign: "middle" }}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg></span><span className="score-value">{score}</span>
-            </div>
-          </div>
 
-          {/* Vehicle to sort */}
           <div style={{
-            width: 160, height: 160, borderRadius: 'var(--radius-full)',
-            background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(12px)',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            boxShadow: 'var(--shadow-lg)', marginBottom: 'var(--space-md)',
-            border: '3px solid rgba(255,255,255,0.6)',
-            animation: 'characterBob 2s ease-in-out infinite',
+            position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column',
+            height: '100%', width: '100%', maxWidth: 500, margin: '0 auto',
+            padding: 'clamp(8px, 2vw, 14px)', gap: 'clamp(6px, 1.5vw, 10px)',
           }}>
-            {currentVehicle.image ? (
-              <img src={currentVehicle.image} alt={lang === 'bm' ? currentVehicle.nameBm : currentVehicle.nameEn}
-                style={{ width: 100, height: 100, objectFit: 'contain', borderRadius: 'var(--radius-md)' }} />
-            ) : (
-              <GI e={currentVehicle.emoji} size={64} />
-            )}
-            <span style={{
-              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.85rem',
-              color: 'var(--text-primary)', marginTop: 4,
-            }}>
-              {lang === 'bm' ? currentVehicle.nameBm : currentVehicle.nameEn}
-            </span>
-          </div>
-
-          <p style={{
-            fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.2rem',
-            color: 'var(--text-primary)', marginBottom: 'var(--space-lg)',
-          }}>
-            {lang === 'bm' ? 'Kenderaan ini bergerak di mana?' : 'Where does this vehicle travel?'}
-          </p>
-
-          {/* Category choices */}
-          <div style={{
-            display: 'flex', gap: 'var(--space-md)', width: '100%',
-            maxWidth: 500, justifyContent: 'center',
-          }}>
-            {CATEGORIES.map((cat, i) => (
-              <button key={cat.id} onClick={() => handleCategoryTap(cat)} style={{
-                flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
-                gap: 'var(--space-sm)', padding: 'var(--space-lg)',
-                background: feedback?.type === 'correct' && cat.id === currentVehicle.category
-                  ? 'linear-gradient(135deg, #6BCB77, #48C9B0)' : cat.color,
-                borderRadius: 'var(--radius-lg)',
-                border: feedback?.type === 'correct' && cat.id === currentVehicle.category
-                  ? '3px solid var(--cm-green)' : '3px solid rgba(255,255,255,0.6)',
-                boxShadow: 'var(--shadow-card)', cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                animation: `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.1}s both`,
-              }}>
-                <GI e={cat.emoji} size={40} />
-                <span style={{
-                  fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1rem',
-                  color: feedback?.type === 'correct' && cat.id === currentVehicle.category ? 'white' : 'var(--text-primary)',
-                }}>
-                  {lang === 'bm' ? cat.nameBm : cat.nameEn}
-                </span>
-              </button>
-            ))}
-          </div>
-
-          {/* Feedback */}
-          {feedback && (
+            {/* Header */}
             <div style={{
-              marginTop: 'var(--space-lg)', padding: '10px 24px', borderRadius: 'var(--radius-full)',
-              background: feedback.type === 'correct'
-                ? 'linear-gradient(135deg, #6BCB77, #48C9B0)'
-                : 'linear-gradient(135deg, #FF6B6B, #ee5a24)',
-              color: 'white', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.1rem',
-              boxShadow: 'var(--shadow-md)',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(10px)',
+              borderRadius: 'clamp(16px, 3vw, 24px)', padding: 'clamp(6px, 1vw, 10px) clamp(10px, 1.5vw, 16px)',
+              boxShadow: '0 4px 20px rgba(255,109,0,0.12)', flexShrink: 0,
             }}>
-              {feedback.message}
+              <button onClick={() => goToWorld('transport')} style={{
+                background: `linear-gradient(135deg, ${ACCENT_LIGHT}, ${ACCENT})`, borderRadius: '50%',
+                width: 'clamp(32px, 5vw, 42px)', height: 'clamp(32px, 5vw, 42px)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                border: 'none', cursor: 'pointer', boxShadow: '0 3px 10px rgba(255,109,0,0.3)',
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              </button>
+              <div style={{ textAlign: 'center', flex: 1 }}>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.7rem, 2vw, 0.9rem)', fontWeight: 800, color: ACCENT }}>
+                  {lang === 'bm' ? 'Susun Kenderaan' : 'Sort Transport'}
+                </div>
+                <div style={{ fontSize: '0.6rem', color: '#999', fontWeight: 500 }}>
+                  {roundIdx + 1}/{TOTAL_ROUNDS} · {score} pts
+                </div>
+              </div>
+              <div style={{
+                background: 'rgba(255,109,0,0.1)', borderRadius: 12, padding: '4px 10px',
+                fontFamily: 'var(--font-heading)', fontSize: '0.65rem', fontWeight: 700, color: ACCENT,
+              }}>
+                {streak > 0 && `x${streak}`}
+              </div>
             </div>
-          )}
+
+            {/* Progress bar */}
+            <div style={{ height: 6, background: 'rgba(0,0,0,0.06)', borderRadius: 3, overflow: 'hidden', flexShrink: 0 }}>
+              <div style={{
+                height: '100%', width: `${progress}%`, borderRadius: 3,
+                background: `linear-gradient(90deg, ${ACCENT_LIGHT}, ${ACCENT})`,
+                transition: 'width 0.5s ease',
+              }} />
+            </div>
+
+            {/* Vehicle card */}
+            <div style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              animation: 'popIn 0.5s ease', gap: 'clamp(6px, 1.5vw, 10px)', flexShrink: 0,
+            }}>
+              <div style={{
+                background: 'rgba(255,255,255,0.95)', borderRadius: 20,
+                padding: 'clamp(12px, 2.5vw, 20px)', textAlign: 'center',
+                boxShadow: '0 6px 24px rgba(0,0,0,0.1)', width: '100%', maxWidth: 320,
+              }}>
+                <img src={assetPath(vehicle.img)} alt={vName}
+                  style={{
+                    width: 'clamp(80px, 20vw, 110px)', height: 'clamp(80px, 20vw, 110px)',
+                    objectFit: 'cover', borderRadius: 16,
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                    animation: 'characterBob 2s ease-in-out infinite',
+                  }}
+                  onError={(e) => { e.target.style.opacity = '0.3'; }}
+                />
+                <div style={{
+                  fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.1rem, 3vw, 1.4rem)',
+                  fontWeight: 900, color: '#333', marginTop: 8,
+                }}>
+                  {vName}
+                </div>
+                <div style={{
+                  fontSize: 'clamp(0.7rem, 1.8vw, 0.85rem)', color: '#999',
+                  fontWeight: 600, marginTop: 2,
+                }}>
+                  {lang === 'bm' ? 'Di mana kenderaan ini bergerak?' : 'Where does this vehicle go?'}
+                </div>
+              </div>
+            </div>
+
+            {/* Zone buttons - big touch targets */}
+            <div style={{
+              flex: 1, display: 'flex', flexDirection: 'column',
+              justifyContent: 'center', gap: 'clamp(8px, 2vw, 14px)',
+              maxWidth: 400, width: '100%', alignSelf: 'center',
+            }}>
+              {ZONES.map((zone, i) => {
+                const isCorrect = zone.id === vehicle.zone;
+                const showHint = wrongCount >= 2 && isCorrect;
+                const isCorrectFeedback = feedback?.type === 'correct' && feedback?.zone === zone.id;
+                return (
+                  <button key={`${roundIdx}-${zone.id}`} onClick={() => handleZoneTap(zone)} style={{
+                    background: isCorrectFeedback ? zone.gradient
+                      : showHint ? `linear-gradient(135deg, ${zone.color}22, ${zone.color}15)`
+                      : 'rgba(255,255,255,0.95)',
+                    border: showHint ? `3px solid ${zone.color}`
+                      : isCorrectFeedback ? `3px solid ${zone.color}`
+                      : '2px solid rgba(0,0,0,0.06)',
+                    borderRadius: 'clamp(16px, 3vw, 22px)',
+                    padding: 'clamp(14px, 3vw, 22px) clamp(18px, 4vw, 28px)',
+                    cursor: feedback ? 'default' : 'pointer',
+                    display: 'flex', alignItems: 'center', gap: 'clamp(10px, 2vw, 16px)',
+                    boxShadow: showHint ? `0 0 16px ${zone.color}44` : '0 3px 12px rgba(0,0,0,0.06)',
+                    transition: 'all 0.2s ease',
+                    transform: isCorrectFeedback ? 'scale(1.03)' : 'scale(1)',
+                    animation: showHint ? 'pulse 1.5s ease-in-out infinite' : `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.08}s both`,
+                  }}>
+                    {/* Zone icon */}
+                    <div style={{
+                      width: 'clamp(40px, 8vw, 52px)', height: 'clamp(40px, 8vw, 52px)',
+                      borderRadius: '50%', background: zone.gradient,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: 'white', flexShrink: 0,
+                      boxShadow: `0 3px 10px ${zone.color}44`,
+                    }}>
+                      {zoneIcons[zone.icon]}
+                    </div>
+                    <div style={{ textAlign: 'left' }}>
+                      <div style={{
+                        fontFamily: 'var(--font-heading)', fontWeight: 800,
+                        fontSize: 'clamp(0.95rem, 2.5vw, 1.15rem)',
+                        color: isCorrectFeedback ? 'white' : '#333',
+                      }}>
+                        {lang === 'bm' ? zone.nameBm : zone.nameEn}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Sorted counter */}
+            {sorted.length > 0 && (
+              <div style={{
+                display: 'flex', justifyContent: 'center', gap: 4, flexWrap: 'wrap',
+                flexShrink: 0, padding: '4px 0',
+              }}>
+                {sorted.slice(-8).map((s, i) => (
+                  <div key={i} style={{
+                    width: 8, height: 8, borderRadius: '50%',
+                    background: s.zoneColor, opacity: 0.7,
+                  }} />
+                ))}
+              </div>
+            )}
+
+            {/* Feedback overlay */}
+            {feedback && feedback.type === 'wrong' && (
+              <div style={{
+                position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+                zIndex: 50, animation: 'popIn 0.3s ease',
+              }}>
+                <div style={{
+                  padding: 'clamp(12px, 3vw, 20px) clamp(24px, 5vw, 40px)',
+                  borderRadius: 20, fontFamily: 'var(--font-heading)',
+                  fontSize: 'clamp(1rem, 2.5vw, 1.3rem)', fontWeight: 800,
+                  background: 'rgba(255,107,107,0.95)',
+                  color: '#fff', boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
+                }}>
+                  {feedback.message}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {gameComplete && (
         <GameCompleteModal
           lang={lang} stars={getStars()} score={score}
-          accentColor="var(--cm-orange)"
-          onPlayAgain={() => { setRound(1); setScore(0); setGameComplete(false); setConfettiPieces([]); generateRound(1); }}
+          accentColor={ACCENT}
+          onPlayAgain={() => {
+            setRoundIdx(0); setScore(0); setStreak(0); setWrongCount(0);
+            setGameComplete(false); setConfetti([]); setSorted([]);
+            setRounds([...ALL_VEHICLES].sort(() => Math.random() - 0.5).slice(0, TOTAL_ROUNDS));
+          }}
           onBack={() => goToWorld('transport')}
-          confettiPieces={confettiPieces}
+          confettiPieces={confetti}
         />
       )}
     </div>
@@ -3796,196 +3890,428 @@ export function SubtractionShopGame() {
 
 // ============================================
 // ROAD SAFETY GAME (Jalan Raya)
-// Control the traffic light — Red/Yellow/Green!
+// "Bantu Bumi Pulang dengan Selamat" — Help Bumi get home safely!
+// Rebuilt: 15 scenarios, shuffled, GameCompleteModal, streak, hints
 // ============================================
 export function RoadSafetyGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const SCENARIOS = [
+  const ACCENT = '#E53935';
+  const ACCENT_LIGHT = '#EF5350';
+  const TOTAL_ROUNDS = 15;
+
+  const ALL_SCENARIOS = useMemo(() => [
     {
-      situation: { bm: 'Lampu MERAH menyala. Apa patut buat?', en: 'The RED light is on. What should you do?' },
+      situationBm: 'Lampu MERAH menyala. Apa patut buat?',
+      situationEn: 'The RED light is on. What should you do?',
       lightColor: '#FF4444', correct: 'stop',
       options: [
         { key: 'stop', bm: 'Berhenti', en: 'Stop' },
-        { key: 'go', bm: 'Jalan', en: 'Walk' },
-        { key: 'run', bm: 'Lari', en: 'Run' }
-      ]
+        { key: 'go', bm: 'Jalan terus', en: 'Keep walking' },
+        { key: 'run', bm: 'Lari laju', en: 'Run fast' },
+      ],
+      tipBm: 'Lampu merah bermaksud BERHENTI. Tunggu sehingga lampu bertukar hijau.',
+      tipEn: 'Red light means STOP. Wait until the light turns green.',
     },
     {
-      situation: { bm: 'Lampu HIJAU menyala. Apa patut buat?', en: 'The GREEN light is on. What should you do?' },
-      lightColor: '#4CAF50', correct: 'go',
+      situationBm: 'Lampu HIJAU menyala. Apa patut buat?',
+      situationEn: 'The GREEN light is on. What should you do?',
+      lightColor: '#4CAF50', correct: 'check',
       options: [
+        { key: 'run', bm: 'Lari cepat', en: 'Run quickly' },
+        { key: 'check', bm: 'Semak keadaan dan jalan', en: 'Check and walk safely' },
         { key: 'stop', bm: 'Berhenti', en: 'Stop' },
-        { key: 'go', bm: 'Jalan dengan selamat', en: 'Walk safely' },
-        { key: 'run', bm: 'Lari laju', en: 'Run fast' }
-      ]
+      ],
+      tipBm: 'Walaupun lampu hijau, pastikan selamat dahulu sebelum melintas bersama orang dewasa.',
+      tipEn: 'Even when the light is green, check it is safe first before crossing with an adult.',
     },
     {
-      situation: { bm: 'Lampu KUNING menyala. Apa patut buat?', en: 'The YELLOW light is on. What should you do?' },
+      situationBm: 'Lampu KUNING menyala. Apa patut buat?',
+      situationEn: 'The YELLOW light is on. What should you do?',
       lightColor: '#FFD700', correct: 'wait',
       options: [
         { key: 'go', bm: 'Jalan terus', en: 'Keep walking' },
-        { key: 'wait', bm: '⏳ Tunggu & bersedia', en: '⏳ Wait & get ready' },
-        { key: 'run', bm: 'Lari', en: 'Run' }
-      ]
+        { key: 'wait', bm: 'Bersedia untuk berhenti', en: 'Get ready to stop' },
+        { key: 'run', bm: 'Lari cepat', en: 'Run fast' },
+      ],
+      tipBm: 'Lampu kuning bermaksud BERSEDIA. Jangan memecut, bersiap untuk berhenti.',
+      tipEn: 'Yellow light means GET READY. Do not rush, prepare to stop.',
     },
     {
-      situation: { bm: 'Hendak melintas jalan. Apa patut buat dahulu?', en: 'Want to cross the road. What should you do first?' },
-      lightColor: '#4A90D9', correct: 'look',
+      situationBm: 'Hendak melintas jalan. Apa patut buat dahulu?',
+      situationEn: 'Want to cross the road. What should you do first?',
+      lightColor: '#4A90D9', correct: 'adult',
       options: [
         { key: 'run', bm: 'Lari lintasi', en: 'Run across' },
-        { key: 'look', bm: 'Tengok kiri-kanan', en: 'Look left-right' },
-        { key: 'close', bm: 'Pejam mata', en: 'Close eyes' }
-      ]
+        { key: 'adult', bm: 'Minta bantuan orang dewasa', en: 'Ask an adult for help' },
+        { key: 'close', bm: 'Pejam mata dan jalan', en: 'Close eyes and walk' },
+      ],
+      tipBm: 'Sentiasa minta bantuan orang dewasa sebelum melintas jalan.',
+      tipEn: 'Always ask an adult for help before crossing the road.',
     },
     {
-      situation: { bm: 'Nampak zebra crossing. Di mana patut melintas?', en: 'You see a zebra crossing. Where should you cross?' },
+      situationBm: 'Nampak lintasan belang. Di mana patut melintas?',
+      situationEn: 'You see a zebra crossing. Where should you cross?',
       lightColor: '#2D3436', correct: 'zebra',
       options: [
-        { key: 'anywhere', bm: 'Mana-mana saja', en: 'Anywhere' },
-        { key: 'zebra', bm: 'Di zebra crossing', en: 'At the zebra crossing' },
-        { key: 'behind', bm: 'Belakang kereta', en: 'Behind the car' }
-      ]
+        { key: 'anywhere', bm: 'Mana-mana sahaja', en: 'Anywhere' },
+        { key: 'zebra', bm: 'Di lintasan belang', en: 'At the zebra crossing' },
+        { key: 'behind', bm: 'Belakang kenderaan', en: 'Behind a vehicle' },
+      ],
+      tipBm: 'Gunakan lintasan belang bersama orang dewasa untuk melintas dengan selamat.',
+      tipEn: 'Use the zebra crossing with an adult to cross safely.',
     },
     {
-      situation: { bm: 'Berjalan di tepi jalan. Di mana patut berjalan?', en: 'Walking on the roadside. Where should you walk?' },
+      situationBm: 'Berjalan di tepi jalan. Di mana patut berjalan?',
+      situationEn: 'Walking on the roadside. Where should you walk?',
       lightColor: '#6BCB77', correct: 'sidewalk',
       options: [
-        { key: 'middle', bm: '🛣️ Tengah jalan', en: '🛣️ Middle of road' },
+        { key: 'middle', bm: 'Tengah jalan raya', en: 'Middle of the road' },
         { key: 'sidewalk', bm: 'Di kaki lima', en: 'On the sidewalk' },
-        { key: 'backwards', bm: 'Berjalan undur', en: 'Walk backwards' }
-      ]
+        { key: 'backwards', bm: 'Berjalan undur', en: 'Walk backwards' },
+      ],
+      tipBm: 'Sentiasa berjalan di kaki lima. Jauhi tengah jalan raya.',
+      tipEn: 'Always walk on the sidewalk. Stay away from the middle of the road.',
     },
-  ];
+    {
+      situationBm: 'Hendak menaiki kereta. Apa yang penting?',
+      situationEn: 'Getting into a car. What is important?',
+      lightColor: '#4A90D9', correct: 'seatbelt',
+      options: [
+        { key: 'window', bm: 'Buka tingkap luas', en: 'Open the window wide' },
+        { key: 'seatbelt', bm: 'Pakai tali pinggang keledar', en: 'Wear the seatbelt' },
+        { key: 'stand', bm: 'Berdiri di kerusi', en: 'Stand on the seat' },
+      ],
+      tipBm: 'Sentiasa pakai tali pinggang keledar dan duduk di kerusi khas kanak-kanak.',
+      tipEn: 'Always wear a seatbelt and sit in a child car seat.',
+    },
+    {
+      situationBm: 'Hendak menaiki motosikal. Apa yang mesti dipakai?',
+      situationEn: 'Getting on a motorcycle. What must you wear?',
+      lightColor: '#FF8C00', correct: 'helmet',
+      options: [
+        { key: 'hat', bm: 'Topi biasa', en: 'A normal hat' },
+        { key: 'helmet', bm: 'Topi keledar yang sesuai', en: 'A proper helmet' },
+        { key: 'nothing', bm: 'Tiada apa-apa', en: 'Nothing' },
+      ],
+      tipBm: 'Topi keledar melindungi kepala. Pastikan saiznya sesuai dan dipasang betul.',
+      tipEn: 'A helmet protects your head. Make sure it fits properly and is fastened.',
+    },
+    {
+      situationBm: 'Bola terjatuh ke jalan raya. Apa patut buat?',
+      situationEn: 'A ball rolled onto the road. What should you do?',
+      lightColor: '#E53935', correct: 'stop_ball',
+      options: [
+        { key: 'chase', bm: 'Kejar bola ke jalan', en: 'Chase the ball to the road' },
+        { key: 'stop_ball', bm: 'Berhenti dan minta bantuan', en: 'Stop and ask for help' },
+        { key: 'run_fast', bm: 'Lari laju ambil bola', en: 'Run fast to get the ball' },
+      ],
+      tipBm: 'Jangan sesekali berlari ke jalan raya! Minta orang dewasa mengambil bola.',
+      tipEn: 'Never run onto the road! Ask an adult to get the ball.',
+    },
+    {
+      situationBm: 'Kenderaan sedang bergerak di hadapan. Apa patut buat?',
+      situationEn: 'Vehicles are moving in front. What should you do?',
+      lightColor: '#E53935', correct: 'stay_away',
+      options: [
+        { key: 'play', bm: 'Bermain di situ', en: 'Play there' },
+        { key: 'stay_away', bm: 'Jauhi kawasan kenderaan', en: 'Stay away from vehicles' },
+        { key: 'touch', bm: 'Sentuh kenderaan', en: 'Touch the vehicle' },
+      ],
+      tipBm: 'Jauhi kawasan pergerakan kenderaan. Kenderaan mungkin tidak nampak kamu.',
+      tipEn: 'Stay away from moving vehicles. They might not see you.',
+    },
+    {
+      situationBm: 'Hari hujan dan jalan licin. Bagaimana hendak berjalan?',
+      situationEn: 'It is rainy and the road is slippery. How should you walk?',
+      lightColor: '#4A90D9', correct: 'careful',
+      options: [
+        { key: 'run_rain', bm: 'Lari laju', en: 'Run fast' },
+        { key: 'careful', bm: 'Berjalan perlahan dengan berhati-hati', en: 'Walk slowly and carefully' },
+        { key: 'slide', bm: 'Gelongsor di jalan', en: 'Slide on the road' },
+      ],
+      tipBm: 'Jalan mungkin licin ketika hujan. Bergerak perlahan bersama orang dewasa.',
+      tipEn: 'Roads can be slippery when wet. Walk slowly with an adult.',
+    },
+    {
+      situationBm: 'Berada di kawasan sekolah. Apa yang penting?',
+      situationEn: 'You are in a school zone. What is important?',
+      lightColor: '#FFD700', correct: 'observe',
+      options: [
+        { key: 'run_play', bm: 'Lari bermain ke jalan', en: 'Run and play on the road' },
+        { key: 'observe', bm: 'Perhatikan kenderaan dan ikut arahan', en: 'Watch for vehicles and follow instructions' },
+        { key: 'ignore', bm: 'Abaikan sahaja', en: 'Just ignore' },
+      ],
+      tipBm: 'Di kawasan sekolah, perhatikan kenderaan dan ikut arahan orang dewasa.',
+      tipEn: 'In school zones, watch for vehicles and follow adult instructions.',
+    },
+    {
+      situationBm: 'Hendak keluar dari kereta. Apa patut buat?',
+      situationEn: 'Getting out of a car. What should you do?',
+      lightColor: '#4A90D9', correct: 'safe_side',
+      options: [
+        { key: 'any_door', bm: 'Buka pintu mana-mana sahaja', en: 'Open any door' },
+        { key: 'safe_side', bm: 'Keluar di bahagian yang selamat', en: 'Exit from the safe side' },
+        { key: 'jump', bm: 'Lompat keluar cepat', en: 'Jump out quickly' },
+      ],
+      tipBm: 'Keluar di bahagian yang selamat dengan bantuan orang dewasa.',
+      tipEn: 'Exit from the safe side with adult help.',
+    },
+    {
+      situationBm: 'Mendengar bunyi siren ambulans. Apa patut buat?',
+      situationEn: 'You hear an ambulance siren. What should you do?',
+      lightColor: '#E53935', correct: 'give_way',
+      options: [
+        { key: 'ignore_siren', bm: 'Abaikan bunyi itu', en: 'Ignore the sound' },
+        { key: 'give_way', bm: 'Beri laluan bersama orang dewasa', en: 'Give way with an adult' },
+        { key: 'block', bm: 'Berdiri di tengah jalan', en: 'Stand in the middle of the road' },
+      ],
+      tipBm: 'Kenderaan kecemasan perlu laluan! Berundur ke tepi bersama orang dewasa.',
+      tipEn: 'Emergency vehicles need to pass! Step aside with an adult.',
+    },
+    {
+      situationBm: 'Melihat lampu isyarat pejalan kaki. Apa maknanya?',
+      situationEn: 'You see a pedestrian signal. What does it mean?',
+      lightColor: '#4CAF50', correct: 'understand',
+      options: [
+        { key: 'ignore_signal', bm: 'Abaikan lampu itu', en: 'Ignore the signal' },
+        { key: 'understand', bm: 'Fahami isyarat dan semak keadaan', en: 'Understand the signal and check' },
+        { key: 'run_signal', bm: 'Lari melintas cepat', en: 'Run across quickly' },
+      ],
+      tipBm: 'Fahami isyarat pejalan kaki dan semak keadaan sebelum melintas bersama orang dewasa.',
+      tipEn: 'Understand pedestrian signals and check before crossing with an adult.',
+    },
+  ], []);
 
-  const TOTAL_ROUNDS = SCENARIOS.length;
-  const [round, setRound] = useState(0);
+  const [rounds, setRounds] = useState(() =>
+    [...ALL_SCENARIOS].sort(() => Math.random() - 0.5).slice(0, TOTAL_ROUNDS)
+  );
+  const [roundIdx, setRoundIdx] = useState(0);
   const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [wrongCount, setWrongCount] = useState(0);
   const [feedback, setFeedback] = useState(null);
+  const [showTip, setShowTip] = useState(false);
   const [gameComplete, setGameComplete] = useState(false);
+  const [confetti, setConfetti] = useState([]);
 
-  const scenario = SCENARIOS[round];
+  const scenario = rounds[roundIdx];
+  const progress = ((roundIdx) / TOTAL_ROUNDS) * 100;
 
   const handleAnswer = (opt) => {
     if (feedback) return;
     if (opt.key === scenario.correct) {
-      setScore(s => s + 10);
+      const newStreak = streak + 1;
+      setStreak(newStreak);
+      const bonus = newStreak >= 3 ? 15 : 10;
+      setScore(prev => prev + bonus);
       setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
+      setShowTip(true);
       setTimeout(() => {
-        if (round + 1 >= TOTAL_ROUNDS) {
-          const finalScore = score + 10;
-          const stars = finalScore >= 50 ? 3 : finalScore >= 30 ? 2 : 1;
+        setFeedback(null); setShowTip(false); setWrongCount(0);
+        if (roundIdx + 1 >= TOTAL_ROUNDS) {
+          const finalScore = score + bonus;
+          const stars = finalScore >= 180 ? 3 : finalScore >= 100 ? 2 : 1;
           completeGame('transport', 'road-safety', stars, finalScore);
-          celebrationFeedback(lang, soundEnabled);
+          if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
+          const colors = ['#E53935', '#FFD93D', '#4CAF50', '#4A90D9', '#FF8C00', '#9B72CF'];
+          setConfetti(Array.from({ length: 60 }, (_, i) => ({
+            id: i, left: Math.random() * 100, color: colors[i % colors.length],
+            delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
+          })));
           setGameComplete(true);
         } else {
-          setRound(r => r + 1);
-          setFeedback(null);
+          setRoundIdx(prev => prev + 1);
         }
-      }, 1200);
+      }, 2200);
     } else {
+      setStreak(0);
+      setWrongCount(prev => prev + 1);
       setFeedback({ type: 'wrong', message: wrongFeedback(lang, soundEnabled) });
       setTimeout(() => setFeedback(null), 900);
     }
   };
 
-  if (gameComplete) {
-    const stars = score >= 50 ? 3 : score >= 30 ? 2 : 1;
-    return (
-      <div className="game-screen">
-        <div className="game-body" style={{ textAlign: 'center', justifyContent: 'center' }}>
-          <div style={{ marginBottom: 8 }}><TrophyIcon size={48} /></div>
-          <h2 style={{ fontFamily: 'var(--font-heading)', color: 'var(--cm-orange)' }}>
-            {lang === 'bm' ? 'Pandai Keselamatan Jalan!' : 'Road Safety Expert!'}
-          </h2>
-          <div style={{ fontSize: '2rem', margin: 'var(--space-md) 0' }}>
-            {[1, 2, 3].map(s => <span key={s}>{s <= stars ? <StarIcon size={20} /> : <svg width={20} height={20} viewBox='0 0 24 24' fill='#DDD'><path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z' /></svg>}</span>)}
-          </div>
-          <p style={{ fontSize: '1.3rem', fontWeight: 700 }}>{t('score', lang)}: {score}</p>
-          <div className="action-buttons" style={{ marginTop: 'var(--space-lg)' }}>
-            <button className="btn-secondary" onClick={() => { setRound(0); setScore(0); setGameComplete(false); }}>
-              <RefreshIcon size={16} /> {t('playAgain', lang)}
-            </button>
-            <button className="btn-success" onClick={() => goToWorld('transport')}>
-              <CheckIcon size={16} /> {t('backToWorld', lang)}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const getStars = () => score >= 180 ? 3 : score >= 100 ? 2 : 1;
+  if (!scenario) return null;
+
+  // Traffic light mapping
+  const lightColors = ['#FF4444', '#FFD700', '#4CAF50'];
+  const activeIdx = scenario.lightColor === '#FF4444' || scenario.lightColor === '#E53935' ? 0
+    : scenario.lightColor === '#FFD700' || scenario.lightColor === '#FF8C00' ? 1
+    : scenario.lightColor === '#4CAF50' || scenario.lightColor === '#6BCB77' ? 2 : -1;
 
   return (
-    <div className="game-screen" style={{ position: 'relative' }}>
-      <img src={assetPath('/images/game/road_scene_bg.jpg')} alt="" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, opacity: 0.85 }} />
-      <div className="game-header">
-        <button className="back-btn" onClick={() => goToWorld('transport')}>←</button>
-        <span className="game-title">
-          {lang === 'bm' ? 'Jalan Raya' : 'Road Safety'}
-        </span>
-        <div className="game-stars">
-          <span style={{ fontWeight: 700, color: 'var(--cm-orange)' }}>
-            {round + 1}/{TOTAL_ROUNDS}
-          </span>
-        </div>
-      </div>
+    <div className="game-screen" style={{ touchAction: 'none' }}>
+      <div className="game-body" style={{ padding: 0 }}>
+        <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
+          <img src={assetPath('/images/game/road_scene_bg.jpg')} alt="" style={{
+            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+            objectFit: 'cover', zIndex: 0, opacity: 0.55, pointerEvents: 'none',
+          }} />
 
-      <div className="game-body" style={{ textAlign: 'center', gap: 'var(--space-md)' }}>
-        {/* Traffic Light */}
-        <div style={{
-          background: '#2D3436', borderRadius: 24, padding: '20px 30px',
-          display: 'inline-flex', flexDirection: 'column', gap: 12,
-          boxShadow: 'var(--shadow-lg)', margin: '0 auto'
-        }}>
-          {['#FF4444', '#FFD700', '#4CAF50'].map(lc => (
-            <div key={lc} style={{
-              width: 50, height: 50, borderRadius: '50%',
-              background: scenario.lightColor === lc ? lc : '#444',
-              boxShadow: scenario.lightColor === lc ? `0 0 20px ${lc}` : 'none',
-              transition: 'all 0.5s ease'
-            }} />
-          ))}
-        </div>
-
-        {/* Question */}
-        <div style={{
-          background: 'white', borderRadius: 20, padding: 'var(--space-md) var(--space-lg)',
-          boxShadow: 'var(--shadow-md)', maxWidth: 360, margin: '0 auto'
-        }}>
-          <p style={{ fontWeight: 700, fontSize: '1.1rem', color: '#333' }}>
-            {lang === 'bm' ? scenario.situation.bm : scenario.situation.en}
-          </p>
-        </div>
-
-        {/* Options */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 340, margin: '0 auto', width: '100%' }}>
-          {scenario.options.map((opt, i) => (
-            <button key={i} onClick={() => handleAnswer(opt)} style={{
-              background: feedback?.type === 'correct' && opt.key === scenario.correct ? '#6BCB77' : 'white',
-              border: '3px solid #E0E0E0', borderRadius: 16, padding: '14px 18px',
-              fontSize: '1rem', fontWeight: 700, cursor: 'pointer',
-              boxShadow: 'var(--shadow-sm)', textAlign: 'left',
-              transform: feedback?.type === 'correct' && opt.key === scenario.correct ? 'scale(1.03)' : 'scale(1)',
-              color: feedback?.type === 'correct' && opt.key === scenario.correct ? 'white' : '#333',
-              transition: 'all 0.2s ease'
-            }}>
-              {lang === 'bm' ? opt.bm : opt.en}
-            </button>
-          ))}
-        </div>
-
-        {/* Feedback */}
-        {feedback && (
           <div style={{
-            padding: '10px 20px', borderRadius: 16,
-            background: feedback.type === 'correct' ? '#6BCB77' : '#FF6B6B',
-            color: 'white', fontWeight: 700, animation: 'popIn 0.3s ease'
+            position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column',
+            height: '100%', width: '100%', maxWidth: 500, margin: '0 auto',
+            padding: 'clamp(8px, 2vw, 14px)', gap: 'clamp(6px, 1.5vw, 10px)',
           }}>
-            {feedback.type === 'correct' ? '' : ''}{feedback.message}
+            {/* Header */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(10px)',
+              borderRadius: 'clamp(16px, 3vw, 24px)', padding: 'clamp(6px, 1vw, 10px) clamp(10px, 1.5vw, 16px)',
+              boxShadow: '0 4px 20px rgba(229,57,53,0.12)', flexShrink: 0,
+            }}>
+              <button onClick={() => goToWorld('transport')} style={{
+                background: `linear-gradient(135deg, ${ACCENT_LIGHT}, ${ACCENT})`, borderRadius: '50%',
+                width: 'clamp(32px, 5vw, 42px)', height: 'clamp(32px, 5vw, 42px)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                border: 'none', cursor: 'pointer', boxShadow: '0 3px 10px rgba(229,57,53,0.3)',
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              </button>
+              <div style={{ textAlign: 'center', flex: 1 }}>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.7rem, 2vw, 0.9rem)', fontWeight: 800, color: ACCENT }}>
+                  {lang === 'bm' ? 'Jalan Raya Selamat' : 'Road Safety'}
+                </div>
+                <div style={{ fontSize: '0.6rem', color: '#999', fontWeight: 500 }}>
+                  {roundIdx + 1}/{TOTAL_ROUNDS} · {score} pts
+                </div>
+              </div>
+              <div style={{
+                background: 'rgba(229,57,53,0.1)', borderRadius: 12, padding: '4px 10px',
+                fontFamily: 'var(--font-heading)', fontSize: '0.65rem', fontWeight: 700, color: ACCENT,
+              }}>
+                {streak > 0 && `x${streak}`}
+              </div>
+            </div>
+
+            {/* Progress bar */}
+            <div style={{ height: 6, background: 'rgba(0,0,0,0.06)', borderRadius: 3, overflow: 'hidden', flexShrink: 0 }}>
+              <div style={{
+                height: '100%', width: `${progress}%`, borderRadius: 3,
+                background: `linear-gradient(90deg, ${ACCENT_LIGHT}, ${ACCENT})`,
+                transition: 'width 0.5s ease',
+              }} />
+            </div>
+
+            {/* Traffic Light */}
+            <div style={{ display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{
+                background: '#2D3436', borderRadius: 'clamp(16px, 3vw, 22px)',
+                padding: 'clamp(10px, 2vw, 16px) clamp(14px, 2.5vw, 22px)',
+                display: 'inline-flex', flexDirection: 'column', gap: 'clamp(6px, 1.5vw, 10px)',
+                boxShadow: '0 8px 30px rgba(0,0,0,0.3)',
+              }}>
+                {lightColors.map((lc, li) => (
+                  <div key={li} style={{
+                    width: 'clamp(36px, 8vw, 50px)', height: 'clamp(36px, 8vw, 50px)', borderRadius: '50%',
+                    background: activeIdx === li ? lc : '#444',
+                    boxShadow: activeIdx === li ? `0 0 24px ${lc}, 0 0 48px ${lc}44` : 'none',
+                    transition: 'all 0.5s ease',
+                  }} />
+                ))}
+              </div>
+            </div>
+
+            {/* Question */}
+            <div style={{
+              background: 'rgba(255,255,255,0.95)', borderRadius: 20,
+              padding: 'clamp(10px, 2vw, 16px) clamp(14px, 3vw, 22px)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.08)', textAlign: 'center', flexShrink: 0,
+            }}>
+              <div style={{
+                fontFamily: 'var(--font-heading)', fontWeight: 800,
+                fontSize: 'clamp(0.8rem, 2.2vw, 1rem)', color: '#333',
+              }}>
+                {lang === 'bm' ? scenario.situationBm : scenario.situationEn}
+              </div>
+            </div>
+
+            {/* Options */}
+            <div style={{
+              flex: 1, display: 'flex', flexDirection: 'column',
+              justifyContent: 'center', gap: 'clamp(6px, 1.5vw, 10px)',
+              maxWidth: 400, width: '100%', alignSelf: 'center',
+            }}>
+              {scenario.options.map((opt, i) => {
+                const isCorrect = opt.key === scenario.correct;
+                const showHint = wrongCount >= 2 && isCorrect;
+                return (
+                  <button key={`${roundIdx}-${opt.key}`} onClick={() => handleAnswer(opt)} style={{
+                    background: showHint
+                      ? 'linear-gradient(135deg, rgba(107,203,119,0.15), rgba(76,175,80,0.1))'
+                      : feedback?.type === 'correct' && isCorrect
+                        ? 'linear-gradient(135deg, #6BCB77, #4CAF50)' : 'rgba(255,255,255,0.95)',
+                    border: showHint ? '3px solid #6BCB77'
+                      : feedback?.type === 'correct' && isCorrect ? '3px solid #4CAF50'
+                      : '2px solid rgba(0,0,0,0.06)',
+                    borderRadius: 'clamp(14px, 3vw, 20px)',
+                    padding: 'clamp(12px, 2.5vw, 18px) clamp(14px, 3vw, 22px)',
+                    cursor: feedback ? 'default' : 'pointer', fontFamily: 'var(--font-heading)',
+                    fontSize: 'clamp(0.8rem, 2vw, 0.95rem)', fontWeight: 700,
+                    color: feedback?.type === 'correct' && isCorrect ? '#fff' : '#444',
+                    boxShadow: showHint ? '0 0 16px rgba(107,203,119,0.3)' : '0 3px 12px rgba(0,0,0,0.06)',
+                    transition: 'all 0.2s ease', textAlign: 'left',
+                    transform: feedback?.type === 'correct' && isCorrect ? 'scale(1.03)' : 'scale(1)',
+                    animation: showHint ? 'pulse 1.5s ease-in-out infinite' : `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.08}s both`,
+                  }}>
+                    {lang === 'bm' ? opt.bm : opt.en}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Safety tip after correct */}
+            {showTip && (
+              <div style={{
+                background: 'rgba(255,255,255,0.95)', borderRadius: 16,
+                padding: 'clamp(8px, 1.5vw, 12px) clamp(12px, 2vw, 18px)',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                fontSize: 'clamp(0.7rem, 1.8vw, 0.8rem)', color: '#555',
+                fontWeight: 500, lineHeight: 1.4, textAlign: 'center',
+                animation: 'popIn 0.3s ease', flexShrink: 0,
+                border: '2px solid rgba(76,175,80,0.2)',
+              }}>
+                {lang === 'bm' ? scenario.tipBm : scenario.tipEn}
+              </div>
+            )}
+
+            {/* Feedback overlay (wrong only) */}
+            {feedback && feedback.type === 'wrong' && (
+              <div style={{
+                position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+                zIndex: 50, animation: 'popIn 0.3s ease',
+              }}>
+                <div style={{
+                  padding: 'clamp(12px, 3vw, 20px) clamp(24px, 5vw, 40px)',
+                  borderRadius: 20, fontFamily: 'var(--font-heading)',
+                  fontSize: 'clamp(1rem, 2.5vw, 1.3rem)', fontWeight: 800,
+                  background: 'rgba(255,107,107,0.95)',
+                  color: '#fff', boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
+                }}>
+                  {feedback.message}
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
+
+      {gameComplete && (
+        <GameCompleteModal
+          lang={lang} stars={getStars()} score={score}
+          accentColor={ACCENT}
+          onPlayAgain={() => {
+            setRoundIdx(0); setScore(0); setStreak(0); setWrongCount(0);
+            setGameComplete(false); setConfetti([]);
+            setRounds([...ALL_SCENARIOS].sort(() => Math.random() - 0.5).slice(0, TOTAL_ROUNDS));
+          }}
+          onBack={() => goToWorld('transport')}
+          confettiPieces={confetti}
+        />
+      )}
     </div>
   );
 }
@@ -8405,7 +8731,7 @@ export function BuildVehicleGame() {
     <div className="game-screen" style={{ touchAction: 'none' }}>
       <div className="game-body" style={{ padding: 0 }}>
         <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
-          <img src={assetPath('/images/game/build_vehicle_bg_v2.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.5, pointerEvents: "none" }} />
+          <img src={assetPath('/images/game/build_vehicle_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.4, pointerEvents: "none" }} />
 
           {/* Confetti */}
           {confetti.map(c => (
@@ -8582,100 +8908,522 @@ export function BuildVehicleGame() {
 
 // ============================================
 // WORLD VEHICLES GAME (Kenderaan Dunia)
-// Learn about unique vehicles from around the world!
+// "Jelajah Dunia Bersama Bumi" — Explore the world's unique vehicles!
+// Rebuilt: 15 rounds, HD images, 3-phase flow (Kenali/Teroka/Main)
 // ============================================
 export function WorldVehiclesGame() {
   const { language, completeGame, goToWorld, soundEnabled } = useGameStore();
   const lang = language;
 
-  const VEHICLES = [
-    { name: lang === 'bm' ? 'Tuk-Tuk' : 'Tuk-Tuk', country: 'Thailand', emoji: '🛺', fact: lang === 'bm' ? 'Teksi tiga roda popular di Asia!' : 'Popular three-wheeled taxi in Asia!' },
-    { name: lang === 'bm' ? 'Gondola' : 'Gondola', country: 'Italy', emoji: '🚣', fact: lang === 'bm' ? 'Bot di kanal Venice!' : 'Boat in Venice canals!' },
-    { name: lang === 'bm' ? 'Kereta Api Peluru' : 'Bullet Train', country: 'Japan', emoji: '🚄', fact: lang === 'bm' ? 'Kereta api paling laju di dunia!' : 'Fastest train in the world!' },
-    { name: lang === 'bm' ? 'Rickshaw' : 'Rickshaw', country: 'India', emoji: '🛺', fact: lang === 'bm' ? 'Ditarik oleh manusia atau basikal!' : 'Pulled by people or bicycles!' },
-    { name: lang === 'bm' ? 'Bas Sekolah' : 'School Bus', country: 'USA', emoji: '🚌', fact: lang === 'bm' ? 'Bas kuning yang terkenal!' : 'The famous yellow bus!' },
-  ];
+  const ACCENT = '#00695C';
+  const ACCENT_LIGHT = '#4DB6AC';
+  const TOTAL_ROUNDS = 15;
 
-  const [idx, setIdx] = useState(0);
-  const [quizAnswer, setQuizAnswer] = useState(null);
+  const ALL_VEHICLES = useMemo(() => [
+    {
+      id: 'tuktuk', img: 'tuktuk',
+      nameBm: 'Tuk-tuk', nameEn: 'Tuk-tuk',
+      locationBm: 'Thailand', locationEn: 'Thailand',
+      factBm: 'Teksi tiga roda yang popular di jalanan Thailand. Ia kecil, pantas dan berwarna-warni!',
+      factEn: 'A popular three-wheeled taxi on Thailand streets. It is small, fast and colourful!',
+      regionBm: 'Asia Tenggara', regionEn: 'Southeast Asia',
+    },
+    {
+      id: 'gondola', img: 'gondola',
+      nameBm: 'Gondola', nameEn: 'Gondola',
+      locationBm: 'Venice, Itali', locationEn: 'Venice, Italy',
+      factBm: 'Bot hitam yang indah bergerak di kanal Venice. Didayung oleh gondolier yang mahir!',
+      factEn: 'A beautiful black boat gliding through Venice canals. Rowed by a skilled gondolier!',
+      regionBm: 'Eropah', regionEn: 'Europe',
+    },
+    {
+      id: 'shinkansen', img: 'shinkansen',
+      nameBm: 'Shinkansen', nameEn: 'Bullet Train',
+      locationBm: 'Jepun', locationEn: 'Japan',
+      factBm: 'Kereta api peluru yang sangat pantas! Ia boleh bergerak sehingga 320 km sejam!',
+      factEn: 'An incredibly fast bullet train! It can travel up to 320 km per hour!',
+      regionBm: 'Asia Timur', regionEn: 'East Asia',
+    },
+    {
+      id: 'rickshaw', img: 'rickshaw',
+      nameBm: 'Beca Kayuh', nameEn: 'Cycle Rickshaw',
+      locationBm: 'India', locationEn: 'India',
+      factBm: 'Teksi basikal tiga roda yang berwarna-warni. Dikayuh oleh pemandu yang kuat!',
+      factEn: 'A colourful three-wheeled bicycle taxi. Pedalled by a strong rider!',
+      regionBm: 'Asia Selatan', regionEn: 'South Asia',
+    },
+    {
+      id: 'school_bus', img: 'school_bus',
+      nameBm: 'Bas Sekolah Kuning', nameEn: 'Yellow School Bus',
+      locationBm: 'Amerika Syarikat', locationEn: 'United States',
+      factBm: 'Bas kuning yang menghantar kanak-kanak ke sekolah. Ia sangat terkenal di seluruh dunia!',
+      factEn: 'A yellow bus that takes children to school. It is very famous around the world!',
+      regionBm: 'Amerika Utara', regionEn: 'North America',
+    },
+    {
+      id: 'jeepney', img: 'jeepney',
+      nameBm: 'Jeepney', nameEn: 'Jeepney',
+      locationBm: 'Filipina', locationEn: 'Philippines',
+      factBm: 'Kenderaan awam yang paling berwarna-warni di dunia! Dihias dengan seni yang cantik.',
+      factEn: 'The most colourful public transport in the world! Decorated with beautiful art.',
+      regionBm: 'Asia Tenggara', regionEn: 'Southeast Asia',
+    },
+    {
+      id: 'vaporetto', img: 'vaporetto',
+      nameBm: 'Vaporetto', nameEn: 'Vaporetto',
+      locationBm: 'Venice, Itali', locationEn: 'Venice, Italy',
+      factBm: 'Bas air yang membawa ramai penumpang di kanal Venice. Seperti bas, tetapi di atas air!',
+      factEn: 'A water bus carrying many passengers in Venice canals. Like a bus, but on water!',
+      regionBm: 'Eropah', regionEn: 'Europe',
+    },
+    {
+      id: 'tram', img: 'tram',
+      nameBm: 'Trem', nameEn: 'Tram',
+      locationBm: 'Lisbon, Portugal', locationEn: 'Lisbon, Portugal',
+      factBm: 'Kereta api kecil yang bergerak di jalanan bandar. Trem kuning Lisbon sangat terkenal!',
+      factEn: 'A small train that runs on city streets. The yellow Lisbon tram is very famous!',
+      regionBm: 'Eropah', regionEn: 'Europe',
+    },
+    {
+      id: 'dog_sled', img: 'dog_sled',
+      nameBm: 'Kereta Anjing Salji', nameEn: 'Dog Sled',
+      locationBm: 'Kawasan Bersalji', locationEn: 'Snowy Regions',
+      factBm: 'Kereta luncur yang ditarik oleh anjing Husky yang kuat melalui salji tebal!',
+      factEn: 'A sled pulled by strong Husky dogs through thick snow!',
+      regionBm: 'Artik', regionEn: 'Arctic',
+    },
+    {
+      id: 'dhow', img: 'dhow',
+      nameBm: 'Dhow', nameEn: 'Dhow',
+      locationBm: 'Lautan Hindi', locationEn: 'Indian Ocean',
+      factBm: 'Kapal layar tradisional dengan layar segitiga. Digunakan untuk perdagangan sejak zaman dahulu!',
+      factEn: 'A traditional sailing vessel with triangular sails. Used for trade since ancient times!',
+      regionBm: 'Timur Tengah', regionEn: 'Middle East',
+    },
+    {
+      id: 'felucca', img: 'felucca',
+      nameBm: 'Felucca', nameEn: 'Felucca',
+      locationBm: 'Mesir', locationEn: 'Egypt',
+      factBm: 'Perahu layar kayu yang belayar di Sungai Nil yang terkenal. Tenang dan damai!',
+      factEn: 'A wooden sailboat sailing on the famous River Nile. Calm and peaceful!',
+      regionBm: 'Afrika Utara', regionEn: 'North Africa',
+    },
+    {
+      id: 'cable_car', img: 'cable_car',
+      nameBm: 'Kereta Kabel', nameEn: 'Cable Car',
+      locationBm: 'Kawasan Pergunungan', locationEn: 'Mountain Areas',
+      factBm: 'Kenderaan yang digantung pada kabel dan terbang tinggi di atas gunung! Pemandangan cantik!',
+      factEn: 'A vehicle hanging on cables flying high above mountains! Beautiful views!',
+      regionBm: 'Seluruh Dunia', regionEn: 'Worldwide',
+    },
+    {
+      id: 'beca', img: 'beca',
+      nameBm: 'Beca', nameEn: 'Trishaw',
+      locationBm: 'Asia', locationEn: 'Asia',
+      factBm: 'Beca ialah basikal tiga roda dengan tempat duduk penumpang. Popular di Malaysia dan Asia!',
+      factEn: 'A trishaw is a three-wheeled bicycle with a passenger seat. Popular in Malaysia and Asia!',
+      regionBm: 'Asia', regionEn: 'Asia',
+    },
+    {
+      id: 'snowmobile', img: 'snowmobile',
+      nameBm: 'Kereta Salji Bermotor', nameEn: 'Snowmobile',
+      locationBm: 'Kawasan Bersalji', locationEn: 'Snowy Regions',
+      factBm: 'Kenderaan bermotor yang boleh bergerak di atas salji! Seperti motosikal untuk musim salji!',
+      factEn: 'A motorised vehicle that can travel on snow! Like a motorcycle for winter!',
+      regionBm: 'Artik', regionEn: 'Arctic',
+    },
+    {
+      id: 'steam_train', img: 'steam_train',
+      nameBm: 'Kereta Api Wap', nameEn: 'Steam Train',
+      locationBm: 'Sejarah Dunia', locationEn: 'World History',
+      factBm: 'Kereta api pertama di dunia! Menggunakan wap air panas untuk bergerak. Choo choo!',
+      factEn: 'The first trains in the world! Uses hot steam to move. Choo choo!',
+      regionBm: 'Sejarah', regionEn: 'History',
+    },
+  ], []);
+
+  // All unique locations for quiz choices
+  const ALL_LOCATIONS = useMemo(() => {
+    const locs = ALL_VEHICLES.map(v => lang === 'bm' ? v.locationBm : v.locationEn);
+    return [...new Set(locs)];
+  }, [ALL_VEHICLES, lang]);
+
+  const [rounds, setRounds] = useState(() =>
+    [...ALL_VEHICLES].sort(() => Math.random() - 0.5).slice(0, TOTAL_ROUNDS)
+  );
+  const [roundIdx, setRoundIdx] = useState(0);
+  const [phase, setPhase] = useState('kenali'); // kenali -> teroka -> main
   const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [wrongCount, setWrongCount] = useState(0);
+  const [feedback, setFeedback] = useState(null);
   const [gameComplete, setGameComplete] = useState(false);
-  const [showFact, setShowFact] = useState(true);
+  const [confetti, setConfetti] = useState([]);
+  const [quizChoices, setQuizChoices] = useState([]);
+  const [collection, setCollection] = useState([]);
 
-  const handleQuiz = (answer) => {
-    const correct = answer === VEHICLES[idx].country;
-    if (correct) {
-      if (soundEnabled) { if (lang === 'bm') playBMCorrectFeedback(); else playCorrectSound(); }
-      setScore(score + 1);
-    } else {
-      if (soundEnabled) { if (lang === 'bm') playBMWrongFeedback(); else playWrongSound(); }
+  const vehicle = rounds[roundIdx];
+  const vName = lang === 'bm' ? vehicle?.nameBm : vehicle?.nameEn;
+  const vLocation = lang === 'bm' ? vehicle?.locationBm : vehicle?.locationEn;
+  const vFact = lang === 'bm' ? vehicle?.factBm : vehicle?.factEn;
+  const progress = ((roundIdx) / TOTAL_ROUNDS) * 100;
+
+  // Generate quiz choices when entering 'main' phase
+  useEffect(() => {
+    if (phase === 'main' && vehicle) {
+      const correctLoc = lang === 'bm' ? vehicle.locationBm : vehicle.locationEn;
+      const wrongLocs = ALL_LOCATIONS.filter(l => l !== correctLoc)
+        .sort(() => Math.random() - 0.5).slice(0, 3);
+      setQuizChoices([correctLoc, ...wrongLocs].sort(() => Math.random() - 0.5));
+      setWrongCount(0);
     }
-    setQuizAnswer(correct ? 'correct' : 'wrong');
-    setTimeout(() => {
-      setQuizAnswer(null);
-      setShowFact(true);
-      if (idx + 1 < VEHICLES.length) setIdx(idx + 1);
-      else {
-        if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
-        const f = correct ? score + 1 : score;
-        completeGame('transport', 'world-vehicles', f >= 4 ? 3 : f >= 2 ? 2 : 1, f * 20);
-        setGameComplete(true);
-      }
-    }, 1000);
+  }, [phase, roundIdx, vehicle, lang, ALL_LOCATIONS]);
+
+  // Preload images
+  useEffect(() => {
+    ALL_VEHICLES.forEach(v => {
+      const img = new Image();
+      img.src = assetPath(`/images/vehicles/world/${v.img}.jpg`);
+    });
+  }, [ALL_VEHICLES]);
+
+  const handleQuizAnswer = (answer) => {
+    if (feedback) return;
+    const correctLoc = lang === 'bm' ? vehicle.locationBm : vehicle.locationEn;
+
+    if (answer === correctLoc) {
+      const newStreak = streak + 1;
+      setStreak(newStreak);
+      const bonus = newStreak >= 3 ? 15 : 10;
+      setScore(prev => prev + bonus);
+      setCollection(prev => [...prev, vehicle.id]);
+      setFeedback({ type: 'correct', message: correctFeedback(lang, soundEnabled) });
+
+      setTimeout(() => {
+        setFeedback(null);
+        if (roundIdx + 1 >= TOTAL_ROUNDS) {
+          const finalScore = score + bonus;
+          const stars = finalScore >= 180 ? 3 : finalScore >= 100 ? 2 : 1;
+          completeGame('transport', 'world-vehicles', stars, finalScore);
+          if (soundEnabled) { if (lang === 'bm') playBMCelebration(); else playCelebrationSound(); }
+          const colors = ['#00695C', '#4DB6AC', '#FFD93D', '#FF6B9D', '#6BCB77', '#9B72CF'];
+          setConfetti(Array.from({ length: 60 }, (_, i) => ({
+            id: i, left: Math.random() * 100, color: colors[i % colors.length],
+            delay: Math.random() * 0.5, size: 6 + Math.random() * 8,
+          })));
+          setGameComplete(true);
+        } else {
+          setRoundIdx(prev => prev + 1);
+          setPhase('kenali');
+        }
+      }, 1200);
+    } else {
+      setStreak(0);
+      const newWrong = wrongCount + 1;
+      setWrongCount(newWrong);
+      setFeedback({ type: 'wrong', message: wrongFeedback(lang, soundEnabled) });
+      setTimeout(() => setFeedback(null), 900);
+    }
   };
 
-  if (gameComplete) {
-    return (
-      <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.9))', textAlign: 'center', padding: 40 }}>
-        <div style={{ marginBottom: 16 }}><TrophyIcon size={48} /></div>
-        <h1 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{lang === 'bm' ? 'Penjelajah Kenderaan!' : 'Vehicle Explorer!'}</h1>
-        <div style={{ margin: "16px 0", display: "flex", justifyContent: "center", gap: 4 }}><StarIcon size={28} /><StarIcon size={28} /><StarIcon size={28} /></div>
-        <button className="btn-premium" onClick={() => goToWorld('transport')}>{lang === 'bm' ? '← Kembali' : '← Back'}</button>
-      </div>
-    );
-  }
+  const getStars = () => score >= 180 ? 3 : score >= 100 ? 2 : 1;
 
-  const v = VEHICLES[idx];
-  const countryChoices = [v.country, ...VEHICLES.filter((_, i) => i !== idx).slice(0, 2).map(x => x.country)].sort(() => Math.random() - 0.5);
+  if (!vehicle) return null;
+
+  const correctLoc = lang === 'bm' ? vehicle.locationBm : vehicle.locationEn;
 
   return (
-    <div className="game-container" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
-      <img src={assetPath('/images/game/world_vehicles_bg.jpg')} alt="" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0, opacity: 0.85, pointerEvents: "none" }} />
-      <div style={{ padding: 16, textAlign: 'center' }}>
-        <button className="icon-btn" onClick={() => goToWorld('transport')} style={{ position: 'absolute', left: 16, top: 16 }}>←</button>
-        <h2 style={{ fontFamily: 'var(--font-heading)', color: '#00695C' }}>{v.name}</h2>
-        <div style={{ fontSize: '0.8rem', color: '#999' }}>{idx + 1}/{VEHICLES.length}</div>
-        <div style={{ textAlign: 'center', margin: '16px 0' }}><GI e={v.emoji} size={80} /></div>
-        {showFact && (
-          <div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '12px auto', maxWidth: 300 }}>
-            <p style={{ fontSize: '0.9rem', color: '#555', margin: 0 }}>{v.fact}</p>
-            <button onClick={() => setShowFact(false)} style={{
-              marginTop: 12, padding: '8px 20px', borderRadius: 12, background: '#00897B', color: 'white',
-              border: 'none', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font-heading)',
-            }}>{lang === 'bm' ? 'Kuiz!' : 'Quiz!'}</button>
-          </div>
-        )}
-        {!showFact && (
-          <div style={{ background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 16, margin: '12px auto', maxWidth: 300 }}>
-            <p style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: 12 }}>
-              {lang === 'bm' ? `${v.name} dari mana?` : `Where is ${v.name} from?`}
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {countryChoices.map((c, i) => (
-                <button key={i} onClick={() => handleQuiz(c)} style={{
-                  padding: '10px 16px', borderRadius: 12, background: 'white', border: '2px solid rgba(0,0,0,0.1)',
-                  cursor: 'pointer', fontWeight: 700, fontSize: '0.9rem',
-                }}>{c}</button>
-              ))}
+    <div className="game-screen" style={{ touchAction: 'none' }}>
+      <div className="game-body" style={{ padding: 0 }}>
+        <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
+          <img src={assetPath('/images/game/world_vehicles_bg.jpg')} alt="" style={{
+            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+            objectFit: 'cover', zIndex: 0, opacity: 0.4, pointerEvents: 'none',
+          }} />
+
+          <div style={{
+            position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column',
+            height: '100%', width: '100%', maxWidth: 500, margin: '0 auto',
+            padding: 'clamp(8px, 2vw, 14px)', gap: 'clamp(6px, 1.5vw, 10px)',
+          }}>
+            {/* Header */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(10px)',
+              borderRadius: 'clamp(16px, 3vw, 24px)', padding: 'clamp(6px, 1vw, 10px) clamp(10px, 1.5vw, 16px)',
+              boxShadow: `0 4px 20px rgba(0,105,92,0.12)`, flexShrink: 0,
+            }}>
+              <button onClick={() => goToWorld('transport')} style={{
+                background: `linear-gradient(135deg, ${ACCENT_LIGHT}, ${ACCENT})`, borderRadius: '50%',
+                width: 'clamp(32px, 5vw, 42px)', height: 'clamp(32px, 5vw, 42px)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                border: 'none', cursor: 'pointer', boxShadow: `0 3px 10px rgba(0,105,92,0.3)`,
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              </button>
+
+              <div style={{ textAlign: 'center', flex: 1 }}>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.7rem, 2vw, 0.9rem)', fontWeight: 800, color: ACCENT }}>
+                  {lang === 'bm' ? 'Jelajah Dunia' : 'World Explorer'}
+                </div>
+                <div style={{ fontSize: '0.6rem', color: '#999', fontWeight: 500 }}>
+                  {roundIdx + 1}/{TOTAL_ROUNDS} · {score} pts
+                </div>
+              </div>
+
+              <div style={{
+                background: 'rgba(0,105,92,0.1)', borderRadius: 12, padding: '4px 10px',
+                fontFamily: 'var(--font-heading)', fontSize: '0.65rem', fontWeight: 700, color: ACCENT,
+              }}>
+                {streak > 0 && `x${streak}`}
+              </div>
             </div>
-            {quizAnswer && (
-              <div style={{ marginTop: 10, fontWeight: 700, color: quizAnswer === 'correct' ? '#4CAF50' : '#F44336' }}>
-                {quizAnswer === 'correct' ? '' : ''} {v.country}
+
+            {/* Progress bar */}
+            <div style={{ height: 6, background: 'rgba(0,0,0,0.06)', borderRadius: 3, overflow: 'hidden', flexShrink: 0 }}>
+              <div style={{
+                height: '100%', width: `${progress}%`, borderRadius: 3,
+                background: `linear-gradient(90deg, ${ACCENT_LIGHT}, ${ACCENT})`,
+                transition: 'width 0.5s ease',
+              }} />
+            </div>
+
+            {/* Phase: KENALI -- Show vehicle image + name */}
+            {phase === 'kenali' && (
+              <div style={{
+                flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                animation: 'popIn 0.5s ease', gap: 'clamp(12px, 2vw, 20px)',
+              }}>
+                <div style={{
+                  background: 'rgba(255,255,255,0.95)', borderRadius: 24,
+                  padding: 'clamp(20px, 4vw, 32px)', textAlign: 'center',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)', maxWidth: 380, width: '100%',
+                }}>
+                  <img
+                    src={assetPath(`/images/vehicles/world/${vehicle.img}.jpg`)}
+                    alt={vName}
+                    style={{
+                      width: 'clamp(120px, 30vw, 180px)', height: 'clamp(120px, 30vw, 180px)',
+                      objectFit: 'cover', borderRadius: 20,
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                      animation: 'characterBob 2s ease-in-out infinite',
+                    }}
+                    onError={(e) => { e.target.style.opacity = '0.3'; }}
+                  />
+                  <div style={{
+                    fontFamily: 'var(--font-heading)', fontSize: 'clamp(1.3rem, 4vw, 1.8rem)',
+                    fontWeight: 900, color: ACCENT, marginTop: 16,
+                  }}>
+                    {vName}
+                  </div>
+                  <div style={{
+                    fontSize: 'clamp(0.75rem, 2vw, 0.9rem)', color: '#999',
+                    fontWeight: 600, marginTop: 4,
+                  }}>
+                    {lang === 'bm' ? vehicle.regionBm : vehicle.regionEn}
+                  </div>
+                </div>
+
+                <button onClick={() => { if (soundEnabled) playTapSound(); setPhase('teroka'); }} style={{
+                  padding: 'clamp(12px, 2.5vw, 18px) clamp(28px, 6vw, 44px)',
+                  borderRadius: 'clamp(16px, 3vw, 24px)',
+                  background: `linear-gradient(135deg, ${ACCENT_LIGHT}, ${ACCENT})`,
+                  color: 'white', border: 'none', fontWeight: 800,
+                  fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
+                  cursor: 'pointer', fontFamily: 'var(--font-heading)',
+                  boxShadow: `0 6px 20px rgba(0,105,92,0.35)`,
+                  transition: 'all 0.2s ease',
+                }}>
+                  {lang === 'bm' ? 'Teroka' : 'Explore'} →
+                </button>
+              </div>
+            )}
+
+            {/* Phase: TEROKA -- Show location + fact */}
+            {phase === 'teroka' && (
+              <div style={{
+                flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                animation: 'popIn 0.5s ease', gap: 'clamp(12px, 2vw, 16px)',
+              }}>
+                <div style={{
+                  background: 'rgba(255,255,255,0.95)', borderRadius: 24,
+                  padding: 'clamp(16px, 3vw, 28px)', textAlign: 'center',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)', maxWidth: 400, width: '100%',
+                }}>
+                  {/* Vehicle thumbnail + name */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'center', marginBottom: 12 }}>
+                    <img src={assetPath(`/images/vehicles/world/${vehicle.img}.jpg`)} alt={vName}
+                      style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 14 }}
+                      onError={(e) => { e.target.style.opacity = '0.3'; }}
+                    />
+                    <div>
+                      <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(1rem, 2.5vw, 1.3rem)', fontWeight: 800, color: ACCENT }}>
+                        {vName}
+                      </div>
+                      <div style={{ fontSize: '0.7rem', color: '#999', fontWeight: 500 }}>
+                        {lang === 'bm' ? vehicle.regionBm : vehicle.regionEn}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Location badge */}
+                  <div style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    background: `linear-gradient(135deg, ${ACCENT_LIGHT}22, ${ACCENT}11)`,
+                    padding: '8px 20px', borderRadius: 50, marginBottom: 12,
+                    border: `2px solid ${ACCENT}22`,
+                  }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill={ACCENT}>
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 'clamp(0.85rem, 2vw, 1rem)', color: ACCENT }}>
+                      {vLocation}
+                    </span>
+                  </div>
+
+                  {/* Fact */}
+                  <div style={{
+                    background: 'rgba(0,105,92,0.04)', borderRadius: 16, padding: '12px 16px',
+                    fontSize: 'clamp(0.8rem, 2vw, 0.95rem)', color: '#555',
+                    lineHeight: 1.5, fontWeight: 500,
+                  }}>
+                    {vFact}
+                  </div>
+                </div>
+
+                <button onClick={() => { if (soundEnabled) playTapSound(); setPhase('main'); }} style={{
+                  padding: 'clamp(12px, 2.5vw, 18px) clamp(28px, 6vw, 44px)',
+                  borderRadius: 'clamp(16px, 3vw, 24px)',
+                  background: `linear-gradient(135deg, #FFB74D, #FF8F00)`,
+                  color: 'white', border: 'none', fontWeight: 800,
+                  fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
+                  cursor: 'pointer', fontFamily: 'var(--font-heading)',
+                  boxShadow: '0 6px 20px rgba(255,143,0,0.35)',
+                  transition: 'all 0.2s ease',
+                }}>
+                  {lang === 'bm' ? 'Kuiz!' : 'Quiz!'} →
+                </button>
+              </div>
+            )}
+
+            {/* Phase: MAIN -- Quiz: match vehicle to location */}
+            {phase === 'main' && (
+              <div style={{
+                flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                animation: 'popIn 0.4s ease', gap: 'clamp(10px, 2vw, 16px)',
+              }}>
+                {/* Vehicle image */}
+                <img src={assetPath(`/images/vehicles/world/${vehicle.img}.jpg`)} alt={vName}
+                  style={{
+                    width: 'clamp(80px, 20vw, 110px)', height: 'clamp(80px, 20vw, 110px)',
+                    objectFit: 'cover', borderRadius: 18,
+                    boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
+                    animation: 'characterBob 2s ease-in-out infinite',
+                    flexShrink: 0,
+                  }}
+                  onError={(e) => { e.target.style.opacity = '0.3'; }}
+                />
+
+                {/* Question */}
+                <div style={{
+                  background: 'rgba(255,255,255,0.95)', borderRadius: 20,
+                  padding: 'clamp(10px, 2vw, 18px) clamp(16px, 3vw, 28px)',
+                  textAlign: 'center', boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
+                  flexShrink: 0,
+                }}>
+                  <div style={{
+                    fontFamily: 'var(--font-heading)', fontWeight: 800, color: ACCENT,
+                    fontSize: 'clamp(0.85rem, 2.5vw, 1.1rem)',
+                  }}>
+                    {lang === 'bm' ? `${vName} datang dari mana?` : `Where does the ${vName} come from?`}
+                  </div>
+                </div>
+
+                {/* Quiz choices - 2x2 grid */}
+                <div style={{
+                  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  width: '100%', minHeight: 0,
+                }}>
+                  <div style={{
+                    display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)',
+                    gap: 'clamp(8px, 2vw, 14px)', width: '100%', maxWidth: 380,
+                  }}>
+                    {quizChoices.map((loc, i) => {
+                      const isCorrect = loc === correctLoc;
+                      const showHint = wrongCount >= 2 && isCorrect;
+                      return (
+                        <button key={`${roundIdx}-${i}-${loc}`} onClick={() => handleQuizAnswer(loc)} style={{
+                          background: showHint
+                            ? 'linear-gradient(135deg, rgba(107,203,119,0.2), rgba(76,175,80,0.15))'
+                            : 'rgba(255,255,255,0.95)',
+                          borderRadius: 'clamp(14px, 3vw, 20px)',
+                          padding: 'clamp(14px, 3vw, 22px)',
+                          border: showHint ? '3px solid #6BCB77' : '2px solid rgba(0,0,0,0.06)',
+                          cursor: feedback ? 'default' : 'pointer',
+                          fontFamily: 'var(--font-heading)',
+                          fontSize: 'clamp(0.75rem, 2vw, 0.95rem)', fontWeight: 700, color: '#444',
+                          boxShadow: showHint ? '0 0 16px rgba(107,203,119,0.3)' : '0 3px 12px rgba(0,0,0,0.06)',
+                          transition: 'all 0.2s ease',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          textAlign: 'center', minHeight: 'clamp(50px, 10vw, 70px)',
+                          animation: showHint ? 'pulse 1.5s ease-in-out infinite' : `bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 0.08}s both`,
+                        }}>
+                          {loc}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Feedback overlay */}
+            {feedback && (
+              <div style={{
+                position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+                zIndex: 50, animation: 'popIn 0.3s ease',
+              }}>
+                <div style={{
+                  padding: 'clamp(12px, 3vw, 20px) clamp(24px, 5vw, 40px)',
+                  borderRadius: 20, fontFamily: 'var(--font-heading)',
+                  fontSize: 'clamp(1rem, 2.5vw, 1.3rem)', fontWeight: 800,
+                  background: feedback.type === 'correct' ? 'rgba(107,203,119,0.95)' : 'rgba(255,107,107,0.95)',
+                  color: '#fff', boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
+                }}>
+                  {feedback.message}
+                </div>
+              </div>
+            )}
+
+            {/* Collection counter */}
+            {collection.length > 0 && (
+              <div style={{
+                position: 'absolute', bottom: 'clamp(8px, 2vw, 16px)', right: 'clamp(8px, 2vw, 16px)',
+                background: 'rgba(255,255,255,0.9)', borderRadius: 16,
+                padding: '6px 14px', zIndex: 10,
+                fontFamily: 'var(--font-heading)', fontSize: '0.7rem', fontWeight: 700, color: ACCENT,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+              }}>
+                {lang === 'bm' ? 'Koleksi' : 'Collection'}: {collection.length}/{TOTAL_ROUNDS}
               </div>
             )}
           </div>
-        )}
+        </div>
       </div>
+
+      {gameComplete && (
+        <GameCompleteModal
+          lang={lang} stars={getStars()} score={score}
+          accentColor={ACCENT}
+          onPlayAgain={() => {
+            setRoundIdx(0); setScore(0); setStreak(0); setGameComplete(false);
+            setPhase('kenali'); setCollection([]); setConfetti([]);
+            setRounds([...ALL_VEHICLES].sort(() => Math.random() - 0.5).slice(0, TOTAL_ROUNDS));
+          }}
+          onBack={() => goToWorld('transport')}
+          confettiPieces={confetti}
+        />
+      )}
     </div>
   );
 }
@@ -9315,7 +10063,7 @@ export function MimicAnimalGame() {
   const lang = language;
 
   const ACTIONS = [
-    { image: assetPath('/animals/cat.jpg'), nameBm: 'Kucing', nameEn: 'Cat', actionBm: 'Mengeong! Meow! 🐱', actionEn: 'Say Meow! 🐱', tipBm: 'Buat bunyi kucing!', tipEn: 'Make cat sounds!' },
+    { image: assetPath('/animals/cat.jpg'), nameBm: 'Kucing', nameEn: 'Cat', actionBm: 'Mengeong! Meow!', actionEn: 'Say Meow!', tipBm: 'Buat bunyi kucing!', tipEn: 'Make cat sounds!' },
     { image: assetPath('/animals/dog.jpg'), nameBm: 'Anjing', nameEn: 'Dog', actionBm: 'Menyalak! Woof woof!', actionEn: 'Say Woof! Bark!', tipBm: 'Buat bunyi anjing!', tipEn: 'Make dog sounds!' },
     { image: assetPath('/animals/frog.jpg'), nameBm: 'Katak', nameEn: 'Frog', actionBm: 'Lompat tinggi-tinggi!', actionEn: 'Jump high like a frog!', tipBm: 'Lompat macam katak!', tipEn: 'Jump like a frog!' },
     { image: assetPath('/animals/elephant.jpg'), nameBm: 'Gajah', nameEn: 'Elephant', actionBm: 'Hayun tangan macam belalai!', actionEn: 'Swing your arm like a trunk!', tipBm: 'Tangan jadi belalai!', tipEn: 'Arms become trunks!' },

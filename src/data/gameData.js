@@ -94,7 +94,7 @@ export const WORLDS = [
     color: 'orange',
     guide: 'bumi',
     description: 'Kenderaan di mana-mana!',
-    requiredPlan: 'mini',
+    requiredPlan: 'complete',
     games: [
       { id: 'build-vehicle', name: 'Bina Kenderaan', nameEn: 'Build Vehicle', icon: '', description: 'Build your own vehicle!' },
       { id: 'sort-transport', name: 'Susun Kenderaan', nameEn: 'Sort Transport', icon: '', description: 'Land, Air, or Water?' },
@@ -111,7 +111,7 @@ export const WORLDS = [
     color: 'red',
     guide: 'sihat',
     description: 'Makanan sihat & sedap!',
-    requiredPlan: 'mini',
+    requiredPlan: 'complete',
     games: [
       { id: 'grocery-store', name: 'Kedai Runcit', nameEn: 'Grocery Store', icon: '', description: 'Shop for ingredients!' },
       { id: 'our-garden', name: 'Kebun Kita', nameEn: 'Our Garden', icon: '', description: 'Grow your own food!' },
