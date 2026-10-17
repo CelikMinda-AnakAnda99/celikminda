@@ -1,0 +1,13 @@
+[build]
+  base = "public/landing"
+  publish = "public/landing"
+
+[functions]
+  directory = "public/landing/netlify/functions"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

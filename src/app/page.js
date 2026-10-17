@@ -912,48 +912,38 @@ function WorldMap({ onOpenParent }) {
           })}
         </div>
 
-        {/* ── SECTION 2: CelikMinda Lengkap (Worlds 7-12) ── */}
+        {/* ── SECTION 2: Coming Soon (Worlds 7-12) ── */}
         <div style={{
           textAlign: 'center', padding: 'var(--space-xl) var(--space-md) var(--space-sm)',
           position: 'relative', zIndex: 2,
         }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 'var(--space-sm)',
-            background: userPlan === 'complete' 
-              ? 'linear-gradient(135deg, rgba(255,217,61,0.2), rgba(255,165,0,0.1))'
-              : 'linear-gradient(135deg, rgba(150,150,150,0.1), rgba(100,100,100,0.05))',
+            background: 'linear-gradient(135deg, rgba(150,150,150,0.1), rgba(100,100,100,0.05))',
             padding: '10px 24px', borderRadius: 'var(--radius-full)',
-            border: userPlan === 'complete' 
-              ? '2px solid rgba(255,217,61,0.4)'
-              : '2px solid rgba(150,150,150,0.2)',
+            border: '2px solid rgba(150,150,150,0.2)',
           }}>
-            {userPlan === 'complete' ? <CrownIcon size={22} /> : <LockIcon size={22} />}
+            <LockIcon size={22} />
             <span style={{ 
               fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '0.95rem',
-              color: userPlan === 'complete' ? '#CC8800' : '#888',
+              color: '#888',
             }}>
-              {lang === 'bm' ? 'CELIKMINDA LENGKAP' : 'CELIKMINDA COMPLETE'}
+              COMING SOON
             </span>
             <span style={{
               fontSize: '0.75rem', fontWeight: 600,
-              color: userPlan === 'complete' ? '#B8860B' : '#999',
-              background: userPlan === 'complete' ? 'rgba(255,217,61,0.2)' : 'rgba(150,150,150,0.1)',
+              color: '#999',
+              background: 'rgba(150,150,150,0.1)',
               padding: '2px 10px', borderRadius: 12,
             }}>
               +{COMPLETE_ONLY_WORLDS.length} {lang === 'bm' ? 'Dunia' : 'Worlds'} • +{COMPLETE_ONLY_GAME_COUNT} {lang === 'bm' ? 'Permainan' : 'Games'}
             </span>
-            {userPlan === 'complete' && (
-              <span style={{ fontSize: '0.7rem', color: '#FFD93D', fontWeight: 800 }}>
-                <StarIcon size={14} /> {lang === 'bm' ? 'AKTIF' : 'ACTIVE'}
-              </span>
-            )}
           </div>
         </div>
 
-        <div className="worlds-grid">
+        <div className="worlds-grid" style={{ opacity: 0.5, pointerEvents: 'none' }}>
           {COMPLETE_ONLY_WORLDS.map((world, idx) => {
-            const isLocked = userPlan !== 'complete';
-            return renderWorldCard(world, idx + MINI_WORLDS.length, isLocked);
+            return renderWorldCard(world, idx + MINI_WORLDS.length, true);
           })}
         </div>
 
@@ -974,46 +964,23 @@ function WorldMap({ onOpenParent }) {
               <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)' }}>
                 {lang === 'bm' ? 'Mulakan Pembelajaran Anak Anda!' : 'Start Your Child\'s Learning!'}
               </span>
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-                <button className="btn-premium" onClick={() => setShowUpgradeModal(true)}
-                  style={{ padding: '10px 20px', fontSize: '0.85rem', background: 'var(--cm-green)' }}>
-                  <SeedlingIcon size={14} /> Mini — RM49.90
-                </button>
-                <button className="btn-premium" onClick={() => setShowUpgradeModal(true)}
-                  style={{ padding: '10px 20px', fontSize: '0.85rem' }}>
-                  <CrownIcon size={14} /> Lengkap — RM99.90
-                </button>
-              </div>
-            </div>
-          )}
-          {userPlan === 'mini' && (
-            <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: 'var(--space-sm)',
-              background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)',
-              padding: 'var(--space-md) var(--space-xl)', borderRadius: 'var(--radius-full)',
-              boxShadow: 'var(--shadow-card)', border: '1px solid rgba(255,255,255,0.5)',
-            }}>
-              <SeedlingIcon size={20} />
-              <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                {lang === 'bm' ? 'CelikMinda Mini aktif' : 'CelikMinda Mini active'}
-              </span>
-              <button className="btn-premium" style={{ padding: '8px 16px', fontSize: '0.8rem' }}
-                onClick={() => setShowUpgradeModal(true)}>
-                {lang === 'bm' ? <><StarIcon size={14} /> Naik Taraf — RM50</> : <><StarIcon size={14} /> Upgrade — RM50</>}
+              <button className="btn-premium" onClick={() => setShowUpgradeModal(true)}
+                style={{ padding: '12px 28px', fontSize: '0.95rem', background: 'linear-gradient(135deg, #6BCB77, #4CAF50)' }}>
+                <SeedlingIcon size={16} /> {lang === 'bm' ? 'Beli CelikMinda — RM49.90' : 'Buy CelikMinda — RM49.90'}
               </button>
             </div>
           )}
-          {userPlan === 'complete' && (
+          {(userPlan === 'mini' || userPlan === 'complete') && (
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 'var(--space-sm)',
-              background: 'linear-gradient(135deg, rgba(255,217,61,0.15), rgba(255,165,0,0.1))',
+              background: 'linear-gradient(135deg, rgba(107,203,119,0.15), rgba(107,203,119,0.05))',
               backdropFilter: 'blur(12px)',
               padding: 'var(--space-md) var(--space-xl)', borderRadius: 'var(--radius-full)',
-              boxShadow: 'var(--shadow-card)', border: '2px solid rgba(255,217,61,0.3)',
+              boxShadow: 'var(--shadow-card)', border: '2px solid rgba(107,203,119,0.3)',
             }}>
-              <CrownIcon size={20} />
-              <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.85rem', color: '#CC8800' }}>
-                {lang === 'bm' ? 'CelikMinda Lengkap — Semua Dunia Terbuka!' : 'CelikMinda Complete — All Worlds Unlocked!'}
+              <SeedlingIcon size={20} />
+              <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.85rem', color: '#2D8B4E' }}>
+                {lang === 'bm' ? 'CelikMinda Aktif — Selamat Bermain!' : 'CelikMinda Active — Happy Learning!'}
               </span>
             </div>
           )}
@@ -1034,17 +1001,15 @@ function WorldMap({ onOpenParent }) {
 }
 
 // ════════════════════════════════════════════
-// 💰 UPGRADE MODAL — Premium Package Selection
+// 💰 UPGRADE MODAL — Single Price RM49.90
 // ════════════════════════════════════════════
 function UpgradeModal({ onClose, userPlan }) {
   const { language, activateSubscription } = useGameStore();
   const lang = language;
 
-  const handlePurchase = (plan) => {
-    // TODO: In production, this will redirect to ToyyibPay payment page
-    // and only call activateSubscription after server-verified webhook
-    // For now, demo activation:
-    activateSubscription(plan, `DEMO-${Date.now()}`, 'demo');
+  const handlePurchase = () => {
+    // TODO: In production, redirect to ToyyibPay
+    activateSubscription('mini', `DEMO-${Date.now()}`, 'demo');
     onClose();
   };
 
@@ -1057,14 +1022,14 @@ function UpgradeModal({ onClose, userPlan }) {
       animation: 'fadeIn 0.3s ease',
     }} onClick={onClose}>
       <div style={{
-        background: 'white', borderRadius: 28, maxWidth: 440, width: '100%',
+        background: 'white', borderRadius: 28, maxWidth: 420, width: '100%',
         boxShadow: '0 24px 48px rgba(0,0,0,0.2)',
         overflow: 'hidden', animation: 'popIn 0.3s ease',
       }} onClick={e => e.stopPropagation()}>
         
         {/* Header */}
         <div style={{
-          background: 'linear-gradient(135deg, #6C5CE7, #A29BFE)',
+          background: 'linear-gradient(135deg, #6BCB77, #4CAF50)',
           padding: 'var(--space-xl) var(--space-lg)',
           textAlign: 'center', color: 'white', position: 'relative',
         }}>
@@ -1083,114 +1048,48 @@ function UpgradeModal({ onClose, userPlan }) {
           </p>
         </div>
 
-        {/* Package Cards */}
+        {/* Single Package */}
         <div style={{ padding: 'var(--space-lg)', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
           
-          {/* Mini Package */}
-          {userPlan === 'free' && (
-            <div style={{
-              border: '2px solid rgba(107,203,119,0.3)', borderRadius: 20,
-              padding: 'var(--space-md)', position: 'relative',
-              background: 'linear-gradient(135deg, rgba(107,203,119,0.05), transparent)',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                <SeedlingIcon size={24} />
-                <div>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1rem' }}>
-                    CelikMinda Mini
-                  </div>
-                  <div style={{ fontSize: '0.75rem', color: '#666' }}>
-                    {PACKAGES.mini.worlds} {lang === 'bm' ? 'Dunia' : 'Worlds'} • {PACKAGES.mini.games} {lang === 'bm' ? 'Permainan' : 'Games'}
-                  </div>
-                </div>
-                <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.3rem', color: '#2D8B4E' }}>
-                    RM49.90
-                  </div>
-                  <div style={{ fontSize: '0.65rem', color: '#999' }}>
-                    {lang === 'bm' ? 'sekali bayar' : 'one-time'}
-                  </div>
-                </div>
-              </div>
-              <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: 12 }}>
-                <CheckIcon size={14} /> {lang === 'bm' ? 'Gua Huruf, Istana Nombor, Hutan Haiwan, Studio Warna, Pengangkutan, Pasar Buah' : 'Letter Cave, Number Castle, Animal Forest, Colour Studio, Transport, Fruit Market'}
-              </div>
-              <button onClick={() => handlePurchase('mini')} style={{
-                width: '100%', padding: '12px', borderRadius: 14,
-                background: '#6BCB77', color: 'white', border: 'none',
-                fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '0.95rem',
-                cursor: 'pointer', transition: 'transform 0.15s ease',
-              }}>
-                <SeedlingIcon size={14} /> {lang === 'bm' ? 'Beli Mini — RM49.90' : 'Buy Mini — RM49.90'}
-              </button>
-            </div>
-          )}
-
-          {/* Complete Package */}
           <div style={{
-            border: '2px solid rgba(255,217,61,0.4)', borderRadius: 20,
+            border: '2px solid rgba(107,203,119,0.3)', borderRadius: 20,
             padding: 'var(--space-md)', position: 'relative',
-            background: 'linear-gradient(135deg, rgba(255,217,61,0.08), rgba(255,165,0,0.04))',
+            background: 'linear-gradient(135deg, rgba(107,203,119,0.05), transparent)',
           }}>
-            {/* Best Value Badge */}
-            <div style={{
-              position: 'absolute', top: -10, right: 16,
-              background: 'linear-gradient(135deg, #FFD93D, #FFA726)', color: '#8B4513',
-              padding: '3px 12px', borderRadius: 10, fontSize: '0.65rem',
-              fontWeight: 900, fontFamily: 'var(--font-heading)',
-              boxShadow: '0 2px 8px rgba(255,165,0,0.3)',
-            }}>
-              {lang === 'bm' ? <><StarIcon size={12} /> NILAI TERBAIK</> : <><StarIcon size={12} /> BEST VALUE</>}
-            </div>
-            
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-              <CrownIcon size={24} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+              <SeedlingIcon size={28} />
               <div>
-                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1rem' }}>
-                  CelikMinda Lengkap
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.1rem' }}>
+                  CelikMinda
                 </div>
                 <div style={{ fontSize: '0.75rem', color: '#666' }}>
-                  {PACKAGES.complete.worlds} {lang === 'bm' ? 'Dunia' : 'Worlds'} • {PACKAGES.complete.games} {lang === 'bm' ? 'Permainan' : 'Games'}
+                  6 {lang === 'bm' ? 'Dunia' : 'Worlds'} • 38 {lang === 'bm' ? 'Permainan' : 'Games'}
                 </div>
               </div>
               <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.3rem', color: '#CC8800' }}>
-                  {userPlan === 'mini' ? 'RM50.00' : 'RM99.90'}
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.5rem', color: '#2D8B4E' }}>
+                  RM49.90
                 </div>
                 <div style={{ fontSize: '0.65rem', color: '#999' }}>
-                  {userPlan === 'mini' 
-                    ? (lang === 'bm' ? 'naik taraf' : 'upgrade')
-                    : (lang === 'bm' ? 'sekali bayar' : 'one-time')}
+                  {lang === 'bm' ? 'sekali bayar' : 'one-time'}
                 </div>
               </div>
             </div>
-            
-            <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: 12 }}>
-              <CheckIcon size={14} /> {lang === 'bm' ? 'SEMUA 12 dunia termasuk: Badan Saya, Taman Bentuk, Kampung Pekerjaan, Dewan Muzik, Penjelajah Dunia, Makmal Sains' : 'ALL 12 worlds including: My Body, Shape Garden, Job Village, Music Hall, World Explorer, Science Lab'}
+            <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: 6 }}>
+              <CheckIcon size={14} /> {lang === 'bm' ? 'Gua Huruf, Istana Nombor, Hutan Haiwan' : 'Letter Cave, Number Castle, Animal Forest'}
             </div>
-            
-            <button onClick={() => handlePurchase('complete')} style={{
+            <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: 14 }}>
+              <CheckIcon size={14} /> {lang === 'bm' ? 'Studio Warna, Stesen Pengangkutan, Pasar Buah' : 'Colour Studio, Transport Station, Fruit Market'}
+            </div>
+            <button onClick={handlePurchase} style={{
               width: '100%', padding: '14px', borderRadius: 14,
-              background: 'linear-gradient(135deg, #FFD93D, #FFA726)', color: '#8B4513',
-              border: 'none', fontFamily: 'var(--font-heading)', fontWeight: 900,
-              fontSize: '1rem', cursor: 'pointer', transition: 'transform 0.15s ease',
-              boxShadow: '0 4px 16px rgba(255,165,0,0.3)',
+              background: 'linear-gradient(135deg, #6BCB77, #4CAF50)', color: 'white', border: 'none',
+              fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1rem',
+              cursor: 'pointer', transition: 'transform 0.15s ease',
+              boxShadow: '0 4px 16px rgba(107,203,119,0.4)',
             }}>
-              <CrownIcon size={14} /> {userPlan === 'mini' 
-                ? (lang === 'bm' ? 'Naik Taraf — Tambah RM50' : 'Upgrade — Add RM50')
-                : (lang === 'bm' ? 'Beli Lengkap — RM99.90' : 'Buy Complete — RM99.90')}
+              <SeedlingIcon size={16} /> {lang === 'bm' ? 'Beli Sekarang — RM49.90' : 'Buy Now — RM49.90'}
             </button>
-
-            {userPlan === 'mini' && (
-              <div style={{ 
-                fontSize: '0.7rem', color: '#999', textAlign: 'center', marginTop: 8,
-                fontStyle: 'italic',
-              }}>
-                {lang === 'bm' 
-                  ? <><LightbulbIcon size={14} /> Anda sudah membayar RM49.90. Hanya perlu tambah RM50 sahaja!</>
-                  : <><LightbulbIcon size={14} /> You already paid RM49.90. Just add RM50 more!</>}
-              </div>
-            )}
           </div>
 
           {/* Family note */}
