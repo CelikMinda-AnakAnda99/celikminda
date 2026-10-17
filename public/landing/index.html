@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ms" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CelikMinda — Aplikasi Permainan Pendidikan Untuk Anak Umur 1-6 Tahun</title>
+    <meta name="description" content="Aplikasi permainan pendidikan interaktif No.1 Malaysia untuk kanak-kanak 1-6 tahun. 8 dunia pembelajaran, 62 permainan. RM49.90 sahaja.">
+    <meta property="og:title" content="CelikMinda — Permainan Pendidikan Anak 1-6 Tahun">
+    <meta property="og:description" content="62 permainan interaktif. 8 dunia pembelajaran. Bayar sekali, akses selamanya. RM49.90.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="images/hero.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #7C3AED; --primary-dark: #6D28D9; --primary-light: #A78BFA;
+            --secondary: #F59E0B; --secondary-light: #FCD34D;
+            --accent: #EC4899; --accent-light: #F9A8D4;
+            --success: #10B981; --dark: #1E1B4B; --dark-light: #312E81;
+            --text: #374151; --text-light: #6B7280;
+            --bg: #FAFAFF; --white: #FFFFFF;
+            --gradient-1: linear-gradient(135deg, #7C3AED 0%, #EC4899 50%, #F59E0B 100%);
+            --gradient-2: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);
+            --gradient-3: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 20px rgba(124,58,237,0.12);
+            --shadow-lg: 0 12px 40px rgba(124,58,237,0.18);
+            --shadow-xl: 0 20px 60px rgba(124,58,237,0.25);
+            --radius-sm: 8px; --radius-md: 16px; --radius-lg: 24px; --radius-xl: 32px;
+        }
+
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; color: var(--text); background: var(--bg); line-height: 1.7; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        .gradient-text { background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+        /* ============ TOP BANNER ============ */
+        .top-banner { background: var(--gradient-3); color: white; padding: 10px 20px; text-align: center; font-size: 14px; font-weight: 600; position: relative; z-index: 100; }
+        .banner-content { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+
+        /* ============ NAVBAR ============ */
+        .navbar { position: sticky; top: 0; z-index: 99; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(124,58,237,0.08); padding: 12px 0; transition: all 0.3s; }
+        .navbar.scrolled { background: rgba(255,255,255,0.95); box-shadow: var(--shadow-sm); }
+        .nav-container { display: flex; align-items: center; justify-content: space-between; }
+        .logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+        .logo-text { font-family: 'Fredoka', sans-serif; font-size: 24px; font-weight: 700; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .logo-icon-box { width: 36px; height: 36px; border-radius: 10px; background: var(--gradient-2); display: flex; align-items: center; justify-content: center; color: white; font-family: 'Fredoka'; font-weight: 700; font-size: 14px; box-shadow: 0 4px 12px rgba(124,58,237,0.3); }
+        .nav-cta { background: var(--gradient-2); color: white; padding: 10px 24px; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 14px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(124,58,237,0.3); }
+        .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(124,58,237,0.4); }
+
+        /* ============ BUTTONS ============ */
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 32px; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 16px; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); cursor: pointer; border: none; position: relative; overflow: hidden; }
+        .btn-primary { background: var(--gradient-2); color: white; box-shadow: 0 4px 20px rgba(124,58,237,0.35); }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(124,58,237,0.5); }
+        .btn-secondary { background: white; color: var(--primary); border: 2px solid var(--primary-light); }
+        .btn-secondary:hover { background: var(--primary); color: white; transform: translateY(-2px); }
+        .btn-lg { padding: 16px 36px; font-size: 17px; }
+        .btn-xl { padding: 20px 48px; font-size: 20px; }
+        .btn-block { width: 100%; }
+        .pulse-animation { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{box-shadow:0 4px 20px rgba(124,58,237,0.35)} 50%{box-shadow:0 4px 40px rgba(124,58,237,0.6),0 0 0 10px rgba(124,58,237,0.1)} }
+
+        /* ============ HERO ============ */
+        .hero { position: relative; padding: 60px 0 40px; overflow: hidden; }
+        .hero-bg-shapes { position: absolute; inset: 0; z-index: -1; }
+        .shape { position: absolute; border-radius: 50%; opacity: 0.06; }
+        .shape-1 { width: 400px; height: 400px; background: var(--primary); top: -100px; right: -100px; }
+        .shape-2 { width: 300px; height: 300px; background: var(--accent); bottom: -50px; left: -80px; }
+        .shape-3 { width: 200px; height: 200px; background: var(--secondary); top: 40%; left: 60%; }
+        .hero-content { text-align: center; position: relative; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.15); border-radius: 50px; padding: 8px 20px; font-size: 14px; font-weight: 600; color: var(--primary); margin-bottom: 20px; }
+        .hero h1 { font-family: 'Fredoka', sans-serif; font-size: clamp(32px, 5vw, 52px); font-weight: 700; line-height: 1.15; color: var(--dark); margin-bottom: 16px; }
+        .hero-subtitle { font-size: clamp(16px, 2.5vw, 19px); color: var(--text-light); max-width: 600px; margin: 0 auto 28px; }
+        .hero-mockup { max-width: 860px; margin: 0 auto 28px; border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-xl); }
+        .hero-mockup img { width: 100%; height: auto; display: block; }
+        .hero-stats { display: flex; justify-content: center; gap: 0; background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); max-width: 560px; margin: 0 auto 28px; overflow: hidden; }
+        .stat-item { flex: 1; padding: 20px 16px; text-align: center; }
+        .stat-item + .stat-item { border-left: 1px solid rgba(124,58,237,0.08); }
+        .stat-number { font-family: 'Fredoka'; font-size: 28px; font-weight: 700; color: var(--primary); }
+        .stat-label { font-size: 12px; color: var(--text-light); font-weight: 500; }
+        .hero-cta-group { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+        .hero-trust { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 20px; font-size: 14px; color: var(--text-light); flex-wrap: wrap; }
+        .trust-avatars { display: flex; }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 13px; margin-left: -8px; border: 2px solid white; }
+        .avatar:first-child { margin-left: 0; }
+
+        /* ============ SECTION HEADERS ============ */
+        .section-header { text-align: center; margin-bottom: 44px; }
+        .section-badge { display: inline-block; background: rgba(124,58,237,0.08); color: var(--primary); padding: 6px 16px; border-radius: 50px; font-size: 13px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .section-header h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(28px, 4vw, 40px); font-weight: 700; color: var(--dark); line-height: 1.2; }
+        .section-desc { color: var(--text-light); font-size: 16px; max-width: 560px; margin: 12px auto 0; }
+
+        /* ============ PROBLEM SECTION ============ */
+        .problem-section { padding: 72px 0; }
+        .problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .problem-card { background: white; border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.04); transition: all 0.3s; }
+        .problem-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+        .problem-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+        .problem-icon svg { width: 26px; height: 26px; }
+        .problem-card h3 { font-family: 'Fredoka'; font-weight: 600; font-size: 18px; color: var(--dark); margin-bottom: 8px; }
+        .problem-card p { font-size: 14px; color: var(--text-light); }
+
+        /* ============ WORLD SECTIONS ============ */
+        .worlds-section { padding: 72px 0; }
+        .world-block { margin-bottom: 44px; }
+        .world-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+        .world-num { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Fredoka'; font-weight: 700; font-size: 18px; color: white; flex-shrink: 0; }
+        .world-info h3 { font-family: 'Fredoka'; font-weight: 700; font-size: 20px; color: var(--dark); }
+        .world-info span { font-size: 13px; color: var(--text-light); font-weight: 500; }
+        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+        .game-card { background: white; border-radius: var(--radius-md); padding: 14px 16px; box-shadow: var(--shadow-sm); border: 1px solid rgba(0,0,0,0.04); display: flex; align-items: center; gap: 12px; transition: all 0.3s; }
+        .game-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+        .game-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; color: white; flex-shrink: 0; letter-spacing: -0.5px; }
+        .game-text h4 { font-family: 'Fredoka'; font-weight: 600; font-size: 14px; color: var(--dark); line-height: 1.2; }
+        .game-text p { font-size: 12px; color: var(--text-light); margin-top: 1px; }
+
+        /* ============ TREASURE / COMING SOON ============ */
+        .treasure { position: relative; border-radius: var(--radius-xl); background: linear-gradient(135deg, #1E1042 0%, #2D1B69 50%, #1A0D3C 100%); padding: 56px 32px; margin-top: 48px; text-align: center; color: white; overflow: hidden; }
+        .treasure::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, rgba(167,139,250,0.15) 0%, transparent 60%), radial-gradient(circle at 70% 70%, rgba(236,72,153,0.1) 0%, transparent 50%); }
+        .treasure h3 { font-family: 'Fredoka'; font-weight: 700; font-size: clamp(22px, 3vw, 30px); margin-bottom: 10px; position: relative; }
+        .treasure .t-desc { opacity: 0.75; font-size: 15px; max-width: 480px; margin: 0 auto 32px; position: relative; }
+        .sparkle { position: absolute; width: 3px; height: 3px; background: #FFD93D; border-radius: 50%; animation: twinkle 3s ease-in-out infinite; }
+        @keyframes twinkle { 0%,100%{opacity:0;transform:scale(0.5)} 50%{opacity:1;transform:scale(1.3)} }
+        .treasure-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; position: relative; }
+        .t-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-md); padding: 20px 14px; backdrop-filter: blur(8px); transition: all 0.3s; }
+        .t-card:hover { background: rgba(255,255,255,0.1); transform: translateY(-4px); border-color: rgba(167,139,250,0.3); }
+        .t-lock { width: 34px; height: 34px; border-radius: 10px; background: rgba(255,215,61,0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+        .t-lock svg { width: 16px; height: 16px; fill: #FFD93D; }
+        .t-card h4 { font-family: 'Fredoka'; font-weight: 600; font-size: 14px; margin-bottom: 3px; }
+        .t-card .t-count { font-size: 12px; opacity: 0.55; }
+        .treasure-badge { display: inline-block; margin-top: 28px; padding: 8px 22px; border-radius: 50px; background: linear-gradient(135deg, rgba(255,215,61,0.2), rgba(236,72,153,0.2)); border: 1px solid rgba(255,215,61,0.3); font-family: 'Fredoka'; font-weight: 600; font-size: 14px; color: #FFD93D; position: relative; }
+
+        /* ============ AGE GROUPS ============ */
+        .age-section { padding: 72px 0; }
+        .age-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .age-card { border-radius: var(--radius-lg); padding: 32px 24px; text-align: center; color: white; transition: all 0.3s; }
+        .age-card:hover { transform: translateY(-4px); }
+        .age-toddler { background: linear-gradient(135deg, #FF6B6B, #FF8E8E); box-shadow: 0 12px 30px rgba(255,107,107,0.3); }
+        .age-preschool { background: linear-gradient(135deg, #7C3AED, #A78BFA); box-shadow: 0 12px 30px rgba(124,58,237,0.3); }
+        .age-school { background: linear-gradient(135deg, #10B981, #34D399); box-shadow: 0 12px 30px rgba(16,185,129,0.3); }
+        .age-range { font-family: 'Fredoka'; font-size: 48px; font-weight: 700; line-height: 1; }
+        .age-label { font-size: 14px; opacity: 0.85; margin-bottom: 12px; }
+        .age-card h3 { font-family: 'Fredoka'; font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+        .age-card p { font-size: 14px; opacity: 0.9; line-height: 1.5; }
+
+        /* ============ TESTIMONIALS ============ */
+        .testimonial-section { padding: 72px 0; }
+        .testimonial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .testimonial-card { background: white; border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.04); }
+        .stars { color: #F59E0B; font-size: 16px; margin-bottom: 12px; letter-spacing: 2px; }
+        .testimonial-card p { font-size: 15px; color: var(--text); line-height: 1.65; margin-bottom: 16px; }
+        .testimonial-author { display: flex; align-items: center; gap: 12px; }
+        .author-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 16px; flex-shrink: 0; }
+        .testimonial-author strong { font-size: 14px; color: var(--dark); display: block; }
+        .testimonial-author span { font-size: 12px; color: var(--text-light); }
+
+        /* ============ PRICING ============ */
+        .pricing-section { padding: 72px 0; text-align: center; }
+        .pricing-card-single { max-width: 520px; margin: 0 auto; background: white; border-radius: var(--radius-xl); padding: 48px 36px; position: relative; overflow: hidden; box-shadow: var(--shadow-xl); border: 2px solid rgba(124,58,237,0.12); }
+        .pricing-card-single::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: var(--gradient-1); }
+        .popular-badge { display: inline-block; background: var(--gradient-3); color: white; padding: 5px 16px; border-radius: 50px; font-size: 12px; font-weight: 800; text-transform: uppercase; margin-bottom: 16px; letter-spacing: 0.5px; }
+        .pricing-card-single h3 { font-family: 'Fredoka'; font-size: 24px; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
+        .pricing-card-single .p-desc { color: var(--text-light); margin-bottom: 20px; font-size: 15px; }
+        .price-tag { display: flex; align-items: baseline; justify-content: center; gap: 4px; margin-bottom: 4px; }
+        .price-old { font-size: 18px; color: var(--text-light); text-decoration: line-through; margin-right: 8px; }
+        .price-current { font-family: 'Fredoka'; font-size: 56px; font-weight: 700; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; }
+        .price-period { font-size: 14px; color: var(--text-light); margin-bottom: 28px; display: block; margin-top: 4px; }
+        .pricing-features { text-align: left; margin-bottom: 28px; }
+        .pricing-features li { list-style: none; display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 500; padding: 6px 0; }
+        .check-icon { width: 22px; height: 22px; border-radius: 50%; background: var(--success); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .check-icon svg { width: 12px; height: 12px; fill: white; }
+
+        /* ============ CHECKOUT FORM ============ */
+        .checkout-form { text-align: left; margin-top: 24px; }
+        .form-group { margin-bottom: 14px; }
+        .checkout-form label { display: block; font-weight: 700; font-size: 13px; color: var(--dark); margin-bottom: 5px; }
+        .checkout-form input { width: 100%; padding: 14px 16px; border-radius: 14px; border: 2px solid rgba(124,58,237,0.1); background: #FAFAFF; font-family: 'Plus Jakarta Sans'; font-size: 15px; outline: none; transition: all 0.3s; }
+        .checkout-form input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(124,58,237,0.06); }
+        .checkout-btn { width: 100%; padding: 17px; border-radius: 50px; border: none; background: var(--gradient-2); color: white; font-family: 'Fredoka'; font-weight: 700; font-size: 18px; cursor: pointer; box-shadow: 0 4px 20px rgba(124,58,237,0.35); transition: all 0.3s; margin-top: 6px; }
+        .checkout-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(124,58,237,0.5); }
+        .checkout-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+        .checkout-trust { margin-top: 16px; text-align: center; font-size: 13px; color: var(--text-light); }
+        .payment-badges { display: flex; justify-content: center; gap: 8px; margin-top: 8px; }
+        .payment-badge { background: rgba(124,58,237,0.06); color: var(--primary); padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; }
+
+        /* ============ FAQ ============ */
+        .faq-section { padding: 72px 0; }
+        .faq-list { max-width: 680px; margin: 0 auto; }
+        .faq-item { background: white; border-radius: var(--radius-md); margin-bottom: 10px; box-shadow: var(--shadow-sm); border: 1px solid rgba(0,0,0,0.04); cursor: pointer; overflow: hidden; }
+        .faq-question { padding: 18px 22px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 15px; color: var(--dark); }
+        .faq-toggle { font-size: 20px; color: var(--primary); transition: transform 0.3s; font-weight: 400; }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+        .faq-answer p { padding: 0 22px 18px; font-size: 14px; color: var(--text-light); line-height: 1.7; }
+        .faq-item.active .faq-answer { max-height: 200px; }
+        .faq-item.active .faq-toggle { transform: rotate(45deg); }
+
+        /* ============ FINAL CTA ============ */
+        .final-cta { padding: 72px 0; }
+        .cta-content { background: var(--gradient-2); border-radius: var(--radius-xl); padding: 56px 32px; text-align: center; color: white; position: relative; overflow: hidden; }
+        .cta-content::before { content: ''; position: absolute; width: 300px; height: 300px; background: rgba(255,255,255,0.05); border-radius: 50%; top: -100px; right: -100px; }
+        .cta-content h2 { font-family: 'Fredoka'; font-size: clamp(24px, 3.5vw, 36px); font-weight: 700; margin-bottom: 12px; }
+        .cta-content p { opacity: 0.85; font-size: 16px; margin-bottom: 24px; max-width: 500px; margin-left: auto; margin-right: auto; }
+        .cta-urgency { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.12); border-radius: 50px; padding: 8px 20px; font-size: 14px; font-weight: 600; margin-bottom: 24px; }
+
+        /* ============ FOOTER ============ */
+        .footer { padding: 40px 0; border-top: 1px solid rgba(124,58,237,0.08); }
+        .footer-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .footer-brand { display: flex; align-items: center; gap: 8px; }
+        .footer-brand p { font-size: 13px; color: var(--text-light); margin-left: 8px; }
+        .footer-links { display: flex; gap: 20px; }
+        .footer-links a { color: var(--text-light); text-decoration: none; font-size: 13px; transition: color 0.3s; }
+        .footer-links a:hover { color: var(--primary); }
+        .footer-bottom { text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.04); }
+        .footer-bottom p { font-size: 12px; color: var(--text-light); }
+
+        /* ============ EMAIL FLOAT ============ */
+        .email-float { position: fixed; bottom: 24px; right: 24px; z-index: 90; width: 52px; height: 52px; border-radius: 50%; background: var(--gradient-2); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(124,58,237,0.4); transition: all 0.3s; }
+        .email-float:hover { transform: scale(1.1); box-shadow: 0 6px 30px rgba(124,58,237,0.5); }
+
+        /* ============ TOAST ============ */
+        .toast { position: fixed; bottom: 24px; left: 24px; z-index: 1000; padding: 14px 22px; border-radius: var(--radius-md); background: white; box-shadow: 0 12px 40px rgba(0,0,0,0.15); font-weight: 600; font-size: 14px; transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.4,0,0.2,1); max-width: 360px; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid #EF4444; }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 768px) {
+            .age-grid { grid-template-columns: 1fr; gap: 16px; }
+            .game-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .hero-stats { flex-direction: row; max-width: 100%; }
+            .stat-number { font-size: 22px; }
+            .hero h1 { font-size: 28px; }
+            .pricing-card-single { padding: 32px 22px; }
+            .price-current { font-size: 44px; }
+            .treasure { padding: 40px 20px; }
+            .treasure-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
+            .hero-cta-group { flex-direction: column; align-items: center; }
+            .btn-lg { width: 100%; text-align: center; }
+            .game-grid { grid-template-columns: 1fr; }
+            .stat-item { padding: 14px 8px; }
+            .footer-content { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Banner -->
+    <div class="top-banner">
+        <div class="banner-content">
+            <span>TAWARAN AWAL — RM49.90 sahaja untuk <strong>akses seumur hidup</strong>. Harga akan naik selepas pelancaran penuh.</span>
+        </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <span class="logo-icon-box">CM</span>
+                <span class="logo-text">CelikMinda</span>
+            </a>
+            <a href="#harga" class="nav-cta">Dapatkan Sekarang</a>
+        </div>
+    </nav>
+
+    <!-- Email Float -->
+    <a href="mailto:muhammadsyazmihafiz@gmail.com?subject=Pertanyaan%20CelikMinda" class="email-float" aria-label="Email">
+        <svg viewBox="0 0 24 24" fill="white" width="24" height="24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+    </a>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-bg-shapes"><div class="shape shape-1"></div><div class="shape shape-2"></div><div class="shape shape-3"></div></div>
+        <div class="container hero-content">
+            <div class="hero-badge">Aplikasi Pendidikan No.1 Untuk Anak Malaysia</div>
+            <h1>Permainan Interaktif Yang<br><span class="gradient-text">Mendidik Anak Anda</span></h1>
+            <p class="hero-subtitle">62 permainan interaktif merangkumi ABC, Nombor, Haiwan, Warna, Kenderaan, Makanan, Bentuk, Muzik dan Sains — direka khas untuk <strong>kanak-kanak 1 hingga 6 tahun</strong>.</p>
+            <div class="hero-cta-group">
+                <a href="#harga" class="btn btn-primary btn-lg pulse-animation">Dapatkan CelikMinda — RM49.90</a>
+                <a href="#dunia" class="btn btn-secondary btn-lg">Lihat Semua Dunia</a>
+            </div>
+            <div class="hero-mockup"><img src="images/hero.jpg" alt="CelikMinda Toddlers" loading="eager"></div>
+            <div class="hero-stats">
+                <div class="stat-item"><div class="stat-number">8</div><div class="stat-label">Dunia Pembelajaran</div></div>
+                <div class="stat-item"><div class="stat-number">62</div><div class="stat-label">Permainan Interaktif</div></div>
+                <div class="stat-item"><div class="stat-number">1-6</div><div class="stat-label">Tahun (3 Peringkat)</div></div>
+            </div>
+            <div class="hero-trust">
+                <div class="trust-avatars">
+                    <div class="avatar" style="background:linear-gradient(135deg,#FF6B6B,#FF8E8E)">A</div>
+                    <div class="avatar" style="background:linear-gradient(135deg,#4ECDC4,#6EDDD6)">S</div>
+                    <div class="avatar" style="background:linear-gradient(135deg,#A78BFA,#C4B5FD)">N</div>
+                    <div class="avatar" style="background:linear-gradient(135deg,#FBBF24,#FCD34D)">R</div>
+                    <div class="avatar" style="background:linear-gradient(135deg,#F472B6,#F9A8D4)">M</div>
+                </div>
+                <span>Direka khas untuk <strong>ibu bapa Malaysia</strong> yang prihatin pendidikan anak</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Masalah Ibu Bapa</span>
+                <h2>Adakah Anda <span class="gradient-text">Mengalami Ini?</span></h2>
+            </div>
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <div class="problem-icon" style="background:linear-gradient(135deg,#FEE2E2,#FECACA)"><svg fill="#EF4444" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div>
+                    <h3>Tak Tahu Nak Ajar Apa</h3>
+                    <p>Banyak sangat bahan di internet tapi tak tersusun. Mana satu yang sesuai untuk umur anak?</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon" style="background:linear-gradient(135deg,#EDE9FE,#DDD6FE)"><svg fill="#7C3AED" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg></div>
+                    <h3>Kos Tuisyen Mahal</h3>
+                    <p>Tuisyen RM200-500 sebulan? Dengan CelikMinda, bayar RM49.90 sekali sahaja — guna selamanya.</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon" style="background:linear-gradient(135deg,#FEF3C7,#FDE68A)"><svg fill="#F59E0B" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg></div>
+                    <h3>Tak Cukup Masa</h3>
+                    <p>Nak cari dan prepare bahan sendiri? Memang tak sempat. Kami dah siapkan semua untuk anda.</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon" style="background:linear-gradient(135deg,#D1FAE5,#A7F3D0)"><svg fill="#10B981" viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg></div>
+                    <h3>Anak Asyik Main Phone</h3>
+                    <p>Tukar screen time jadi learning time. Permainan CelikMinda seronok DAN mendidik.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Worlds Section -->
+    <section class="worlds-section" id="dunia">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Apa Anak Anda Akan Dapat</span>
+                <h2>6 Dunia <span class="gradient-text">Tersedia Sekarang</span></h2>
+                <p class="section-desc">Setiap dunia mengandungi permainan yang direka oleh pakar pendidikan kanak-kanak Malaysia.</p>
+            </div>
+
+            <!-- World 1 -->
+            <div class="world-block">
+                <div class="world-header"><div class="world-num" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">1</div><div class="world-info"><h3>Gua Huruf</h3><span>8 permainan &middot; Belajar ABC dan membaca</span></div></div>
+                <div class="game-grid">
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">JH</div><div class="game-text"><h4>Jejak Huruf</h4><p>Trace huruf yang hidup</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">PH</div><div class="game-text"><h4>Pokok Huruf</h4><p>Petik buah huruf yang betul</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">LB</div><div class="game-text"><h4>Lebah &amp; Bunga</h4><p>Padankan huruf besar &amp; kecil</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">SK</div><div class="game-text"><h4>Bijak Suku Kata</h4><p>Bina perkataan di kilang</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">TH</div><div class="game-text"><h4>Tembak Huruf</h4><p>Pop gelembung huruf</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">PZ</div><div class="game-text"><h4>Puzzle Huruf</h4><p>Lengkapkan puzzle huruf</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">NY</div><div class="game-text"><h4>Nyanyian ABC</h4><p>Nyanyi bersama Minda</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">CH</div><div class="game-text"><h4>Cerita Huruf</h4><p>Baca cerita huruf yang menarik</p></div></div>
+                </div>
+            </div>
+
+            <!-- World 2 -->
+            <div class="world-block">
+                <div class="world-header"><div class="world-num" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">2</div><div class="world-info"><h3>Istana Nombor</h3><span>8 permainan &middot; Matematik asas dan pengiraan</span></div></div>
+                <div class="game-grid">
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">MB</div><div class="game-text"><h4>Menara Blok</h4><p>Susun blok mengikut nombor</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">KB</div><div class="game-text"><h4>Kira Benda</h4><p>Kira objek yang bergerak</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">MM</div><div class="game-text"><h4>Mesin Matematik</h4><p>Mesin tambah ajaib</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">KT</div><div class="game-text"><h4>Kedai Tolak</h4><p>Jual barang dan belajar tolak</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">JN</div><div class="game-text"><h4>Jejak Nombor</h4><p>Trace nombor 0 hingga 9</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">BK</div><div class="game-text"><h4>Besar &amp; Kecil</h4><p>Bandingkan mana lebih</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">CP</div><div class="game-text"><h4>Corak &amp; Pola</h4><p>Lengkapkan corak seni</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">DA</div><div class="game-text"><h4>Dadu Ajaib</h4><p>Golek dan kira</p></div></div>
+                </div>
+            </div>
+
+            <!-- World 3 -->
+            <div class="world-block">
+                <div class="world-header"><div class="world-num" style="background:linear-gradient(135deg,#10B981,#6EE7B7)">3</div><div class="world-info"><h3>Hutan Haiwan</h3><span>6 permainan &middot; Alam semula jadi dan haiwan</span></div></div>
+                <div class="game-grid">
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#10B981,#6EE7B7)">RH</div><div class="game-text"><h4>Rumah Haiwan</h4><p>Padankan haiwan dengan habitat</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#10B981,#6EE7B7)">BH</div><div class="game-text"><h4>Bunyi Haiwan</h4><p>Dengar dan kenal pasti bunyi</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#10B981,#6EE7B7)">LH</div><div class="game-text"><h4>Lengkap Haiwan</h4><p>Kenal bahagian badan haiwan</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#10B981,#6EE7B7)">AM</div><div class="game-text"><h4>Apa Dia Makan?</h4><p>Beri makan haiwan</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#10B981,#6EE7B7)">EN</div><div class="game-text"><h4>Ensaiklopedia</h4><p>Kumpul lencana haiwan</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#10B981,#6EE7B7)">TH</div><div class="game-text"><h4>Tiru Haiwan</h4><p>Berlakon macam haiwan</p></div></div>
+                </div>
+            </div>
+
+            <!-- World 4 -->
+            <div class="world-block">
+                <div class="world-header"><div class="world-num" style="background:linear-gradient(135deg,#8B5CF6,#C4B5FD)">4</div><div class="world-info"><h3>Studio Warna</h3><span>7 permainan &middot; Warna dan kreativiti</span></div></div>
+                <div class="game-grid">
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#8B5CF6,#C4B5FD)">CW</div><div class="game-text"><h4>Campur Warna</h4><p>Campurkan warna di makmal</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#8B5CF6,#C4B5FD)">MA</div><div class="game-text"><h4>Mewarna Ajaib</h4><p>Warnakan dan lihat hidup</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#8B5CF6,#C4B5FD)">PW</div><div class="game-text"><h4>Padankan Warna</h4><p>Padankan nama dengan warna</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#8B5CF6,#C4B5FD)">IA</div><div class="game-text"><h4>Ingatan Ajaib</h4><p>Cari pasangan yang sama</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#8B5CF6,#C4B5FD)">TW</div><div class="game-text"><h4>Teka Warna</h4><p>Teka warna setiap benda</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#8B5CF6,#C4B5FD)">TV</div><div class="game-text"><h4>Titisan Warna Ajaib</h4><p>Seret titisan ke gelas</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#8B5CF6,#C4B5FD)">LK</div><div class="game-text"><h4>Lukis Bersama</h4><p>Kanvas lukisan bebas</p></div></div>
+                </div>
+            </div>
+
+            <!-- World 5 -->
+            <div class="world-block">
+                <div class="world-header"><div class="world-num" style="background:linear-gradient(135deg,#F59E0B,#FCD34D)">5</div><div class="world-info"><h3>Stesen Pengangkutan</h3><span>4 permainan &middot; Kenderaan dan keselamatan jalan raya</span></div></div>
+                <div class="game-grid">
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#F59E0B,#FCD34D);color:#7a3500">BK</div><div class="game-text"><h4>Bina Kenderaan</h4><p>Bina kenderaan sendiri</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#F59E0B,#FCD34D);color:#7a3500">SK</div><div class="game-text"><h4>Susun Kenderaan</h4><p>Darat, Udara atau Air?</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#F59E0B,#FCD34D);color:#7a3500">JR</div><div class="game-text"><h4>Jalan Raya</h4><p>Kawal lampu isyarat</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#F59E0B,#FCD34D);color:#7a3500">KD</div><div class="game-text"><h4>Kenderaan Dunia</h4><p>Terokai kenderaan unik</p></div></div>
+                </div>
+            </div>
+
+            <!-- World 6 -->
+            <div class="world-block">
+                <div class="world-header"><div class="world-num" style="background:linear-gradient(135deg,#EF4444,#FCA5A5)">6</div><div class="world-info"><h3>Pasar Buah</h3><span>5 permainan &middot; Makanan sihat dan nutrisi</span></div></div>
+                <div class="game-grid">
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EF4444,#FCA5A5)">KR</div><div class="game-text"><h4>Kedai Runcit</h4><p>Beli bahan masakan</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EF4444,#FCA5A5)">KK</div><div class="game-text"><h4>Kebun Kita</h4><p>Tanam sayur sendiri</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EF4444,#FCA5A5)">CK</div><div class="game-text"><h4>Chef Kecil</h4><p>Masak hidangan sedap</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EF4444,#FCA5A5)">ST</div><div class="game-text"><h4>Sihat atau Tidak?</h4><p>Pilih makanan sihat</p></div></div>
+                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EF4444,#FCA5A5)">BS</div><div class="game-text"><h4>Buah atau Sayur?</h4><p>Klasifikasi makanan</p></div></div>
+                </div>
+            </div>
+
+            <!-- Treasure Coming Soon -->
+            <div class="treasure">
+                <div class="sparkle" style="top:12%;left:8%"></div>
+                <div class="sparkle" style="top:25%;right:15%;animation-delay:.8s"></div>
+                <div class="sparkle" style="top:60%;left:20%;animation-delay:1.5s"></div>
+                <div class="sparkle" style="top:40%;right:10%;animation-delay:2.2s"></div>
+                <div class="sparkle" style="bottom:20%;left:45%;animation-delay:.5s"></div>
+                <div class="sparkle" style="top:15%;left:55%;animation-delay:1.8s"></div>
+                <div class="sparkle" style="bottom:30%;right:25%;animation-delay:2.8s"></div>
+                <h3>6 Dunia Lagi Sedang Dibina</h3>
+                <p class="t-desc">Pembeli awal mendapat akses automatik apabila setiap dunia siap — tanpa bayaran tambahan. Ini adalah harga terendah yang akan ditawarkan.</p>
+                <div class="treasure-grid">
+                    <div class="t-card"><div class="t-lock"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div><h4>Badan Saya</h4><p class="t-count">5 permainan</p></div>
+                    <div class="t-card"><div class="t-lock"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div><h4>Taman Bentuk</h4><p class="t-count">5 permainan</p></div>
+                    <div class="t-card"><div class="t-lock"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div><h4>Kampung Pekerjaan</h4><p class="t-count">4 permainan</p></div>
+                    <div class="t-card"><div class="t-lock"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div><h4>Dewan Muzik</h4><p class="t-count">4 permainan</p></div>
+                    <div class="t-card"><div class="t-lock"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div><h4>Penjelajah Dunia</h4><p class="t-count">3 permainan</p></div>
+                    <div class="t-card"><div class="t-lock"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div><h4>Makmal Sains</h4><p class="t-count">4 permainan</p></div>
+                </div>
+                <div class="treasure-badge">Beli sekarang — Akses automatik apabila siap</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Age Groups -->
+    <section class="age-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">3 Peringkat Umur</span>
+                <h2>Bahan Mengikut <span class="gradient-text">Tahap Perkembangan</span></h2>
+            </div>
+            <div class="age-grid">
+                <div class="age-card age-toddler"><div class="age-range">1-2</div><div class="age-label">Tahun</div><h3>Explore &amp; Discover</h3><p>Motor halus, kenal warna, bentuk, saiz, haiwan, dan garisan asas</p></div>
+                <div class="age-card age-preschool"><div class="age-range">3-4</div><div class="age-label">Tahun</div><h3>Learn &amp; Build</h3><p>Huruf A-Z, nombor 1-50, suku kata, mewarna, padanan warna dan haiwan</p></div>
+                <div class="age-card age-school"><div class="age-range">5-6</div><div class="age-label">Tahun</div><h3>Prepare &amp; Master</h3><p>Matematik lanjut, bacaan bertahap, sains asas dan persediaan sekolah</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonial-section">
+        <div class="container">
+            <div class="section-header"><span class="section-badge">Testimoni</span><h2>Apa Kata <span class="gradient-text">Ibu Bapa?</span></h2></div>
+            <div class="testimonial-grid">
+                <div class="testimonial-card"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p>"Anak saya umur 3 tahun sangat suka main CelikMinda. Sekarang dah boleh kenal huruf A-Z. <strong>Sangat berbaloi!</strong>"</p><div class="testimonial-author"><div class="author-avatar" style="background:linear-gradient(135deg,#FF6B6B,#FF8E8E)">A</div><div><strong>Aisyah, 32</strong><span>Ibu kepada 2 anak &middot; Kuala Lumpur</span></div></div></div>
+                <div class="testimonial-card"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p>"Dulu bayar tuisyen RM300/bulan. Sekarang guna CelikMinda je. <strong>Jimat sangat!</strong>"</p><div class="testimonial-author"><div class="author-avatar" style="background:linear-gradient(135deg,#4ECDC4,#6EDDD6)">S</div><div><strong>Siti Nurhaliza, 28</strong><span>Ibu kepada 3 anak &middot; Johor Bahru</span></div></div></div>
+                <div class="testimonial-card"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p>"Bayar sekali je RM49.90, dapat semua. Tak macam app lain yang kena subscribe bulanan. <strong>Highly recommended!</strong>"</p><div class="testimonial-author"><div class="author-avatar" style="background:linear-gradient(135deg,#A78BFA,#C4B5FD)">N</div><div><strong>Nur Fazlina, 35</strong><span>Ibu kepada 1 anak &middot; Terengganu</span></div></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing-section" id="harga">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Satu Harga. Semua Termasuk.</span>
+                <h2>Pelaburan Terbaik Untuk <span class="gradient-text">Masa Depan Anak</span></h2>
+                <p class="section-desc">Tiada langganan. Tiada bayaran tersembunyi. Bayar sekali, akses selamanya.</p>
+            </div>
+            <div class="pricing-card-single">
+                <div class="popular-badge">Tawaran Awal — Harga Terendah</div>
+                <h3>CelikMinda Lengkap</h3>
+                <p class="p-desc">Akses penuh ke semua 8 dunia dan 62 permainan</p>
+                <div class="price-tag"><span class="price-old">RM149</span><span class="price-current">RM49.90</span></div>
+                <span class="price-period">Sekali bayar &middot; Akses selamanya &middot; Kemas kini percuma</span>
+                <ul class="pricing-features">
+                    <li><span class="check-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>8 Dunia Pembelajaran Penuh</li>
+                    <li><span class="check-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>62 Permainan Interaktif</li>
+                    <li><span class="check-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>Boleh Guna Offline</li>
+                    <li><span class="check-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>Kawalan Ibu Bapa dan Laporan</li>
+                    <li><span class="check-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>Kemas Kini Percuma Seumur Hidup</li>
+                    <li><span class="check-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>Tiada Iklan. Tiada Penjejak. Selamat.</li>
+                </ul>
+                <form class="checkout-form" id="checkoutForm" onsubmit="handleCheckout(event)">
+                    <div class="form-group"><label for="buyerName">Nama Penuh</label><input type="text" id="buyerName" placeholder="Contoh: Siti Aminah" required></div>
+                    <div class="form-group"><label for="buyerEmail">Emel (untuk terima akses)</label><input type="email" id="buyerEmail" placeholder="contoh@gmail.com" required></div>
+                    <div class="form-group"><label for="buyerPhone">No. Telefon</label><input type="tel" id="buyerPhone" placeholder="0123456789" required></div>
+                    <button type="submit" class="checkout-btn pulse-animation" id="checkoutBtn">Bayar Sekarang — RM49.90</button>
+                    <div class="checkout-trust">
+                        <span>Pembayaran selamat melalui</span>
+                        <div class="payment-badges">
+                            <span class="payment-badge">FPX</span>
+                            <span class="payment-badge">DuitNow</span>
+                            <span class="payment-badge">ToyyibPay</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section">
+        <div class="container">
+            <div class="section-header"><span class="section-badge">Soalan Lazim</span><h2>Soalan Yang <span class="gradient-text">Sering Ditanya</span></h2></div>
+            <div class="faq-list">
+                <div class="faq-item" onclick="this.classList.toggle('active')"><div class="faq-question"><span>Apa itu CelikMinda?</span><span class="faq-toggle">+</span></div><div class="faq-answer"><p>CelikMinda adalah aplikasi permainan pendidikan interaktif untuk kanak-kanak berumur 1-6 tahun. Ia mengandungi 8 dunia pembelajaran dengan 62 permainan yang direka oleh pakar pendidikan.</p></div></div>
+                <div class="faq-item" onclick="this.classList.toggle('active')"><div class="faq-question"><span>Bagaimana cara akses selepas bayar?</span><span class="faq-toggle">+</span></div><div class="faq-answer"><p>Selepas pembayaran berjaya, emel dengan link akses dan kata laluan akan dihantar secara automatik ke emel anda. Anda boleh terus log masuk dan mula bermain.</p></div></div>
+                <div class="faq-item" onclick="this.classList.toggle('active')"><div class="faq-question"><span>Boleh guna pada berapa peranti?</span><span class="faq-toggle">+</span></div><div class="faq-answer"><p>Satu akaun boleh digunakan pada mana-mana pelayar web di telefon, tablet, atau komputer. Tiada had peranti.</p></div></div>
+                <div class="faq-item" onclick="this.classList.toggle('active')"><div class="faq-question"><span>Ada jaminan wang dikembalikan?</span><span class="faq-toggle">+</span></div><div class="faq-answer"><p>Ya. Kami tawarkan jaminan 30 hari wang dikembalikan. Hubungi kami dan kami akan pulangkan wang anda sepenuhnya.</p></div></div>
+                <div class="faq-item" onclick="this.classList.toggle('active')"><div class="faq-question"><span>Bila dunia baharu akan dibuka?</span><span class="faq-toggle">+</span></div><div class="faq-answer"><p>Kami sedang aktif membangunkan semua 8 dunia. Pembeli awal mendapat akses automatik apabila siap tanpa bayaran tambahan.</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta">
+        <div class="container">
+            <div class="cta-content">
+                <div class="cta-urgency">Harga promosi ini TERHAD — akan naik bila-bila masa</div>
+                <h2>Jangan Biarkan Anak Anda <span style="color:#FCD34D">Ketinggalan</span></h2>
+                <p>Setiap hari yang berlalu adalah peluang belajar yang hilang. Mula sekarang.</p>
+                <a href="#harga" class="btn btn-primary btn-xl pulse-animation" style="background:white;color:var(--primary)">Dapatkan CelikMinda Sekarang</a>
+                <div style="margin-top:16px;font-size:14px;opacity:0.7">Pembayaran selamat melalui FPX, DuitNow &amp; ToyyibPay</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon-box" style="width:28px;height:28px;font-size:11px;border-radius:8px">CM</span>
+                    <span class="logo-text" style="font-size:18px">CelikMinda</span>
+                    <p>Aplikasi pendidikan No.1 untuk anak Malaysia.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="mailto:muhammadsyazmihafiz@gmail.com">Emel</a>
+                    <a href="#">Polisi Privasi</a>
+                    <a href="#">Terma dan Syarat</a>
+                </div>
+            </div>
+            <div class="footer-bottom"><p>&copy; 2026 CelikMinda. Semua hak cipta terpelihara. Pembayaran diproses oleh ToyyibPay.</p></div>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        function showToast(m,t='success'){const e=document.getElementById('toast');e.textContent=m;e.className='toast '+t+' show';setTimeout(()=>e.classList.remove('show'),4000)}
+
+        async function handleCheckout(e){
+            e.preventDefault();
+            const btn=document.getElementById('checkoutBtn'),n=document.getElementById('buyerName').value.trim(),em=document.getElementById('buyerEmail').value.trim(),ph=document.getElementById('buyerPhone').value.trim();
+            if(!n||!em||!ph){showToast('Sila isi semua maklumat.','error');return}
+            btn.disabled=true;btn.textContent='Memproses...';
+            try{
+                const r=await fetch('/.netlify/functions/create-bill',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:n,email:em,phone:ph})});
+                const d=await r.json();
+                if(d.billUrl){showToast('Sedang redirect ke pembayaran...','success');setTimeout(()=>window.location.href=d.billUrl,1000)}
+                else throw new Error(d.error||'Gagal membuat bil.')
+            }catch(err){showToast('Ralat: '+err.message,'error');btn.disabled=false;btn.textContent='Bayar Sekarang — RM49.90'}
+        }
+
+        // Navbar scroll
+        window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>20));
+
+        // Payment return check
+        const p=new URLSearchParams(window.location.search);
+        if(p.get('status_id')==='1'){showToast('Pembayaran berjaya! Semak emel anda untuk link akses.','success');history.replaceState({},'',window.location.pathname)}
+        else if(p.get('status_id')==='3'){showToast('Pembayaran tidak berjaya. Sila cuba semula.','error');history.replaceState({},'',window.location.pathname)}
+
+        // Click sounds
+        const AC=window.AudioContext||window.webkitAudioContext;let ac;
+        function ia(){if(!ac)ac=new AC()}
+        function pc(){ia();const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.frequency.setValueAtTime(800,ac.currentTime);o.frequency.exponentialRampToValueAtTime(1200,ac.currentTime+.05);g.gain.setValueAtTime(.12,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.1);o.start(ac.currentTime);o.stop(ac.currentTime+.1)}
+        document.querySelectorAll('.btn,.nav-cta,.checkout-btn,.faq-item').forEach(el=>el.addEventListener('click',pc));
+    </script>
+</body>
+</html>
