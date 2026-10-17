@@ -104,17 +104,13 @@
 
         /* ============ WORLD SECTIONS ============ */
         .worlds-section { padding: 72px 0; }
-        .world-block { margin-bottom: 44px; }
-        .world-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
-        .world-num { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Fredoka'; font-weight: 700; font-size: 18px; color: white; flex-shrink: 0; }
-        .world-info h3 { font-family: 'Fredoka'; font-weight: 700; font-size: 20px; color: var(--dark); }
-        .world-info span { font-size: 13px; color: var(--text-light); font-weight: 500; }
-        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
-        .game-card { background: white; border-radius: var(--radius-md); padding: 14px 16px; box-shadow: var(--shadow-sm); border: 1px solid rgba(0,0,0,0.04); display: flex; align-items: center; gap: 12px; transition: all 0.3s; }
-        .game-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
-        .game-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; color: white; flex-shrink: 0; letter-spacing: -0.5px; }
-        .game-text h4 { font-family: 'Fredoka'; font-weight: 600; font-size: 14px; color: var(--dark); line-height: 1.2; }
-        .game-text p { font-size: 12px; color: var(--text-light); margin-top: 1px; }
+        .worlds-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; }
+        .world-card { background: white; border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.04); transition: all 0.3s; display: flex; gap: 18px; align-items: flex-start; }
+        .world-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+        .world-num { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-family: 'Fredoka'; font-weight: 700; font-size: 22px; color: white; flex-shrink: 0; }
+        .world-card-info h3 { font-family: 'Fredoka'; font-weight: 700; font-size: 18px; color: var(--dark); margin-bottom: 2px; }
+        .world-card-info .game-count { font-size: 13px; color: var(--primary); font-weight: 700; margin-bottom: 4px; }
+        .world-card-info p { font-size: 13px; color: var(--text-light); line-height: 1.5; }
 
         /* ============ TREASURE / COMING SOON ============ */
         .treasure { position: relative; border-radius: var(--radius-xl); background: linear-gradient(135deg, #1E1042 0%, #2D1B69 50%, #1A0D3C 100%); padding: 56px 32px; margin-top: 48px; text-align: center; color: white; overflow: hidden; }
@@ -341,84 +337,13 @@
                 <p class="section-desc">Setiap dunia mengandungi permainan yang direka oleh pakar pendidikan kanak-kanak Malaysia.</p>
             </div>
 
-            <!-- World 1 -->
-            <div class="world-block">
-                <div class="world-header"><div class="world-num" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">1</div><div class="world-info"><h3>Gua Huruf</h3><span>8 permainan &middot; Belajar ABC dan membaca</span></div></div>
-                <div class="game-grid">
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">JH</div><div class="game-text"><h4>Jejak Huruf</h4><p>Trace huruf yang hidup</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">PH</div><div class="game-text"><h4>Pokok Huruf</h4><p>Petik buah huruf yang betul</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">LB</div><div class="game-text"><h4>Lebah &amp; Bunga</h4><p>Padankan huruf besar &amp; kecil</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">SK</div><div class="game-text"><h4>Bijak Suku Kata</h4><p>Bina perkataan di kilang</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">TH</div><div class="game-text"><h4>Tembak Huruf</h4><p>Pop gelembung huruf</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">PZ</div><div class="game-text"><h4>Puzzle Huruf</h4><p>Lengkapkan puzzle huruf</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">NY</div><div class="game-text"><h4>Nyanyian ABC</h4><p>Nyanyi bersama Minda</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">CH</div><div class="game-text"><h4>Cerita Huruf</h4><p>Baca cerita huruf yang menarik</p></div></div>
-                </div>
-            </div>
-
-            <!-- World 2 -->
-            <div class="world-block">
-                <div class="world-header"><div class="world-num" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">2</div><div class="world-info"><h3>Istana Nombor</h3><span>8 permainan &middot; Matematik asas dan pengiraan</span></div></div>
-                <div class="game-grid">
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">MB</div><div class="game-text"><h4>Menara Blok</h4><p>Susun blok mengikut nombor</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">KB</div><div class="game-text"><h4>Kira Benda</h4><p>Kira objek yang bergerak</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">MM</div><div class="game-text"><h4>Mesin Matematik</h4><p>Mesin tambah ajaib</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">KT</div><div class="game-text"><h4>Kedai Tolak</h4><p>Jual barang dan belajar tolak</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">JN</div><div class="game-text"><h4>Jejak Nombor</h4><p>Trace nombor 0 hingga 9</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">BK</div><div class="game-text"><h4>Besar &amp; Kecil</h4><p>Bandingkan mana lebih</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">CP</div><div class="game-text"><h4>Corak &amp; Pola</h4><p>Lengkapkan corak seni</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">DA</div><div class="game-text"><h4>Dadu Ajaib</h4><p>Golek dan kira</p></div></div>
-                </div>
-            </div>
-
-            <!-- World 3 -->
-            <div class="world-block">
-                <div class="world-header"><div class="world-num" style="background:linear-gradient(135deg,#10B981,#6EE7B7)">3</div><div class="world-info"><h3>Hutan Haiwan</h3><span>6 permainan &middot; Alam semula jadi dan haiwan</span></div></div>
-                <div class="game-grid">
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#10B981,#6EE7B7)">RH</div><div class="game-text"><h4>Rumah Haiwan</h4><p>Padankan haiwan dengan habitat</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#10B981,#6EE7B7)">BH</div><div class="game-text"><h4>Bunyi Haiwan</h4><p>Dengar dan kenal pasti bunyi</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#10B981,#6EE7B7)">LH</div><div class="game-text"><h4>Lengkap Haiwan</h4><p>Kenal bahagian badan haiwan</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#10B981,#6EE7B7)">AM</div><div class="game-text"><h4>Apa Dia Makan?</h4><p>Beri makan haiwan</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#10B981,#6EE7B7)">EN</div><div class="game-text"><h4>Ensaiklopedia</h4><p>Kumpul lencana haiwan</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#10B981,#6EE7B7)">TH</div><div class="game-text"><h4>Tiru Haiwan</h4><p>Berlakon macam haiwan</p></div></div>
-                </div>
-            </div>
-
-            <!-- World 4 -->
-            <div class="world-block">
-                <div class="world-header"><div class="world-num" style="background:linear-gradient(135deg,#8B5CF6,#C4B5FD)">4</div><div class="world-info"><h3>Studio Warna</h3><span>7 permainan &middot; Warna dan kreativiti</span></div></div>
-                <div class="game-grid">
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#8B5CF6,#C4B5FD)">CW</div><div class="game-text"><h4>Campur Warna</h4><p>Campurkan warna di makmal</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#8B5CF6,#C4B5FD)">MA</div><div class="game-text"><h4>Mewarna Ajaib</h4><p>Warnakan dan lihat hidup</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#8B5CF6,#C4B5FD)">PW</div><div class="game-text"><h4>Padankan Warna</h4><p>Padankan nama dengan warna</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#8B5CF6,#C4B5FD)">IA</div><div class="game-text"><h4>Ingatan Ajaib</h4><p>Cari pasangan yang sama</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#8B5CF6,#C4B5FD)">TW</div><div class="game-text"><h4>Teka Warna</h4><p>Teka warna setiap benda</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#8B5CF6,#C4B5FD)">TV</div><div class="game-text"><h4>Titisan Warna Ajaib</h4><p>Seret titisan ke gelas</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#8B5CF6,#C4B5FD)">LK</div><div class="game-text"><h4>Lukis Bersama</h4><p>Kanvas lukisan bebas</p></div></div>
-                </div>
-            </div>
-
-            <!-- World 5 -->
-            <div class="world-block">
-                <div class="world-header"><div class="world-num" style="background:linear-gradient(135deg,#F59E0B,#FCD34D)">5</div><div class="world-info"><h3>Stesen Pengangkutan</h3><span>4 permainan &middot; Kenderaan dan keselamatan jalan raya</span></div></div>
-                <div class="game-grid">
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#F59E0B,#FCD34D);color:#7a3500">BK</div><div class="game-text"><h4>Bina Kenderaan</h4><p>Bina kenderaan sendiri</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#F59E0B,#FCD34D);color:#7a3500">SK</div><div class="game-text"><h4>Susun Kenderaan</h4><p>Darat, Udara atau Air?</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#F59E0B,#FCD34D);color:#7a3500">JR</div><div class="game-text"><h4>Jalan Raya</h4><p>Kawal lampu isyarat</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#F59E0B,#FCD34D);color:#7a3500">KD</div><div class="game-text"><h4>Kenderaan Dunia</h4><p>Terokai kenderaan unik</p></div></div>
-                </div>
-            </div>
-
-            <!-- World 6 -->
-            <div class="world-block">
-                <div class="world-header"><div class="world-num" style="background:linear-gradient(135deg,#EF4444,#FCA5A5)">6</div><div class="world-info"><h3>Pasar Buah</h3><span>5 permainan &middot; Makanan sihat dan nutrisi</span></div></div>
-                <div class="game-grid">
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EF4444,#FCA5A5)">KR</div><div class="game-text"><h4>Kedai Runcit</h4><p>Beli bahan masakan</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EF4444,#FCA5A5)">KK</div><div class="game-text"><h4>Kebun Kita</h4><p>Tanam sayur sendiri</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EF4444,#FCA5A5)">CK</div><div class="game-text"><h4>Chef Kecil</h4><p>Masak hidangan sedap</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EF4444,#FCA5A5)">ST</div><div class="game-text"><h4>Sihat atau Tidak?</h4><p>Pilih makanan sihat</p></div></div>
-                    <div class="game-card"><div class="game-icon" style="background:linear-gradient(135deg,#EF4444,#FCA5A5)">BS</div><div class="game-text"><h4>Buah atau Sayur?</h4><p>Klasifikasi makanan</p></div></div>
-                </div>
+            <div class="worlds-grid">
+                <div class="world-card"><div class="world-num" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">1</div><div class="world-card-info"><h3>Gua Huruf</h3><div class="game-count">8 permainan</div><p>Trace huruf, petik buah ABC, padankan huruf besar dan kecil, bina suku kata, pop gelembung, puzzle, nyanyian dan cerita huruf.</p></div></div>
+                <div class="world-card"><div class="world-num" style="background:linear-gradient(135deg,#EC4899,#F9A8D4)">2</div><div class="world-card-info"><h3>Istana Nombor</h3><div class="game-count">8 permainan</div><p>Menara blok, kira benda, mesin matematik, kedai tolak, trace nombor, besar dan kecil, corak pola dan dadu ajaib.</p></div></div>
+                <div class="world-card"><div class="world-num" style="background:linear-gradient(135deg,#10B981,#6EE7B7)">3</div><div class="world-card-info"><h3>Hutan Haiwan</h3><div class="game-count">6 permainan</div><p>Padankan haiwan dengan habitat, bunyi haiwan, ensaiklopedia, beri makan haiwan, lengkap badan haiwan dan tiru haiwan.</p></div></div>
+                <div class="world-card"><div class="world-num" style="background:linear-gradient(135deg,#8B5CF6,#C4B5FD)">4</div><div class="world-card-info"><h3>Studio Warna</h3><div class="game-count">7 permainan</div><p>Campur warna, mewarna ajaib, padankan warna, ingatan ajaib, teka warna, titisan warna ajaib dan kanvas lukisan bebas.</p></div></div>
+                <div class="world-card"><div class="world-num" style="background:linear-gradient(135deg,#F59E0B,#FCD34D)">5</div><div class="world-card-info"><h3>Stesen Pengangkutan</h3><div class="game-count">4 permainan</div><p>Bina kenderaan sendiri, susun kenderaan darat/udara/air, kawal lampu isyarat dan terokai kenderaan dunia.</p></div></div>
+                <div class="world-card"><div class="world-num" style="background:linear-gradient(135deg,#EF4444,#FCA5A5)">6</div><div class="world-card-info"><h3>Pasar Buah</h3><div class="game-count">5 permainan</div><p>Kedai runcit, kebun kita, chef kecil, pilih makanan sihat atau tidak dan klasifikasi buah atau sayur.</p></div></div>
             </div>
 
             <!-- Treasure Coming Soon -->
@@ -466,7 +391,7 @@
             <div class="section-header"><span class="section-badge">Testimoni</span><h2>Apa Kata <span class="gradient-text">Ibu Bapa?</span></h2></div>
             <div class="testimonial-grid">
                 <div class="testimonial-card"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p>"Anak saya umur 3 tahun sangat suka main CelikMinda. Sekarang dah boleh kenal huruf A-Z. <strong>Sangat berbaloi!</strong>"</p><div class="testimonial-author"><div class="author-avatar" style="background:linear-gradient(135deg,#FF6B6B,#FF8E8E)">A</div><div><strong>Aisyah, 32</strong><span>Ibu kepada 2 anak &middot; Kuala Lumpur</span></div></div></div>
-                <div class="testimonial-card"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p>"Dulu bayar tuisyen RM300/bulan. Sekarang guna CelikMinda je. <strong>Jimat sangat!</strong>"</p><div class="testimonial-author"><div class="author-avatar" style="background:linear-gradient(135deg,#4ECDC4,#6EDDD6)">S</div><div><strong>Siti Nurhaliza, 28</strong><span>Ibu kepada 3 anak &middot; Johor Bahru</span></div></div></div>
+                <div class="testimonial-card"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p>"Dulu bayar tuisyen RM300/bulan. Sekarang guna CelikMinda je. <strong>Jimat sangat!</strong>"</p><div class="testimonial-author"><div class="author-avatar" style="background:linear-gradient(135deg,#4ECDC4,#6EDDD6)">S</div><div><strong>Salina Hussin, 28</strong><span>Ibu kepada 3 anak &middot; Johor Bahru</span></div></div></div>
                 <div class="testimonial-card"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p>"Bayar sekali je RM49.90, dapat semua. Tak macam app lain yang kena subscribe bulanan. <strong>Highly recommended!</strong>"</p><div class="testimonial-author"><div class="author-avatar" style="background:linear-gradient(135deg,#A78BFA,#C4B5FD)">N</div><div><strong>Nur Fazlina, 35</strong><span>Ibu kepada 1 anak &middot; Terengganu</span></div></div></div>
             </div>
         </div>
@@ -570,6 +495,8 @@
             btn.disabled=true;btn.textContent='Memproses...';
             try{
                 const r=await fetch('/.netlify/functions/create-bill',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:n,email:em,phone:ph})});
+                const ct=r.headers.get('content-type')||'';
+                if(!ct.includes('application/json')) throw new Error('Fungsi pembayaran belum disetup. Sila deploy ke Netlify terlebih dahulu.');
                 const d=await r.json();
                 if(d.billUrl){showToast('Sedang redirect ke pembayaran...','success');setTimeout(()=>window.location.href=d.billUrl,1000)}
                 else throw new Error(d.error||'Gagal membuat bil.')
