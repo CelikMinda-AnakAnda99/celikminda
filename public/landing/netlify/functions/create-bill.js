@@ -37,6 +37,7 @@ exports.handler = async (event) => {
     const TOYYIBPAY_SECRET = process.env.TOYYIBPAY_SECRET || 'qtao61bl-e6j1-bawp-5qj8-vaqsyxw5i4zs';
     const TOYYIBPAY_CATEGORY = process.env.TOYYIBPAY_CATEGORY || 'i9in6ad7';
     const SITE_URL = process.env.URL || 'https://celikminda.netlify.app';
+    console.log('DEBUG: secret=' + TOYYIBPAY_SECRET.substring(0,8) + '..., category=' + TOYYIBPAY_CATEGORY + ', url=' + SITE_URL);
 
     const billData = {
       userSecretKey: TOYYIBPAY_SECRET,
