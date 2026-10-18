@@ -25,13 +25,28 @@ function postToyyibPay(path, data) {
 }
 
 exports.handler = async (event) => {
-  const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type' };
+  const ALLOWED_ORIGINS = ['https://celikminda.netlify.app', 'https://celikminda-anakanda99.github.io'];
+  const origin = event.headers?.origin || '';
+  const corsOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  const headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': corsOrigin,
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+  };
   if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers, body: '' };
   if (event.httpMethod !== 'POST') return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
 
   try {
     const { name, email, phone } = JSON.parse(event.body);
     if (!name || !email || !phone) return { statusCode: 400, headers, body: JSON.stringify({ error: 'Sila isi semua maklumat.' }) };
+
+    // Input sanitization — strip HTML/scripts
+    const sanitize = (s) => String(s).replace(/[<>'"&]/g, '').trim().substring(0, 200);
+    const safeName = sanitize(name);
+    const safeEmail = sanitize(email).toLowerCase();
+    const safePhone = sanitize(phone).replace(/[^0-9+\-\s]/g, '');
 
     // Get env vars (set in Netlify dashboard — NEVER hardcode secrets!)
     const TOYYIBPAY_SECRET = process.env.TOYYIBPAY_SECRET;
@@ -46,16 +61,16 @@ exports.handler = async (event) => {
       userSecretKey: TOYYIBPAY_SECRET,
       categoryCode: TOYYIBPAY_CATEGORY,
       billName: 'CelikMinda',
-      billDescription: 'Akses penuh CelikMinda — 4 Dunia, 29 Permainan',
+      billDescription: 'Akses penuh CelikMinda — 4 Dunia, 27 Permainan',
       billPriceSetting: 1, // fixed
       billPayorInfo: 1, // required
       billAmount: '100', // RM1.00 in cents (TESTING)
       billReturnUrl: SITE_URL + '/?status_id=1',
-      billCallbackUrl: SITE_URL + '/.netlify/functions/payment-callback?email=' + encodeURIComponent(email) + '&name=' + encodeURIComponent(name) + '&phone=' + encodeURIComponent(phone),
+      billCallbackUrl: SITE_URL + '/.netlify/functions/payment-callback?email=' + encodeURIComponent(safeEmail) + '&name=' + encodeURIComponent(safeName) + '&phone=' + encodeURIComponent(safePhone),
       billExternalReferenceNo: 'CM-' + Date.now(),
-      billTo: name,
-      billEmail: email,
-      billPhone: phone,
+      billTo: safeName,
+      billEmail: safeEmail,
+      billPhone: safePhone,
       billSplitPayment: 0,
       billSplitPaymentArgs: '',
       billPaymentChannel: 0, // FPX only
