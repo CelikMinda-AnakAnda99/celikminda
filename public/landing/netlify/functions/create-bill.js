@@ -46,7 +46,7 @@ exports.handler = async (event) => {
       billDescription: 'Akses penuh CelikMinda — 4 Dunia, 29 Permainan',
       billPriceSetting: 1, // fixed
       billPayorInfo: 1, // required
-      billAmount: '4990', // RM49.90 in cents
+      billAmount: '100', // RM1.00 in cents (TESTING)
       billReturnUrl: SITE_URL + '/?status_id=1',
       billCallbackUrl: SITE_URL + '/.netlify/functions/payment-callback',
       billExternalReferenceNo: 'CM-' + Date.now(),
