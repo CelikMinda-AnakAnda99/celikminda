@@ -56,7 +56,7 @@ exports.handler = async (event) => {
       billSplitPayment: 0,
       billSplitPaymentArgs: '',
       billPaymentChannel: 0, // FPX only
-      billContentEmail: 'Terima kasih kerana membeli CelikMinda! Anda akan menerima emel akses dalam beberapa minit.',
+      billContentEmail: 'Terima kasih kerana membeli CelikMinda! Emel akses anda akan dihantar dari celikminda9799@gmail.com dalam beberapa minit. PENTING: Sila semak juga folder Spam/Junk jika tidak nampak emel tersebut di Inbox.',
       billChargeToCustomer: 1, // charge to buyer
       billExpiryDate: '',
       billExpiryDays: 3
