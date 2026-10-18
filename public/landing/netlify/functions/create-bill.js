@@ -9,7 +9,7 @@ function postToyyibPay(path, data) {
   return new Promise((resolve, reject) => {
     const body = querystring.stringify(data);
     const req = https.request({
-      hostname: 'dev.toyyibpay.com',
+      hostname: 'toyyibpay.com',
       path,
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(body) }
@@ -68,7 +68,7 @@ exports.handler = async (event) => {
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ billUrl: 'https://dev.toyyibpay.com/' + result[0].BillCode })
+        body: JSON.stringify({ billUrl: 'https://toyyibpay.com/' + result[0].BillCode })
       };
     } else {
       console.error('ToyyibPay error:', JSON.stringify(result));
