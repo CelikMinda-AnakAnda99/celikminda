@@ -108,10 +108,11 @@ exports.handler = async (event) => {
     const transactionId = params.get('transaction_id') || params.get('order_id') || '';
     const refNo = params.get('refno') || params.get('billExternalReferenceNo') || '';
 
-    // ToyyibPay also sends buyer info
-    let billEmail = params.get('billEmail') || params.get('email') || '';
-    let billName = params.get('billName') || params.get('name') || '';
-    let billPhone = params.get('billPhone') || params.get('phone') || '';
+    // ToyyibPay also sends buyer info (or from callback URL query params)
+    const qsParams = new URLSearchParams((event.rawUrl || '').split('?')[1] || '');
+    let billEmail = params.get('billEmail') || params.get('email') || qsParams.get('email') || '';
+    let billName = params.get('billName') || params.get('name') || qsParams.get('name') || '';
+    let billPhone = params.get('billPhone') || params.get('phone') || qsParams.get('phone') || '';
 
     console.log('Callback:', { billCode, status, transactionId, billEmail, billName, refNo });
 

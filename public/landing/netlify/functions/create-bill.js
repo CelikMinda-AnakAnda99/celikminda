@@ -48,7 +48,7 @@ exports.handler = async (event) => {
       billPayorInfo: 1, // required
       billAmount: '100', // RM1.00 in cents (TESTING)
       billReturnUrl: SITE_URL + '/?status_id=1',
-      billCallbackUrl: SITE_URL + '/.netlify/functions/payment-callback',
+      billCallbackUrl: SITE_URL + '/.netlify/functions/payment-callback?email=' + encodeURIComponent(email) + '&name=' + encodeURIComponent(name) + '&phone=' + encodeURIComponent(phone),
       billExternalReferenceNo: 'CM-' + Date.now(),
       billTo: name,
       billEmail: email,
