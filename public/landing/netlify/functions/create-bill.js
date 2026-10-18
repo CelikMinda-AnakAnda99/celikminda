@@ -33,11 +33,14 @@ exports.handler = async (event) => {
     const { name, email, phone } = JSON.parse(event.body);
     if (!name || !email || !phone) return { statusCode: 400, headers, body: JSON.stringify({ error: 'Sila isi semua maklumat.' }) };
 
-    // Get env vars (set in Netlify dashboard)
-    const TOYYIBPAY_SECRET = process.env.TOYYIBPAY_SECRET || 'qtao61bl-e6j1-bawp-5qj8-vaqsyxw5i4zs';
-    const TOYYIBPAY_CATEGORY = process.env.TOYYIBPAY_CATEGORY || 'i9in6ad7';
+    // Get env vars (set in Netlify dashboard — NEVER hardcode secrets!)
+    const TOYYIBPAY_SECRET = process.env.TOYYIBPAY_SECRET;
+    const TOYYIBPAY_CATEGORY = process.env.TOYYIBPAY_CATEGORY;
     const SITE_URL = process.env.URL || 'https://celikminda.netlify.app';
-    console.log('DEBUG: secret=' + TOYYIBPAY_SECRET.substring(0,8) + '..., category=' + TOYYIBPAY_CATEGORY + ', url=' + SITE_URL);
+    if (!TOYYIBPAY_SECRET || !TOYYIBPAY_CATEGORY) {
+      console.error('Missing TOYYIBPAY env vars');
+      return { statusCode: 500, headers, body: JSON.stringify({ error: 'Payment config missing' }) };
+    }
 
     const billData = {
       userSecretKey: TOYYIBPAY_SECRET,
