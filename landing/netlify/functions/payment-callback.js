@@ -15,7 +15,7 @@ function generatePassword() {
   return 'CM-' + crypto.randomBytes(4).toString('hex').toUpperCase();
 }
 
-function supabaseRequest(method, path, body, serviceKey) {
+function supabaseRequest(method, path, body, serviceKey, extraHeaders) {
   return new Promise((resolve, reject) => {
     const data = body ? JSON.stringify(body) : '';
     const options = {
@@ -24,7 +24,8 @@ function supabaseRequest(method, path, body, serviceKey) {
         'Content-Type': 'application/json',
         'apikey': serviceKey,
         'Authorization': 'Bearer ' + serviceKey,
-        'Prefer': 'return=representation'
+        'Prefer': 'return=representation',
+        ...(extraHeaders || {})
       }
     };
     if (data) options.headers['Content-Length'] = Buffer.byteLength(data);
@@ -208,12 +209,12 @@ exports.handler = async (event) => {
       paid_at: new Date().toISOString(), payment_method: 'fpx'
     }, SERVICE_KEY);
 
-    // Update profile — store temp password for admin visibility
+    // Update profile — store temp password for admin visibility (upsert with merge)
     if (userId) {
-      await supabaseRequest('POST', '/rest/v1/profiles', {
+      await supabaseRequest('POST', '/rest/v1/profiles?on_conflict=id', {
         id: userId, email: billEmail, child_name: '', package: 'complete',
         temp_password: password, must_setup: true
-      }, SERVICE_KEY);
+      }, SERVICE_KEY, { 'Prefer': 'resolution=merge-duplicates' });
     }
 
     // Send welcome email
