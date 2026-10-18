@@ -21,7 +21,7 @@ export const WORLDS = [
       { id: 'syllable-factory', name: 'Bijak Suku Kata', nameEn: 'Syllable Factory', icon: '', description: 'Build words in the factory!' },
       { id: 'letter-bubbles', name: 'Tembak Huruf', nameEn: 'Letter Bubbles', icon: '', description: 'Pop the right letter bubble!' },
       { id: 'letter-puzzle', name: 'Puzzle Huruf', nameEn: 'Letter Puzzle', icon: '', description: 'Complete the letter puzzle!' },
-      { id: 'abc-song', name: 'Nyanyian ABC', nameEn: 'ABC Song', icon: '', description: 'Sing along with MINDA!' },
+
       { id: 'letter-stories', name: 'Cerita Huruf', nameEn: 'Letter Stories', icon: '', description: 'Read fun letter adventures!' },
     ]
   },
@@ -82,7 +82,7 @@ export const WORLDS = [
       { id: 'sock-pairs', name: 'Ingatan Ajaib', nameEn: 'Magic Memory', icon: '', description: 'Find matching pairs!' },
       { id: 'colour-hunter', name: 'Teka Warna', nameEn: 'Guess the Colour', icon: '', description: 'Guess the colour of each item!' },
       { id: 'color-drops', name: 'Titisan Warna Ajaib', nameEn: 'Magic Color Drops', icon: '', description: 'Drop colors on paper and watch them spread!' },
-      { id: 'free-draw', name: 'Lukis Bersama', nameEn: 'Draw Together', icon: '', description: 'Free drawing canvas!' },
+
     ]
   },
   {

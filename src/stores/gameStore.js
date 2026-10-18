@@ -126,6 +126,7 @@ export const useGameStore = create(
       userId: null,        // Supabase user UUID
       authLoading: false,  // true while checking session
       authError: null,     // last auth error message
+      mustSetup: false,    // true if first-time login — needs password change + child name
 
       // ── Child profile ──
       childName: 'Adik',
@@ -139,7 +140,7 @@ export const useGameStore = create(
       progress: {},
 
       // ── Current navigation ──
-      currentView: 'home', // 'home', 'world', 'game'
+      currentView: 'home', // 'home', 'world', 'game', 'setup'
       currentWorldId: null,
       currentGameId: null,
 
@@ -296,6 +297,7 @@ export const useGameStore = create(
           let totalStars = 0;
           Object.values(progress).forEach(p => { totalStars += p.stars || 0; });
 
+          const needsSetup = profile?.must_setup === true || !profile?.child_name;
           set({
             isLoggedIn: true,
             userId: user.id,
@@ -304,17 +306,18 @@ export const useGameStore = create(
             childName: profile?.child_name || 'Adik',
             progress,
             totalStars,
+            mustSetup: needsSetup,
             subscription: {
               ...get().subscription,
               plan: profile?.package || 'free',
             },
             language: profile?.language || 'bm',
-            currentView: 'home',
+            currentView: needsSetup ? 'setup' : 'home',
             currentWorldId: null,
             currentGameId: null,
             authLoading: false,
           });
-          return { success: true };
+          return { success: true, needsSetup };
         } catch (e) {
           set({ authLoading: false, authError: e.message });
           return { success: false, error: e.message };
@@ -338,6 +341,29 @@ export const useGameStore = create(
 
       // Clear auth error
       clearAuthError: () => set({ authError: null }),
+
+      // Complete first-time setup (change password + set child name)
+      completeSetup: async (newPassword, childName) => {
+        try {
+          if (!supabase) throw new Error('Supabase not configured');
+          const { error: pwErr } = await supabase.auth.updateUser({ password: newPassword });
+          if (pwErr) throw pwErr;
+
+          const userId = get().userId;
+          if (userId) {
+            await supabase.from('profiles').update({
+              child_name: childName,
+              must_setup: false,
+              temp_password: newPassword,
+            }).eq('id', userId);
+          }
+
+          set({ childName, mustSetup: false, currentView: 'home' });
+          return { success: true };
+        } catch (e) {
+          return { success: false, error: e.message };
+        }
+      },
 
       // ════════════════════════════════════════
       // 🧭 NAVIGATION ACTIONS

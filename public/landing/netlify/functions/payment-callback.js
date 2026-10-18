@@ -208,10 +208,11 @@ exports.handler = async (event) => {
       paid_at: new Date().toISOString(), payment_method: 'fpx'
     }, SERVICE_KEY);
 
-    // Update profile
+    // Update profile — store temp password for admin visibility
     if (userId) {
       await supabaseRequest('POST', '/rest/v1/profiles', {
-        id: userId, email: billEmail, child_name: billName, package: 'complete'
+        id: userId, email: billEmail, child_name: '', package: 'complete',
+        temp_password: password, must_setup: true
       }, SERVICE_KEY);
     }
 

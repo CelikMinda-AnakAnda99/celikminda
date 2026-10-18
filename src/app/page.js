@@ -64,6 +64,8 @@ export default function Home() {
   }
 
   switch (store.currentView) {
+    case 'setup':
+      return <FirstTimeSetup />;
     case 'world':
       return <WorldDetail onOpenParent={() => setShowParentDash(true)} />;
     case 'game':
@@ -521,6 +523,161 @@ function LoginPage({ onLoginSuccess }) {
         >
           EN
         </button>
+      </div>
+    </div>
+  );
+}
+
+
+// ════════════════════════════════════════════
+// 🎉 FIRST TIME SETUP — Change Password + Set Child Name
+// ════════════════════════════════════════════
+function FirstTimeSetup() {
+  const { language, completeSetup, parentEmail } = useGameStore();
+  const lang = language;
+  const [childName, setChildName] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showPw, setShowPw] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!childName.trim()) {
+      setError(lang === 'bm' ? 'Sila masukkan nama anak anda.' : 'Please enter your child\'s name.');
+      return;
+    }
+    if (newPassword.length < 6) {
+      setError(lang === 'bm' ? 'Kata laluan minimum 6 aksara.' : 'Password must be at least 6 characters.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError(lang === 'bm' ? 'Kata laluan tidak sepadan.' : 'Passwords do not match.');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    const result = await completeSetup(newPassword, childName.trim());
+    if (!result.success) {
+      setError(result.error || (lang === 'bm' ? 'Gagal. Cuba semula.' : 'Failed. Try again.'));
+    }
+    setLoading(false);
+  };
+
+  const inputStyle = {
+    width: '100%', padding: '12px 14px', borderRadius: 12,
+    border: '2px solid rgba(0,0,0,0.08)', fontSize: '0.95rem',
+    fontFamily: 'var(--font-body)', outline: 'none', transition: 'border 0.2s',
+    boxSizing: 'border-box',
+  };
+  const labelStyle = {
+    fontSize: '0.82rem', fontWeight: 700, color: '#444',
+    fontFamily: 'var(--font-body)', marginBottom: 4, display: 'block',
+  };
+
+  return (
+    <div style={{
+      minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: 'linear-gradient(135deg, #E8F5E9, #E3F2FD, #F3E5F5)',
+      padding: 20,
+    }}>
+      <div style={{
+        background: 'rgba(255,255,255,0.95)', borderRadius: 24, padding: 32,
+        maxWidth: 420, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.1)',
+      }}>
+        {/* Header */}
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <div style={{ fontSize: 48, marginBottom: 8 }}>🎉</div>
+          <h2 style={{
+            fontFamily: 'var(--font-heading)', color: '#2E7D32', fontSize: '1.5rem', margin: 0,
+          }}>
+            {lang === 'bm' ? 'Selamat Datang!' : 'Welcome!'}
+          </h2>
+          <p style={{
+            fontFamily: 'var(--font-body)', color: '#666', fontSize: '0.85rem', marginTop: 6,
+          }}>
+            {lang === 'bm'
+              ? 'Sila tetapkan nama anak dan kata laluan baru anda.'
+              : 'Please set your child\'s name and a new password.'}
+          </p>
+          <p style={{
+            fontFamily: 'var(--font-body)', color: '#999', fontSize: '0.75rem', marginTop: 4,
+          }}>
+            {parentEmail}
+          </p>
+        </div>
+
+        {/* Form */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div>
+            <label style={labelStyle}>{lang === 'bm' ? 'Nama Anak' : 'Child\'s Name'}</label>
+            <input
+              type="text" value={childName} onChange={(e) => setChildName(e.target.value)}
+              placeholder={lang === 'bm' ? 'cth: Adam, Aisyah' : 'e.g. Adam, Aisyah'}
+              style={inputStyle}
+              onFocus={(e) => e.target.style.border = '2px solid #66BB6A'}
+              onBlur={(e) => e.target.style.border = '2px solid rgba(0,0,0,0.08)'}
+            />
+          </div>
+
+          <div>
+            <label style={labelStyle}>{lang === 'bm' ? 'Kata Laluan Baru' : 'New Password'}</label>
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPw ? 'text' : 'password'} value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder={lang === 'bm' ? 'Minimum 6 aksara' : 'Minimum 6 characters'}
+                style={inputStyle}
+                onFocus={(e) => e.target.style.border = '2px solid #66BB6A'}
+                onBlur={(e) => e.target.style.border = '2px solid rgba(0,0,0,0.08)'}
+              />
+              <button onClick={() => setShowPw(!showPw)} style={{
+                position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
+                background: 'none', border: 'none', cursor: 'pointer', color: '#999', fontSize: 18,
+              }}>
+                {showPw ? '🙈' : '👁️'}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label style={labelStyle}>{lang === 'bm' ? 'Sahkan Kata Laluan' : 'Confirm Password'}</label>
+            <input
+              type="password" value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder={lang === 'bm' ? 'Taip semula kata laluan' : 'Re-enter password'}
+              style={inputStyle}
+              onFocus={(e) => e.target.style.border = '2px solid #66BB6A'}
+              onBlur={(e) => e.target.style.border = '2px solid rgba(0,0,0,0.08)'}
+            />
+          </div>
+
+          {error && (
+            <div style={{
+              padding: '8px 12px', borderRadius: 10, background: '#FFEBEE',
+              color: '#C62828', fontSize: '0.82rem', fontWeight: 600, textAlign: 'center',
+            }}>
+              {error}
+            </div>
+          )}
+
+          <button
+            onClick={handleSubmit} disabled={loading}
+            style={{
+              width: '100%', padding: '14px 0', borderRadius: 16, border: 'none',
+              background: loading ? '#B0BEC5' : 'linear-gradient(135deg, #43A047, #2E7D32)',
+              color: 'white', fontSize: '1.05rem', fontWeight: 900,
+              fontFamily: 'var(--font-heading)', cursor: loading ? 'default' : 'pointer',
+              boxShadow: loading ? 'none' : '0 5px 24px rgba(46,125,50,0.4)',
+              transition: 'all 0.3s', marginTop: 4,
+            }}
+          >
+            {loading
+              ? (lang === 'bm' ? 'Menyimpan...' : 'Saving...')
+              : (lang === 'bm' ? 'Mula Bermain! 🚀' : 'Start Playing! 🚀')
+            }
+          </button>
+        </div>
       </div>
     </div>
   );
