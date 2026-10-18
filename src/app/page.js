@@ -327,21 +327,7 @@ function LoginPage({ onLoginSuccess }) {
           >
             {lang === 'bm' ? 'Log Masuk' : 'Login'}
           </button>
-          <button
-            className="login-tab-btn"
-            onClick={() => { playSound('tab'); setMode('register'); setError(''); }}
-            style={{
-              flex: 1, padding: '11px 0', border: 'none', borderRadius: 11,
-              background: mode === 'register' ? 'linear-gradient(135deg, #2196F3, #42A5F5)' : 'transparent',
-              color: mode === 'register' ? 'white' : '#888',
-              fontWeight: 800, fontSize: 'clamp(0.78rem, 1.5vw, 0.9rem)', cursor: 'pointer',
-              fontFamily: 'var(--font-heading)',
-              boxShadow: mode === 'register' ? '0 3px 12px rgba(33,150,243,0.3)' : 'none',
-              transition: 'all 0.3s',
-            }}
-          >
-            {lang === 'bm' ? 'Daftar Baru' : 'Register'}
-          </button>
+
         </div>
 
         {/* Form Fields */}
@@ -471,8 +457,7 @@ function LoginPage({ onLoginSuccess }) {
             className="login-submit-btn"
             onClick={() => {
               playSound('submit');
-              if (mode === 'login') handleLogin();
-              else handleRegister();
+              handleLogin();
             }}
             disabled={loading}
             style={{
@@ -488,9 +473,7 @@ function LoginPage({ onLoginSuccess }) {
           >
             {loading
               ? (lang === 'bm' ? 'Memuat...' : 'Loading...')
-              : mode === 'login'
-                ? (lang === 'bm' ? 'Log Masuk' : 'Login')
-                : (lang === 'bm' ? 'Daftar & Mula!' : 'Register & Start!')
+              : (lang === 'bm' ? 'Log Masuk' : 'Login')
             }
           </button>
         </div>
@@ -500,19 +483,15 @@ function LoginPage({ onLoginSuccess }) {
           textAlign: 'center', marginTop: 10, fontSize: 'clamp(0.72rem, 1.3vw, 0.82rem)',
           color: '#555', fontFamily: 'var(--font-body)',
         }}>
-          {mode === 'login'
-            ? (lang === 'bm' ? 'Belum ada akaun? ' : "Don't have an account? ")
-            : (lang === 'bm' ? 'Sudah ada akaun? ' : 'Already have an account? ')
-          }
-          <span
-            onClick={() => { playSound('tab'); setMode(mode === 'login' ? 'register' : 'login'); setError(''); }}
+          {lang === 'bm' ? 'Belum ada akaun? ' : "Don't have an account? "}
+          <a
+            href="https://celikminda.netlify.app"
+            target="_blank"
+            rel="noopener noreferrer"
             style={{ color: '#2196F3', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}
           >
-            {mode === 'login'
-              ? (lang === 'bm' ? 'Daftar di sini' : 'Register here')
-              : (lang === 'bm' ? 'Log masuk' : 'Login')
-            }
-          </span>
+            {lang === 'bm' ? 'Dapatkan di sini' : 'Get access here'}
+          </a>
         </p>
       </div>
 
