@@ -34,15 +34,15 @@ exports.handler = async (event) => {
     if (!name || !email || !phone) return { statusCode: 400, headers, body: JSON.stringify({ error: 'Sila isi semua maklumat.' }) };
 
     // Get env vars (set in Netlify dashboard)
-    const TOYYIBPAY_SECRET = process.env.TOYYIBPAY_SECRET || 'i9in6ad7';
-    const TOYYIBPAY_CATEGORY = process.env.TOYYIBPAY_CATEGORY || 'qtao61bl-e6j1-bawp-5qj8-vaqsyxw5i4zs';
+    const TOYYIBPAY_SECRET = process.env.TOYYIBPAY_SECRET || 'qtao61bl-e6j1-bawp-5qj8-vaqsyxw5i4zs';
+    const TOYYIBPAY_CATEGORY = process.env.TOYYIBPAY_CATEGORY || 'i9in6ad7';
     const SITE_URL = process.env.URL || 'https://celikminda.netlify.app';
 
     const billData = {
       userSecretKey: TOYYIBPAY_SECRET,
       categoryCode: TOYYIBPAY_CATEGORY,
-      billName: 'CelikMinda Lengkap',
-      billDescription: 'Akses penuh CelikMinda — 8 Dunia, 62 Permainan',
+      billName: 'CelikMinda',
+      billDescription: 'Akses penuh CelikMinda — 4 Dunia, 29 Permainan',
       billPriceSetting: 1, // fixed
       billPayorInfo: 1, // required
       billAmount: '4990', // RM49.90 in cents

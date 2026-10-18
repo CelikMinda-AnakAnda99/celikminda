@@ -130,7 +130,7 @@ exports.handler = async (event) => {
     if (!billEmail && billCode) {
       try {
         const billInfo = await new Promise((resolve, reject) => {
-          const qry = require('querystring').stringify({ billCode, userSecretKey: process.env.TOYYIBPAY_SECRET || 'i9in6ad7' });
+          const qry = require('querystring').stringify({ billCode, userSecretKey: process.env.TOYYIBPAY_SECRET || 'qtao61bl-e6j1-bawp-5qj8-vaqsyxw5i4zs' });
           const req = https.request({ hostname: 'dev.toyyibpay.com', path: '/index.php/api/getBillTransactions', method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(qry) } },
             res => { let d=''; res.on('data',c=>d+=c); res.on('end',()=>{try{resolve(JSON.parse(d))}catch{resolve([])}}); });

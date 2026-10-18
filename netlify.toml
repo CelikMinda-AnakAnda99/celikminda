@@ -1,9 +1,9 @@
 [build]
   base = "public/landing"
-  publish = "public/landing"
+  publish = "."
 
 [functions]
-  directory = "public/landing/netlify/functions"
+  directory = "netlify/functions"
 
 [[headers]]
   for = "/*"
