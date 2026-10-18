@@ -141,6 +141,38 @@ exports.handler = async (event) => {
       return { statusCode: 200, headers, body: JSON.stringify({ status: 'not_paid' }) };
     }
 
+    // SECURITY: Verify payment with ToyyibPay API before creating account
+    const TOYYIBPAY_SECRET = process.env.TOYYIBPAY_SECRET;
+    if (!billCode || !TOYYIBPAY_SECRET) {
+      console.error('Missing billCode or TOYYIBPAY_SECRET for verification');
+      return { statusCode: 400, headers, body: JSON.stringify({ error: 'verification_failed' }) };
+    }
+
+    const verifyPayment = await new Promise((resolve, reject) => {
+      const verifyData = require('querystring').stringify({ billCode, userSecretKey: TOYYIBPAY_SECRET });
+      const req = https.request({
+        hostname: 'toyyibpay.com', path: '/index.php/api/getBillTransactions', method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(verifyData) }
+      }, res => {
+        let d = ''; res.on('data', c => d += c);
+        res.on('end', () => { try { resolve(JSON.parse(d)); } catch { resolve(null); } });
+      });
+      req.on('error', () => resolve(null));
+      req.write(verifyData); req.end();
+    });
+
+    // Check if ToyyibPay confirms payment as successful
+    const isVerified = verifyPayment && Array.isArray(verifyPayment) && verifyPayment.some(
+      tx => tx.billpaymentStatus === '1' || tx.billpaymentStatus === 1
+    );
+
+    if (!isVerified) {
+      console.error('Payment NOT verified by ToyyibPay! Possible spoofed callback. billCode:', billCode);
+      return { statusCode: 403, headers, body: JSON.stringify({ error: 'payment_not_verified' }) };
+    }
+
+    console.log('Payment VERIFIED by ToyyibPay for billCode:', billCode);
+
     const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!SERVICE_KEY) {
       console.error('Missing SUPABASE_SERVICE_ROLE_KEY');
