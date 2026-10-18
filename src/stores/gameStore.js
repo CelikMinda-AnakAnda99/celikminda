@@ -240,7 +240,7 @@ export const useGameStore = create(
               totalStars,
               subscription: {
                 ...get().subscription,
-                plan: profile?.package || 'free',
+                plan: profile?.package || 'complete',
               },
               language: profile?.language || 'bm',
               soundEnabled: profile?.sound_enabled !== false,
@@ -309,7 +309,7 @@ export const useGameStore = create(
             mustSetup: needsSetup,
             subscription: {
               ...get().subscription,
-              plan: profile?.package || 'free',
+              plan: profile?.package || 'complete',
             },
             language: profile?.language || 'bm',
             currentView: needsSetup ? 'setup' : 'home',
