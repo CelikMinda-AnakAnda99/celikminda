@@ -530,7 +530,7 @@ function LoginPage({ onLoginSuccess }) {
 
 
 // ════════════════════════════════════════════
-// 🎉 FIRST TIME SETUP — Change Password + Set Child Name
+// FIRST TIME SETUP — Change Password + Set Child Name
 // ════════════════════════════════════════════
 function FirstTimeSetup() {
   const { language, completeSetup, parentEmail } = useGameStore();
@@ -564,44 +564,47 @@ function FirstTimeSetup() {
     setLoading(false);
   };
 
-  const inputStyle = {
-    width: '100%', padding: '12px 14px', borderRadius: 12,
-    border: '2px solid rgba(0,0,0,0.08)', fontSize: '0.95rem',
-    fontFamily: 'var(--font-body)', outline: 'none', transition: 'border 0.2s',
-    boxSizing: 'border-box',
-  };
-  const labelStyle = {
-    fontSize: '0.82rem', fontWeight: 700, color: '#444',
-    fontFamily: 'var(--font-body)', marginBottom: 4, display: 'block',
-  };
-
   return (
     <div style={{
-      minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'linear-gradient(135deg, #E8F5E9, #E3F2FD, #F3E5F5)',
-      padding: 20,
+      minHeight: '100vh', minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: 'linear-gradient(160deg, #f0fdf4 0%, #ecfeff 40%, #f5f3ff 100%)',
+      padding: '16px',
     }}>
       <div style={{
-        background: 'rgba(255,255,255,0.95)', borderRadius: 24, padding: 32,
-        maxWidth: 420, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.1)',
+        background: 'white', borderRadius: 20, padding: 'clamp(24px, 5vw, 36px)',
+        maxWidth: 400, width: '100%',
+        boxShadow: '0 4px 32px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04)',
+        border: '1px solid rgba(0,0,0,0.04)',
       }}>
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <div style={{ fontSize: 48, marginBottom: 8 }}>🎉</div>
+        {/* Icon */}
+        <div style={{ textAlign: 'center', marginBottom: 20 }}>
+          <div style={{
+            width: 56, height: 56, borderRadius: 16, margin: '0 auto 14px',
+            background: 'linear-gradient(135deg, #34d399, #06b6d4)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 6px 20px rgba(52,211,153,0.35)',
+          }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
           <h2 style={{
-            fontFamily: 'var(--font-heading)', color: '#2E7D32', fontSize: '1.5rem', margin: 0,
+            fontFamily: 'var(--font-heading)', color: '#1e293b',
+            fontSize: 'clamp(1.2rem, 4vw, 1.5rem)', margin: 0, fontWeight: 800,
           }}>
             {lang === 'bm' ? 'Selamat Datang!' : 'Welcome!'}
           </h2>
           <p style={{
-            fontFamily: 'var(--font-body)', color: '#666', fontSize: '0.85rem', marginTop: 6,
+            fontFamily: 'var(--font-body)', color: '#64748b',
+            fontSize: 'clamp(0.78rem, 2.5vw, 0.88rem)', marginTop: 6, lineHeight: 1.5,
           }}>
             {lang === 'bm'
-              ? 'Sila tetapkan nama anak dan kata laluan baru anda.'
-              : 'Please set your child\'s name and a new password.'}
+              ? 'Tetapkan nama anak dan kata laluan baru anda untuk mula bermain.'
+              : 'Set your child\'s name and a new password to start playing.'}
           </p>
           <p style={{
-            fontFamily: 'var(--font-body)', color: '#999', fontSize: '0.75rem', marginTop: 4,
+            fontFamily: 'var(--font-body)', color: '#94a3b8',
+            fontSize: 'clamp(0.7rem, 2vw, 0.78rem)', marginTop: 4,
           }}>
             {parentEmail}
           </p>
@@ -610,52 +613,89 @@ function FirstTimeSetup() {
         {/* Form */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div>
-            <label style={labelStyle}>{lang === 'bm' ? 'Nama Anak' : 'Child\'s Name'}</label>
+            <label style={{
+              fontSize: 'clamp(0.75rem, 2.2vw, 0.82rem)', fontWeight: 600, color: '#374151',
+              fontFamily: 'var(--font-body)', marginBottom: 6, display: 'block',
+            }}>
+              {lang === 'bm' ? 'Nama Anak' : 'Child\'s Name'}
+            </label>
             <input
               type="text" value={childName} onChange={(e) => setChildName(e.target.value)}
               placeholder={lang === 'bm' ? 'cth: Adam, Aisyah' : 'e.g. Adam, Aisyah'}
-              style={inputStyle}
-              onFocus={(e) => e.target.style.border = '2px solid #66BB6A'}
-              onBlur={(e) => e.target.style.border = '2px solid rgba(0,0,0,0.08)'}
+              style={{
+                width: '100%', padding: '11px 14px', borderRadius: 10,
+                border: '1.5px solid #e2e8f0', fontSize: 'clamp(0.88rem, 2.8vw, 0.95rem)',
+                fontFamily: 'var(--font-body)', outline: 'none', transition: 'all 0.2s',
+                boxSizing: 'border-box', background: '#f8fafc',
+              }}
+              onFocus={(e) => { e.target.style.borderColor = '#34d399'; e.target.style.background = '#fff'; }}
+              onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.background = '#f8fafc'; }}
             />
           </div>
 
           <div>
-            <label style={labelStyle}>{lang === 'bm' ? 'Kata Laluan Baru' : 'New Password'}</label>
+            <label style={{
+              fontSize: 'clamp(0.75rem, 2.2vw, 0.82rem)', fontWeight: 600, color: '#374151',
+              fontFamily: 'var(--font-body)', marginBottom: 6, display: 'block',
+            }}>
+              {lang === 'bm' ? 'Kata Laluan Baru' : 'New Password'}
+            </label>
             <div style={{ position: 'relative' }}>
               <input
                 type={showPw ? 'text' : 'password'} value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder={lang === 'bm' ? 'Minimum 6 aksara' : 'Minimum 6 characters'}
-                style={inputStyle}
-                onFocus={(e) => e.target.style.border = '2px solid #66BB6A'}
-                onBlur={(e) => e.target.style.border = '2px solid rgba(0,0,0,0.08)'}
+                placeholder={lang === 'bm' ? 'Minimum 6 aksara' : 'Min 6 characters'}
+                style={{
+                  width: '100%', padding: '11px 40px 11px 14px', borderRadius: 10,
+                  border: '1.5px solid #e2e8f0', fontSize: 'clamp(0.88rem, 2.8vw, 0.95rem)',
+                  fontFamily: 'var(--font-body)', outline: 'none', transition: 'all 0.2s',
+                  boxSizing: 'border-box', background: '#f8fafc',
+                }}
+                onFocus={(e) => { e.target.style.borderColor = '#34d399'; e.target.style.background = '#fff'; }}
+                onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.background = '#f8fafc'; }}
               />
               <button onClick={() => setShowPw(!showPw)} style={{
                 position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
-                background: 'none', border: 'none', cursor: 'pointer', color: '#999', fontSize: 18,
+                background: 'none', border: 'none', cursor: 'pointer', padding: 4,
               }}>
-                {showPw ? '🙈' : '👁️'}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round">
+                  {showPw ? (
+                    <><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></>
+                  ) : (
+                    <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>
+                  )}
+                </svg>
               </button>
             </div>
           </div>
 
           <div>
-            <label style={labelStyle}>{lang === 'bm' ? 'Sahkan Kata Laluan' : 'Confirm Password'}</label>
+            <label style={{
+              fontSize: 'clamp(0.75rem, 2.2vw, 0.82rem)', fontWeight: 600, color: '#374151',
+              fontFamily: 'var(--font-body)', marginBottom: 6, display: 'block',
+            }}>
+              {lang === 'bm' ? 'Sahkan Kata Laluan' : 'Confirm Password'}
+            </label>
             <input
               type="password" value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder={lang === 'bm' ? 'Taip semula kata laluan' : 'Re-enter password'}
-              style={inputStyle}
-              onFocus={(e) => e.target.style.border = '2px solid #66BB6A'}
-              onBlur={(e) => e.target.style.border = '2px solid rgba(0,0,0,0.08)'}
+              style={{
+                width: '100%', padding: '11px 14px', borderRadius: 10,
+                border: '1.5px solid #e2e8f0', fontSize: 'clamp(0.88rem, 2.8vw, 0.95rem)',
+                fontFamily: 'var(--font-body)', outline: 'none', transition: 'all 0.2s',
+                boxSizing: 'border-box', background: '#f8fafc',
+              }}
+              onFocus={(e) => { e.target.style.borderColor = '#34d399'; e.target.style.background = '#fff'; }}
+              onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.background = '#f8fafc'; }}
             />
           </div>
 
           {error && (
             <div style={{
-              padding: '8px 12px', borderRadius: 10, background: '#FFEBEE',
-              color: '#C62828', fontSize: '0.82rem', fontWeight: 600, textAlign: 'center',
+              padding: '10px 14px', borderRadius: 10, background: '#fef2f2',
+              color: '#dc2626', fontSize: 'clamp(0.75rem, 2.2vw, 0.82rem)',
+              fontWeight: 600, textAlign: 'center', border: '1px solid #fecaca',
             }}>
               {error}
             </div>
@@ -664,17 +704,17 @@ function FirstTimeSetup() {
           <button
             onClick={handleSubmit} disabled={loading}
             style={{
-              width: '100%', padding: '14px 0', borderRadius: 16, border: 'none',
-              background: loading ? '#B0BEC5' : 'linear-gradient(135deg, #43A047, #2E7D32)',
-              color: 'white', fontSize: '1.05rem', fontWeight: 900,
+              width: '100%', padding: '13px 0', borderRadius: 12, border: 'none',
+              background: loading ? '#cbd5e1' : 'linear-gradient(135deg, #34d399, #06b6d4)',
+              color: 'white', fontSize: 'clamp(0.95rem, 3vw, 1.05rem)', fontWeight: 800,
               fontFamily: 'var(--font-heading)', cursor: loading ? 'default' : 'pointer',
-              boxShadow: loading ? 'none' : '0 5px 24px rgba(46,125,50,0.4)',
-              transition: 'all 0.3s', marginTop: 4,
+              boxShadow: loading ? 'none' : '0 4px 16px rgba(52,211,153,0.35)',
+              transition: 'all 0.3s', marginTop: 6, letterSpacing: '0.3px',
             }}
           >
             {loading
               ? (lang === 'bm' ? 'Menyimpan...' : 'Saving...')
-              : (lang === 'bm' ? 'Mula Bermain! 🚀' : 'Start Playing! 🚀')
+              : (lang === 'bm' ? 'Mula Bermain' : 'Start Playing')
             }
           </button>
         </div>
