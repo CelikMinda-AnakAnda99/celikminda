@@ -83,10 +83,29 @@ async function sendWelcomeEmail(toEmail, toName, password) {
     </div>
   `;
 
+  const text = `Selamat Datang ke CelikMinda!
+
+Terima kasih atas pembelian anda, ${toName}.
+
+Maklumat akses anda:
+- Link Aplikasi: ${GAME_URL}
+- Emel Log Masuk: ${toEmail}
+- Kata Laluan: ${password}
+
+Sila log masuk di ${GAME_URL} menggunakan maklumat di atas.
+
+Simpan emel ini untuk rujukan. Jangan kongsikan kata laluan anda.
+
+Soalan? Hubungi celikminda9799@gmail.com
+
+CelikMinda - Aplikasi Pendidikan No.1 Untuk Anak Malaysia`;
+
   await transporter.sendMail({
-    from: '"CelikMinda" <celikminda9799@gmail.com>',
+    from: `"CelikMinda" <${GMAIL_USER}>`,
+    replyTo: GMAIL_USER,
     to: toEmail,
-    subject: 'Akses CelikMinda Anda — Selamat Datang!',
+    subject: `CelikMinda - Maklumat Akses Anda`,
+    text,
     html
   });
 
